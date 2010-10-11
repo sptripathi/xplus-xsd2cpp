@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<ns1:myComplexTypeElem ns1:aNNI="unbounded" ns1:globalStringAttr="abc" ns1:anotherNNI="100" ns1:aCommonName="abcde" xmlns:ns1="http://www.example.com/STDemo">
+  Here you will see some examples of simpleType elements
+  Following are examples of -atomic- simpleType elements
+  <ns1:xBoolean>false</ns1:xBoolean>
+  <ns1:xDecimal>-1.23e-6</ns1:xDecimal>
+  <ns1:xFloat>-1.23e-3</ns1:xFloat>
+  <ns1:xDouble>-1.23e-5</ns1:xDouble>
+  <ns1:xInteger>-12678967543233</ns1:xInteger>
+  <ns1:xPositiveInteger>12678967543233</ns1:xPositiveInteger>
+  <ns1:xNonPositiveInteger>-12678967543233</ns1:xNonPositiveInteger>
+  <ns1:xNegativeInteger>-12678967543233</ns1:xNegativeInteger>
+  <ns1:xNonNegativeInteger>12678967543233</ns1:xNonNegativeInteger>
+  <ns1:xLong>-9223372036854775808</ns1:xLong>
+  <ns1:xInt>-2147483648</ns1:xInt>
+  <ns1:xShort>-32768</ns1:xShort>
+  <ns1:xByte>-127</ns1:xByte>
+  <ns1:xUnsignedLong>18446744073709551615</ns1:xUnsignedLong>
+  <ns1:xUnsignedInt>4294967295</ns1:xUnsignedInt>
+  <ns1:xUnsignedShort>65535</ns1:xUnsignedShort>
+  <ns1:xUnsignedByte>255</ns1:xUnsignedByte>
+  <ns1:xHexBinary>FEFF</ns1:xHexBinary>
+  <ns1:xBase64Binary>ZXF+NAQF/d</ns1:xBase64Binary>
+  <ns1:xUri>http://www.example.com/xmlplus</ns1:xUri>
+  <ns1:xNormalizedString>no CR LF TAB</ns1:xNormalizedString>
+  <ns1:xToken>xs:hexBinary</ns1:xToken>
+  <ns1:xLanguage>english</ns1:xLanguage>
+  <ns1:xName>:colonToken</ns1:xName>
+  <ns1:xNCName>noColonToken</ns1:xNCName>
+  <ns1:xQName>xsi:schemaLocation</ns1:xQName>
+  <ns1:xDateTime>2001-07-04T14:50:59Z</ns1:xDateTime>
+  <ns1:xDate>2010-01-04</ns1:xDate>
+  <ns1:xYearMonth>1980-11</ns1:xYearMonth>
+  <ns1:xYear>1978</ns1:xYear>
+  <ns1:xMonthDay>12-30</ns1:xMonthDay>
+  <ns1:xMonth>7</ns1:xMonth>
+  <ns1:xDay>30</ns1:xDay>
+  <ns1:xTime>14:59:57</ns1:xTime>
+  <ns1:xDuration>P1Y2M3DT10H30M40S</ns1:xDuration>
+  <ns1:anIntMax10>10</ns1:anIntMax10>
+  <ns1:anIntMax10>10</ns1:anIntMax10>
+  <ns1:anIntMax10>10</ns1:anIntMax10>
+  <ns1:anIntMax10>10</ns1:anIntMax10>
+  <ns1:anIntMax5k>4999</ns1:anIntMax5k>
+  <ns1:globalWaterTemp>30</ns1:globalWaterTemp>
+  <ns1:aSKU>123-AB</ns1:aSKU>
+  <ns1:aDateTime>2010-01-04T12:00:00Z</ns1:aDateTime>
+  <ns1:aDate>2010-01-04</ns1:aDate>
+  <ns1:aYear>2009</ns1:aYear>
+  <ns1:aCommonName>abcde</ns1:aCommonName>
+  End of -atomic- simpleType elements
+  Following are examples of -list- simpleType elements
+  <ns1:aListOfIntMax5k>0 1000 2000 3000 4000</ns1:aListOfIntMax5k>
+  <ns1:aListOfFourIntMax500>100 200 300 400</ns1:aListOfFourIntMax500>
+  <ns1:aListOfTwoIntMax3k>1000 2000</ns1:aListOfTwoIntMax3k>
+  End of -list- simpleType elements
+ Following are examples of -union- simpleType elements
+  <ns1:aFont>medium</ns1:aFont>
+  <ns1:anotherFont>72</ns1:anotherFont>
+  End of -union- simpleType elements
+End of all example elements
+</ns1:myComplexTypeElem>

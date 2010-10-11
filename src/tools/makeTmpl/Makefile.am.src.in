@@ -1,0 +1,6 @@
+AM_CXXFLAGS= -I@includedir@ -I$(top_srcdir)/include
+AM_LDFLAGS=
+
+lib_LTLIBRARIES = lib@xsdname@.la
+lib@xsdname@_la_LIBADD = @libdir@/libxsdall.la
+lib@xsdname@_la_SOURCES = \

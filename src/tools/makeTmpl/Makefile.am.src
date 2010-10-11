@@ -1,0 +1,6 @@
+AM_CXXFLAGS= -I/Users/satyat/xplusbuild/include -I$(top_srcdir)/include
+AM_LDFLAGS=
+
+lib_LTLIBRARIES = lib@xsdname@.la
+lib@xsdname@_la_LIBADD = /Users/satyat/xplusbuild/lib/libxsdall.la
+lib@xsdname@_la_SOURCES = \

@@ -1,0 +1,6 @@
+ACLOCAL_AMFLAGS = -I m4
+AUTOMAKE_OPTIONS = foreign
+SUBDIRS = src include
+
+$(top_srcdir)/include/XSD/PrimitiveTypes.h : Makefile
+	cd $(top_srcdir) && xsltproc src/tools/xsl/xsd2cppST.xsl src/tools/xsl/XMLSchema.xsd # hack: revisit

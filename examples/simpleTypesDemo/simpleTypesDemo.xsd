@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+// This file is part of XmlPlus package
+// 
+// Copyright (C)   2010   Satya Prakash Tripathi
+// All rights reserved.
+//
+-->
+
+<xsd:schema
+elementFormDefault="qualified"
+attributeFormDefault="qualified"
+targetNamespace="http://www.example.com/STDemo"
+xmlns:tns="http://www.example.com/STDemo"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+>
+
+  <!-- 
+            1. global element/attribute declarations 
+  -->
+
+  <xsd:element name="myComplexTypeElem" type="tns:MyComplexType"/>
+  <xsd:element name="globalWaterTemp" type="tns:CelciusWaterTemp"/>
+  <xsd:attribute name="globalStringAttr">
+    <xsd:simpleType>
+      <xsd:restriction base='xsd:string'>
+        <xsd:length value='3'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:attribute>
+
+
+  <!-- 
+          2. global simpleType/complexType declarations
+  -->
+
+  <xsd:complexType name="MyComplexType" mixed="true">
+    <xsd:sequence>
+      
+      <!-- 2.1 atomic, builtin simpleTypes  -->
+      <xsd:element name="xBoolean" type="xsd:boolean" fixed="false"/>
+      <xsd:element name="xDecimal" type="xsd:decimal" default="-1.23e-6"/>
+      <xsd:element name="xFloat" type="xsd:float" default="-1.23e-3"/>
+      <xsd:element name="xDouble" type="xsd:double" default="-1.23e-5"/>
+      <xsd:element name="xInteger" type="xsd:integer" default="-12678967543233"/>
+      <xsd:element name="xPositiveInteger" type="xsd:positiveInteger" default="12678967543233"/>
+      <xsd:element name="xNonPositiveInteger" type="xsd:nonPositiveInteger" default="-12678967543233"/>
+      <xsd:element name="xNegativeInteger" type="xsd:negativeInteger" default="-12678967543233"/>
+      <xsd:element name="xNonNegativeInteger" type="xsd:nonNegativeInteger" default="12678967543233"/>
+      <xsd:element name="xLong" type="xsd:long" default="-9223372036854775808"/>
+      <xsd:element name="xInt" type="xsd:int" default="-2147483648"/>
+      <xsd:element name="xShort" type="xsd:short" default="-32768"/>
+      <xsd:element name="xByte" type="xsd:byte" default="-127"/>
+      <xsd:element name="xUnsignedLong" type="xsd:unsignedLong" default="18446744073709551615"/>
+      <xsd:element name="xUnsignedInt" type="xsd:unsignedInt" default="4294967295"/>
+      <xsd:element name="xUnsignedShort" type="xsd:unsignedShort" default="65535"/>
+      <xsd:element name="xUnsignedByte" type="xsd:unsignedByte" default="255"/>
+      <xsd:element name="xHexBinary" type="xsd:hexBinary" default="FEFF"/>
+      <xsd:element name="xBase64Binary" type="xsd:base64Binary" default="ZXF+NAQF/d"/>
+      <xsd:element name="xUri" type="xsd:anyURI" default="http://www.example.com/xmlplus"/>
+      <xsd:element name="xNormalizedString" type="xsd:normalizedString" default="no CR LF TAB"/>
+      <xsd:element name="xToken" type="xsd:token" default=" xs:hexBinary "/>
+      <xsd:element name="xLanguage" type="xsd:language" default="english"/>
+      <xsd:element name="xName" type="xsd:Name" default=":colonToken"/>
+      <xsd:element name="xNCName" type="xsd:NCName" default="noColonToken"/>
+      <xsd:element name="xQName" type="xsd:QName" default="xsi:schemaLocation"/>
+      <xsd:element name="xDateTime" type="xsd:dateTime" default="2001-07-04T14:50:59Z"/>
+      <xsd:element name="xDate" type="xsd:date" default="2010-01-04"/>
+      <xsd:element name="xYearMonth" type="xsd:gYearMonth" default="1980-11"/>
+      <xsd:element name="xYear" type="xsd:gYear" default="1978"/>
+      <xsd:element name="xMonthDay" type="xsd:gMonthDay" default="12-30"/>
+      <xsd:element name="xMonth" type="xsd:gMonth" default="7"/>
+      <xsd:element name="xDay" type="xsd:gDay" default="30"/>
+      <xsd:element name="xTime" type="xsd:time" default="14:59:57"/>
+      <xsd:element name="xDuration" type="xsd:duration" default="P1Y2M3DT10H30M40S"/>
+
+      <!-- 2.2 atomic, derived(non-builtin) simpleTypes  -->
+      <xsd:element name="anIntMax10" minOccurs="3" maxOccurs="5">
+        <xsd:simpleType>
+          <xsd:restriction base='xsd:int'>
+            <xsd:maxInclusive value='10'/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="anIntMax5k" type="tns:IntMax5k"/>
+      <xsd:element ref="tns:globalWaterTemp"/>
+      <xsd:element name="aSKU" type="tns:SKU"/>
+      <xsd:element name="aDateTime" type="tns:DateTimeInARange"/>
+      <xsd:element name="aDate" type="tns:DateInARange" default="2010-01-04"/>
+      <xsd:element name="aYear" type="tns:YearInARange"/>
+      <xsd:element name="aCommonName">
+        <xsd:simpleType>
+          <xsd:restriction base='xsd:string'>
+            <xsd:length value='5'/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+
+      <!-- 2.3 list simpleTypes -->
+      <xsd:element name="aListOfIntMax5k" type="tns:ListOfIntMax5k"/>
+      <xsd:element name="aListOfFourIntMax500" type="tns:ListOfFourIntMax500"/>
+      <xsd:element name="aListOfTwoIntMax3k" type="tns:ListOfTwoIntMax3k"/>
+
+      <!-- 2.4 union simpleTypes -->
+      <xsd:element name="aFont" type="tns:Font"/>
+      <xsd:element name="anotherFont" type="tns:Font"/>
+
+    </xsd:sequence>
+
+    <xsd:attribute name="xID" type="xsd:ID" default="NMTOKENS.minLength" use="optional"/>
+    <xsd:attribute name="xIDREF" type="xsd:IDREF" use="optional"/>
+    <xsd:attribute name="xIDREFS" type="xsd:IDREFS" use="optional"/>
+    <xsd:attribute name="xENTITY" type="xsd:ENTITY" use="optional"/>
+    <xsd:attribute name="xENTITIES" type="xsd:ENTITIES" use="optional"/>
+    <xsd:attribute name="xNMTOKEN" type="xsd:NMTOKEN" default="prohibited" use="optional"/>
+    <xsd:attribute name="xNMTOKENS" type="xsd:NMTOKENS" default="optional prohibited required" use="optional"/>
+    <xsd:attribute ref="tns:globalStringAttr" use="required"/>
+    <xsd:attribute name="aNOTATION" type="tns:PictureNotationType"/>
+    <xsd:attribute name="aNNI" type="tns:EnumNNI" use="required"/>
+    <xsd:attribute name="anotherNNI" type="tns:EnumNNI" use="required"/>
+    <xsd:attribute name="aCommonName" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base='xsd:string'>
+          <xsd:length value='5'/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:simpleType name="CelciusWaterTemp">
+   <xsd:restriction base="xsd:decimal">
+    <xsd:fractionDigits value="2"/>
+    <xsd:minExclusive value="0.00"/>
+    <xsd:maxExclusive value="100.00"/>
+   </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="SKU">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\d{3}-[A-Z]{2}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+
+  <xsd:simpleType name="DateTimeInARange">
+   <xsd:restriction base="xsd:dateTime">
+    <xsd:minInclusive value="2010-01-01T12:00:00Z"/>
+    <xsd:maxInclusive value="2010-05-31T23:00:00Z"/>
+   </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="DateInARange">
+   <xsd:restriction base="xsd:date">
+    <xsd:minInclusive value="2010-01-01Z"/>
+    <xsd:maxInclusive value="2010-01-31Z"/>
+   </xsd:restriction>
+  </xsd:simpleType>
+  
+  
+  <xsd:simpleType name="YearInARange">
+   <xsd:restriction base="xsd:gYear">
+    <xsd:minExclusive value="2005"/>
+    <xsd:maxInclusive value="2010"/>
+   </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='IntMax5k'>
+    <xsd:restriction base='xsd:int'>
+      <xsd:maxExclusive value='5000'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='ListOfIntMax5k'>
+    <xsd:list itemType='tns:IntMax5k'/>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='ListOfIntMax500'>
+    <xsd:list>
+      <xsd:simpleType>
+        <xsd:restriction base='xsd:int'>
+          <xsd:maxExclusive value='500'/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:list>  
+  </xsd:simpleType>
+
+  <xsd:simpleType name='ListOfFourIntMax500'>
+    <xsd:restriction base='tns:ListOfIntMax500'>
+      <xsd:maxLength value='4'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='ListOfIntMax3k'>
+    <xsd:list>
+      <xsd:simpleType>
+        <xsd:restriction>
+          <xsd:simpleType>
+            <xsd:restriction base='tns:IntMax5k'>
+              <xsd:maxExclusive value='4000'/>
+            </xsd:restriction>
+          </xsd:simpleType>
+          <xsd:maxExclusive value='3000'/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:list>  
+  </xsd:simpleType>
+
+  <xsd:simpleType name='ListOfTwoIntMax3k'>
+    <xsd:restriction base='tns:ListOfIntMax3k'>
+      <xsd:maxLength value='2'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Font">
+    <xsd:union memberTypes="tns:Fontbynumber tns:Fontbystringname"/>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Fontbynumber">
+    <xsd:restriction base="xsd:positiveInteger">
+      <xsd:maxInclusive value="72"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Fontbystringname">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="small"/>
+      <xsd:enumeration value="medium"/>
+      <xsd:enumeration value="large"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="EnumNNI">
+    <xsd:union memberTypes="xsd:nonNegativeInteger">
+     <xsd:simpleType>
+      <xsd:restriction base="xsd:NMTOKEN">
+       <xsd:enumeration value="unbounded"/>
+      </xsd:restriction>
+     </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+
+  <xsd:notation name="jpeg" public="JPG"/>
+  <xsd:notation name="gif" public="GIF"/>
+  <xsd:simpleType name="PictureNotationType">
+    <xsd:restriction base="xsd:NOTATION">
+      <xsd:enumeration value="jpeg"/>
+      <xsd:enumeration value="gif"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+
+</xsd:schema>

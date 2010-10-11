@@ -1,0 +1,7 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" >
+  
+  <xsd:include schemaLocation="complexTypes.xsd"/>
+  
+  <xsd:element name="directory" type="Directory"/>
+  
+</xsd:schema>

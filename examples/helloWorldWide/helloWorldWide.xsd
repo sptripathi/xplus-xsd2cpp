@@ -1,0 +1,12 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+ <xsd:element name="msg" type="MsgChars"/>
+
+  <xsd:simpleType name="MsgChars">
+    <xsd:restriction base='xsd:string'>
+      <xsd:length value='11'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>
+

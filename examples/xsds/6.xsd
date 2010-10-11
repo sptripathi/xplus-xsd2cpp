@@ -1,0 +1,12 @@
+<xsd:schema 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:tns="urn:simplest" 
+  targetNamespace="urn:simplest"
+>
+  
+  <xsd:complexType name="TestCT6">
+    <xsd:sequence>
+      <xsd:element name="item1"  type="xsd:int" />
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>

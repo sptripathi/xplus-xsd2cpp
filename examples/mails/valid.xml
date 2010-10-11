@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<mails>
+  <mail id="101">
+    <envelope>
+      <From>tom@mgm.com</From>
+      <To>jerry@mgm.com</To>
+      <Date>1978-07-04T14:50:59Z</Date>
+      <Subject>this shouldn't happen to dogs</Subject>
+    </envelope>
+    <body>Heard that the dogs are chained these days.
+	Who is going to save you now? :)</body>
+  </mail>
+  <mail id="131">
+    <envelope>
+      <From>jerry@mgm.com</From>
+      <To>tom@mgm.com</To>
+      <Date>1978-07-04T23:50:59Z</Date>
+      <Subject>Re: this shouldn't happen to dogs</Subject>
+    </envelope>
+    <body>>> Heard that the dogs are chained these days.
+	 >> Who is going to save you now? :)
+
+	Hmmm... I am in trouble now, I guess :(</body>
+  </mail>
+</mails>

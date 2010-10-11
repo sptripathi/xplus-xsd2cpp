@@ -1,0 +1,228 @@
+<html>
+
+  <head>
+    <title>Tool Usage</title>
+  </head>
+
+  <h2>Tool Usage</h2>
+  <hr NOSHADE SIZE=10 WIDTH=100%>
+    
+
+  <body>
+    <form>
+
+      <ul>
+        <li><a href="#ABOUT_XSD2CPP">About xsd2pp</a>
+        <li><a href="#XSD2CPP_RUN">Running the xsd2cpp tool</a>
+        <li><a href="#BUILD_GEN_SOURCE">Building the generated source</a>
+        <li><a href="#USE_BUILD">Using the build</a>
+      </ul>
+
+      <br>
+      <a name="ABOUT_XSD2CPP"><h3>About <code>xsd2cpp</code></h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
+        <code>XmlPlus</code> build has a binary called <code>xsd2cpp</code>.
+        This binary when invoked on a XML-Schema file, generates:
+        <ul>
+          <li> the C++ sources/headers for the supplied XML-Schema
+          <li> a <code>main.cpp</code> template, to demonstrate how generated sources can be consumed
+          <li> the automake/autoconf files for building the generated source
+        </ul>
+        
+       The generated C++ sources serve for:
+        <ul>
+          <li> C++ data-binding for XML-schema
+          <li> C++ validating-parser/writer for xml-files constrained by the supplied XML-schema
+        </ul>  
+          
+      <p> 
+      The <code>main.cpp</code> aims to demonstrate the multiple options available(parsing/writing/validating xml-files etc.) around the schema and xml files.
+      <br><br>
+      Further, in this document, in relation to <code>xsd2cpp</code>, the &lt;name&gt; token would signify the name(excluding extension like .xsd) of the supplied XML-Schema.<br>
+      For instance, given a XML-Schema file <code>simpleTypesDemo.xsd</code>, the &lt;name&gt; would mean "simpleTypesDemo" token. 
+      </p>
+
+      <br><br>
+      <a name="XSD2CPP_RUN"><h3>Running the <code>xsd2cpp</code> tool</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
+      As long as XmlPlus installation path is set in the environment, one should be able to run xsd2cpp from anywhere in the directory tree.<br>
+      (see <a href="install.html#UPDATE_ENV">Update env with the installation path</a>)<br>
+      <br>
+      Try accessing the xsd2cpp tool:
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      <code>
+        $ xsd2cpp <br> 
+        Usage: xsd2cpp    xsd-file    [outdir] <br>
+        <br>  
+        &nbsp;outdir: directory to output the generated source, like foo, . , .. etc.<br>
+        &nbsp;&nbsp;(if unspecified, defaults to xsd-file-name)<br>
+      </code>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      <br>
+
+      The xsd2cpp when run on a XML-Schema file, generates the C++ source/header files along with the make related files.<br>
+      An example follows: 
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+        <code>
+        $ xsd2cpp simpleTypesDemo.xsd .<br>
+        output path: .<br>
+        =&gt;  Generating source files...<br>
+        =&gt;  Generating automake/autoconf files ...<br>
+        </code>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+
+      <br>
+      <a name="BUILD_GEN_SOURCE"><h3>Building the generated source</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
+        Steps to build the generated source:
+        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      <table border=0>
+        <tr>
+          <th width=20%></th>
+          <th width=2%></th>
+          <th width=78%></th>
+        </tr>
+        <tr>
+          <td><code>$ ./autogen.sh</code></td>
+          <td>:</td>
+          <td>generate configure script, run configure</td>
+        </tr>
+        <tr>
+          <td><code>$ make</code></td>
+          <td>:</td>
+          <td>build the source</td>
+        </tr>
+        <tr>
+          <td><code>$ make install</code></td>
+          <td>:</td>
+          <td>install the build</td>
+        </tr>
+        <tr>
+          <td><code>$ make doxygen-doc</code></td>
+          <td>:</td>
+          <td>generates the doxygen html documentation in doc/ directory relative to current working directory</td>
+        </tr>
+      </table>
+        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      ( <i>Note:</i> The autogen.sh should be run only once, which generates the configure script and runs it too.<br>
+        Once you have the configure script generated, next time onwards you should run configure instead of autogen.sh.)
+
+        <br><br>
+        It is likely that, while experimenting the tool with XML-Schema, you edit the files like XML-Schema iteratively, and would want to see the build in action for each such edit.<br>
+        After every edit, you should run following commands in that order:
+        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+        <code> 
+          $ xsd2cpp XML-Schema outdir<br>
+          $ cd outdir <br>
+          $ run configure ( with your choice of options)<br>
+          $ make<br>
+          $ make install<br> 
+        </code>
+        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+
+        <br>
+        The build is installed in the path depending on <code>--prefix</code> option specified to <code>autogen.sh</code> or <code>configure</code>.<br>
+        Note that in the absence of an explicit specification of <code>--prefix</code> option, the <code>autogen.sh</code>(generated by xsd2cpp) defaults the install path to a directory <code>build/</code> relative to the directory of input XML-Schema file.<br>
+
+        For XML-Schema file &lt;name&gt;.xsd, the build contains:
+        <ul>
+          <li> the data-binding+parser+writer library 
+          <li> header files to be used in user development sources consuming the abovestated library
+          <li> there is a binary built with name &lt;name&gt;run
+        </ul>
+
+      <br>
+      <a name="USE_BUILD"><h3>Using the build</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
+      <p>
+        The built library alongwith the generated headers for user supplied XML-Schema, can be consumed by user applications in their builds.<br>
+
+        One example of how to consume the built library/headers, comes alongwith the generated sources viz. main.cpp. The main.cpp includes the generated headers and links to the built library, and makes a binary named &lt;name&gt;run. This &lt;name&gt;run binary demostrates all the use cases around the XML-Schema, that XmlPlus supports. So in that sense main.cpp serves as an example user application, showing how to consume the C++ library built for a XML-Schema file.<br>
+      </p>
+
+        <br>
+        Now let us check out the build in the installed path. Taking the examples/simpleTypesDemo as an example, it should look like this:
+        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+        <code>
+        <b>$ pwd</b><br>
+          /Users/goofy/xmlplus/examples/simpleTypesDemo<br><br>
+        <b>$ find build -type d</b><br>
+          build/<br>
+          build/bin/<br>
+          build/lib/<br>
+          build/include/<br>
+          <br>
+        <b>$ find build -type f</b><br>
+          build/bin/simpleTypesDemorun<br>
+          build/lib/libsimpleTypesDemo.0.dylib<br>
+          build/lib/libsimpleTypesDemo.a<br>
+          build/lib/libsimpleTypesDemo.la<br>
+        </code>
+        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+        
+        <br>
+        Each &lt;name&gt;run comes with a set of options. The options provided are aimed at covering most of the use cases in relation to XML-Schema and xml documents. You should use one &lt;name&gt;run built for the XML-Schema of your choice, to undertand all the use cases.<br>
+        An example of &lt;name&gt;run options: 
+        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+          <code>
+        $ ./build/bin/simpleTypesDemorun --help <br>
+        Usage: ./build/bin/simpleTypesDemorun [options] [XMLfile] <br>
+        Options:<br>
+        &nbsp;-s, --sample<br>
+        &nbsp;&nbsp; create a schema-driven sample xml-file<br>
+        &nbsp;&nbsp; Note: optional fields are omitted<br>
+        &nbsp;-w, --write<br>
+        &nbsp;&nbsp; write a xml-file using populated Document<br>
+        &nbsp;&nbsp; Note: populateDocument() function in main.cpp template,<br>
+        &nbsp;&nbsp; must be used to populate the Document<br>
+        &nbsp;-v, --validate<br>
+        &nbsp;&nbsp; validate input xml-file(against compiled schema)<br>
+        &nbsp;-r, --roundtrip<br>
+        &nbsp;&nbsp; roundtrip (read-&gt;write) input xml-file<br>
+        &nbsp;-u, --ruw<br>
+        &nbsp;&nbsp; perform read-&gt;update-&gt;write operations on input xml-file<br>
+        &nbsp;-h, --help<br>
+        &nbsp;&nbsp; print help<br>
+          </code>         
+        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+
+      <br><br>
+      These options are self-explanatory. However, folllowing example is provided to demonstrate one such use case(validation of xml file):<br>
+      For a XML-Schema named simpleTypesDemo.xsd, we have a simpleTypesDemorun test utility built.<br>
+      Now, let us assume that you have one st.xml file which is a well-formed xml document, but is invalid against the XML-Schema.
+
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      <code>
+      $ ./build/bin/simpleTypesDemorun -v st.xml<br>
+      validating file:st.xml<br>
+      &nbsp;&nbsp;=&gt; validation failed<br>
+
+      Error: {<br>
+      &nbsp;&nbsp;Expected:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;=&gt; Element '{http://www.example.com/STDemo} anIntMax5k'<br>
+      &nbsp;&nbsp;Got:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;=&gt; Element '{http://www.example.com/STDemo} anIntMax10'<br>
+      <br>
+      &nbsp;&nbsp;element: myComplexTypeElem<br>
+      &nbsp;&nbsp;file: st.xml<br>
+      &nbsp;&nbsp;line,column: 43, 2<br>
+      }<br>
+      <//code>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      
+      <br>
+      On fixing the error in st.xml, when the validation is done again, it would look like so: 
+        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      <code>
+      $ ./build/bin/simpleTypesDemorun -v st.xml<br>
+      validating file:st.xml<br>
+      &nbsp;&nbsp; =&gt; validated successfully<br>
+      </code>
+        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+
+
+    </form>
+  </body>
+  
+
+</html>

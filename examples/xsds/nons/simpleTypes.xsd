@@ -1,0 +1,49 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" >
+  
+  <xsd:simpleType name="CelciusWaterTemp">
+   <xsd:restriction base="xsd:decimal">
+    <xsd:fractionDigits value="2"/>
+    <xsd:minExclusive value="0.00"/>
+    <xsd:maxExclusive value="100.00"/>
+   </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="AllNNI">
+    <xsd:annotation>
+      <xsd:documentation>for maxOccurs</xsd:documentation>
+    </xsd:annotation>
+    <xsd:union memberTypes="xsd:nonNegativeInteger">
+     <xsd:simpleType>
+      <xsd:restriction base="xsd:NMTOKEN">
+       <xsd:enumeration value="unbounded"/>
+      </xsd:restriction>
+     </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="AllFonts">
+    <xsd:union memberTypes="Fontbynumber Fontbystringname"/>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Fontbynumber">
+    <xsd:restriction base="xsd:positiveInteger">
+      <xsd:maxInclusive value="72"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Fontbystringname">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="small"/>
+      <xsd:enumeration value="medium"/>
+      <xsd:enumeration value="large"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="SKU">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\d{3}-[A-Z]{2}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+</xsd:schema>  
+

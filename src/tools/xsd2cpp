@@ -1,0 +1,205 @@
+#!/bin/bash
+
+#
+# This file is part of XmlPlus package
+# 
+# Copyright (C)   2010   Satya Prakash Tripathi
+#
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+INST_BIN_DIR=/Users/satyat/xplusbuild/bin
+INST_LIB_DIR=/Users/satyat/xplusbuild/lib
+INST_INCL_DIR=/Users/satyat/xplusbuild/include
+XSD2CPP_XSL_PATH=$INST_BIN_DIR/xsl/xsd2cpp.xsl
+
+MKDIR=`which mkdir`
+XSLTPROC=`which xsltproc`
+BASENAME=`which basename`
+SED=`which sed`
+CUT=`which cut`
+FIND=`which find`
+GREP=`which grep`
+AWK=`which awk`
+CP=`which cp`
+MV=`which mv`
+DIRNAME=`which dirname`
+
+OUTDIR=""
+XSD=""
+XSDNAME=""
+PATH=""
+CWD=""
+ABSPATH=""
+GEN_XSD_SOURCES=""
+GEN_XSD_INCLUDES=""
+NSALIASES_FILE="none"
+
+
+get_abs_path()
+{
+  if [ "${PATH:0:1}" == "/" ]; then
+    ABSPATH=$PATH
+  else
+    ABSPATH=`pwd`/$PATH
+  fi
+}
+
+init()
+{
+  XSDNAME=`$BASENAME $XSD | $CUT -d'.' -f1`
+  if [ -z "$OUTDIR" ]; then
+    OUTDIR=$XSDNAME
+  fi
+
+  CWD=`pwd`
+  
+  echo
+  echo "output path: $OUTDIR"
+  
+  PATH=$XSD
+  get_abs_path
+  ABSXSD=$ABSPATH
+
+  PATH=$XSD2CPP_XSL_PATH
+  get_abs_path
+  XSD2CPP_XSL_PATH=$ABSPATH
+}
+
+
+gen_source_files()
+{
+  BACKUP_DIR=""
+  if [ "$OUTDIR" = "." ] || [  "$OUTDIR" = ".." ]; then
+    
+    BACKUP_DIR=$OUTDIR/xbak
+
+    if [ -e "$OUTDIR/src" ]; then
+      echo "* the directory $OUTDIR/src already exists, backing up in $BACKUP_DIR"
+      $MKDIR -p $BACKUP_DIR
+      $MV "$OUTDIR/src" $BACKUP_DIR/
+    fi
+    if [ -e "$OUTDIR/include" ]; then
+      echo "* the directory $OUTDIR/include already exists, backing up in $BACKUP_DIR"
+      $MKDIR -p $BACKUP_DIR
+      $MV "$OUTDIR/include" $BACKUP_DIR/
+    fi
+
+  else
+    BACKUP_DIR=xbak
+    if [ -e "$OUTDIR" ]; then
+      echo "* the directory $OUTDIR already exists, backing up in $BACKUP_DIR"
+      $MKDIR -p $BACKUP_DIR
+      $MV "$OUTDIR" $BACKUP_DIR/
+    fi
+    $MKDIR $OUTDIR
+  fi
+  
+  echo
+  echo "=>  Generating source files..."
+
+  # generate the xsd-to-sources
+  cd $OUTDIR
+  XSDDIR=`$DIRNAME $ABSXSD`
+  if [ -f $XSDDIR/nsaliases.xml ]; then
+    NSALIASES_FILE=$XSDDIR/nsaliases.xml
+  fi
+  XSLTPROC_OPTIONS="--stringparam input_doc $ABSXSD --stringparam CWD $CWD --stringparam w3cXmlSchema false --stringparam NSALIASES_FILE $NSALIASES_FILE "
+  $XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD
+  ret=$?
+  
+  if [ $ret -ne 0 ]; then
+    exit $ret
+  fi
+
+  #beautify
+  for file in `$FIND include/ -name "*.h"`
+  do
+    tmpFile=/tmp/`$BASENAME $file`.tmp
+    $SED -e 's/MEMBER_VAR //g' -e 's/MEMBER_FN //g' \
+         -e 's/XMARKER //g' \
+         $file > $tmpFile
+    $MV $tmpFile $file
+  done
+
+  ## no need to beautify the cpp files
+  #for file in `$FIND $OUTDIR/src/ -name "*.cpp"`
+  #do
+  #  tmpFile=/tmp/`$BASENAME $file`.tmp
+  #  $SED -e 's/MEMBER_VAR //g' -e 's/MEMBER_FN //g' $file > $tmpFile
+  #  $MV $tmpFile $file
+  #done
+    
+
+  # create main.cpp if it doesnt exist already
+  if [ ! -e  main.cpp ]; then
+    $MV main.cpp.template main.cpp
+  fi
+  
+  #GEN_XSD_SOURCES=`cd src && $FIND . -name "*.cpp" | $GREP -v "main\.cpp"`
+  GEN_XSD_SOURCES=`cd src && $FIND . -name "*.cpp" | $AWK '/$/{printf "%s ", $0;next}{print}'`
+  GEN_XSD_INCLUDES=`cd include && $FIND . -name "*.h" | $AWK '/$/{printf "%s ", $0;next}{print}'`
+  cd - > /dev/null 2>&1
+}
+
+gen_automake_files()
+{
+  echo "=>  Generating automake/autoconf files ..."
+
+  MAKE_TMPL_DIR=$INST_BIN_DIR/makeTmpl
+  CONFIG_AC_FILE=$MAKE_TMPL_DIR/configure.ac
+  MAKE_AM_TOP_SRC_DIR_FILE=$MAKE_TMPL_DIR/Makefile.am.top_srcdir
+  MAKE_AM_SRC_DIR_FILE=$MAKE_TMPL_DIR/Makefile.am.src
+  MAKE_AM_INC_DIR_FILE=$MAKE_TMPL_DIR/Makefile.am.include
+
+  $SED -e "s/@xsdname@/$XSDNAME/g" $CONFIG_AC_FILE > $OUTDIR/configure.ac
+  $SED -e "s/@xsdname@/$XSDNAME/g" $MAKE_AM_TOP_SRC_DIR_FILE > $OUTDIR/Makefile.am
+  $SED -e "s/@xsdname@/$XSDNAME/g" $MAKE_AM_SRC_DIR_FILE > $OUTDIR/src/Makefile.am
+  $CP $MAKE_AM_INC_DIR_FILE  $OUTDIR/include/Makefile.am
+  $CP $MAKE_TMPL_DIR/acinclude.m4 $OUTDIR/
+  $CP $MAKE_TMPL_DIR/aminclude.am $OUTDIR/
+  $CP $MAKE_TMPL_DIR/doxygen.cfg $OUTDIR/
+  #$SED -e "s/@genxsdsources@/$GEN_XSD_SOURCES/g" $MAKE_AM_SRC_DIR_FILE > $OUTDIR/src/Makefile.am
+  echo "$GEN_XSD_SOURCES" >> $OUTDIR/src/Makefile.am
+  echo "$GEN_XSD_INCLUDES" >> $OUTDIR/include/Makefile.am
+  $CP $MAKE_TMPL_DIR/autogen.sh $OUTDIR/autogen.sh
+}
+
+
+run()
+{
+  gen_source_files
+  gen_automake_files
+  echo
+}
+
+#main
+if [ $# -ge 1 ]; then
+  XSD=$1
+  if [ $# -eq 2 ]; then
+    OUTDIR=$2
+  fi
+else
+  echo "Usage: $0 xsd-file [outdir]"
+  echo
+  echo "  outdir: directory to output the generated source, like foo, . , .. etc."
+  echo "          (if unspecified, defaults to xsd-file-name)"
+  echo
+  exit 2
+fi
+
+init
+run
+

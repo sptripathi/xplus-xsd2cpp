@@ -1,0 +1,206 @@
+<html>
+
+  <head>
+    <title>XmlPlus Examples</title>
+  </head>
+
+  <h2>XmlPlus Examples</h2>
+  <hr NOSHADE SIZE=10 WIDTH=100%>
+
+  <body>
+    <form>
+      
+      <ul>
+        <li><a href="#HOWTO_EXAMPLES">How to try examples</a>
+        <li><a href="#EX_BY_TAGS">Examples by tags</a>
+        <li><a href="#ALL_EXAMPLES">All examples</a>
+        <ul>
+          <li><a href="#SIMPLEST">Simplest</a>
+        </ul>  
+      </ul>
+
+      <a name="HOWTO_EXAMPLES"><h3>How to try examples</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
+      
+      Please read the topic <a href="usage.html">Tool Usage</a>, to learn about xsd2cpp-usage, building generated source, and running the executables.<br> 
+
+
+      Each example directory, comes with following files:
+      <ol>
+        <li> a XML-Schema file(.xsd)
+        <li> a valid.xml file(a valid XML file for reference)
+        <li> a main.cpp file
+      </ol>
+      <br><br>
+      
+      As mentioned earlier, xsd2cpp usage is:<br>
+      $ xsd2cpp<br>
+      Usage: xsd2cpp xsd-file [outdir]<br>
+      
+      <br><br>
+      
+      However, for trying examples which are already organized with sensible names, and to be able to easily use the supplied main.cpp, we should run xsd2cpp within specific example subdirectory, with outdir specified as ".", like so:
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+        <code>
+        $ cd simpleTypesDemo/<br>
+        $ xsd2cpp simpleTypesDemo.xsd .<br>
+        output path: .<br>
+        =&gt;  Generating source files...<br>
+        =&gt;  Generating automake/autoconf files ...<br>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      
+      <br><br>
+      If for whatever reason you have specified a outdir other than ".", then you would need to:
+      <ul>
+        <li> copy the supplied main.cpp in the outdir
+        <li> cd outdir , before building the source
+      </ul>  
+
+      <br><br>
+
+      For building the source in the outdir:
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      $ ./autogen.sh<br>
+      $ make 	<br>
+      $ make install 	<br>
+      $ make doxygen-doc<br>
+        </code>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+  
+
+
+      <br><br>
+      <a name="EX_BY_TAGS"><h3>Examples by tags</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
+      
+      <table border=1>
+        <caption>Find examples by tags</caption>
+
+        <tr>
+          <th width=20%>Example</th>
+          <th width=80%>Associated Tags</th>
+        </tr>
+        <tr>
+          <td><a href="#SIMPLEST">simplest</a></td>
+          <td>simpleType</td>
+        </tr>
+        <tr>
+          <td><a href="#SIMPLETYPES_DEMO">simpleTypesDemo</a></td>
+          <td>
+          xsd:boolean, xsd:decimal, xsd:float, xsd:double, xsd:integer, xsd:positiveInteger, 
+          xsd:nonPositiveInteger, xsd:negativeInteger, xsd:nonNegativeInteger, xsd:long, 
+          xsd:int, xsd:short, xsd:byte, xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort, 
+          xsd:unsignedByte, xsd:hexBinary, xsd:base64Binary, xsd:anyURI, xsd:normalizedString, 
+          xsd:token, xsd:language, xsd:Name, xsd:NCName, xsd:QName, xsd:dateTime, xsd:date, 
+          xsd:gYearMonth, xsd:gYear, xsd:gMonthDay, xsd:gMonth, xsd:gDay, xsd:time, xsd:duration, 
+          xsd:ID, xsd:IDREF, xsd:IDREFS, xsd:ENTITY, xsd:ENTITIES, xsd:NMTOKEN, xsd:NMTOKENS
+          </td>
+        </tr>
+        <tr>
+          <td><a href="#IMPINC_DEMO">importIncludeDemo</a></td>
+          <td>simpleType, complexType, import, include </td>
+        </tr>
+      </table>
+
+      <a name="ALL_EXAMPLES"><h3>All Examples</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
+
+      All the examples follow, without any specific order.   
+
+
+      <a name="HELLO_WORLD"><h4>helloWorld</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
+      The xsd file: <a href="../../examples/helloWorld/helloWorld.xsd">helloWorld.xsd</a>
+      <br><br>
+      The valid.xml file: <a href="../../examples/helloWorld/valid.xml">valid.xml</a>
+      <br><br>
+      The main.cpp file: <a href="../../examples/helloWorld/main.cpp">main.cpp</a>
+      <br><br>
+      <br><br>
+      
+      <a name="HELLO_WORLDWIDE"><h4>helloWorldWide</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
+      The xsd file: <a href="../../examples/helloWorldWide/helloWorldWide.xsd">helloWorldWide.xsd</a>
+      <br><br>
+      The valid.xml file: <a href="../../examples/helloWorldWide/valid.xml">valid.xml</a>
+      <br><br>
+      The main.cpp file: <a href="../../examples/helloWorldWide/main.cpp">main.cpp</a>
+      <br><br>
+      <br><br>
+      
+      <a name="SIMPLEST"><h4>simplest</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
+      The xsd file: <a href="../../examples/simplest/simplest.xsd">simplest.xsd</a>
+      <br><br>
+      The valid.xml file: <a href="../../examples/simplest/valid.xml">valid.xml</a>
+      <br><br>
+      The main.cpp file: <a href="../../examples/simplest/main.cpp">main.cpp</a>
+      <br><br>
+      <br><br>
+
+
+      <a name="SIMPLETYPES_DEMO"><h4>simpleTypesDemo</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
+      The xsd file: <a href="../../examples/simpleTypesDemo/simpleTypesDemo.xsd">simpleTypesDemo.xsd</a>
+      <br><br>
+      The valid.xml file: <a href="../../examples/simpleTypesDemo/valid.xml">valid.xml</a>
+      <br><br>
+      The main.cpp file: <a href="../../examples/simpleTypesDemo/main.cpp">main.cpp</a>
+      <br><br>
+      <br><br>
+
+      <a name="MAILS_DEMO"><h4>purchaseOrder</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
+      The xsd file: <a href="../../examples/po/po.xsd">po.xsd</a>
+      <br><br>
+      The valid.xml file: <a href="../../examples/po/valid.xml">valid.xml</a>
+      <br><br>
+      The main.cpp file: <a href="../../examples/po/main.cpp">main.cpp</a>
+      <br><br>
+      <br><br>
+
+      <a name="MAILS_DEMO"><h4>mails</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
+      The xsd file: <a href="../../examples/mails/mails.xsd">mails.xsd</a>
+      <br><br>
+      The valid.xml file: <a href="../../examples/mails/valid.xml">valid.xml</a>
+      <br><br>
+      The main.cpp file: <a href="../../examples/mails/main.cpp">main.cpp</a>
+      <br><br>
+      <br><br>
+
+      <a name="IMPINC_DEMO"><h4>includeDemo</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
+      The xsd file: <a href="../../examples/includeDemo/includeDemo.xsd">importIncludeDemo.xsd</a>
+      <br><br>
+      The valid.xml file: <a href="../../examples/importIncludeDemo/valid.xml">valid.xml</a>
+      <br><br>
+      The main.cpp file: <a href="../../examples/importIncludeDemo/main.cpp">main.cpp</a>
+      <br><br>
+      <br><br>
+
+      <a name="IMPINC_DEMO"><h4>importIncludeDemo</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
+      The xsd file: <a href="../../examples/importIncludeDemo/importIncludeDemo.xsd">importIncludeDemo.xsd</a>
+      <br><br>
+      The valid.xml file: <a href="../../examples/importIncludeDemo/valid.xml">valid.xml</a>
+      <br><br>
+      The main.cpp file: <a href="../../examples/importIncludeDemo/main.cpp">main.cpp</a>
+      <br><br>
+      <br><br>
+
+      <a name="IMPINC_DEMO"><h4>importIncludeDemo</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
+      The xsd file: <a href="../../examples/importIncludeDemo/importIncludeDemo.xsd">importIncludeDemo.xsd</a>
+      <br><br>
+      The valid.xml file: <a href="../../examples/importIncludeDemo/valid.xml">valid.xml</a>
+      <br><br>
+      The main.cpp file: <a href="../../examples/importIncludeDemo/main.cpp">main.cpp</a>
+      <br><br>
+      <br><br>
+
+    </form>
+  </body>
+
+
+</html>

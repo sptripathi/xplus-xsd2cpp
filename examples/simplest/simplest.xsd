@@ -1,0 +1,16 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  targetNamespace="http://www.example.com/simplest"
+  elementFormDefault="qualified"
+  >
+
+  <xsd:element name="items">
+    <xsd:complexType mixed="true">
+      <xsd:sequence>
+        <xsd:element name="item" type="xsd:string" minOccurs="0" maxOccurs="5"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:string" default="102" use="optional"/>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>
+
