@@ -1,0 +1,16 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:ns1="urn:org:legal"
+  xmlns:ns2="urn:org:hr"
+  targetNamespace="urn:org:legal"
+>
+  <xsd:import namespace="urn:org:hr" schemaLocation="hr.xsd"/>
+
+  <xsd:complexType name="LegalDept">
+    <xsd:sequence>
+      <xsd:element ref="ns2:leaderId"/>
+      <xsd:element name="legalAdvisors" type="ns2:UserIdList"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:token" use="required"/>
+  </xsd:complexType>
+
+</xsd:schema>

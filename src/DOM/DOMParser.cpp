@@ -1,7 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Free Software Foundation, Inc.
-// Author: Satya Prakash Tripathi
+// Copyright (C)   2010   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -74,8 +73,7 @@ void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet)
     << endl;
 #endif
 
-  _elemTextBuffer = "";
-
+  _elementTextBuffer = "";
   Node* elemNode = _docNode->createElementNS(
       const_cast<DOMString *>(nsTriplet.nsUri()),
       const_cast<DOMString *>(nsTriplet.nsPrefix()),
@@ -95,16 +93,16 @@ void DOMParser::onElementEnd(void *userData, NodeNSTriplet nsTriplet)
     << nsTriplet.toString()
     << endl;
 #endif
-  
-  if(_elemTextBuffer.length() > 0 ) 
+
+  if(_elementTextBuffer.length()>0) 
   {
-    //TODO: make sure this new doesnt leak
-    TextNodeP textNode = _docNode->createTextNode(new DOMString(_elemTextBuffer));
+    DOMStringPtr pBuff = new DOMString(_elementTextBuffer);
+    TextNodeP textNode = _docNode->createTextNode(pBuff);
     if(!textNode) {
       throw DOMException("failed to create Text");
     }
   }
-  _elemTextBuffer = "";
+  _elementTextBuffer = "";
 
   _docNode->endElementNS(
         const_cast<DOMString *>(nsTriplet.nsUri()),
@@ -152,9 +150,9 @@ void DOMParser::onCharacterData(void *userData,
 #ifdef _DOM_DBG
   cout << "onCharacterData charBuff:[" << charDataPtr->str() << "]" << endl;
 #endif
-  
-  if( charDataPtr) {
-    _elemTextBuffer += *charDataPtr;
+
+  if(charDataPtr) {
+    _elementTextBuffer += *charDataPtr;
   }
 
   /*
@@ -299,3 +297,5 @@ void DOMParser::parseXmlFileDOM(string filePath)
   this->setUserData(&depth);
   ExpatParser::parseXmlFile(filePath);
 }
+
+

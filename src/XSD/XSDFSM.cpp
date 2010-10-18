@@ -1,7 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Free Software Foundation, Inc.
-// Author: Satya Prakash Tripathi
+// Copyright (C)   2010   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -21,6 +20,21 @@
 #include "XSD/XSDFSM.h"
 
 namespace FSM {
+
+void warnNullNode(Node *pNode, const char* nodeName, const char* qName, int minOccurence)
+{
+  if(pNode == NULL)
+  {
+    ostringstream oss;
+    oss << "   *** Warning: the node-pointer for component " << qName << " was found NULL, when retrieved.\n"
+      << "   Dereferencing this node-pointer would cause runtime errors." << endl;
+    if(minOccurence==0) {
+      oss << "   As this node is optional, consider marking it present:" << endl
+        << "   parentNode->mark_present_" << nodeName << "()"; 
+    }
+    cerr << endl << oss.str() << endl;
+  }
+}
 
 DOMString formatNamespaceName(XsdFsmBase::XsdFsmType fsmType, DOMString* nsUri, DOMString localName)
 {

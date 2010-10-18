@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <ns1:myComplexTypeElem ns1:aNNI="unbounded" ns1:globalStringAttr="abc" ns1:anotherNNI="100" ns1:aCommonName="abcde" xmlns:ns1="http://www.example.com/STDemo">
-  Here you will see some examples of simpleType elements
-  Following are examples of -atomic- simpleType elements
+  
+Here you will see some examples of simpleType elements
+  
+Following are examples of -atomic- simpleType elements
   <ns1:xBoolean>false</ns1:xBoolean>
   <ns1:xDecimal>-1.23e-6</ns1:xDecimal>
   <ns1:xFloat>-1.23e-3</ns1:xFloat>
@@ -37,7 +39,6 @@
   <ns1:xDay>30</ns1:xDay>
   <ns1:xTime>14:59:57</ns1:xTime>
   <ns1:xDuration>P1Y2M3DT10H30M40S</ns1:xDuration>
-  <ns1:anIntMax10>10</ns1:anIntMax10>
   <ns1:anIntMax10>10</ns1:anIntMax10>
   <ns1:anIntMax10>10</ns1:anIntMax10>
   <ns1:anIntMax10>10</ns1:anIntMax10>

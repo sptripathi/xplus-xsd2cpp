@@ -1,0 +1,26 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:ns1="urn:org:engg"
+  xmlns:ns2="urn:org:hr"
+  targetNamespace="urn:org:engg"
+>
+  <xsd:import namespace="urn:org:hr" schemaLocation="hr.xsd"/>
+
+  <xsd:complexType name="EnggDept">
+    <xsd:sequence>
+      <xsd:element ref="ns2:leaderId"/>
+      <xsd:element name="project" type="ns1:EnggProject" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:token" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="EnggProject">
+    <xsd:sequence>
+      <xsd:element ref="ns2:leaderId"/>
+      <xsd:element name="projectName" type="xsd:string"/>
+      <xsd:element name="engineers" type="ns2:UserIdList"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+
+
+</xsd:schema>

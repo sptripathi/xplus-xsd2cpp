@@ -1,7 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Free Software Foundation, Inc.
-// Author: Satya Prakash Tripathi
+// Copyright (C)   2010   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -44,10 +43,10 @@ namespace XPlus
     millis = fraction*1000;
     micros = fraction*1000000 - millis*1000; 
     
-    //cout << "integral:" << integral 
-    //  << " millis:" <<  millis 
-    //  << " micros:" <<  micros 
-    //  << endl;
+    cout << "integral:" << integral 
+      << " millis:" <<  millis 
+      << " micros:" <<  micros 
+      << endl;
 
   }
 

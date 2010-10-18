@@ -452,6 +452,7 @@
   The composition of child-attributes is straightforward, that is child-attributes are specified as direct children of the parent-element. 
   <br><br>
   However, the child-elements are composed through many abstractions:<br><br>
+  <b>FIXME: the tree below may not require complexContent</b>
   <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
     &nbsp;&nbsp;<b>parent-element</b>
     <ul>
@@ -462,6 +463,7 @@
           <li> <b>child-element</b>
         </ul>
         <li> one level of MGD (currently unsupported)
+        <li> complexContent (currently unsupported)
       </ul>
     </ul>
   </div>  
@@ -694,6 +696,58 @@
   The xsd2cpp tool generates a main.cpp in the output directory.
   The main.cpp is a demo application. It serves the purpose of showing: <br> a) how the build of generated source(libraries and headers), are to be consumed<br> b) all uses cases possible, and their HOWTOs
 
+  <br><br>
+  <b>Note:</b> <i>If there is a main.cpp file already present in output directory, then it is not overridden on invocation of xsd2cpp, instead a file named <code>main.cpp.template</code>, is made available under the same output directory.</i>
+  <br><br>
+
+  This main.cpp common functions are placed inside src/XSD/UserOps.cpp relative to XmlPlus source-root. The main() function of the generated main.cpp, calls XSD_USER_OPS::xsd_main(), to use those funtions, which in turn call the template functions, which user needs to fill code with.<br><br>
+  Your application does not have to use the data-binding library like this. There is an unfolded main.cpp available under examples/simplest/main.cpp. An application could use call flow like used in the examples/simplest/main.cpp.
+
+  <br><br>
+  In the generated main.cpp, you would need to write code in some template functions:
+  <ul>
+    <li> <b>chooseDocumentElement()</b> : to choose the documentElement ie root of the document. <br>The options would be already available, you just need to uncomment the appropriate line. This callback function is available, when there are more than one top-level elements in the source(or included/imported) document(s).
+    <br> <br>
+    <li> <b>populateDocument()</b> : to populate the Document while writing a fresh XML file<br>
+       Write code populate the document with values, starting from root. 
+    <br> <br>
+    <li> <b>updateOrConsumeDocument()</b> : callback function where you could test the Document, consume the Document or update the Document, in the -u option(read,operate,write). 
+  </ul>
+
+  A relevant sample code-snippet of main.cpp follows:<br>
+
+  <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
+    <code>
+    // Following functions are templates.<br>
+    // You need to put code in the context
+    <br><br>
+    void chooseDocumentElement(STDemo::Document* xsdDoc)<br>
+    {<br>
+      &nbsp;&nbsp;// uncomment one of folowing to choose root<br>
+      &nbsp;&nbsp;xsdDoc-&gt;set_root_myComplexTypeElem();<br>
+      &nbsp;&nbsp;//xsdDoc-&gt;set_root_intValue2();<br>
+    }
+    <br><br>
+    void populateDocument(DOM::Document* pDoc)<br>
+    {<br>
+      &nbsp;&nbsp;STDemo::Document* docNode = dynamic_cast&lt;STDemo::Document *&gt;(pDoc);
+      <br><br>
+      &nbsp;&nbsp;// write code to populate the Document here<br>
+      &nbsp;&nbsp;...<br>
+      &nbsp;&nbsp;....<br>
+      &nbsp;&nbsp;rootElem-&gt;set_aFont("medium");<br>
+      &nbsp;&nbsp;rootElem-&gt;set_anotherFont("72");<br>
+      &nbsp;&nbsp;....<br>
+      &nbsp;&nbsp;...<br>
+    }
+    <br><br>
+    void updateOrConsumeDocument(DOM::Document* pDoc)<br>
+    {<br>
+      &nbsp;&nbsp;STDemo::Document* xsdDoc = dynamic_cast&lt;STDemo::Document *&gt;(pDoc);<br>
+      &nbsp;&nbsp;// write code to update the populated-Document here<br>
+    }
+    </code>
+  </div>
 
   <br><br>
   <a name="SRC_USE_CASE"><h3>Use Cases with generated source</h3></a>

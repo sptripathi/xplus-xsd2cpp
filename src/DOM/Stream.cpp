@@ -1,7 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Free Software Foundation, Inc.
-// Author: Satya Prakash Tripathi
+// Copyright (C)   2010   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -67,6 +66,10 @@ XPlusCharOutputStream& operator<<(XPlusCharOutputStream& s, const Node& node)
     case Node::ENTITY_NODE:
       break;
     case Node::PROCESSING_INSTRUCTION_NODE:
+      {
+        const PI& pi = dynamic_cast<const PI &>(node);
+        outputPI(s, pi);
+      }
       break;
     case Node::COMMENT_NODE:
       {
@@ -129,6 +132,20 @@ void outputDocument(XPlusCharOutputStream& s, const Document& doc)
   {
     const Node* childNode = childNodes.item(i);
     s << *childNode;
+  }
+}
+
+void outputPI(XPlusCharOutputStream& s, const PI& pi)
+{
+  if(pi.getTarget()) 
+  {
+    s << "<?";
+    s << pi.getTarget() << " ";
+    if(pi.getData()) {
+      s << pi.getData();
+    }
+    s << "?>";
+    s << endl;
   }
 }
 
@@ -256,6 +273,22 @@ void outputElement(XPlusCharOutputStream& s, const Element& e)
     node = node->getNextSibling();
   }
 
+
+  /*
+  const NodeList& childNodes = e.getChildNodes();
+  for(unsigned int i=0; i<childNodes.getLength(); i++)
+  {
+    const Node* childNode = childNodes.item(i);
+    if(childNode->getNodeType() ==  Node::ELEMENT_NODE) {
+      if(e.prettyPrint()) {
+        s << "\n";
+      }
+      cntChildElements++;
+    }
+    s << *childNode;
+  }
+  */
+
   //element end
   if( e.prettyPrint() && (cntChildElements > 0 ) ) {
     s << "\n"; 
@@ -292,7 +325,7 @@ void outputTextNode(XPlusCharOutputStream& s, const TextNode& tn)
   // In their place, appropriate padding spaces would be streamed out
   if( tn.prettyPrint()) {
     //dataStr.trim(UTF8FNS::is_TAB_SPACE);  
-    dataStr.trim(UTF8FNS::isSpaceChar);  
+    //dataStr.trim(UTF8FNS::isSpaceChar);  
   }
   if(dataStr.length()==0) {
     return;

@@ -1,0 +1,32 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:ns1="urn:org"
+  xmlns:ns2="urn:org:engg"
+  xmlns:ns3="urn:org:legal"
+  xmlns:ns4="urn:org:hr"
+  targetNamespace="urn:org"
+>
+
+  <xsd:import namespace="urn:org:engg" schemaLocation="engg.xsd"/>
+  <xsd:import namespace="urn:org:legal" schemaLocation="legal.xsd"/>
+  <xsd:import namespace="urn:org:hr" schemaLocation="hr.xsd"/>
+
+  <xsd:element name="organization">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="ns4:leaderId"/>
+        <xsd:element name="name" type="xsd:string"/>
+        <xsd:element name="departments" type="ns1:Departments"/>
+        <xsd:element name="allEmployees" type="ns4:AllEmployees"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:token" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="Departments">
+    <xsd:sequence>
+      <xsd:element name="engineering" type="ns2:EnggDept"/>
+      <xsd:element name="legal" type="ns3:LegalDept"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

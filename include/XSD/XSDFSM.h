@@ -1,3 +1,21 @@
+// This file is part of XmlPlus package
+// 
+// Copyright (C)   2010   Satya Prakash Tripathi
+//
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 #ifndef __XSD_FSM_H__
 #define __XSD_FSM_H__
@@ -32,6 +50,7 @@ namespace FSM {
   typedef AutoPtr<XsdFsmBase> XsdFsmBasePtr;
   typedef XsdFsmBase* XsdFsmBaseP;
 
+void warnNullNode(Node *pNode, const char* nodeName, const char* qName, int minOccurence);
 bool matchNamespace(const DOMString* nsUri1, const DOMString* nsUri2);
 void outputErrorToException(XPlus::Exception& ex, list<DOMString> possibleEvents, DOMString gotEvent, bool docBuilding=true);
 

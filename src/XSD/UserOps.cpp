@@ -1,7 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Free Software Foundation, Inc.
-// Author: Satya Prakash Tripathi
+// Copyright (C)   2010   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -69,10 +68,10 @@ namespace XSD_USER_OPS
     cout << "readUpdateWriteFile:" << inFilePath << endl;
     cout << "Going to: \n"
       << "  1) read input-xml-file\n"
-         "  2) update the read Document with user-supplied function updateOrConsumeDocument()\n"
+         "  2) operate on the read Document with user-supplied function updateOrConsumeDocument()\n"
          "  3) write xml file..." 
          << endl << endl;
-    string outFile = inFilePath+ ".ruw.xml";
+    string outFile = inFilePath+ ".row.xml";
     try 
     {
       AutoPtr<DOM::Document> pDoc = createXsdDocument(inFilePath);
@@ -155,8 +154,8 @@ namespace XSD_USER_OPS
     cout << " -r, --roundtrip\n"
       << "            roundtrip (read->write) input xml-file"
       << endl;
-    cout << " -u, --ruw\n"
-        << "         perform read->update->write operations on input xml-file"
+    cout << " -u, --row\n"
+        << "         perform read->operate->write operations on input xml-file"
         << endl;
     cout << " -h, --help\n"
         << "         print help"
@@ -185,7 +184,7 @@ namespace XSD_USER_OPS
         {"write",      no_argument,       0, 'w'},
         {"validate",   required_argument, 0, 'v'},
         {"roundtrip",  required_argument, 0, 'r'},
-        {"ruw",        required_argument, 0, 'u'},
+        {"row",        required_argument, 0, 'u'},
         {0, 0, 0, 0}
       };
       /* getopt_long stores the option index here. */

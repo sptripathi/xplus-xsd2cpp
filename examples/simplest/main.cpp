@@ -291,9 +291,8 @@ void populateDocument(simplest::Document xsdDoc)
 
   if(1)
   {
-    pItems->add_item()->stringValue("one");
-    pItems->add_item()->stringValue("two");
-    //pItems->add_item()->stringValue("three");
+    pItems->add_item_string("one");
+    pItems->add_item_string("two");
   }
   else
   {

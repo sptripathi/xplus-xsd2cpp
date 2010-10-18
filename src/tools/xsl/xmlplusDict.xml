@@ -25,7 +25,7 @@
 
   <primitiveTypes>
     <type name="string">>
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
     <type name="boolean">
@@ -48,11 +48,11 @@
       <impl implType="XPlus::Time" adt="true" >
         <boundFacetSuffix>DateTime</boundFacetSuffix>
         <code>
-    static std::string typeToString(XPlus::Time val) {
+    static DOM::DOMString typeToString(XPlus::Time val) {
       return DateTimeUtils::formatXsdTime(val); 
     }
 
-    static XPlus::Time stringToType(std::string strVal) {
+    static XPlus::Time stringToType(DOM::DOMString strVal) {
        return DateTimeUtils::parseXsdTime(strVal);
     }
         </code>
@@ -62,11 +62,11 @@
       <impl implType="XPlus::Duration" adt="true" >
         <boundFacetSuffix>Duration</boundFacetSuffix>
         <code>
-    static std::string typeToString(XPlus::Duration val) {
+    static DOM::DOMString typeToString(XPlus::Duration val) {
       return DateTimeUtils::formatXsdDuration(val); 
     }
 
-    static XPlus::Duration stringToType(std::string strVal) {
+    static XPlus::Duration stringToType(DOM::DOMString strVal) {
        return DateTimeUtils::parseXsdDuration(strVal);
     }
         </code>
@@ -76,11 +76,11 @@
       <impl implType="XPlus::DateTime" adt="true" >
         <boundFacetSuffix>DateTime</boundFacetSuffix>
         <code>
-    static std::string typeToString(XPlus::DateTime val) {
+    static DOM::DOMString typeToString(XPlus::DateTime val) {
       return DateTimeUtils::formatISO8601DateTime(val); 
     }
 
-    static XPlus::DateTime stringToType(std::string strVal) {
+    static XPlus::DateTime stringToType(DOM::DOMString strVal) {
        return DateTimeUtils::parseISO8601DateTime(strVal);
     }
         </code>
@@ -90,11 +90,11 @@
       <impl implType="XPlus::Date" adt="true" >
         <boundFacetSuffix>DateTime</boundFacetSuffix>
         <code>
-    static std::string typeToString(XPlus::Date val) {
+    static DOM::DOMString typeToString(XPlus::Date val) {
       return DateTimeUtils::formatXsdDate(val); 
     }
 
-    static XPlus::Date stringToType(std::string strVal) {
+    static XPlus::Date stringToType(DOM::DOMString strVal) {
        return DateTimeUtils::parseXsdDate(strVal);
     }
         </code>
@@ -104,11 +104,11 @@
       <impl implType="XPlus::YearMonth" adt="true" >
         <boundFacetSuffix>DateTime</boundFacetSuffix>
         <code>
-    static std::string typeToString(XPlus::YearMonth val) {
+    static DOM::DOMString typeToString(XPlus::YearMonth val) {
       return DateTimeUtils::formatXsdYearMonth(val); 
     }
 
-    static XPlus::YearMonth stringToType(std::string strVal) {
+    static XPlus::YearMonth stringToType(DOM::DOMString strVal) {
        return DateTimeUtils::parseXsdYearMonth(strVal);
     }
         </code>
@@ -118,11 +118,11 @@
       <impl implType="XPlus::MonthDay" adt="true" >
         <boundFacetSuffix>DateTime</boundFacetSuffix>
         <code>
-    static std::string typeToString(XPlus::MonthDay val) {
+    static DOM::DOMString typeToString(XPlus::MonthDay val) {
       return DateTimeUtils::formatXsdMonthDay(val); 
     }
 
-    static XPlus::MonthDay stringToType(std::string strVal) {
+    static XPlus::MonthDay stringToType(DOM::DOMString strVal) {
        return DateTimeUtils::parseXsdMonthDay(strVal);
     }
         </code>
@@ -132,11 +132,11 @@
       <impl implType="XPlus::Day" adt="true" >
         <boundFacetSuffix>DateTime</boundFacetSuffix>
         <code>
-    static std::string typeToString(XPlus::Day val) {
+    static DOM::DOMString typeToString(XPlus::Day val) {
       return DateTimeUtils::formatXsdDay(val); 
     }
 
-    static XPlus::Day stringToType(std::string strVal) {
+    static XPlus::Day stringToType(DOM::DOMString strVal) {
        return DateTimeUtils::parseXsdDay(strVal);
     }
         </code>
@@ -146,11 +146,11 @@
       <impl implType="XPlus::Month" adt="true" >
         <boundFacetSuffix>DateTime</boundFacetSuffix>
         <code>
-    static std::string typeToString(XPlus::Month val) {
+    static DOM::DOMString typeToString(XPlus::Month val) {
       return DateTimeUtils::formatXsdMonth(val); 
     }
 
-    static XPlus::Month stringToType(std::string strVal) {
+    static XPlus::Month stringToType(DOM::DOMString strVal) {
        return DateTimeUtils::parseXsdMonth(strVal);
     }
         </code>
@@ -160,37 +160,37 @@
       <impl implType="XPlus::Year" adt="true" >
         <boundFacetSuffix>DateTime</boundFacetSuffix>
         <code>
-    static std::string typeToString(XPlus::Year val) {
+    static DOM::DOMString typeToString(XPlus::Year val) {
       int year = val.year();
       return XPlus::toString&lt;int&gt;(year); 
     }
 
-    static XPlus::Year stringToType(std::string strVal) {
+    static XPlus::Year stringToType(DOM::DOMString strVal) {
        return Year(XPlus::fromString&lt;int&gt;(strVal));
     }
         </code>
       </impl>  
     </type>
     <type name="hexBinary">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
     <type name="base64Binary" adt="false">
-      <impl implType="string">
+      <impl implType="DOM::DOMString">
       </impl>  
     </type>
     <type name="anyURI">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
     <type name="QName">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
     
     <!-- used only on attributes -->
     <type name="NOTATION">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
   </primitiveTypes>
@@ -198,65 +198,65 @@
   
   <derivedTypes>
     <type name="normalizedString" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
     <type name="token" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
     <type name="language" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
 
     <!-- used only on attributes -->
     <type name="NMTOKEN" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
 
     <!-- used only on attributes -->
     <type name="NMTOKENS" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
     <type name="Name" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
     <type name="NCName" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
 
     <!-- used only on attributes -->
     <type name="ID" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
 
     <!-- used only on attributes -->
     <type name="IDREF" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
 
     <!-- used only on attributes -->
     <type name="IDREFS" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
 
     <!-- used only on attributes -->
     <type name="ENTITY" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
 
     <!-- used only on attributes -->
     <type name="ENTITIES" primType="string">
-      <impl implType="string" adt="false">
+      <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
 
@@ -380,5 +380,6 @@
     <facet name="fractionDigits"/>
   </ConstrainingFacets>
 
+  <CPPReservedKeywords> auto const double float int short struct unsigned break continue else for long signed switch void case default enum goto register sizeof typedef volatile char do extern if return static union while asm dynamic_cast namespace reinterpret_cast try bool explicit new static_cast typeid catch false operator template typename class friend private this using const_cast inline public throw virtual delete mutable protected true wchar_t and bitand compl not_eq or_eq xor_eq and_eq bitor not or xor </CPPReservedKeywords>
 
 </xmlplusDict>

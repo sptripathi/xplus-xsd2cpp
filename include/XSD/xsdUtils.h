@@ -1,3 +1,22 @@
+// This file is part of XmlPlus package
+// 
+// Copyright (C)   2010   Satya Prakash Tripathi
+//
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #ifndef __XSD_UTILS_H__ 
 #define __XSD_UTILS_H__
 
@@ -84,10 +103,7 @@ namespace XMLSchema
         }
       }
 
-      //TODO: FIXME need value() fn ??
-
       virtual ~XmlAttribute() {}
-
 
       virtual inline TextNodeP createTextNode(DOMString* data) 
       {
@@ -101,7 +117,6 @@ namespace XMLSchema
           throw ex;
         }
       }
-
 
       inline void print() {
         cout << "XmlAttribute:"
@@ -163,10 +178,6 @@ namespace XMLSchema
   class TElement : public DOM::Element
   {
     protected:
-      //XsdFsmBasePtr  _fsm;
-      
-      //scratchPad variables
-      //Node*           _fsmCreatedNode;
 
     public:
 
@@ -182,8 +193,6 @@ namespace XMLSchema
           Node*        nextSiblingElement=NULL
           ):
         DOM::Element(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement)
-        //, _fsm(NULL)
-        //, _fsmCreatedNode(NULL)
     {
 #if 0
       // child is likely to override _fsm allocation
@@ -197,14 +206,6 @@ namespace XMLSchema
 
     virtual TDocumentP ownerDocument() =0;
     virtual TElementP ownerElement() =0; 
-#if 0
-    virtual TDocumentP ownerDocument() {
-      return dynamic_cast<TDocumentP>(this->getOwnerDocument());
-    }
-    virtual TElementP ownerElement() {
-      return this;
-    }
-#endif
       
     virtual TElementP createElementNS(DOMString* nsUri, 
         DOMString* nsPrefix, 
@@ -219,10 +220,6 @@ namespace XMLSchema
     virtual void endDocument() =0;
       
     virtual TextNodeP createTextNode(DOMString* data) =0;
-
-      //TODO: make these pure virtual
-      //virtual DOMString* value() {}
-      //virtual void value(DOMString* str) {}
   };
   
 

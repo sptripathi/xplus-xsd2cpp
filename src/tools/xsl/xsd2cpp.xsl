@@ -45,8 +45,14 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
     </xsl:choose>
   </xsl:for-each>
   
-  <xsl:apply-templates select="*[local-name()='schema']"/>
+  <!--
+  <xsl:message>
+  ***** exporting  schema: <xsl:value-of select="$input_doc"/>
+  </xsl:message>
+  -->
+  <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="$input_doc"/></xsl:call-template>
   <xsl:call-template name="GEN_MAIN_CPP"/>
+  <xsl:apply-templates select="*[local-name()='schema']"/>
     
 </xsl:template>
 
@@ -66,13 +72,18 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 </schema>
 -->
 <xsl:template match="*[local-name()='schema']">
-
   <xsl:call-template name="CREATE_ALL_INCLUDE_H"/>
-  <!--
-  <xsl:call-template name="CREATE_COMMON_INCLUDE_H"/>
-  -->
   <xsl:call-template name="DEFINE_DOC"/>
-  
+  <xsl:call-template name="T_validate_includes"/>
+  <xsl:call-template name="T_validate_imports"/>
+  <xsl:call-template name="T_process_schema_contents"/>
+</xsl:template>
+
+
+
+<xsl:template match="*[local-name()='schema']" mode="IMPORTED_DOC">
+  <xsl:call-template name="CREATE_ALL_INCLUDE_H"/>
+  <xsl:call-template name="DEFINE_DOC"/>
   <xsl:call-template name="T_validate_includes"/>
   <xsl:call-template name="T_validate_imports"/>
   <xsl:call-template name="T_process_schema_contents"/>
@@ -91,14 +102,6 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
     <xsl:variable name="pos" select="position()"/>
     <xsl:variable name="localName" select="local-name()"/>
     <xsl:choose>
-      <xsl:when test="$localName='import'">
-        <xsl:apply-templates select="document(@schemaLocation)"/>
-      </xsl:when>  
-      <xsl:when test="$localName='include'">
-        <!--
-        <xsl:apply-templates select="document(@schemaLocation)" mode="INCLUDED_DOC"/>
-        -->
-      </xsl:when>  
       <xsl:when test="$localName='redefine'">
         <xsl:call-template name="T_unsupported_usage">
           <xsl:with-param name="unsupportedItem" select="$localName"/>
@@ -125,23 +128,45 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
       </xsl:when>  
       <xsl:when test="$localName='element'">
         <xsl:call-template name="DEFINE_DOC_ELEMENT_H"/>
-        <xsl:if test="not(@type)">
+        <xsl:if test="not(@type) and not(@ref)">
           <xsl:call-template name="DEFINE_DOC_ELEMENT_CPP"/>
         </xsl:if>
       </xsl:when>  
       <xsl:when test="$localName='attribute'">
         <xsl:call-template name="DEFINE_DOC_ATTRIBUTE_H"/>
-        <xsl:if test="not(@type)">
+        <xsl:if test="not(@type) and not(@ref)">
           <xsl:call-template name="DEFINE_DOC_ATTRIBUTE_CPP"/>
         </xsl:if>
       </xsl:when>  
+    </xsl:choose>
+  </xsl:for-each>        
+
+  <xsl:for-each select="*">
+    <xsl:choose>
+      <xsl:when test="local-name()='import'">
+        <!--
+        <xsl:message>
+        ************ applying imported schema: <xsl:value-of select="@schemaLocation"/>
+        </xsl:message>
+        -->
+        <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="@schemaLocation"/></xsl:call-template>
+        <xsl:apply-templates select="document(@schemaLocation)" mode="IMPORTED_DOC"/>
+      </xsl:when>  
+      <xsl:when test="local-name()='include'">
+        <!--
+        <xsl:message>
+        ************ applying included schema: <xsl:value-of select="@schemaLocation"/>
+        </xsl:message>
+        -->
+        <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="@schemaLocation"/></xsl:call-template>
+        <xsl:apply-templates select="document(@schemaLocation)" mode="INCLUDED_DOC"/>
+      </xsl:when>
     </xsl:choose>
   </xsl:for-each>        
 </xsl:template>
 
 
 <xsl:template name="T_validate_imports">
-
   <xsl:variable name="myTargetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
   <xsl:for-each select="*[local-name()='import']">
     <xsl:variable name="targetNsUriImportedDoc">
@@ -173,7 +198,6 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 
 
 <xsl:template name="T_validate_includes">
-
   <xsl:variable name="myTargetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
   <xsl:for-each select="*[local-name()='include']">
     <xsl:variable name="targetNsUriIncludedDoc">
@@ -203,25 +227,25 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 
 
 <xsl:template name="DEFINE_DOC">
+  <xsl:variable name="cntTLE"><xsl:call-template name="T_count_top_level_elements_doc_and_includes"/></xsl:variable>
+  <xsl:if test="$cntTLE >= 1">
     <xsl:call-template name="DEFINE_DOC_H"/>
     <xsl:call-template name="DEFINE_DOC_CPP"/>
+  </xsl:if>  
 </xsl:template>
 
 
 <xsl:template name="DEFINE_DOC_H">
-  <xsl:variable name="cntTLE"><xsl:call-template name="T_count_top_level_elements_doc_and_includes"/></xsl:variable>
 
-<xsl:if test="$cntTLE >= 1">
   <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
   <xsl:variable name="cppTargetNSConcatStr"><xsl:call-template name="T_get_cppTargetNSConcatStr"/></xsl:variable>
   <xsl:variable name="cppTargetNSDirChain"><xsl:call-template name="T_get_cppTargetNSDirChain"/></xsl:variable>
 
   <xsl:variable name="filename" select="concat('include/', $cppTargetNSDirChain, '/Document.h')" />
-  <!-- Creating  -->
   <xsl:document method="text" href="{$filename}">
 #ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_DOCUMENT_H__
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_DOCUMENT_H__
-
+        
 #include "XSD/xsdUtils.h"
 <xsl:call-template name="GEN_DOC_INCLUDE_H"/>
 
@@ -258,7 +282,6 @@ public:
   Document(bool buildTree=true);
   virtual ~Document() {}
     
-  <xsl:if test="$cntTLE > 1">
     <xsl:for-each select="*[local-name()='element']">
       <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
   MEMBER_FN void set_root_<xsl:value-of select="$cppName"/>();
@@ -267,7 +290,6 @@ public:
     <xsl:call-template name="ITERATE_SCHEMA_INCLUDES">
       <xsl:with-param name="mode" select="'decl_set_root'"/>
     </xsl:call-template>  
-  </xsl:if>
 
 
   <xsl:for-each select="*[local-name()='element']">
@@ -285,7 +307,6 @@ public:
 <xsl:call-template name="T_emit_cppNSEnd_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
 #endif
   </xsl:document>
-</xsl:if>
 </xsl:template>
 
 
@@ -401,11 +422,12 @@ public:
   <xsl:variable name="cppTargetNSConcatStr"><xsl:call-template name="T_get_cppTargetNSConcatStr"/></xsl:variable>
   <xsl:variable name="typeCppNSDirChain"><xsl:call-template name="T_get_cppTargetNSDirChain"/></xsl:variable>
   <xsl:variable name="complexTypeName" select="@name" />
-  <xsl:variable name="filename" select="concat('include/', $typeCppNSDirChain, '/Types/', $complexTypeName, '.h')" />
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
+  <xsl:variable name="filename" select="concat('include/', $typeCppNSDirChain, '/Types/', $cppName, '.h')" />
   <!-- Creating  -->
   <xsl:document method="text" href="{$filename}">
-#ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$complexTypeName"/>_H__
-#define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$complexTypeName"/>_H__
+#ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
+#define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
 #include "XSD/xsdUtils.h"
 
 <xsl:call-template name="GEN_INCLUDELIST_OF_COMPLEXTYPE_SIMPLETYPE_INCLUDE_H"/>
@@ -418,16 +440,16 @@ namespace Types
   
 /// The class for complexType <xsl:value-of select="$complexTypeName"/>
 /// \n Refer to documentation on structures/methods inside ...
-class <xsl:value-of select="$complexTypeName"/> : public XMLSchema::Types::anyComplexType
+class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyComplexType
 {
 public:
   //constructor
-  <xsl:value-of select="$complexTypeName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL);
+  <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL);
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$complexTypeName"/>
   </xsl:call-template>  
-}; //end class <xsl:value-of select="$complexTypeName"/>
+}; //end class <xsl:value-of select="$cppName"/>
 
 } // end namespace Types
 
@@ -1087,7 +1109,6 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
         </xsl:call-template>
       </xsl:variable>
       
-      <!-- satya -->
     <xsl:choose>
       <xsl:when test="$maxOccurGT1Child='true'">
 
@@ -1118,7 +1139,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
     ///  @return the value(as DOMString) of the element 
     MEMBER_FN DOMString get_<xsl:value-of select="$cppNameFunction"/>_string(unsigned int idx);
 
-          <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='string'">
+          <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
 
     ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
     ///  \n Sets the value of the element at the supplied index with the supplied value.
@@ -1167,7 +1188,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
     ///  @return the value(as DOMString) of the element 
     MEMBER_FN DOMString get_<xsl:value-of select="$cppNameFunction"/>_string();
 
-          <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='string'">
+          <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
 
     ///  For the scalar-element with QName "<xsl:value-of select="$expandedQName"/>" :
     ///  \n Sets the value of the scalar element with the supplied value.
@@ -1198,21 +1219,38 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
     <xsl:if test="$maxOccurGT1Child='true' and $maxOccurGTminOccurChild='true'">
 
     ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-    ///  Adds one element to the end of the "list of the element nodes"
+    ///  \n Adds one element to the end of the "list of the element nodes"
     ///  @return the pointer to the added element
-    MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/> add_<xsl:value-of select="$cppNameFunction"/>();
+    MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/> add_node_<xsl:value-of select="$cppNameFunction"/>();
 
     ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-    ///  Sizes-up the "list of the element nodes" with the supplied size
+    ///  \n Sizes-up the "list of the element nodes" with the supplied size
     ///  @param size the request size(unsigned int) of the list
     ///  @return the list of "pointer-to-element-node"
     MEMBER_FN <xsl:value-of select="$returnType"/> set_count_<xsl:value-of select="$cppNameFunction"/>(<xsl:if test="$maxOccurGT1Child='true'">unsigned int size</xsl:if>);
 
+
+      <xsl:if test="$isSimpleType='true'">
+      
+    ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+    ///  \n Adds one element to the end of the "list of the element nodes", and sets the value with supplied DOMString value
+    ///  @param val the value(as DOMString) to set with 
+    MEMBER_FN void add_<xsl:value-of select="$cppNameFunction"/>_string(DOMString val);
+      
+        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
+
+    ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+    ///  \n Adds one element to the end of the "list of the element nodes", and sets the value with supplied type value
+    ///  @param val the value(as <xsl:value-of select="$atomicSimpleTypeImpl"/>) to set with 
+    MEMBER_FN void add_<xsl:value-of select="$cppNameFunction"/>(<xsl:value-of select="$atomicSimpleTypeImpl"/> val);  
+        </xsl:if>
+      </xsl:if>
+    
     </xsl:if>
 
     <xsl:if test="$maxOccurenceChild=1 and $minOccurenceChild=0">
     ///  For the optional scalar element with QName "<xsl:value-of select="$expandedQName"/>" :
-    ///  Marks the element as present 
+    ///  \n Marks the element as present 
     void mark_present_<xsl:value-of select="$cppNameFunction"/>();
     </xsl:if>
     </xsl:for-each>
@@ -1228,7 +1266,6 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
 
   private:  
 
-    // Doxygen: TODO 
     inline XsdFsmBase* clone() const {
       return new <xsl:value-of select="$mgNameSingularCpp"/>(*this);
     }
@@ -1423,7 +1460,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
   ///  @return the value(as DOMString) of the element 
   MEMBER_FN DOMString get_<xsl:value-of select="$cppNameFunction"/>_string(unsigned int idx);
 
-        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='string'">
+        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
 
   ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
   ///  \n Sets the value of the element at the supplied index with the supplied value.
@@ -1459,7 +1496,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
   ///  \n Returns the value(as DOMString) of the <xsl:value-of select="$localName"/>
   MEMBER_FN DOMString get_<xsl:value-of select="$cppNameFunction"/>_string();
 
-        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='string'">
+        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
 
   ///  For the scalar-<xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
   ///  \n Sets the value of the <xsl:value-of select="$localName"/> with the supplied value.
@@ -1477,7 +1514,6 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
    </xsl:if>   
 
 
-
   <xsl:if test="$isUnderSingularMgNesting='true'">
 
     <xsl:variable name="returnType">
@@ -1490,15 +1526,31 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
     <xsl:if test="$maxOccurGT1Node='true' and $maxOccurGTminOccurNode='true'">
 
   ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  Adds one element to the end of the "list of the element nodes"
+  ///  \n Adds one element to the end of the "list of the element nodes"
   ///  @return the pointer to the added element
-  MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/> add_<xsl:value-of select="$cppNameFunction"/>();
+  MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/> add_node_<xsl:value-of select="$cppNameFunction"/>();
   
   ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  Sizes-up the "list of the element nodes" with the supplied size
+  ///  \n Sizes-up the "list of the element nodes" with the supplied size
   ///  @param size the request size(unsigned int) of the list
   ///  @return the list of "pointer-to-element-node"
   MEMBER_FN <xsl:value-of select="$returnType"/> set_count_<xsl:value-of select="$cppNameFunction"/>(unsigned int size);
+
+      <xsl:if test="$isSimpleType='true'">
+      
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Adds one element to the end of the "list of the element nodes", and sets the value with supplied DOMString value
+  ///  @param val the value(as DOMString) to set with 
+  MEMBER_FN void add_<xsl:value-of select="$cppNameFunction"/>_string(DOMString val);
+      
+        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
+
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Adds one element to the end of the "list of the element nodes", and sets the value with supplied type value
+  ///  @param val the value(as <xsl:value-of select="$atomicSimpleTypeImpl"/>) to set with 
+  MEMBER_FN void add_<xsl:value-of select="$cppNameFunction"/>(<xsl:value-of select="$atomicSimpleTypeImpl"/> val);  
+        </xsl:if>
+      </xsl:if>
 
     </xsl:if>
 
@@ -1522,11 +1574,12 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
 
 <xsl:template name="DEFINE_LEVEL1_COMPLEXTYPE_CPP">
   <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
   <xsl:variable name="cppTargetNSDirChain"><xsl:call-template name="T_get_cppTargetNSDirChain"/></xsl:variable>
     
     <xsl:variable name="complexTypeName" select="@name" />
-    <xsl:variable name="filename" select="concat('src/', $cppTargetNSDirChain, '/Types/',  @name, '.cpp')" />
-    <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/Types/', @name , '.h')" />
+    <xsl:variable name="filename" select="concat('src/', $cppTargetNSDirChain, '/Types/',  $cppName, '.cpp')" />
+    <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/Types/', $cppName , '.h')" />
     <!-- Creating  -->
     <xsl:document method="text" href="{$filename}">
 #include "<xsl:value-of select="$hdrName"/>"
@@ -1742,6 +1795,7 @@ namespace Types
     <xsl:variable name="minOccurence"><xsl:call-template name="T_get_minOccurence"/></xsl:variable>
     <xsl:variable name="maxOccurGTminOccur"><xsl:call-template name="T_is_maxOccurence_gt_minOccurence"/></xsl:variable>
     <xsl:variable name="maxOccurGT1"><xsl:call-template name="T_is_maxOccurence_gt_1"/></xsl:variable>
+    <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
     <xsl:variable name="resolution">
       <xsl:call-template name="T_resolve_elementAttr">
         <xsl:with-param name="node" select="."/>  
@@ -1893,6 +1947,8 @@ namespace Types
           node_p = unitFsm->nodeList().at(0); 
         }
       }
+      
+      FSM::warnNullNode(node_p, "<xsl:value-of select="$cppNameFunction"/>", "<xsl:value-of select="$expandedQName"/>", <xsl:value-of select="$minOccurence"/>);
       return node_p;
           </xsl:otherwise>
         </xsl:choose>
@@ -1914,7 +1970,7 @@ namespace Types
     {
       return <xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>_at(idx)->stringValue();
     }
-        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='string'">
+        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
     void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_<xsl:value-of select="$cppNameFunction"/>(unsigned int idx,<xsl:value-of select="$atomicSimpleTypeImpl"/> val)
     {
       <xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>_at(idx)->value(val);
@@ -1945,7 +2001,7 @@ namespace Types
       return <xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>()->stringValue();
     }
 
-        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='string'">
+        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
     void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_<xsl:value-of select="$cppNameFunction"/>(<xsl:value-of select="$atomicSimpleTypeImpl"/> val)     
     {
           <xsl:if test="$minOccurence=0">
@@ -1964,7 +2020,7 @@ namespace Types
     </xsl:if>
 
     <xsl:if test="$maxOccurGT1='true' and $maxOccurGTminOccur='true'">
-    <xsl:value-of select="$cppTypePtrShort_nsLevel1"/><xsl:text> </xsl:text><xsl:value-of select="$cppNSDerefLevel1Onwards"/>add_<xsl:value-of select="$cppNameFunction"/>()
+    <xsl:value-of select="$cppTypePtrShort_nsLevel1"/><xsl:text> </xsl:text><xsl:value-of select="$cppNSDerefLevel1Onwards"/>add_node_<xsl:value-of select="$cppNameFunction"/>()
     {
       DOMStringPtr nsUriPtr = <xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>;
       this->processEventThrow(nsUriPtr, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdFsmBase::ELEMENT_START, false); 
@@ -1982,19 +2038,38 @@ namespace Types
 
       unsigned int prevSize = <xsl:value-of select="$localName"/><xsl:if test="$maxOccurGT1='true'">s</xsl:if>_<xsl:value-of select="$cppNameFunction"/>().size();
       if(size &lt; prevSize) {
-        //TODO: allow later:
+        //FIXME: allow later:
         throw XPlus::RuntimeException("resize lesser than current size not allowed");
       }
 
       for(unsigned int j=prevSize; j&lt;size; j++) 
       {
-        // pretend docBuilding to avoid computation of adding after
-        // first loop
+        // pretend docBuilding to avoid computation of adding after first loop
         this->processEventThrow(<xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdFsmBase::ELEMENT_START, false); 
       }
       
       return <xsl:value-of select="$localName"/><xsl:if test="$maxOccurGT1='true'">s</xsl:if>_<xsl:value-of select="$cppNameFunction"/>();
     }
+
+          <xsl:if test="$isSimpleType='true'">
+      
+    void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>add_<xsl:value-of select="$cppNameFunction"/>_string(DOMString val)
+    {
+      this-&gt;add_node_<xsl:value-of select="$cppNameFunction"/>()->stringValue(val);
+    }
+            <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
+
+    void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>add_<xsl:value-of select="$cppNameFunction"/>(<xsl:value-of select="$atomicSimpleTypeImpl"/> val)  
+    {
+      this-&gt;add_node_<xsl:value-of select="$cppNameFunction"/>()->value(val);
+    }
+            </xsl:if>
+          </xsl:if>
+ 
+
+
+
+
 
         </xsl:if>
       
@@ -2099,7 +2174,6 @@ namespace Types
   <xsl:value-of select="$cppTypeSmartPtrShort_nsLevel1"/><xsl:text> </xsl:text><xsl:value-of select="$cppNSDerefLevel1Onwards"/>create_<xsl:value-of select="$cppNameFunction"/>()
   {
     static DOMStringPtr myName = new DOMString("<xsl:value-of select="$elemAttrName"/>");
-    //static DOMStringPtr myNsUri = <xsl:choose><xsl:when test="$myNsUri=''">NULL</xsl:when><xsl:otherwise>new DOMString("<xsl:value-of select="$myNsUri"/>")</xsl:otherwise></xsl:choose>;
     static DOMStringPtr myNsUri = <xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>;
     if(<xsl:value-of select="$refDocument"/>->buildTree() || !_fsm->fsmCreatedNode())
     {
@@ -2177,22 +2251,34 @@ namespace Types
       -->
     void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_<xsl:value-of select="$cppNameFunction"/>(DOMString val)
     {
+        <xsl:if test="$isOptionalScalar='true'">
+      mark_present_<xsl:value-of select="$cppNameFunction"/>();
+        </xsl:if>
       <xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>()->stringValue(val);
     }
 
     DOMString <xsl:value-of select="$cppNSDerefLevel1Onwards"/>get_<xsl:value-of select="$cppNameFunction"/>_string()
     {
+        <xsl:if test="$isOptionalScalar='true'">
+      mark_present_<xsl:value-of select="$cppNameFunction"/>();
+        </xsl:if>
       return <xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>()->stringValue();
     }
 
-    <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='string'">
+    <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
     void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_<xsl:value-of select="$cppNameFunction"/>(<xsl:value-of select="$atomicSimpleTypeImpl"/> val)
     {
+        <xsl:if test="$isOptionalScalar='true'">
+      mark_present_<xsl:value-of select="$cppNameFunction"/>();
+        </xsl:if>
       <xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>()->value(val);
     }
 
     <xsl:value-of select="$atomicSimpleTypeImpl"/><xsl:text> </xsl:text><xsl:value-of select="$cppNSDerefLevel1Onwards"/>get_<xsl:value-of select="$cppNameFunction"/>()
     {
+        <xsl:if test="$isOptionalScalar='true'">
+      mark_present_<xsl:value-of select="$cppNameFunction"/>();
+        </xsl:if>
       return <xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>()->value();
     }
 
@@ -2217,9 +2303,10 @@ namespace Types
     </xsl:when>
     <xsl:when test="$maxOccurGT1Node='false' and $isUnderSingularMgNesting='true'">
   <xsl:value-of select="$cppTypePtrShort_nsLevel1"/><xsl:text> </xsl:text><xsl:value-of select="$cppNSDerefLevel1Onwards"/><xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>()
- {
+  {
+    FSM::warnNullNode(<xsl:value-of select="$cppNameUseCase"/>, "<xsl:value-of select="$cppNameFunction"/>", "<xsl:value-of select="$expandedQName"/>", <xsl:value-of select="$minOccurNode"/>);
     return <xsl:value-of select="$cppNameUseCase"/>;
- }
+  }
     </xsl:when>
   </xsl:choose>
 
@@ -2229,17 +2316,39 @@ namespace Types
   -->
   <xsl:if test="local-name(..)='choice' or local-name(..)='sequence' or local-name(..)='all'">  
     <xsl:variable name="mgName" select="local-name(..)"/>
+    
     <xsl:if test="$isUnderSingularMgNesting = 'true'">
+
       <xsl:if test="$maxOccurGT1Node='true' and $maxOccurGTminOccurNode='true'">
-  <xsl:value-of select="$cppTypePtrShort_nsLevel1"/><xsl:text> </xsl:text><xsl:value-of select="$cppNSDerefLevel1Onwards"/>add_<xsl:value-of select="$cppNameFunction"/>()
+  <xsl:value-of select="$cppTypePtrShort_nsLevel1"/><xsl:text> </xsl:text><xsl:value-of select="$cppNSDerefLevel1Onwards"/>add_node_<xsl:value-of select="$cppNameFunction"/>()
   {
-    return <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->add_<xsl:value-of select="$cppNameFunction"/>();
+    return <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->add_node_<xsl:value-of select="$cppNameFunction"/>();
   }
 
   List&lt;<xsl:value-of select="$cppTypeSmartPtrShort_nsLevel1"/>&gt;<xsl:text> </xsl:text><xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_count_<xsl:value-of select="$cppNameFunction"/>(unsigned int size)
   {
     return <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->set_count_<xsl:value-of select="$cppNameFunction"/>(size);
   }
+
+        <xsl:if test="$isSimpleType='true'">
+      
+    void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>add_<xsl:value-of select="$cppNameFunction"/>_string(DOMString val)
+    {
+      <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->add_<xsl:value-of select="$cppNameFunction"/>_string(val);
+    }
+
+          <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
+
+    void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>add_<xsl:value-of select="$cppNameFunction"/>(<xsl:value-of select="$atomicSimpleTypeImpl"/> val)
+    {
+      <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->add_<xsl:value-of select="$cppNameFunction"/>(val);
+    }
+
+          </xsl:if>
+        </xsl:if>
+
+
+
       </xsl:if>
 
 
@@ -2255,7 +2364,7 @@ namespace Types
     return <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->get_<xsl:value-of select="$cppNameFunction"/>_string(idx);
   }
 
-          <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='string'">
+          <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
   void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_<xsl:value-of select="$cppNameFunction"/>(unsigned int idx,<xsl:value-of select="$atomicSimpleTypeImpl"/> val)
   {
     <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->set_<xsl:value-of select="$cppNameFunction"/>(idx, val);
@@ -2283,7 +2392,7 @@ namespace Types
     return <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->get_<xsl:value-of select="$cppNameFunction"/>_string();
   }
 
-          <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='string'">
+          <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
   void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_<xsl:value-of select="$cppNameFunction"/>(<xsl:value-of select="$atomicSimpleTypeImpl"/> val)
   {
     <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->set_<xsl:value-of select="$cppNameFunction"/>(val);
@@ -2331,7 +2440,6 @@ namespace Types
         <xsl:with-param name="schemaComponentName" select="$cppName"/>
       </xsl:call-template>
     </xsl:for-each>
-    <!-- TODO for-each simpleType -->
 
   </xsl:for-each>  
   </xsl:if>
@@ -2358,8 +2466,8 @@ namespace Types
 
   <xsl:variable name="filename" select="concat('include/', $cppTargetNSDirChain, '/', $cppName, '.h')" />
   <xsl:document method="text" href="{$filename}">
-#ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="@name"/>_H__
-#define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="@name"/>_H__
+#ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
+#define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
 <xsl:call-template name="GEN_INCLUDELIST_OF_ELEMENT_ATTR_H"/>
 
 using namespace XPlus;
@@ -2375,22 +2483,24 @@ using namespace XPlus;
 </xsl:document>
 </xsl:template>
 
-<xsl:template name="DEFINE_DOC_ATTRIBUTE_CPP">
-  <!-- //TODO:1008 -->
-</xsl:template>
 
+
+
+<xsl:template name="DEFINE_DOC_ATTRIBUTE_CPP">
+</xsl:template>
 
 
 
 <xsl:template name="DEFINE_DOC_ELEMENT_H">
   <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
   <xsl:variable name="cppTargetNSConcatStr"><xsl:call-template name="T_get_cppTargetNSConcatStr"/></xsl:variable>
   <xsl:variable name="cppTargetNSDirChain"><xsl:call-template name="T_get_cppTargetNSDirChain"/></xsl:variable>
 
-  <xsl:variable name="filename" select="concat('include/', $cppTargetNSDirChain, '/', @name, '.h')" />
+  <xsl:variable name="filename" select="concat('include/', $cppTargetNSDirChain, '/', $cppName, '.h')" />
   <xsl:document method="text" href="{$filename}">
-#ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="@name"/>_H__
-#define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="@name"/>_H__
+#ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
+#define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
 #include "XSD/UrTypes.h"
 #include "XSD/xsdUtils.h"
 
@@ -2541,10 +2651,10 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
 <xsl:template name="DEFINE_DOC_ELEMENT_CPP">
   <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
   <xsl:variable name="cppTargetNSDirChain"><xsl:call-template name="T_get_cppTargetNSDirChain"/></xsl:variable>
-    
-    <xsl:variable name="schemaComponentName" select="@name" />
-    <xsl:variable name="filename" select="concat('src/', $cppTargetNSDirChain, '/', @name, '.cpp')" />
-    <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/', @name , '.h')" />
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
+  <xsl:variable name="schemaComponentName" select="@name" />
+  <xsl:variable name="filename" select="concat('src/', $cppTargetNSDirChain, '/', $cppName, '.cpp')" />
+  <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/', $cppName , '.h')" />
     <!-- Creating  -->
     <xsl:document method="text" href="{$filename}">
 #include "<xsl:value-of select="$hdrName"/>"
@@ -2566,6 +2676,7 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
 <xsl:template name="CREATE_ALL_INCLUDE_H">
   <xsl:variable name="cppTargetNSConcatStr"><xsl:call-template name="T_get_cppTargetNSConcatStr"/></xsl:variable>
   <xsl:variable name="cppTargetNSDirChain"><xsl:call-template name="T_get_cppTargetNSDirChain"/></xsl:variable>
+  <xsl:variable name="cntTLE"><xsl:call-template name="T_count_top_level_elements_doc_and_includes"/></xsl:variable>
   
   <xsl:variable name="filename" select="concat('include/', $cppTargetNSDirChain, '/', 'all-include.h')" />
   <!-- Creating  -->
@@ -2573,8 +2684,7 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
 #ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_ALL_INCLUDE_H__
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_ALL_INCLUDE_H__
 
-
-using namespace XPlus;
+#include "XPlus/AutoPtr.h"
 
   <xsl:for-each select="*[local-name()='import']">
     <xsl:variable name="importDocNS">
@@ -2585,8 +2695,10 @@ using namespace XPlus;
     </xsl:variable>
 #include "<xsl:value-of select="$importDocNS"/>/all-include.h"
   </xsl:for-each>  
-
+  
+<xsl:if test="$cntTLE>0">
 #include "<xsl:value-of select="$cppTargetNSDirChain"/>/Document.h"
+</xsl:if>
 
   <xsl:for-each select="*[ (local-name()='element' or local-name()='attribute') and not(@type)]">
     <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
@@ -2598,9 +2710,15 @@ using namespace XPlus;
   <xsl:for-each select="*[local-name()='complexType']">
   -->
   <xsl:for-each select="*[local-name()='complexType' or local-name()='simpleType']">
-    <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/Types/', @name, '.h')" />
+    <xsl:variable name="transformedToken">
+      <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="@name"/></xsl:call-template>
+    </xsl:variable>
+    <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/Types/', $transformedToken, '.h')" />
 #include "<xsl:value-of select="$hdrName"/>"    
   </xsl:for-each>
+
+using namespace XPlus;
+
 
 #endif 
   </xsl:document>
@@ -2801,7 +2919,7 @@ void populateDocument(DOM::Document* pDoc)
 void updateOrConsumeDocument(DOM::Document* pDoc)
 {
   <xsl:value-of select="$cppTargetNSDeref"/>::Document* xsdDoc = dynamic_cast&lt;<xsl:value-of select="$cppTargetNSDeref"/>::Document *&gt;(pDoc);
-  // write code to update the populated-Document here
+  // write code to operate on the populated-Document here
 
 }
 

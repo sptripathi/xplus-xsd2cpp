@@ -35,12 +35,31 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 
 <xsl:template name="ITERATE_SCHEMA_INCLUDES">
   <xsl:param name="mode" select="''"/>
+  
+  <xsl:variable name="currentDocument"><xsl:call-template name="T_get_current_schema_doc"/></xsl:variable>
+  <xsl:variable name="cntInc" select="count(document($currentDocument)/*[local-name()='schema']/*[local-name()='include'])"/>
 
-  <xsl:for-each select="document($input_doc)/*[local-name()='schema']/*[local-name()='include']">
+  <xsl:for-each select="document($currentDocument)/*[local-name()='schema']/*[local-name()='include']">
+    <!--
+    <xsl:message>
+    T|<xsl:value-of select="@schemaLocation"/>|<xsl:value-of select="$currentDocument"/>|
+    </xsl:message>
+    -->
+    <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="@schemaLocation"/></xsl:call-template>
     <xsl:call-template name="ON_SCHEMA_INCLUDE">
       <xsl:with-param name="mode" select="$mode"/>
     </xsl:call-template>  
   </xsl:for-each>
+
+  <!-- reset current doc to sourceDocument -->
+  <xsl:if test="$cntInc>0">
+  <!--
+    <xsl:message>
+      ITERATE_SCHEMA_INCLUDES reset |<xsl:value-of select="$currentDocument"/>|
+    </xsl:message>
+  -->
+    <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="$currentDocument"/></xsl:call-template>
+  </xsl:if>
 </xsl:template>
 
 
@@ -56,7 +75,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
           <xsl:with-param name="mode" select="$mode"/>
         </xsl:call-template>  
       </xsl:when>
-      <xsl:otherwise>TODO:error handling </xsl:otherwise>
+      <xsl:otherwise></xsl:otherwise>
     </xsl:choose>
   </xsl:for-each>  
 </xsl:template>

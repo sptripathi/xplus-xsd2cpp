@@ -1,3 +1,22 @@
+// This file is part of XmlPlus package
+// 
+// Copyright (C)   2010   Satya Prakash Tripathi
+//
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #ifndef __DOM_STREAM_H__
 #define __DOM_STREAM_H__
 
@@ -37,6 +56,7 @@ typedef std::ofstream XPlusFileOutputStream;
 void outputXmlDecl(XPlusCharOutputStream& s, const Document& doc);
 XPlusCharOutputStream& operator<<(XPlusCharOutputStream& s, const DOM::Node& node);
 void outputDocument(XPlusCharOutputStream& s, const DOM::Document& doc);
+void outputPI(XPlusCharOutputStream& s, const PI& pi);
 void outputElement(XPlusCharOutputStream& s, const DOM::Element& e);
 void outputAttribute(XPlusCharOutputStream& s, const DOM::Attribute& attr);
 void outputTextNode(XPlusCharOutputStream& s, const DOM::TextNode& tn);

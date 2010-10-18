@@ -106,6 +106,7 @@ namespace Types
 
 <xsl:template name="INCLUDELIST_OF_SIMPLETYPE_H">
   <xsl:choose>
+
     <xsl:when test="*[local-name()='restriction']/@base">
       <xsl:variable name="baseCppNSDirChain">
         <xsl:call-template name="T_get_cppNSStr_simpleType_base">
@@ -118,25 +119,32 @@ namespace Types
 #include "<xsl:value-of select="$baseCppNSDirChain"/>/Types/<xsl:value-of select="$baseCppType"/>.h"      
       </xsl:if>
     </xsl:when>  
+
     <xsl:when test="*[local-name()='list']"> 
 #include "XSD/SimpleTypeListTmpl.h"      
-    <xsl:if test="*[local-name()='list']/@itemType">
-      <xsl:variable name="itemNsUri">
-        <xsl:call-template name="T_get_nsUri_simpleType_list_itemType">
-          <xsl:with-param name="itemType" select="*[local-name()='list']/@itemType"/>
-        </xsl:call-template>
-      </xsl:variable>
-      <xsl:variable name="itemCppNSDirChain">
-        <xsl:call-template name="T_get_cppNSStr_for_nsUri">
-          <xsl:with-param name="nsUri" select="$itemNsUri"/>
-          <xsl:with-param name="mode" select="'dir_chain'"/>
-        </xsl:call-template>
-      </xsl:variable>
-      <xsl:variable name="ItemType" select="*[local-name()='list']/@itemType"/>
-      <xsl:variable name="cppItemType"><xsl:call-template name="T_get_cppType_simpleType_list_itemType"/></xsl:variable>
+      <xsl:if test="*[local-name()='list']/@itemType">
+        <xsl:variable name="itemNsUri">
+          <xsl:call-template name="T_get_nsUri_simpleType_list_itemType">
+            <xsl:with-param name="itemType" select="*[local-name()='list']/@itemType"/>
+          </xsl:call-template>
+        </xsl:variable>
+        <xsl:if test="$itemNsUri != $xmlSchemaNSUri">
+          <xsl:variable name="itemCppNSDirChain">
+            <xsl:call-template name="T_get_cppNSStr_for_nsUri">
+              <xsl:with-param name="nsUri" select="$itemNsUri"/>
+              <xsl:with-param name="mode" select="'dir_chain'"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:variable name="ItemType" select="*[local-name()='list']/@itemType"/>
+          <xsl:variable name="cppItemType"><xsl:call-template name="T_get_cppType_simpleType_list_itemType"/></xsl:variable>
 #include  "<xsl:value-of select="$itemCppNSDirChain"/>/Types/<xsl:value-of select="$cppItemType"/>.h"
+        </xsl:if>
       </xsl:if>
+      <xsl:for-each select="*[local-name()='simpleType']">
+        <xsl:call-template name="INCLUDELIST_OF_SIMPLETYPE_H"/>
+      </xsl:for-each>
     </xsl:when>
+
     <xsl:when test="*[local-name()='union']"> 
       <xsl:if test="*[local-name()='union']/@memberTypes">
         <xsl:call-template name="ITERATE_SIMPLETYPE_UNION_MEMBERTYPES">
@@ -144,6 +152,9 @@ namespace Types
           <xsl:with-param name="mode" select="'gen_member_incl'"/>
         </xsl:call-template>
       </xsl:if>  
+      <xsl:for-each select="*[local-name()='union']/*[local-name()='simpleType']">
+        <xsl:call-template name="INCLUDELIST_OF_SIMPLETYPE_H"/>
+      </xsl:for-each>
     </xsl:when>  
   </xsl:choose>
 </xsl:template>
@@ -203,6 +214,7 @@ namespace Types
 #include "DOM/DOMCommonInc.h"
 #include "XSD/PrimitiveTypes.h"
 #include "XSD/xsdUtils.h"
+#include "XSD/PrimitiveTypes.h"
 <xsl:call-template name="INCLUDELIST_OF_SIMPLETYPE_H"/>
 
 using namespace std;

@@ -1,20 +1,4 @@
 nobase_include_HEADERS = \
- #expat/amigaconfig.h \
- #expat/ascii.h \
- #expat/asciitab.h \
- #expat/expat_external.h \
- #expat/expat.h \
- #expat/iasciitab.h \
- #expat/internal.h \
- #expat/latin1tab.h \
- #expat/macconfig.h \
- #expat/nametab.h \
- #expat/utf8tab.h \
- #expat/winconfig.h \
- #expat/xmlrole.h \
- #expat/xmltok.h \
- #expat/xmltok_impl.h \
- #\
   Poco/AutoPtr.h \
   Poco/Bugcheck.h \
   Poco/Config.h \

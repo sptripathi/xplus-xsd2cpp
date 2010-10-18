@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 # This file is part of XmlPlus package
@@ -35,6 +35,9 @@ GREP=`which grep`
 AWK=`which awk`
 CP=`which cp`
 MV=`which mv`
+RM=`which rm`
+CAT=`which cat`
+GETOPT=`which getopt`
 DIRNAME=`which dirname`
 
 OUTDIR=""
@@ -46,6 +49,7 @@ ABSPATH=""
 GEN_XSD_SOURCES=""
 GEN_XSD_INCLUDES=""
 NSALIASES_FILE="none"
+XPLUS_META_DIR=""
 
 
 get_abs_path()
@@ -76,8 +80,14 @@ init()
   PATH=$XSD2CPP_XSL_PATH
   get_abs_path
   XSD2CPP_XSL_PATH=$ABSPATH
+
+  XPLUS_META_DIR=$CWD/.xplusmeta
 }
 
+cleanup_meta()
+{
+  $RM -f $XPLUS_META_DIR/*
+}
 
 gen_source_files()
 {
@@ -116,11 +126,16 @@ gen_source_files()
   if [ -f $XSDDIR/nsaliases.xml ]; then
     NSALIASES_FILE=$XSDDIR/nsaliases.xml
   fi
+
+  $MKDIR -p $XPLUS_META_DIR
   XSLTPROC_OPTIONS="--stringparam input_doc $ABSXSD --stringparam CWD $CWD --stringparam w3cXmlSchema false --stringparam NSALIASES_FILE $NSALIASES_FILE "
-  $XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD
+  $XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD > $XPLUS_META_DIR/log 2>&1
   ret=$?
+
+  $CAT $XPLUS_META_DIR/log | $GREP -v xplusmeta
   
   if [ $ret -ne 0 ]; then
+    #cleanup_meta
     exit $ret
   fi
 
@@ -180,25 +195,70 @@ gen_automake_files()
 
 run()
 {
+  cleanup_meta
   gen_source_files
   gen_automake_files
   echo
+  #cleanup_meta
 }
 
+
+print_usage()
+{
+  echo "Usage:"
+  echo
+  echo "1.  xsd2cpp xsd-file [outdir]"
+  echo "      outdir: directory to output the generated source, like foo, . , .. etc."
+  echo "      (if unspecified, defaults to xsd-file-name)"
+  echo
+  echo "2.  xsd2cpp -v"
+  echo "      prints verion"
+  echo
+  echo "3.  xsd2cpp -h"
+  echo "      prints help"
+  echo
+}
+
+print_version()
+{
+  $CAT $INST_BIN_DIR/version
+}
+
+
 #main
+
+args=`$GETOPT hv $*`
+if [ $? != 0 ]; then
+  print_usage
+  exit 2
+fi
+set -- $args
+for i
+do
+  case "$i" in
+    -h)
+      print_usage
+      exit
+      shift;;
+    -v)
+      print_version
+      exit
+      shift;;
+    --)
+      shift; break;;
+  esac
+done
+
 if [ $# -ge 1 ]; then
   XSD=$1
   if [ $# -eq 2 ]; then
     OUTDIR=$2
   fi
 else
-  echo "Usage: $0 xsd-file [outdir]"
-  echo
-  echo "  outdir: directory to output the generated source, like foo, . , .. etc."
-  echo "          (if unspecified, defaults to xsd-file-name)"
-  echo
+  print_usage
   exit 2
 fi
+
 
 init
 run

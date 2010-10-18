@@ -23,4 +23,4 @@ BUILT_SOURCES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
 CLEANFILES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
 
 $(top_srcdir)/include/XSD/PrimitiveTypes.h: $(top_srcdir)/src/tools/xsl/xsd2cppBuiltinSimple.xsl $(top_srcdir)/src/tools/xsl/xmlplusDict.xml $(top_srcdir)/resources/xsd/XMLSchema.xsd
-	cd $(top_srcdir) && xsltproc --stringparam input_doc "`pwd`/resources/xsd/XMLSchema.xsd" --stringparam w3cXmlSchema "true" --stringparam NSALIASES_FILE none src/tools/xsl/xsd2cppBuiltinSimple.xsl resources/xsd/XMLSchema.xsd && cd -
+	cd $(top_srcdir) && xsltproc --stringparam input_doc "`pwd`/resources/xsd/XMLSchema.xsd" --stringparam CWD `pwd` --stringparam w3cXmlSchema "true" --stringparam NSALIASES_FILE none src/tools/xsl/xsd2cppBuiltinSimple.xsl resources/xsd/XMLSchema.xsd 2>/dev/null && cd -

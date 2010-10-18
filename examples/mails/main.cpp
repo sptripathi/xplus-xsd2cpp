@@ -83,14 +83,15 @@ void populateDocument(DOM::Document* pDoc)
   pMail->element_envelope()->set_To("tom@mgm.com");
   pMail->element_envelope()->set_Date("1978-07-04T23:50:59Z");
   pMail->element_envelope()->set_Subject("Re: this shouldn't happen to dogs");
-  pMail->set_body("\n\t >> Heard that the dogs are chained these days.\n\t >> Who is going to save you now? :)\n\n\tHmmm... I am in trouble now, I guess :(\n");
-  
+  pMail->set_body("\n\t>Heard that the dogs are chained these days.\n\t>Who is going to save you now? :)\n\n\tHmmm... I am in trouble now, I guess :(\n");
+
 }
 
 void updateOrConsumeDocument(DOM::Document* pDoc)
 {
   NoNS::Document* xsdDoc = dynamic_cast<NoNS::Document *>(pDoc);
   // write code to update the populated-Document here
+
 }
 
   

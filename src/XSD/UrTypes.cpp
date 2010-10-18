@@ -1,7 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Free Software Foundation, Inc.
-// Author: Satya Prakash Tripathi
+// Copyright (C)   2010   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -53,6 +52,20 @@ namespace XMLSchema
     {
       if(_ownerElem)
       {
+
+        // use following fsm allocation for supporting xsi 
+        /*
+        XsdFsmBasePtr fsmsAttrs[] = {
+          new XsdFSM<void *>( NSNamePairOccur(new DOMString("http://www.w3.org/2001/XMLSchema-instance"), DOMString("schemaLocation"), 0, 1), XsdFsmBase::ATTRIBUTE, NULL),
+
+          NULL
+        };
+        XsdFsmBasePtr fsmAttrsAll = new XsdAllFsmOfFSMs(fsmsAttrs);
+        XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(ownerElement()->getNamespaceURI(), *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
+        XsdFsmBasePtr fsms[] = { fsmAttrsAll, elemEndFsm, NULL };
+        _fsm = new XsdSequenceFsmOfFSMs(fsms);
+        */
+
         XsdFsmBaseP elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(ownerElement()->getNamespaceURI(), 
               *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
         XsdFsmBasePtr ptrFsms[] = { elemEndFsm, NULL };
@@ -102,9 +115,8 @@ namespace XMLSchema
     {
       if(this->ownerNode()) 
       {
-        DOMStringPtr pStr = new DOMString(value);
         if(!_valueNode) {
-          _valueNode = this->ownerNode()->createChildTextNode(pStr);
+          _valueNode = this->ownerNode()->createChildTextNode(new DOMString(value));
         }
         else {
           _valueNode->setNodeValue(new DOMString(value));
@@ -149,6 +161,7 @@ namespace XMLSchema
           AttributeP attr = dynamic_cast<AttributeP>(const_cast<Node*>(_fsm->fsmCreatedNode()));
           _fsm->fsmCreatedNode(NULL);
           if(attr) {
+            //satya
             //attr->createChildTextNode(value);
             attr->createTextNode(value);
             return attr;
@@ -893,12 +906,14 @@ namespace XMLSchema
     }
     
     void anySimpleType::applyMaxInclusiveCFacet() {
+      cout << "satya: applyMaxInclusiveCFacet for" << _primitiveType << endl;
     }
 
     void anySimpleType::applyMaxExclusiveCFacet() {
     }
 
     void anySimpleType::applyMinInclusiveCFacet() {
+      cout << "satya: applyMinInclusiveCFacet for" << _primitiveType << endl;
     }
 
     void anySimpleType::applyMinExclusiveCFacet() {

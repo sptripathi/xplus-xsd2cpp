@@ -122,7 +122,7 @@ void populateDocument(DOM::Document* pDoc)
 }
   
 
-void updateDocument(DOM::Document* pDoc)
+void updateOrConsumeDocument(DOM::Document* pDoc)
 {
   STDemo::Document* xsdDoc = dynamic_cast<STDemo::Document *>(pDoc);
   // write code to update the populated-Document here

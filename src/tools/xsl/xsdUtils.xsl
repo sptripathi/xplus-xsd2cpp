@@ -33,12 +33,142 @@
 <xsl:variable name="xmlSchemaNSUri" select="'http://www.w3.org/2001/XMLSchema'"/>
 <xsl:variable name="xplusDictDoc" select="document('xmlplusDict.xml')"/>
 
+<xsl:variable name="input_xsd_dirname"><xsl:call-template name="T_dirname_for_path"><xsl:with-param name="path" select="$input_doc"/></xsl:call-template></xsl:variable>
 
-<!-- START : VERY GENERIC -->
+<xsl:variable name="cppReservedKeywords" select="$xplusDictDoc/xmlplusDict/CPPReservedKeywords"></xsl:variable>
+
+
 <xsl:variable name="newline">
   <xsl:text>
   </xsl:text>
 </xsl:variable>
+
+
+<xsl:template name="T_get_next_nonexisting_meta_idx">
+  <xsl:param name="idx" select="'0'"/>
+  
+  <xsl:variable name="filename" select="concat($CWD,'/.xplusmeta/', $idx+1)" />
+
+  <xsl:variable name="outIdx">
+    <xsl:choose>
+      <xsl:when test="document($filename)">
+        <xsl:call-template name="T_get_next_nonexisting_meta_idx">
+          <xsl:with-param name="idx" select="$idx+1"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$idx+1"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  
+
+  <xsl:value-of select="normalize-space($outIdx)" />
+</xsl:template>
+
+
+<xsl:template name="T_get_last_existing_meta_idx">
+  <xsl:param name="idx" select="'0'"/>
+  
+  <xsl:variable name="filename" select="concat($CWD,'/.xplusmeta/', $idx+1)" />
+
+  <xsl:variable name="outIdx">
+    <xsl:choose>
+      <xsl:when test="document($filename)">
+        <xsl:call-template name="T_get_last_existing_meta_idx">
+          <xsl:with-param name="idx" select="$idx+1"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$idx"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($outIdx)" />
+  
+  <!--
+  <xsl:message>
+    T_get_last_existing_meta_idx|outIdx:<xsl:value-of select="$outIdx"/>|
+  </xsl:message>
+  -->
+</xsl:template>
+
+
+
+<xsl:template name="T_log_next_meta_docPath">
+  <xsl:param name="docPath"/>
+      
+    <xsl:variable name="nextFreeIdx"><xsl:call-template name="T_get_next_nonexisting_meta_idx"/></xsl:variable>
+    <xsl:variable name="filename" select="concat($CWD,'/.xplusmeta/', $nextFreeIdx)"/>
+    <xsl:document method="text" href="{$filename}">&lt;doc name="<xsl:value-of select="$docPath"/>" /&gt;</xsl:document>
+    
+    <!--
+  <xsl:message>
+    <xsl:variable name="currentDocument"><xsl:call-template name="T_get_current_schema_doc"/></xsl:variable>
+    T_log_next_meta_docPath|docPath:<xsl:value-of select="$docPath"/>|nextFreeIdx:<xsl:value-of select="$nextFreeIdx"/>|name=<xsl:value-of select="document($filename)/doc/@name"/>|assert:<xsl:value-of select="$docPath"/>|
+  </xsl:message>
+  -->
+</xsl:template>
+
+
+
+
+<xsl:template name="T_create_abs_xsd_path">
+  <xsl:param name="rel_xsd_path" />
+ 
+  <xsl:variable name="abs_xsd_path">
+    <xsl:if test="not(starts-with($rel_xsd_path,'/'))"><xsl:value-of select="$input_xsd_dirname"/></xsl:if><xsl:value-of select="$rel_xsd_path"/>
+  </xsl:variable>
+  
+
+  <xsl:value-of select="normalize-space($abs_xsd_path)" />
+</xsl:template>
+
+
+<xsl:template name="T_dirname_for_path">
+  <xsl:param name="path" />
+ 
+  <xsl:variable name="dirname">
+    <xsl:choose>
+      <xsl:when test="contains($path,'/')">
+        <xsl:value-of select="substring-before($path, '/')"/>/<xsl:call-template name="T_dirname_for_path"><xsl:with-param name="path" select="substring-after($path, '/')"/></xsl:call-template>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:variable>
+  
+  <xsl:variable name="dirname2" select="normalize-space($dirname)"/>
+
+  <xsl:variable name="dirname3">
+    <xsl:choose>
+      <xsl:when test="$dirname2=''">./</xsl:when>
+      <xsl:otherwise><xsl:value-of select="$dirname2"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($dirname3)" />
+</xsl:template>
+
+
+<xsl:template name="T_get_current_schema_doc">
+<!--
+    The hack of incrementing numbers to find currentDocument is used for user 
+    schemas, when there is at least one import or include.
+-->
+  <xsl:variable name="lastIdx">
+    <xsl:call-template name="T_get_last_existing_meta_idx"/>
+  </xsl:variable>
+  <xsl:variable name="filename" select="concat($CWD,'/.xplusmeta/', $lastIdx)" />
+  <xsl:variable name="currentDocument">
+    <xsl:choose>
+      <xsl:when test="starts-with(document($filename)/doc/@name, '/')">
+        <xsl:value-of select="document($filename)/doc/@name"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="concat($input_xsd_dirname, document($filename)/doc/@name)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($currentDocument)" />
+</xsl:template>
 
 
 <xsl:template name="T_count_top_level_elements_doc_and_includes">
@@ -49,8 +179,20 @@
 
 
 <xsl:template name="T_count_top_level_elements">
-  <xsl:param name="documentName" select="$input_doc"/>
-  <xsl:variable name="cntElem"><xsl:value-of select="count(document($documentName)/*[local-name()='schema']/*[local-name()='element'])"/></xsl:variable>
+  <xsl:param name="documentName" select="''"/>
+
+  <xsl:variable name="currentDocument">
+    <xsl:choose>
+      <xsl:when test="$documentName!=''">
+        <xsl:call-template name="T_create_abs_xsd_path">
+          <xsl:with-param name="rel_xsd_path" select="$documentName" />
+        </xsl:call-template>  
+      </xsl:when>
+      <xsl:otherwise><xsl:call-template name="T_get_current_schema_doc"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="cntElem"><xsl:value-of select="count(document($currentDocument)/*[local-name()='schema']/*[local-name()='element'])"/></xsl:variable>
   <xsl:value-of select="normalize-space($cntElem)"/>
 </xsl:template>
 
@@ -75,7 +217,7 @@
         </xsl:call-template>
       </xsl:variable>
       <xsl:call-template name="T_count_top_level_elements_in_included_docs">
-        <xsl:with-param name="documentName" select="$documentName"/>
+        <xsl:with-param name="documentName" select="$input_doc"/>
         <xsl:with-param name="idxIncludedDoc" select="$idxIncludedDoc+1"/>
         <xsl:with-param name="cntTLES" select="$cntTLESelf+$cntTLEInSelfIncludes+$cntTLES"/>
       </xsl:call-template>
@@ -91,8 +233,19 @@
 
 
 <xsl:template name="T_get_targetNsUriDoc">
-  <xsl:param name="documentName" select="$input_doc"/>
-  <xsl:value-of select="document($documentName)/*[local-name()='schema']/@targetNamespace"/>
+  <xsl:param name="documentName" select="''"/>
+
+  <xsl:variable name="currentDocument">
+    <xsl:choose>
+      <xsl:when test="$documentName!=''">
+        <xsl:call-template name="T_create_abs_xsd_path">
+          <xsl:with-param name="rel_xsd_path" select="$documentName" />
+        </xsl:call-template>  
+      </xsl:when>
+      <xsl:otherwise><xsl:call-template name="T_get_current_schema_doc"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="document($currentDocument)/*[local-name()='schema']/@targetNamespace"/>
 </xsl:template>
 
 
@@ -101,8 +254,6 @@
  //
  //  This file was automatically generated.
  //  DO NOT edit!
- //
- //  Author: Satya Prakash Tripathi
  //
 </xsl:template>
 
@@ -136,7 +287,7 @@ It is however planned to be supported in future releases.
   <xsl:message terminate="yes">
 +---------------------------------------------------------------- 
 |   Unexpected Error.   ErrorCode: <xsl:value-of select="$errorCode"/>
-+---------------------------------------------------------------
++----------------------------------------------------------------
 | Hmmm, you found a bug with this tool( to our regret ).              
 |                                                                      
 | Please report it to us:                                     
@@ -456,19 +607,24 @@ namespace <xsl:value-of select="$nsStr"/>{
   <xsl:variable name="cppValidToken">
     <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$token"/><xsl:with-param name="search-string" select="'-'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
   </xsl:variable>
-  <xsl:value-of select="normalize-space($cppValidToken)"/>
+  <xsl:variable name="spaceTokenSpace" select="concat(' ', $token, ' ')"/>
+
+  <!-- translate for reserved keywords -->
+  <xsl:variable name="cppValidToken2">
+    <xsl:choose>
+      <xsl:when test="contains($cppReservedKeywords, $spaceTokenSpace)">
+        <xsl:value-of select="$cppValidToken"/>_t
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$cppValidToken"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:value-of select="normalize-space($cppValidToken2)"/>
 </xsl:template>
 
 
-
-
-<!-- END: VERY GENERIC -->
-
-
-
-<!-- 
-TODO handle all basic data types 
--->
 <xsl:template name="T_gen_cppType_localPart_ElementAttr">
   <xsl:variable name="typeLocalPart"><xsl:call-template name="T_get_type_localPart_ElementAttr"/></xsl:variable>
   <xsl:variable name="typeStr"><xsl:call-template name="T_get_typeStr_ElementAttr"/></xsl:variable>
@@ -636,9 +792,20 @@ TODO handle all basic data types
   <xsl:param name="nsPrefix" select="''"/>
   <xsl:param name="documentName" select="''"/>
 
-  <!-- two identical blocks fro performance reasons -->
+  <xsl:variable name="currentDocument">
+    <xsl:choose>
+      <xsl:when test="$documentName!=''">
+        <xsl:call-template name="T_create_abs_xsd_path">
+          <xsl:with-param name="rel_xsd_path" select="$documentName" />
+        </xsl:call-template>  
+      </xsl:when>
+      <xsl:otherwise><xsl:call-template name="T_get_current_schema_doc"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <!-- two identical blocks for performance reasons -->
   <xsl:choose>
-    <xsl:when test="$documentName=''">
+    <xsl:when test="$currentDocument=''">
       <xsl:variable name="typeNsUri">
         <xsl:choose>
           <xsl:when test="$nsPrefix=''">
@@ -664,15 +831,15 @@ TODO handle all basic data types
         <xsl:choose>
           <xsl:when test="$nsPrefix=''">
             <!-- default namespace of the doc(xmlns="") if any -->
-            <xsl:value-of select="document($documentName)//namespace::*[name()='']"/>
+            <xsl:value-of select="document($currentDocument)//namespace::*[name()='']"/>
           </xsl:when>
           <xsl:otherwise>
             <xsl:choose>
-              <xsl:when test="count(document($documentName)//namespace::*[name()=$nsPrefix])=0">
+              <xsl:when test="count(document($currentDocument)//namespace::*[name()=$nsPrefix])=0">
                 urn:unknown
               </xsl:when>  
               <xsl:otherwise>
-            <xsl:value-of select="document($documentName)//namespace::*[name()=$nsPrefix]"/>
+            <xsl:value-of select="document($currentDocument)//namespace::*[name()=$nsPrefix]"/>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:otherwise>
@@ -711,10 +878,12 @@ TODO handle all basic data types
 
 
 <xsl:template name="T_get_type_localPart_ElementAttr">
+  <xsl:param name="node" select="."/>
   <xsl:variable name="typeStr">
     <xsl:choose>
-      <xsl:when test="@type"><xsl:value-of select="@type"/> </xsl:when>
-      <xsl:when test="@ref"><xsl:value-of select="@ref"/></xsl:when>
+      <xsl:when test="$node/@type"><xsl:value-of select="$node/@type"/> </xsl:when>
+      <xsl:when test="$node/@ref"><xsl:value-of select="$node/@ref"/></xsl:when>
+      <xsl:otherwise></xsl:otherwise>
     </xsl:choose>
   </xsl:variable>    
   
@@ -730,13 +899,15 @@ TODO handle all basic data types
 
 
 <xsl:template name="T_get_name_ElementAttr">
+  <xsl:param name="node" select="."/>
+
   <xsl:variable name="typeLocalPart"><xsl:call-template name="T_get_type_localPart_ElementAttr"/></xsl:variable>
   
   <xsl:variable name="cppName">
    <xsl:choose>
-     <xsl:when test="@name"><xsl:value-of select="@name"/></xsl:when>
-     <xsl:when test="@ref"><xsl:value-of select="$typeLocalPart"/></xsl:when>
-     <xsl:otherwise>TODO:bug</xsl:otherwise>
+     <xsl:when test="$node/@name"><xsl:value-of select="$node/@name"/></xsl:when>
+     <xsl:when test="$node/@ref"><xsl:value-of select="$typeLocalPart"/></xsl:when>
+     <xsl:otherwise></xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
   <xsl:value-of select="normalize-space($cppName)"/>    
@@ -1096,9 +1267,12 @@ TODO handle all basic data types
   <xsl:value-of select="normalize-space($bool)"/>
 </xsl:template>
 
+
+
 <!-- returns resolution which is not always same as resolvedType -->
 <xsl:template name="T_resolve_elementAttr">
   <xsl:param name="node"/>
+  <xsl:param name="documentName" select="''"/>
 
   <xsl:variable name="resolution">
     <xsl:choose>
@@ -1106,17 +1280,20 @@ TODO handle all basic data types
       <xsl:when test="$node/*[local-name()='simpleType']">
         <xsl:call-template name="T_get_simpleType_details">
           <xsl:with-param name="stNode" select="$node/*[local-name()='simpleType']"/>
+          <xsl:with-param name="documentName" select="$documentName"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$node/@type">
         <xsl:call-template name="T_resolve_typeQName">
           <xsl:with-param name="typeQName" select="$node/@type"/>
+          <xsl:with-param name="documentName" select="$documentName"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$node/@ref">
         <xsl:call-template name="T_resolve_typeQName">
           <xsl:with-param name="typeQName" select="$node/@ref"/>
           <xsl:with-param name="refNodeType" select="local-name($node)"/>
+          <xsl:with-param name="documentName" select="$documentName"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:otherwise>simpleType atomic string</xsl:otherwise>
@@ -1124,7 +1301,7 @@ TODO handle all basic data types
   </xsl:variable>
   
   <xsl:variable name="elemAttrName">
-    <xsl:call-template name="T_get_name_ElementAttr"/>
+    <xsl:call-template name="T_get_name_ElementAttr"><xsl:with-param name="node" select="$node"/></xsl:call-template>
   </xsl:variable>
   <xsl:variable name="resolvedType">
     <xsl:call-template name="T_get_resolution_type">
@@ -1132,12 +1309,20 @@ TODO handle all basic data types
     </xsl:call-template>
   </xsl:variable>
   
-  <!-- assert that resolvedType is one of simpleType,complexType -->
-  <xsl:if test="$resolvedType!='simpleType' and $resolvedType!='complexType'">
+  <!-- assert that resolvedType is one of false, simpleType, complexType -->
+  <xsl:if test="$resolvedType!='simpleType' and $resolvedType!='complexType' and $resolvedType!='false'">
     <xsl:call-template name="T_found_a_bug">
       <xsl:with-param name="errorCode" select="1001"/>
     </xsl:call-template>
   </xsl:if>
+  
+  <!--
+  <xsl:if test="$resolvedType='false'">
+  <xsl:message>
+  |<xsl:value-of select="$resolvedType"/>|name=<xsl:value-of select="$node/@name"/>|type=<xsl:value-of select="$node/@type"/>|ref=<xsl:value-of select="$node/@ref"/>|
+  </xsl:message>
+  </xsl:if>
+  -->
 
   <!-- assert that attribute resolves to simpleType -->
   <xsl:if test="local-name()='attribute'">
@@ -1149,10 +1334,22 @@ TODO handle all basic data types
 </xsl:template>
 
 
+
 <xsl:template name="T_resolve_typeQName">
   <xsl:param name="typeQName"/>
   <xsl:param name="refNodeType" select="''"/>
-  <xsl:param name="documentName" select="$input_doc"/>
+  <xsl:param name="documentName" select="''"/>
+
+  <xsl:variable name="currentDocument">
+    <xsl:choose>
+      <xsl:when test="$documentName!=''">
+        <xsl:call-template name="T_create_abs_xsd_path">
+          <xsl:with-param name="rel_xsd_path" select="$documentName" />
+        </xsl:call-template>  
+      </xsl:when>
+      <xsl:otherwise><xsl:call-template name="T_get_current_schema_doc"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
 
   <xsl:variable name="typeLocalPart">
     <xsl:call-template name="T_get_localPart_of_QName">
@@ -1167,7 +1364,7 @@ TODO handle all basic data types
   <xsl:variable name="typeNsUri">
     <xsl:call-template name="T_get_typeNsUri_for_nsPrefix_inDoc">
       <xsl:with-param name="nsPrefix" select="$typeNsPrefix"/>
-      <xsl:with-param name="documentName" select="$documentName"/>
+      <xsl:with-param name="documentName" select="$currentDocument"/>
     </xsl:call-template>
   </xsl:variable>
   <xsl:variable name="resolution">
@@ -1175,9 +1372,16 @@ TODO handle all basic data types
       <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
       <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
       <xsl:with-param name="refNodeType" select="$refNodeType"/>
-      <xsl:with-param name="documentName" select="$documentName"/>
+      <xsl:with-param name="documentName" select="$currentDocument"/>
     </xsl:call-template>
-  </xsl:variable>  
+  </xsl:variable> 
+  
+    <!--
+  <xsl:message>
+  T|<xsl:value-of select="$currentDocument"/>|type=<xsl:value-of select="$typeQName"/>|<xsl:value-of select="$resolution"/>|
+  </xsl:message>
+  -->
+
   <xsl:value-of select="normalize-space($resolution)"/>
 </xsl:template>
 
@@ -1188,11 +1392,22 @@ TODO handle all basic data types
   <xsl:param name="typeNsUri"/>
   <!--refNodeType := element|attribute|simpleType|complexType -->
   <xsl:param name="refNodeType" select="''"/>
-  <xsl:param name="documentName" select="$input_doc"/>
+  <xsl:param name="documentName" select="''"/>
   
+  <xsl:variable name="currentDocument">
+    <xsl:choose>
+      <xsl:when test="$documentName!=''">
+        <xsl:call-template name="T_create_abs_xsd_path">
+          <xsl:with-param name="rel_xsd_path" select="$documentName" />
+        </xsl:call-template>  
+      </xsl:when>
+      <xsl:otherwise><xsl:call-template name="T_get_current_schema_doc"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
   <xsl:variable name="targetNsUriDoc">
     <xsl:call-template name="T_get_targetNsUriDoc">
-      <xsl:with-param name="documentName" select="$documentName"/>
+      <xsl:with-param name="documentName" select="$currentDocument"/>
     </xsl:call-template>
   </xsl:variable>  
   
@@ -1207,7 +1422,7 @@ TODO handle all basic data types
         </xsl:variable>
         <xsl:choose>  
           <xsl:when test="$isBuiltinType='false'">
-            <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">The type "{<xsl:value-of select="$xmlSchemaNSUri"/>}<xsl:value-of select="$typeLocalPart"/>" in document "<xsl:value-of select="$documentName"/>" is not a valid builtin XMLSchema type-definition</xsl:with-param></xsl:call-template>
+            <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">The type "{<xsl:value-of select="$xmlSchemaNSUri"/>}<xsl:value-of select="$typeLocalPart"/>" in document "<xsl:value-of select="$currentDocument"/>" is not a valid builtin XMLSchema type-definition</xsl:with-param></xsl:call-template>
           </xsl:when>  
           <xsl:otherwise>
             <xsl:variable name="implType">
@@ -1227,14 +1442,14 @@ TODO handle all basic data types
               <xsl:choose>
                 <xsl:when test="$refNodeType=''">
                   <xsl:choose>
-                    <xsl:when test="document($documentName)/*[local-name()='schema']/*[local-name()='simpleType' and @name=$typeLocalPart]">
-                        <xsl:variable name="stNode" select="document($documentName)/*[local-name()='schema']/*[local-name()='simpleType' and @name=$typeLocalPart]"/>
+                    <xsl:when test="document($currentDocument)/*[local-name()='schema']/*[local-name()='simpleType' and @name=$typeLocalPart]">
+                        <xsl:variable name="stNode" select="document($currentDocument)/*[local-name()='schema']/*[local-name()='simpleType' and @name=$typeLocalPart]"/>
                         <xsl:call-template name="T_get_simpleType_details">
                           <xsl:with-param name="stNode" select="$stNode"/>
-                          <xsl:with-param name="documentName" select="$documentName"/>
+                          <xsl:with-param name="documentName" select="$currentDocument"/>
                         </xsl:call-template>
                     </xsl:when>
-                    <xsl:when test="document($documentName)/*[local-name()='schema']/*[local-name()='complexType' and @name=$typeLocalPart]">
+                    <xsl:when test="document($currentDocument)/*[local-name()='schema']/*[local-name()='complexType' and @name=$typeLocalPart]">
                       complexType
                     </xsl:when>
                     <xsl:otherwise>
@@ -1244,14 +1459,16 @@ TODO handle all basic data types
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:choose>
-                    <xsl:when test="document($documentName)/*[local-name()='schema']/*[local-name()=$refNodeType and @name=$typeLocalPart]">
+                    <xsl:when test="document($currentDocument)/*[local-name()='schema']/*[local-name()=$refNodeType and @name=$typeLocalPart]">
 
 
                       <xsl:choose>
                         <xsl:when test="$refNodeType='element' or $refNodeType='attribute'">
                           <xsl:call-template name="T_resolve_elementAttr">
-                            <xsl:with-param name="node" select="document($documentName)/*[local-name()='schema']/*[local-name()=$refNodeType and @name=$typeLocalPart]"/>
+                            <xsl:with-param name="node" select="document($currentDocument)/*[local-name()='schema']/*[local-name()=$refNodeType and @name=$typeLocalPart]"/>
+                            <xsl:with-param name="documentName" select="$currentDocument"/>
                           </xsl:call-template>
+
                         </xsl:when>
                         <xsl:otherwise>
                           <xsl:value-of select="$refNodeType"/>
@@ -1278,7 +1495,7 @@ TODO handle all basic data types
                 <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
                 <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
                 <xsl:with-param name="refNodeType" select="$refNodeType"/>
-                <xsl:with-param name="documentName" select="$documentName"/>
+                <xsl:with-param name="documentName" select="$currentDocument"/>
               </xsl:call-template>
             </xsl:variable>
             <xsl:choose>  
@@ -1287,7 +1504,7 @@ TODO handle all basic data types
                   <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
                   <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
                   <xsl:with-param name="refNodeType" select="$refNodeType"/>
-                  <xsl:with-param name="documentName" select="$documentName"/>
+                  <xsl:with-param name="documentName" select="$currentDocument"/>
                 </xsl:call-template>
               </xsl:when>
               <xsl:otherwise><xsl:value-of select="$typeInIncDocs"/></xsl:otherwise>
@@ -1298,13 +1515,159 @@ TODO handle all basic data types
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>  
-  <xsl:value-of select="$type"/>
+  
+  <xsl:value-of select="normalize-space($type)"/>
 </xsl:template>
+
+
+<xsl:template name="T_resolve_type_in_included_docs">
+  <xsl:param name="typeLocalPart"/>
+  <xsl:param name="typeNsUri"/>
+  <xsl:param name="refNodeType" select="''"/>
+  <xsl:param name="documentName" select="''"/>
+  <xsl:param name="idxIncludedDoc" select='1'/>
+
+  <xsl:variable name="currentDocument">
+    <xsl:choose>
+      <xsl:when test="$documentName!=''">
+        <xsl:call-template name="T_create_abs_xsd_path">
+          <xsl:with-param name="rel_xsd_path" select="$documentName" />
+        </xsl:call-template>  
+      </xsl:when>
+      <xsl:otherwise><xsl:call-template name="T_get_current_schema_doc"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  
+  <xsl:variable name="targetNsUriDoc">
+    <xsl:call-template name="T_get_targetNsUriDoc">
+      <xsl:with-param name="documentName" select="$currentDocument"/>
+    </xsl:call-template>
+  </xsl:variable>  
+  
+  <xsl:variable name="cntIncDocs" select="count(document($currentDocument)/*[local-name()='schema']/*[local-name()='include'])"/>
+
+  <xsl:variable name="type">
+    <xsl:choose>
+      <xsl:when test="$cntIncDocs>=$idxIncludedDoc">
+        <xsl:variable name="includeNode" select="document($currentDocument)/*[local-name()='schema']/*[local-name()='include'][position()=$idxIncludedDoc]"/>
+        <xsl:variable name="typeInThisIncDoc">
+          <xsl:call-template name="T_resolve_typeLocalPartNsUri">
+            <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
+            <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
+            <xsl:with-param name="refNodeType" select="$refNodeType"/>
+            <xsl:with-param name="documentName" select="$includeNode/@schemaLocation"/>
+          </xsl:call-template>
+        </xsl:variable>
+        <xsl:choose>
+          <xsl:when test="normalize-space($typeInThisIncDoc)='false'">
+            <xsl:variable name="typeInNextIncDoc">
+              <xsl:call-template name="T_resolve_type_in_included_docs">
+                <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
+                <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
+                <xsl:with-param name="refNodeType" select="$refNodeType"/>
+                <xsl:with-param name="documentName" select="$currentDocument"/>
+                <xsl:with-param name="idxIncludedDoc" select="$idxIncludedDoc+1"/>
+              </xsl:call-template>
+            </xsl:variable>
+            <xsl:value-of select="$typeInNextIncDoc"/>
+          </xsl:when>                                   
+          <xsl:otherwise><xsl:value-of select="$typeInThisIncDoc"/></xsl:otherwise>           
+        </xsl:choose>                                   
+      </xsl:when>
+      <xsl:otherwise>
+        false
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($type)"/>
+</xsl:template>
+
+
+
+<xsl:template name="T_resolve_type_in_imported_docs">
+  <xsl:param name="typeLocalPart"/>
+  <xsl:param name="typeNsUri"/>
+  <xsl:param name="refNodeType" select="''"/>
+  <xsl:param name="documentName" select="''"/>
+  <xsl:param name="idxImportedDoc" select='1'/>
+ 
+
+  <xsl:variable name="currentDocument">
+    <xsl:choose>
+      <xsl:when test="$documentName!=''">
+        <xsl:call-template name="T_create_abs_xsd_path">
+          <xsl:with-param name="rel_xsd_path" select="$documentName" />
+        </xsl:call-template>  
+      </xsl:when>
+      <xsl:otherwise><xsl:call-template name="T_get_current_schema_doc"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="cntImpDocs" select="count(document($currentDocument)/*[local-name()='schema']/*[local-name()='import'])"/>
+  
+  <xsl:variable name="type">  
+    <xsl:choose>
+      <xsl:when test="($cntImpDocs>$idxImportedDoc) or ($cntImpDocs=$idxImportedDoc)">
+        <xsl:variable name="importedNode" select="document($currentDocument)/*[local-name()='schema']/*[local-name()='import'][position()=$idxImportedDoc]"/>
+        <xsl:choose>
+          <xsl:when test="$importedNode/@namespace=$typeNsUri">
+            <xsl:variable name="typeInThisImpDoc">
+              <xsl:call-template name="T_resolve_typeLocalPartNsUri">
+                <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
+                <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
+                <xsl:with-param name="refNodeType" select="$refNodeType"/>
+                <xsl:with-param name="documentName" select="$importedNode/@schemaLocation"/>
+              </xsl:call-template>
+            </xsl:variable>
+  
+
+            <xsl:choose>
+              <xsl:when test="normalize-space($typeInThisImpDoc)='false'">
+                <xsl:call-template name="T_resolve_type_in_imported_docs">
+                  <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
+                  <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
+                  <xsl:with-param name="refNodeType" select="$refNodeType"/>
+                  <xsl:with-param name="documentName" select="$currentDocument"/>
+                  <xsl:with-param name="idxImportedDoc" select="$idxImportedDoc+1"/>
+                </xsl:call-template>
+              </xsl:when>                                   
+              <xsl:otherwise><xsl:value-of select="$typeInThisImpDoc"/></xsl:otherwise>           
+            </xsl:choose>                                   
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="T_resolve_type_in_imported_docs">
+              <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
+              <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
+              <xsl:with-param name="refNodeType" select="$refNodeType"/>
+              <xsl:with-param name="documentName" select="$currentDocument"/>
+              <xsl:with-param name="idxImportedDoc" select="$idxImportedDoc+1"/>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>  
+  <xsl:value-of select="normalize-space($type)"/>
+</xsl:template>
+
+
 
 
 <xsl:template name="T_get_simpleType_details">
   <xsl:param name="stNode"/>
-  <xsl:param name="documentName" select="$input_doc"/>
+  <xsl:param name="documentName" select="''"/>
+
+  <xsl:variable name="currentDocument">
+    <xsl:choose>
+      <xsl:when test="$documentName!=''">
+        <xsl:call-template name="T_create_abs_xsd_path">
+          <xsl:with-param name="rel_xsd_path" select="$documentName" />
+        </xsl:call-template>  
+      </xsl:when>
+      <xsl:otherwise><xsl:call-template name="T_get_current_schema_doc"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
 
   <xsl:variable name="details">
     <xsl:choose>
@@ -1337,13 +1700,13 @@ TODO handle all basic data types
                 <xsl:variable name="typeNsUri">
                   <xsl:call-template name="T_get_typeNsUri_for_nsPrefix_inDoc">
                     <xsl:with-param name="nsPrefix" select="$typeNsPrefix"/>
-                    <xsl:with-param name="documentName" select="$documentName"/>
+                    <xsl:with-param name="documentName" select="$currentDocument"/>
                   </xsl:call-template>
                 </xsl:variable>
                 <xsl:call-template name="T_resolve_typeLocalPartNsUri">
                   <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
                   <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
-                  <xsl:with-param name="documentName" select="$documentName"/>
+                  <xsl:with-param name="documentName" select="$currentDocument"/>
                 </xsl:call-template>
               </xsl:otherwise>
             </xsl:choose>
@@ -1351,7 +1714,7 @@ TODO handle all basic data types
           <xsl:when test="$stNode/*[local-name()='restriction']/simpleType">
             <xsl:call-template name="T_get_simpleType_details">
               <xsl:with-param name="stNode" select="$stNode/*[local-name()='restriction']/simpleType"/>
-              <xsl:with-param name="documentName" select="$documentName"/>
+              <xsl:with-param name="documentName" select="$currentDocument"/>
             </xsl:call-template>
           </xsl:when>
         </xsl:choose>
@@ -1405,107 +1768,6 @@ TODO handle all basic data types
   <xsl:value-of select="normalize-space(substring-after($resolution, ' atomic '))"/>
 </xsl:template>
 
-
-
-<xsl:template name="T_resolve_type_in_included_docs">
-  <xsl:param name="typeLocalPart"/>
-  <xsl:param name="typeNsUri"/>
-  <xsl:param name="refNodeType" select="''"/>
-  <xsl:param name="documentName" select="$input_doc"/>
-  <xsl:param name="idxIncludedDoc" select='1'/>
-  
-  <xsl:variable name="targetNsUriDoc">
-    <xsl:call-template name="T_get_targetNsUriDoc">
-      <xsl:with-param name="documentName" select="$documentName"/>
-    </xsl:call-template>
-  </xsl:variable>  
-  
-  <xsl:variable name="cntIncDocs" select="count(document($documentName)/*[local-name()='schema']/*[local-name()='include'])"/>
-  <xsl:choose>
-    <xsl:when test="$cntIncDocs>=$idxIncludedDoc">
-      <xsl:variable name="includeNode" select="document($documentName)/*[local-name()='schema']/*[local-name()='include'][position()=$idxIncludedDoc]"/>
-      <xsl:variable name="typeInThisIncDoc">
-        <xsl:call-template name="T_resolve_typeLocalPartNsUri">
-          <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
-          <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
-          <xsl:with-param name="refNodeType" select="$refNodeType"/>
-          <xsl:with-param name="documentName" select="$includeNode/@schemaLocation"/>
-        </xsl:call-template>
-      </xsl:variable>
-      <xsl:choose>
-        <xsl:when test="normalize-space($typeInThisIncDoc)='false'">
-          <xsl:variable name="typeInNextIncDoc">
-            <xsl:call-template name="T_resolve_type_in_included_docs">
-              <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
-              <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
-              <xsl:with-param name="refNodeType" select="$refNodeType"/>
-              <xsl:with-param name="documentName" select="$documentName"/>
-              <xsl:with-param name="idxIncludedDoc" select="$idxIncludedDoc+1"/>
-            </xsl:call-template>
-          </xsl:variable>
-          <xsl:value-of select="$typeInNextIncDoc"/>
-        </xsl:when>                                   
-        <xsl:otherwise><xsl:value-of select="$typeInThisIncDoc"/></xsl:otherwise>           
-      </xsl:choose>                                   
-    </xsl:when>
-    <xsl:otherwise>
-      false
-    </xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
-
-
-
-<xsl:template name="T_resolve_type_in_imported_docs">
-  <xsl:param name="typeLocalPart"/>
-  <xsl:param name="typeNsUri"/>
-  <xsl:param name="refNodeType" select="''"/>
-  <xsl:param name="documentName" select="$input_doc"/>
-  <xsl:param name="idxImportedDoc" select='1'/>
-  
-  <xsl:variable name="cntImpDocs" select="count(document($documentName)/*[local-name()='schema']/*[local-name()='import'])"/>
-  
-  <xsl:choose>
-    <xsl:when test="($cntImpDocs>$idxImportedDoc) or ($cntImpDocs=$idxImportedDoc)">
-      <xsl:variable name="importedNode" select="document($documentName)/*[local-name()='schema']/*[local-name()='import'][position()=$idxImportedDoc]"/>
-      <xsl:choose>
-        <xsl:when test="$importedNode/@namespace=$typeNsUri">
-          <xsl:variable name="typeInThisImpDoc">
-            <xsl:call-template name="T_resolve_typeLocalPartNsUri">
-              <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
-              <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
-              <xsl:with-param name="refNodeType" select="$refNodeType"/>
-              <xsl:with-param name="documentName" select="$importedNode/@schemaLocation"/>
-            </xsl:call-template>
-          </xsl:variable>
-
-          <xsl:choose>
-            <xsl:when test="normalize-space($typeInThisImpDoc)='false'">
-              <xsl:call-template name="T_resolve_type_in_imported_docs">
-                <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
-                <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
-                <xsl:with-param name="refNodeType" select="$refNodeType"/>
-                <xsl:with-param name="documentName" select="$documentName"/>
-                <xsl:with-param name="idxImportedDoc" select="$idxImportedDoc+1"/>
-              </xsl:call-template>
-            </xsl:when>                                   
-            <xsl:otherwise><xsl:value-of select="$typeInThisImpDoc"/></xsl:otherwise>           
-          </xsl:choose>                                   
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:call-template name="T_resolve_type_in_imported_docs">
-            <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
-            <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
-            <xsl:with-param name="refNodeType" select="$refNodeType"/>
-            <xsl:with-param name="documentName" select="$documentName"/>
-            <xsl:with-param name="idxImportedDoc" select="$idxImportedDoc+1"/>
-          </xsl:call-template>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:when>
-    <xsl:otherwise>false</xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
 
 
 
@@ -1599,6 +1861,7 @@ TODO handle all basic data types
    <xsl:choose>
    
      <xsl:when test="@type">
+  
         <xsl:variable name="cppTypeLocalPart"><xsl:call-template name="T_gen_cppType_localPart_ElementAttr"/></xsl:variable>
         <xsl:variable name="typeLocalPart"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="@type"/></xsl:call-template></xsl:variable>
         <xsl:variable name="typeNsUri"><xsl:call-template name="T_get_type_nsUri_ElementAttr"/></xsl:variable>
@@ -1982,9 +2245,20 @@ TODO handle all basic data types
       <xsl:when test="local-name()='element'">XsdFsmBase::ELEMENT_START</xsl:when>
     </xsl:choose>
   </xsl:variable>
+  <xsl:variable name="minOccurenceFixed">
+    <xsl:choose>
+      <xsl:when test="local-name()='attribute'">
+        <xsl:choose>
+          <xsl:when test="@fixed">1</xsl:when>
+          <xsl:otherwise><xsl:call-template name="T_get_minOccurence"/></xsl:otherwise>  
+        </xsl:choose>  
+      </xsl:when>
+      <xsl:when test="local-name()='element'"><xsl:call-template name="T_get_minOccurence"/></xsl:when>
+    </xsl:choose>
+  </xsl:variable>
     
   <xsl:variable name="out">
-    new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( NSNamePairOccur(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/>), <xsl:value-of select="$fsmType"/>, new object_noargs_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>&gt;(<xsl:value-of select="$thisOrThat"/>, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>))
+    new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( NSNamePairOccur(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:value-of select="$minOccurenceFixed"/>, <xsl:call-template name="T_get_maxOccurence"/>), <xsl:value-of select="$fsmType"/>, new object_noargs_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>&gt;(<xsl:value-of select="$thisOrThat"/>, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>))
   </xsl:variable> 
   <xsl:value-of select="normalize-space($out)"/>
 </xsl:template>

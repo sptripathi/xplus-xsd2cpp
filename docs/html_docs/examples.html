@@ -22,8 +22,7 @@
       <a name="HOWTO_EXAMPLES"><h3>How to try examples</h3></a>
       <hr NOSHADE SIZE=7 WIDTH=100%>
       
-      Please read the topic <a href="usage.html">Tool Usage</a>, to learn about xsd2cpp-usage, building generated source, and running the executables.<br> 
-
+      Please read the topic <a href="usage.html">Tool Usage</a>, to learn about xsd2cpp-usage, building generated source, and running the executables.<br><br> 
 
       Each example directory, comes with following files:
       <ol>
@@ -36,9 +35,8 @@
       As mentioned earlier, xsd2cpp usage is:<br>
       $ xsd2cpp<br>
       Usage: xsd2cpp xsd-file [outdir]<br>
-      
       <br><br>
-      
+
       However, for trying examples which are already organized with sensible names, and to be able to easily use the supplied main.cpp, we should run xsd2cpp within specific example subdirectory, with outdir specified as ".", like so:
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
         <code>
@@ -66,7 +64,34 @@
       $ make doxygen-doc<br>
         </code>
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
-  
+
+      <br><br>
+      After successful build and install, you should have a run binary installed. Use this run binary to try out the available options.  <br>
+      An example of &lt;name&gt;run options: 
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+        <code>
+      $ ./build/bin/simpleTypesDemorun --help <br>
+      Usage: ./build/bin/simpleTypesDemorun [options] [XMLfile] <br>
+      Options:<br>
+      &nbsp;-s, --sample<br>
+      &nbsp;&nbsp; create a schema-driven sample xml-file<br>
+      &nbsp;&nbsp; Note: optional fields are omitted<br>
+      &nbsp;-w, --write<br>
+      &nbsp;&nbsp; write a xml-file using populated Document<br>
+      &nbsp;&nbsp; Note: populateDocument() function in main.cpp template,<br>
+      &nbsp;&nbsp; must be used to populate the Document<br>
+      &nbsp;-v, --validate<br>
+      &nbsp;&nbsp; validate input xml-file(against compiled schema)<br>
+      &nbsp;-r, --roundtrip<br>
+      &nbsp;&nbsp; roundtrip (read-&gt;write) input xml-file<br>
+      &nbsp;-u, --ruw<br>
+      &nbsp;&nbsp; perform read-&gt;update-&gt;write operations on input xml-file<br>
+      &nbsp;-h, --help<br>
+      &nbsp;&nbsp; print help<br>
+        </code>         
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+
+
 
 
       <br><br>
@@ -171,31 +196,21 @@
 
       <a name="IMPINC_DEMO"><h4>includeDemo</h4></a>
       <hr NOSHADE SIZE=3 WIDTH=100%>
-      The xsd file: <a href="../../examples/includeDemo/includeDemo.xsd">importIncludeDemo.xsd</a>
+      The xsd file: <a href="../../examples/includeDemo/includeDemo.xsd">includeDemo.xsd</a>
       <br><br>
-      The valid.xml file: <a href="../../examples/importIncludeDemo/valid.xml">valid.xml</a>
+      The valid.xml file: <a href="../../examples/includeDemo/valid.xml">valid.xml</a>
       <br><br>
-      The main.cpp file: <a href="../../examples/importIncludeDemo/main.cpp">main.cpp</a>
-      <br><br>
-      <br><br>
-
-      <a name="IMPINC_DEMO"><h4>importIncludeDemo</h4></a>
-      <hr NOSHADE SIZE=3 WIDTH=100%>
-      The xsd file: <a href="../../examples/importIncludeDemo/importIncludeDemo.xsd">importIncludeDemo.xsd</a>
-      <br><br>
-      The valid.xml file: <a href="../../examples/importIncludeDemo/valid.xml">valid.xml</a>
-      <br><br>
-      The main.cpp file: <a href="../../examples/importIncludeDemo/main.cpp">main.cpp</a>
+      The main.cpp file: <a href="../../examples/includeDemo/main.cpp">main.cpp</a>
       <br><br>
       <br><br>
 
-      <a name="IMPINC_DEMO"><h4>importIncludeDemo</h4></a>
+      <a name="IMPINC_DEMO"><h4>organization</h4></a>
       <hr NOSHADE SIZE=3 WIDTH=100%>
-      The xsd file: <a href="../../examples/importIncludeDemo/importIncludeDemo.xsd">importIncludeDemo.xsd</a>
+      The xsd file: <a href="../../examples/org/org.xsd">org.xsd</a>
       <br><br>
-      The valid.xml file: <a href="../../examples/importIncludeDemo/valid.xml">valid.xml</a>
+      The valid.xml file: <a href="../../examples/org/valid.xml">valid.xml</a>
       <br><br>
-      The main.cpp file: <a href="../../examples/importIncludeDemo/main.cpp">main.cpp</a>
+      The main.cpp file: <a href="../../examples/org/main.cpp">main.cpp</a>
       <br><br>
       <br><br>
 

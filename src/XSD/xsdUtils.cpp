@@ -1,7 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Free Software Foundation, Inc.
-// Author: Satya Prakash Tripathi
+// Copyright (C)   2010   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -127,5 +126,92 @@ namespace XMLSchema
     }
   }
 
- 
+  //
+  //             TElement 
+  //
+
+#if 0
+
+  TElementP TElement::createElementNS(DOMString* nsUri, 
+      DOMString* nsPrefix, 
+      DOMString* localName) 
+  {
+    if(!localName) {
+      throw NullPointerException("createElementNS: localName is NULL");
+    }
+
+    if(_fsm && _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ELEMENT_START))
+    {
+      if(_fsm->fsmCreatedNode()) 
+      {
+        TElementP elem = dynamic_cast<TElementP>(_fsm->fsmCreatedNode());
+        _fsm->fsmCreatedNode(NULL);
+        return elem;
+      }
+    }
+    ostringstream err;
+    err << "Unexpected Element: " << formatNamespaceName(XsdFsmBase::ELEMENT_START, nsUri, *localName);
+    throw XMLSchema::FSMException(DOMString(err.str()));
+  }
+  
+  // TODO: think about how anyType::_value appplies to complexType
+  // value (possibly text value in case of mixed content)
+  TextNodeP TElement::createTextNode(DOMString* data)
+  {
+    return new TextNode(data, ownerDocument(), this);
+  }
+
+  AttributeP TElement::createAttributeNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, DOMString* value)
+  {
+    if(!localName) {
+      //TODO: throw exception
+      return NULL;
+    }
+    if(_fsm && _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ATTRIBUTE))
+    {
+      if(_fsm->fsmCreatedNode()) 
+      {
+        AttributeP attr = dynamic_cast<AttributeP>(_fsm->fsmCreatedNode());
+        _fsm->fsmCreatedNode(NULL);
+        if(attr) {
+          attr->createChildTextNode(value);
+          return attr;
+        }
+      }
+    }
+
+    ostringstream err;
+    err << "Unexpected : " << formatNamespaceName(XsdFsmBase::ATTRIBUTE, nsUri, *localName) ;
+    throw XMLSchema::FSMException(DOMString(err.str()));
+  }
+
+
+  void TElement::endElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)
+  {
+    if(!localName) {
+      throw NullPointerException("endElementNS: localName is NULL");
+    }
+
+    if(_fsm) {
+      _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ELEMENT_END);
+    }
+
+    /*
+    else {
+      //FIXME
+      throw XMLSchema::FSMException("Found end-of-Element of a child-element while no child-element expected");
+      //cerr << "Found end-of-Element of a child-element while no child-element expected" << endl;
+    }
+    */
+  }
+  
+  void TElement::endDocument()
+  {
+    cout << "TElement::endDocument" << endl;
+    if(_fsm) {
+      _fsm->processEventThrow(NULL, "", XsdFsmBase::DOCUMENT_END);  
+    }
+  }
+#endif
+  
 }

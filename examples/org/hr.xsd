@@ -1,0 +1,41 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:ns1="urn:org:hr"
+  targetNamespace="urn:org:hr"
+>
+
+  <xsd:element name="userId" type="ns1:UserId" />
+  <xsd:element name="leaderId" type="ns1:UserId" />
+
+  <xsd:simpleType name="UserId">
+    <xsd:restriction base='xsd:token'>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="UserIdList">
+    <xsd:sequence>
+      <xsd:element ref="ns1:userId" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Employee">
+    <xsd:sequence>
+      <xsd:element ref="ns1:userId"/>
+      <xsd:element name="name" type="xsd:string"/>
+      <xsd:element name="title" type="xsd:string"/>
+      <!--
+      <xsd:element name="joiningDate" type="xsd:date"/>
+      -->
+      <xsd:element name="reportsTo" type="ns1:UserId" minOccurs="0"/>
+      <xsd:element name="reportees" type="ns1:UserIdList"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="AllEmployees">
+    <xsd:sequence>
+      <xsd:element name="employee" type="ns1:Employee" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+
+</xsd:schema>
+
