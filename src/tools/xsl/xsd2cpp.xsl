@@ -1045,12 +1045,20 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
     <xsl:variable name="maxOccurence"><xsl:call-template name="T_get_maxOccurence"/></xsl:variable>
     <xsl:variable name="maxOccurGT1"><xsl:call-template name="T_is_maxOccurence_gt_1"/></xsl:variable>
     <xsl:variable name="mgName" select="local-name()"/>
+    <xsl:variable name="parentName" select="local-name(..)"/>
+    
+    <!--
     <xsl:variable name="mgNameCpp">
       <xsl:choose>
-        <xsl:when test="$cntMG='1'"><xsl:value-of select="local-name()"/></xsl:when>
-        <xsl:otherwise><xsl:value-of select="local-name()"/><xsl:value-of select="position()"/></xsl:otherwise>
+        <xsl:when test="$parentName='choice' or $parentName='sequence' or $parentName='all'"><xsl:value-of select="$mgName"/><xsl:value-of select="1+count(preceding-sibling::*[local-name()=$mgName])"/></xsl:when>  
+        <xsl:otherwise><xsl:value-of select="$mgName"/></xsl:otherwise>
       </xsl:choose>
-    </xsl:variable>  
+    </xsl:variable>
+    -->
+    <xsl:variable name="mgNameCpp">
+      <xsl:call-template name="T_get_cppName_mg"/>
+    </xsl:variable>
+
     <xsl:variable name="mgNameSingularCpp">
       <xsl:choose>
         <xsl:when test="$maxOccurGT1='true'"><xsl:value-of select="local-name()"/></xsl:when>
@@ -1764,9 +1772,19 @@ namespace Types
           <xsl:with-param name="thisOrThat" select="'_that'"/>
         </xsl:call-template>,
       </xsl:if>  
-      <xsl:if test="local-name()='choice' or local-name()='sequence' or local-name='all'">
+      <xsl:if test="local-name()='choice' or local-name()='sequence' or local-name()='all'">
         <xsl:variable name="mgNameChild"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
+        <xsl:variable name="minOccurChild"><xsl:call-template name="T_get_minOccurence"/></xsl:variable>
+        <xsl:variable name="maxOccurChild"><xsl:call-template name="T_get_maxOccurence"/></xsl:variable>
+        <xsl:choose>
+         <!-- optional scalar --> 
+          <xsl:when test="$minOccurChild=0 and $maxOccurChild=1">
+      new XsdFsmArray(new <xsl:value-of select="$mgNameChild"/>(_that), 0, 1),
+          </xsl:when>
+          <xsl:otherwise>
       new <xsl:value-of select="$mgNameChild"/>(_that),
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:if>  
     </xsl:for-each>       
       NULL 
@@ -1813,14 +1831,9 @@ namespace Types
     </xsl:variable>
 
     <xsl:choose>
-      <!-- case1 : begin -->
-      <xsl:when test="$localName='choice' or $localName='sequence' or local-name()='all'">
-        <xsl:variable name="mgName">
-          <xsl:choose>
-            <xsl:when test="$cntChoiceOrSeq='1'"><xsl:value-of select="local-name()"/></xsl:when>
-            <xsl:otherwise><xsl:value-of select="local-name()"/><xsl:value-of select="1+count(preceding-sibling::*[local-name()='choice' or local-name='sequence' or local-name()='all'])"/></xsl:otherwise>
-          </xsl:choose>
-        </xsl:variable>
+      <!-- case1 : satya begin -->
+      <xsl:when test="$localName='choice' or $localName='sequence' or $localName='all'">
+        <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
         <xsl:variable name="mgNameCpp"><xsl:value-of select="normalize-space($mgName)"/><xsl:if test="$maxOccurGT1='true'">List</xsl:if></xsl:variable>
           
         <xsl:variable name="cppNSDerefLevel1Onwards">
@@ -1864,7 +1877,7 @@ namespace Types
       </xsl:if>    <!-- END if test="$parentMgName='choice'"-->
         
 
-    //getters        
+    //getters: 
     <xsl:value-of select="$cppNSDerefLevel1Onwards"/><xsl:value-of select="$mgNameCpp"/>*  <xsl:value-of select="$cppNSDerefLevel1Onwards"/>get_<xsl:value-of select="$mgNameCpp"/>() {
       return dynamic_cast&lt;<xsl:value-of select="$mgNameCpp"/>*&gt;(this->allFSMs()[<xsl:value-of select="position()-1"/>].get());
     }

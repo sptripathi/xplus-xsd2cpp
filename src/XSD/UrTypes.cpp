@@ -96,13 +96,16 @@ namespace XMLSchema
       }
     }
 
+    // 1. sets the value (in _value)
+    // 2. creates the DOM TextNode with this value if the TextNode was not 
+    //    there, else sets the value in the TextNode
     void anyType::stringValue(DOMString value) 
     {
       try
       {
         checkFixed(value);
-        setTextNodeValue(value);
         _value = value;
+        setTextNodeValue(_value);
       }
       catch(XPlus::Exception& ex)
       {
@@ -161,7 +164,6 @@ namespace XMLSchema
           AttributeP attr = dynamic_cast<AttributeP>(const_cast<Node*>(_fsm->fsmCreatedNode()));
           _fsm->fsmCreatedNode(NULL);
           if(attr) {
-            //satya
             //attr->createChildTextNode(value);
             attr->createTextNode(value);
             return attr;

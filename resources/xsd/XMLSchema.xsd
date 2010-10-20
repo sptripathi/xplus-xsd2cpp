@@ -381,7 +381,7 @@
     </xs:annotation>
     <xs:restriction base="xs:anySimpleType">
       <xs:whiteSpace fixed="true" value="collapse" id="base64Binary.whiteSpace"/>
-      <xs:pattern value="[A-Za-z0-9+/]+"/>
+      <xs:pattern value="[A-Za-z0-9=+/]+"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="anyURI" id="anyURI">

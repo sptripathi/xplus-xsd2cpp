@@ -489,7 +489,10 @@ namespace <xsl:value-of select="$nsStr"/>{
         <xsl:variable name="url2">
           <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$url1"/><xsl:with-param name="search-string" select="'/'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
         </xsl:variable>
-        <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$url2"/><xsl:with-param name="search-string" select="'.'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
+        <xsl:variable name="url3">
+          <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$url2"/><xsl:with-param name="search-string" select="'#'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
+        </xsl:variable>
+        <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$url3"/><xsl:with-param name="search-string" select="'.'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
 
       </xsl:otherwise>
 
@@ -2128,13 +2131,15 @@ namespace <xsl:value-of select="$nsStr"/>{
     </xsl:call-template>
   </xsl:variable>
   
-  <xsl:variable name="cntMG" select="count($node/../*[local-name()='choice' or local-name()='sequence' or local-name()='all'])"/>
+  <xsl:variable name="parentName" select="local-name($node/..)"/>
+  
   <xsl:variable name="mgName">
     <xsl:choose>
-      <xsl:when test="$cntMG='1'"><xsl:value-of select="$localName"/></xsl:when>
-      <xsl:otherwise><xsl:value-of select="$localName"/><xsl:value-of select="1+count($node/preceding-sibling::*[local-name()='choice' or local-name='sequence' or local-name='all'])"/></xsl:otherwise>
+      <xsl:when test="$parentName='choice' or $parentName='sequence' or $parentName='all'"><xsl:value-of select="$localName"/><xsl:value-of select="1+count($node/preceding-sibling::*[local-name()=$localName])"/></xsl:when>  
+      <xsl:otherwise><xsl:value-of select="$localName"/></xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+  
   <xsl:variable name="mgNameClass"><xsl:value-of select="normalize-space($mgName)"/><xsl:if test="$maxOccurGT1='true'">List</xsl:if></xsl:variable>
 
   <xsl:value-of select="normalize-space($mgNameClass)"/>

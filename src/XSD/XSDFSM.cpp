@@ -645,7 +645,12 @@ void FsmTreeNode::print() const
   cout << "   depth : " << _depth << endl;
   cout << "   pruned : " << _pruned << endl;
   cout << "   " << (isGreedy()? "greedy":"non-greedy") << endl;
-  _data->print();
+  if(_data) {
+    _data->print();
+  }
+  else {
+    cout << " NULL FSM" << endl;
+  }
   cout << " } // end FsmTreeNode" << endl;
 }
 
@@ -803,7 +808,7 @@ void BinaryFsmTree::removePrunedSubtrees()
     }  
 
     BinaryFsmTree::TreeNodePtr node = fsmTreeNode;
-    while((node->_parent != NULL) && node->_parent->hasOneChild()){
+    while((node->_parent != NULL) && node->_parent->hasOneChild() && !node->_parent->isRoot()){
       node = node->_parent;
     }
     listNodesToDelete.push_back(node);
@@ -812,6 +817,7 @@ void BinaryFsmTree::removePrunedSubtrees()
   list<BinaryFsmTree::TreeNodePtr>::iterator iter = listNodesToDelete.begin();
   for( ; iter!=listNodesToDelete.end(); ++iter)
   {
+    //cout << "BinaryFsmTree::removePrunedSubtrees: deleting node at depth:" << (*iter)->_depth << endl; 
     this->removeNode(*iter);
   }
 }
@@ -1042,6 +1048,8 @@ bool XsdFsmArray::processEvent(DOMString* nsUri, DOMString localName, XsdFsmBase
   list<BinaryFsmTree::TreeNodePtr> leaves;
   leaves.insert(leaves.end(), leavesOrig.begin(), leavesOrig.end());
   list<BinaryFsmTree::TreeNodePtr>::const_iterator it = leaves.begin();
+  
+  //cout << "XsdFsmArray::processEvent leaves size:" << leaves.size() << endl;
   // processedEvent is success if any leaf returns true
   //cout << "number of leaves:" << leaves.size() << endl;
   for( ; it!=leaves.end(); it++)
@@ -1076,8 +1084,11 @@ bool XsdFsmArray::processEventThrow(DOMString* nsUri, DOMString localName, XsdFs
 
 bool XsdFsmArray::isInFinalState() const
 {
-  bool inFinalState = false;
-
+  //TODO:revisit
+  if(_fsmTree._minDepth==0) {
+    return true;
+  }
+  /*
   if(_fsmTree.isAtRoot())
   {
     if(_fsmTree._minDepth==0) {
@@ -1087,9 +1098,13 @@ bool XsdFsmArray::isInFinalState() const
       return false;
     }
   }
+  */
 
+  bool inFinalState = false;
   const list<BinaryFsmTree::TreeNodePtr>& leaves = _fsmTree.getLeaves();
   list<BinaryFsmTree::TreeNodePtr>::const_iterator it = leaves.begin();
+  //cout << "XsdFsmArray::isInFinalState leaves size:" << leaves.size() << endl;
+  
   // processedEvent is success if any leaf returns true
   for( ; it!=leaves.end(); ++it)
   {
@@ -1293,6 +1308,7 @@ void XsdFsmArray::finish()
   const list<BinaryFsmTree::TreeNodePtr>& leaves = _fsmTree.getLeaves();
   list<BinaryFsmTree::TreeNodePtr>::const_iterator it = leaves.begin();
   
+  //cout << "XsdFsmArray::finish leaves size:" << leaves.size() << endl;
   bool finalStateReached = false; 
   for( ; it!=leaves.end(); ++it)
   {
@@ -1300,7 +1316,12 @@ void XsdFsmArray::finish()
 
     // unprune : see Note above
     fsmTreeNode->_pruned = false;
-
+    /*
+    cout << "     isFinal=" << fsmTreeNode->_data->isInFinalState() 
+      <<  " depth=" << fsmTreeNode->_depth 
+      << " isRoot=" << fsmTreeNode->isRoot()
+      << endl;
+    */
     if( (fsmTreeNode->_data->isInFinalState() ) &&
         (fsmTreeNode->_depth >= _fsmTree._minDepth)
       )
@@ -1322,146 +1343,18 @@ void XsdFsmArray::finish()
   
   _fsmTree.removePrunedSubtrees();
   
+  // _minDepth=0 means this fsm is always in final state
+  if(_fsmTree._minDepth==0) {
+    finalStateReached=true;
+  }
+  
+  const list<BinaryFsmTree::TreeNodePtr>& leaves2 = _fsmTree.getLeaves();
+  //cout << "XsdFsmArray::finish leaves2 size:" << leaves2.size() << endl;
   if(!finalStateReached) {
     throw XMLSchema::FSMException("finish failed.");
   }
-  
-  /*
-  //debug
-  cout << "Finished fsm list:" << endl;
-  list<XsdFsmBasePtr>::iterator ii = _fsmList.begin();
-  for( ; ii!=_fsmList.end(); ++ii)
-  {
-    XsdFsmBase* fsm = dynamic_cast<XsdFsmBase *>(ii->get()); 
-    fsm->print();
-  }
-  */
 }
 
 } // end namespace FSM
 
-#ifdef _MAIN
-using namespace DOM;
-using namespace FSM;
 
-#if 0
-main()
-{
-  XsdFSM fsm1( NSNamePairOccur(new DOMString("http://www.mycompany.com/demo"),  DOMString("deptId"), 0, 2 ), XsdFSM::ELEMENT);
-  fsm1.print();
-
-  bool b =fsm1.processEvent(new DOMString("http://www.mycompany.com/demo"),  DOMString("deptId"));
-  cout << "processEvent=" << b << endl;
-
-  list<DOMString> allowedEvents = fsm1.suggestNextEvents();
-  list<DOMString>::const_iterator cit = allowedEvents.begin();
-  for( ; cit!=allowedEvents.end(); cit++){
-    cout << "=> " << *cit << endl;
-  }
-}
-#endif
-
-int
-main()
-{
-
-  /*
- XsdFsmOfFSMs* ptr = new XsdFsmOfFSMs((XsdFsmBasePtr [] ) {
-                          new XsdFSM<void>( NSNamePairOccur(NULL,  DOMString("address"), 1, 1), XsdFsmBase::ELEMENT_START),
-                          new XsdFSM<void>( NSNamePairOccur(NULL,  DOMString("postalAddress"), 1, 1), XsdFsmBase::ELEMENT_START),
-                          NULL
-                          }, XsdFsmOfFSMs::CHOICE);
-
-   XsdFsmBasePtr fofElem = new XsdFsmOfFSMs((XsdFsmBasePtr [] ) {
-      new XsdFSM<void>( NSNamePairOccur(NULL,  DOMString("index"), 1, 1), XsdFsmBase::ELEMENT_START),
-      new XsdFSM<void>( NSNamePairOccur(NULL,  DOMString("name"), 1, 1), XsdFsmBase::ELEMENT_START),
-      new XsdFSM<void>( NSNamePairOccur(NULL,  DOMString("officeRecord"), 1, 1), XsdFsmBase::ELEMENT_START),
-      ptr,
-      new XsdFSM<void>( NSNamePairOccur(NULL,  DOMString("personalInfo"), 1, 1), XsdFsmBase::ELEMENT_START),
-      NULL
-    } , 
-    XsdFsmOfFSMs::SEQUENCE);
-
-  XsdFsmBasePtr elemEndFsm = new XsdFSM<void>(NSNamePairOccur(NULL, "elem", 1, 1), XsdFsmBase::ELEMENT_END);
-  //XsdFsmBasePtr ptrFsms[] = { fofElem, elemEndFsm, NULL };
-  XsdFsmBasePtr ptrFsms[] = { ptr, NULL };
-  XsdFsmBasePtr testFsm = new XsdFsmOfFSMs( ptrFsms, XsdFsmOfFSMs::SEQUENCE);
-  testFsm->print();
-  */
-  
-  /*
- XsdFsmOfFSMs* ptr = new XsdSequenceFsmOfFSMs((XsdFsmBasePtr [] ) 
-     {
-     new XsdFSM<void>( NSNamePairOccur(NULL, DOMString("a"), 0, 1), XsdFsmBase::ELEMENT_START),
-     new XsdFSM<void>( NSNamePairOccur(NULL, DOMString("b"), 1, 2), XsdFsmBase::ELEMENT_START),
-     NULL 
-     });
-     */
-
-  XsdFsmOfFSMs* ptr2 = 
-      new XsdChoiceFsmOfFSMs((XsdFsmBasePtr [] ) {
-        new XsdFSM<void *>( NSNamePairOccur(NULL, DOMString("c"), 1, 1), XsdFsmBase::ELEMENT_START),
-        new XsdFSM<void *>( NSNamePairOccur(NULL, DOMString("d"), 1, 1), XsdFsmBase::ELEMENT_START),
-        NULL
-        } ) ;
-  XsdFsmOfFSMs* ptr = new XsdSequenceFsmOfFSMs((XsdFsmBasePtr [] ) 
-     {
-     new XsdFSM<void *>( NSNamePairOccur(NULL, DOMString("a"), 0, 1), XsdFsmBase::ELEMENT_START),
-     new XsdFSM<void *>( NSNamePairOccur(NULL, DOMString("b"), 1, 2), XsdFsmBase::ELEMENT_START),
-     new XsdFsmArray(ptr2, 2, 3),
-     NULL
-     }
-     );
-  
-  XsdFsmBase* testFsm2 = new XsdFsmArray( ptr, 2, 3);
-  XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(NULL, "elem", 1, 1), XsdFsmBase::ELEMENT_END);
-  XsdFsmBasePtr ptrFsms[] = { testFsm2,  elemEndFsm, NULL };
-  XsdFsmBasePtr testFsm = new XsdSequenceFsmOfFSMs(ptrFsms);
-
-  //XsdFsmBasePtr testFsm = ptr;
-  //XsdFsmBasePtr testFsm2 = new XsdSequenceFsmOfFSMs( (XsdFsmBasePtr [] ) {ptr, NULL} );
-  //XsdFsmBasePtr testFsm = testFsm2->clone();
-
-  XsdFsmBase::XsdFsmType fsmType = XsdFsmBase::ELEMENT_START;
-  DOMString localName;
-  while(1)
-  {
-    cout << endl;
-    cout << "enter localName:";
-    cin >> localName;
-
-    bool b = false;
-    if(localName != ".")
-    {
-      try {
-        b = testFsm->processEvent(NULL,  localName, fsmType);
-        cout << "processEvent=" << b << endl;
-        cout << endl;
-      }
-      catch(XMLSchema::FSMException& e) {
-        cerr << "Error:\n" << e.msg() << endl;
-        break;
-      }
-
-      if(!b)
-      {
-        cout << "allowedEvents:" << endl;
-        list<DOMString> allowedEvents = testFsm->suggestNextEvents();
-        list<DOMString>::const_iterator cit = allowedEvents.begin();
-        for( ; cit!=allowedEvents.end(); cit++){
-          cout << "=> " << *cit << endl;
-        }
-
-        break;
-      }
-    }
-    else //if(localName == ".")
-    {
-      testFsm->finish();
-      break;
-    }
-
-  }
-  return 1;
-}
-#endif

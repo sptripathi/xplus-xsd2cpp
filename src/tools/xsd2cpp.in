@@ -43,6 +43,7 @@ DIRNAME=`which dirname`
 OUTDIR=""
 XSD=""
 XSDNAME=""
+VALID_XSDTOKEN=""
 PATH=""
 CWD=""
 ABSPATH=""
@@ -64,8 +65,12 @@ get_abs_path()
 init()
 {
   XSDNAME=`$BASENAME $XSD | $CUT -d'.' -f1`
+  # token should be valid for Makefile targets and for directory name
+  # eg. '-' is valid for dir-name but not valid as Makefile target
+  VALID_XSDTOKEN=`echo $XSDNAME | $SED -e's/-/_/g'`
+  
   if [ -z "$OUTDIR" ]; then
-    OUTDIR=$XSDNAME
+    OUTDIR=$VALID_XSDTOKEN
   fi
 
   CWD=`pwd`
@@ -92,9 +97,10 @@ cleanup_meta()
 gen_source_files()
 {
   BACKUP_DIR=""
+  PID=$$
   if [ "$OUTDIR" = "." ] || [  "$OUTDIR" = ".." ]; then
     
-    BACKUP_DIR=$OUTDIR/xbak
+    BACKUP_DIR=$OUTDIR/xplus.bak.$PID
 
     if [ -e "$OUTDIR/src" ]; then
       echo "* the directory $OUTDIR/src already exists, backing up in $BACKUP_DIR"
@@ -108,7 +114,7 @@ gen_source_files()
     fi
 
   else
-    BACKUP_DIR=xbak
+    BACKUP_DIR=xplus.bak.$PID
     if [ -e "$OUTDIR" ]; then
       echo "* the directory $OUTDIR already exists, backing up in $BACKUP_DIR"
       $MKDIR -p $BACKUP_DIR
@@ -116,6 +122,8 @@ gen_source_files()
     fi
     $MKDIR $OUTDIR
   fi
+    
+  $RM -rf $BACKUP_DIR/*
   
   echo
   echo "=>  Generating source files..."
@@ -179,9 +187,9 @@ gen_automake_files()
   MAKE_AM_SRC_DIR_FILE=$MAKE_TMPL_DIR/Makefile.am.src
   MAKE_AM_INC_DIR_FILE=$MAKE_TMPL_DIR/Makefile.am.include
 
-  $SED -e "s/@xsdname@/$XSDNAME/g" $CONFIG_AC_FILE > $OUTDIR/configure.ac
-  $SED -e "s/@xsdname@/$XSDNAME/g" $MAKE_AM_TOP_SRC_DIR_FILE > $OUTDIR/Makefile.am
-  $SED -e "s/@xsdname@/$XSDNAME/g" $MAKE_AM_SRC_DIR_FILE > $OUTDIR/src/Makefile.am
+  $SED -e "s/@xsdname@/$VALID_XSDTOKEN/g" $CONFIG_AC_FILE > $OUTDIR/configure.ac
+  $SED -e "s/@xsdname@/$VALID_XSDTOKEN/g" $MAKE_AM_TOP_SRC_DIR_FILE > $OUTDIR/Makefile.am
+  $SED -e "s/@xsdname@/$VALID_XSDTOKEN/g" $MAKE_AM_SRC_DIR_FILE > $OUTDIR/src/Makefile.am
   $CP $MAKE_AM_INC_DIR_FILE  $OUTDIR/include/Makefile.am
   $CP $MAKE_TMPL_DIR/acinclude.m4 $OUTDIR/
   $CP $MAKE_TMPL_DIR/aminclude.am $OUTDIR/

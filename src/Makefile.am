@@ -5,6 +5,12 @@ AM_LDFLAGS=
 
 SUBDIRS = Poco XPlus DOM XSD tools
 
+
+bin_PROGRAMS=fsmTest 
+fsmTest_SOURCES=XSD/FsmTest.cpp 
+fsmTest_LDADD =libxsdall.la
+
+
 lib_LTLIBRARIES = libxsdall.la
 libxsdall_la_SOURCES = \
   Poco/ASCIIEncoding.cpp \

@@ -559,7 +559,7 @@ class XsdFsmOfFSMs : public XsdFsmBase
 
   void print() const 
   {
-    cout << "   { // XsdFsmOfFSMs" << endl;
+    cout << "   { // XsdFsmOfFSMs count=" << _allFSMs.size()  << endl;
     for(unsigned int i=0; i<_allFSMs.size(); i++) {
       _allFSMs[i]->print();
     }
