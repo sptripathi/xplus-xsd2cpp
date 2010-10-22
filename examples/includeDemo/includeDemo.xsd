@@ -1,0 +1,16 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" >
+
+  <xsd:include schemaLocation="files.xsd"/>
+
+  <xsd:element name="myProject">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="description" type="xsd:string" />
+        <xsd:element name="directory" type="Directory"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>  
+    
+  
+</xsd:schema>
+

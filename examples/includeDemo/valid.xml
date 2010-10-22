@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<myProject>
+  <description>my summer project and it's contents in a directory</description>
+  <directory numberOfFiles="3">
+    <path>/home/gilbert/summer_projects/project1/</path>
+    <files>
+      <fileName>a.xml</fileName>
+      <fileName>b.xml</fileName>
+      <fileName>c.xml</fileName>
+    </files>
+  </directory>
+</myProject>
