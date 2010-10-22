@@ -3,7 +3,7 @@
 #include <string>
 
 #include "XSD/UserOps.h"
-#include "NoNS/all-include.h"
+#include "xmldsig/all-include.h"
 
     
 
@@ -14,7 +14,7 @@ int main (int argc, char**argv)
 
 DOM::Document* createXsdDocument(bool buildTree)
 {
-  NoNS::Document* xsdDoc = new NoNS::Document(buildTree);
+  xmldsig::Document* xsdDoc = new xmldsig::Document(buildTree);
     
   return xsdDoc;
 }
@@ -24,7 +24,7 @@ DOM::Document* createXsdDocument(string inFilePath)
   XPlusFileInputStream is;
   is.open(inFilePath.c_str(), ios::binary);
 
-  NoNS::Document* xsdDoc = new NoNS::Document(false);
+  xmldsig::Document* xsdDoc = new xmldsig::Document(false);
 
   is >> *xsdDoc; 
   return xsdDoc;
@@ -40,23 +40,16 @@ DOM::Document* createXsdDocument(string inFilePath)
 // template function to populate the Tree with values
 void populateDocument(DOM::Document* pDoc)
 {
-  NoNS::Document* xsdDoc = dynamic_cast<NoNS::Document *>(pDoc);
+  xmldsig::Document* xsdDoc = dynamic_cast<xmldsig::Document *>(pDoc);
   // write code to populate the Document here
-  NoNS::doc* pdoc = xsdDoc->element_doc();
-  pdoc->set_count_choiceList(2);
 
-  List<NoNS::doc::elem_ptr>  choice1ElemList = pdoc->choice_at(0)->choose_list_elem(2);
-  choice1ElemList.at(0)->stringValue("123");
-  choice1ElemList.at(1)->stringValue("234");
-
-  List<NoNS::doc::elem_ptr>  choice2ElemList = pdoc->choice_at(1)->choose_list_elem(1);
-  choice2ElemList.at(0)->stringValue("789");
+  xsdDoc->element_DSAKeyValue()->set_Y("ctA8YGxrtngg/zKVvqEOefnwmViFztcnPBYPlJsvh6yKI4iDm68fnp4Mi3RrJ6bZAygFrUIQLxLjV+OJtgJAEto0xAs+Mehuq1DkSFEpP3oDzCTOsrOiS1DwQe4oIb7zVk/9l7aPtJMHW0LVlMdwZNFNNJoqMcT2ZfCPrfvYvQ0=");
 
 }
 
 void updateOrConsumeDocument(DOM::Document* pDoc)
 {
-  NoNS::Document* xsdDoc = dynamic_cast<NoNS::Document *>(pDoc);
+  xmldsig::Document* xsdDoc = dynamic_cast<xmldsig::Document *>(pDoc);
   // write code to operate on the populated-Document here
 
 }

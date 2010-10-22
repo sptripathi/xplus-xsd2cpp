@@ -573,7 +573,7 @@ void XsdFsmOfFSMs::fireRequiredEvents()
   if(_fsmType == CHOICE) {
     return;
   }
-
+  
   for(unsigned int i=0; i<_allFSMs.size(); i++)
   {
     if(!_allFSMs[i]->isInFinalState()) {
@@ -646,6 +646,7 @@ void FsmTreeNode::print() const
   cout << "   pruned : " << _pruned << endl;
   cout << "   " << (isGreedy()? "greedy":"non-greedy") << endl;
   if(_data) {
+    cout << "   " << (_data->isInFinalState()? "final":"not-final") << endl;
     _data->print();
   }
   else {
@@ -808,6 +809,8 @@ void BinaryFsmTree::removePrunedSubtrees()
     }  
 
     BinaryFsmTree::TreeNodePtr node = fsmTreeNode;
+    //diff: 
+    //while((node->_parent != NULL) && node->_parent->hasOneChild()){
     while((node->_parent != NULL) && node->_parent->hasOneChild() && !node->_parent->isRoot()){
       node = node->_parent;
     }
@@ -1084,21 +1087,12 @@ bool XsdFsmArray::processEventThrow(DOMString* nsUri, DOMString localName, XsdFs
 
 bool XsdFsmArray::isInFinalState() const
 {
-  //TODO:revisit
   if(_fsmTree._minDepth==0) {
     return true;
   }
-  /*
-  if(_fsmTree.isAtRoot())
-  {
-    if(_fsmTree._minDepth==0) {
-      return true;
-    }
-    else {
-      return false;
-    }
+  else if(_fsmTree.isAtRoot()) {
+    return false;
   }
-  */
 
   bool inFinalState = false;
   const list<BinaryFsmTree::TreeNodePtr>& leaves = _fsmTree.getLeaves();
@@ -1115,8 +1109,8 @@ bool XsdFsmArray::isInFinalState() const
     const FsmTreeNode* fsmTreeNode = dynamic_cast<const FsmTreeNode *>(it->get()); 
 
     bool final = false;
-    if( fsmTreeNode->_data->isInFinalState() && 
-        (fsmTreeNode->_depth>=_fsmTree._minDepth) 
+    if( fsmTreeNode->_data && fsmTreeNode->_data->isInFinalState() && 
+        (fsmTreeNode->_depth >= _fsmTree._minDepth) 
       )  
     {
       final = true;
@@ -1213,6 +1207,7 @@ XsdFsmBasePtr XsdFsmArray::currentUnitFsm()
 
 void XsdFsmArray::resize(unsigned int size)
 {
+  //cout << " ------------------ XsdFsmArray::resize called with size=" << size << endl;
   int sz = static_cast<int>(size);
   if( (sz < _fsmTree._minDepth) || (sz > _fsmTree._maxDepth)) {
     ostringstream oss;
@@ -1343,12 +1338,12 @@ void XsdFsmArray::finish()
   
   _fsmTree.removePrunedSubtrees();
   
-  // _minDepth=0 means this fsm is always in final state
+  //diff: _minDepth=0 means this fsm is always in final state
   if(_fsmTree._minDepth==0) {
     finalStateReached=true;
   }
   
-  const list<BinaryFsmTree::TreeNodePtr>& leaves2 = _fsmTree.getLeaves();
+  //const list<BinaryFsmTree::TreeNodePtr>& leaves2 = _fsmTree.getLeaves();
   //cout << "XsdFsmArray::finish leaves2 size:" << leaves2.size() << endl;
   if(!finalStateReached) {
     throw XMLSchema::FSMException("finish failed.");

@@ -758,6 +758,10 @@ complexType Content:
   <xsl:param name="schemaComponentName" select="''"/>
   <xsl:param name="pos" select="'0'"/>
   <xsl:param name="cnt" select="'1'"/>
+        
+  <xsl:call-template name="T_unsupported_usage">
+    <xsl:with-param name="unsupportedItem" select="'complexType/(complexContent|simpleContent)'"/>
+  </xsl:call-template>
 
   <xsl:if test="not($pos='0') and not($pos='1')">
     <xsl:message terminate="yes">
@@ -1068,7 +1072,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
 
   <!-- mg list -->
   <xsl:if test="$maxOccurGT1='true'">
-  struct <xsl:value-of select="$mgNameCpp"/>List : public XsdFsmArray
+  struct <xsl:value-of select="$mgNameCpp"/> : public XsdFsmArray
   {
   </xsl:if>
   
@@ -1284,7 +1288,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
   <xsl:if test="$maxOccurGT1='true'">
 
     /// constructor for the MG node-list
-    MEMBER_FN <xsl:value-of select="$mgNameCpp"/>List(<xsl:value-of select="$schemaComponentName"/>* that);
+    MEMBER_FN <xsl:value-of select="$mgNameCpp"/>(<xsl:value-of select="$schemaComponentName"/>* that);
     
     /// Returns the MG node at supplied index
     /// @param idx index of the MG node to fetch
@@ -1294,7 +1298,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
     /// pointer to the parent node (complexType or element)
     MEMBER_FN <xsl:value-of select="$schemaComponentName"/>*      _that;
 
-  }; // end <xsl:value-of select="$mgNameCpp"/>List
+  }; // end <xsl:value-of select="$mgNameCpp"/>
   </xsl:if>
   </xsl:for-each>
 
@@ -1834,7 +1838,7 @@ namespace Types
       <!-- case1 : satya begin -->
       <xsl:when test="$localName='choice' or $localName='sequence' or $localName='all'">
         <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
-        <xsl:variable name="mgNameCpp"><xsl:value-of select="normalize-space($mgName)"/><xsl:if test="$maxOccurGT1='true'">List</xsl:if></xsl:variable>
+        <xsl:variable name="mgNameCpp"><xsl:value-of select="normalize-space($mgName)"/></xsl:variable>
           
         <xsl:variable name="cppNSDerefLevel1Onwards">
           <xsl:call-template name="T_get_nsDeref_level1Onwards">
