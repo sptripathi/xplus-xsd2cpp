@@ -52,10 +52,16 @@
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       <code>
         $ xsd2cpp <br> 
-        Usage: xsd2cpp    xsd-file    [outdir] <br>
-        <br>  
-        &nbsp;outdir: directory to output the generated source, like foo, . , .. etc.<br>
-        &nbsp;&nbsp;(if unspecified, defaults to xsd-file-name)<br>
+        Usage:<br>
+        1.  xsd2cpp xsd-file [outdir]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;outdir: directory to output the generated source, like foo, . , .. etc.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;(if unspecified, defaults to xsd-file-name)<br>
+        <br>
+        2.  xsd2cpp -v<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;prints verion<br>
+        <br>
+        3.  xsd2cpp -h<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;prints help<br>
       </code>
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       <br>
@@ -181,8 +187,8 @@
         &nbsp;&nbsp; validate input xml-file(against compiled schema)<br>
         &nbsp;-r, --roundtrip<br>
         &nbsp;&nbsp; roundtrip (read-&gt;write) input xml-file<br>
-        &nbsp;-u, --ruw<br>
-        &nbsp;&nbsp; perform read-&gt;update-&gt;write operations on input xml-file<br>
+        &nbsp;-u, --row<br>
+        &nbsp;&nbsp; perform read-&gt;operate-&gt;write operations on input xml-file<br>
         &nbsp;-h, --help<br>
         &nbsp;&nbsp; print help<br>
           </code>         

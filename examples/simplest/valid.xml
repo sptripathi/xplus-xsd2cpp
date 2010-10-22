@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<ns1:items xmlns:ns1="http://www.example.com/simplest">
+  text content1
+  <ns1:item>one</ns1:item>
+  text content2
+  <ns1:item>two</ns1:item>
+</ns1:items>

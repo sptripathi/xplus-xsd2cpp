@@ -21,16 +21,29 @@
 
     Here is the unsupported components list:
     <ul>
-      <li> complexType/complexContent
-      <li> complexType/simpleContent
+      <li> complexContent inside complexType
+      <li> simpleContent inside complexType
       <li> redefine
       <li> attributeGroup
       <li> group
       <li> notation
-      <li> certain attributes on schema components like simpleType/complexType/element/attribute etc.
+      <li> key
+      <li> keyref
+      <li> unique
+      <li> wildcards and xsi-attributes in instance documents
+      <li> following attributes on applicable schema components: 
+        <ul>
+          <li> finalDefault
+          <li> blockDefault
+          <li> version
+          <li> lang
+          <li> final 
+          <li> block
+          <li> nillable
+          <li> abstract
+          <li> substitutionGroup 
+        </ul>
     </ul>
-
-    This information is available in details in the excel file <b>xsd.xls</b> in the docs directory. Open this file and view the tab named "XSD_components_tree_view". Refer to the "REL x.x: NOT SUPPORTED" and "REL x.x: TARGETED" columns.
     </form>
   </body>
 

@@ -10,3 +10,10 @@ Reach Us:
 =========
 
 email: xmlplus.custodians@gmail.com.
+
+
+SVN:
+===
+
+The hot svn source is available at:
+ http://code.google.com/p/xplus-xsd2cpp/

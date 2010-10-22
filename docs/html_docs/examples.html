@@ -14,9 +14,6 @@
         <li><a href="#HOWTO_EXAMPLES">How to try examples</a>
         <li><a href="#EX_BY_TAGS">Examples by tags</a>
         <li><a href="#ALL_EXAMPLES">All examples</a>
-        <ul>
-          <li><a href="#SIMPLEST">Simplest</a>
-        </ul>  
       </ul>
 
       <a name="HOWTO_EXAMPLES"><h3>How to try examples</h3></a>
@@ -33,11 +30,52 @@
       <br><br>
       
       As mentioned earlier, xsd2cpp usage is:<br>
-      $ xsd2cpp<br>
-      Usage: xsd2cpp xsd-file [outdir]<br>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      <code>
+        $ xsd2cpp <br> 
+        Usage:<br>
+        1.  xsd2cpp xsd-file [outdir]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;outdir: directory to output the generated source, like foo, . , .. etc.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;(if unspecified, defaults to xsd-file-name)<br>
+        <br>
+        2.  xsd2cpp -v<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;prints verion<br>
+        <br>
+        3.  xsd2cpp -h<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;prints help<br>
+      </code>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       <br><br>
 
-      However, for trying examples which are already organized with sensible names, and to be able to easily use the supplied main.cpp, we should run xsd2cpp within specific example subdirectory, with outdir specified as ".", like so:
+
+      
+     
+
+      <b>To try examples, all you have to do is to, run xsd2cpp in the respective examples directory with output directory 
+      specified as "." and then build.<br>
+      This is so because, we have already provided the main.cpp for all the examples.</b> 
+      <br><br>
+
+      You can of course, experiment with the code in the main.cpp, especiallly the template functions like:<br> 
+      <code>  
+      void populateDocument(DOM::Document* pDoc)<br>
+      void updateOrConsumeDocument(DOM::Document* pDoc)<br>
+      </code>
+
+      <br><br>
+      We recommend outdir as "." because:
+      <ul>  
+        <li> example directories are already organized with sensible names
+        <li> using  outdir as "." helps in easily consuming main.cpp
+      </ul>  
+
+      If for whatever reason you have specified a outdir other than ".", then you would need to:
+      <ul>
+        <li> copy the supplied main.cpp in the outdir
+        <li> cd outdir , before building the source
+      </ul>  
+
+      Here is an example xsd2cpp run of simpleTypesDemo example:<br>
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
         <code>
         $ cd simpleTypesDemo/<br>
@@ -46,16 +84,8 @@
         =&gt;  Generating source files...<br>
         =&gt;  Generating automake/autoconf files ...<br>
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
-      
-      <br><br>
-      If for whatever reason you have specified a outdir other than ".", then you would need to:
-      <ul>
-        <li> copy the supplied main.cpp in the outdir
-        <li> cd outdir , before building the source
-      </ul>  
 
       <br><br>
-
       For building the source in the outdir:
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       $ ./autogen.sh<br>
@@ -84,8 +114,8 @@
       &nbsp;&nbsp; validate input xml-file(against compiled schema)<br>
       &nbsp;-r, --roundtrip<br>
       &nbsp;&nbsp; roundtrip (read-&gt;write) input xml-file<br>
-      &nbsp;-u, --ruw<br>
-      &nbsp;&nbsp; perform read-&gt;update-&gt;write operations on input xml-file<br>
+      &nbsp;-u, --row<br>
+      &nbsp;&nbsp; perform read-&gt;operate-&gt;write operations on input xml-file<br>
       &nbsp;-h, --help<br>
       &nbsp;&nbsp; print help<br>
         </code>         
@@ -106,25 +136,83 @@
           <th width=80%>Associated Tags</th>
         </tr>
         <tr>
-          <td><a href="#SIMPLEST">simplest</a></td>
+          <td><a href="#HELLO_WORLD">helloWorld</a></td>
           <td>simpleType</td>
         </tr>
         <tr>
-          <td><a href="#SIMPLETYPES_DEMO">simpleTypesDemo</a></td>
-          <td>
-          xsd:boolean, xsd:decimal, xsd:float, xsd:double, xsd:integer, xsd:positiveInteger, 
-          xsd:nonPositiveInteger, xsd:negativeInteger, xsd:nonNegativeInteger, xsd:long, 
-          xsd:int, xsd:short, xsd:byte, xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort, 
-          xsd:unsignedByte, xsd:hexBinary, xsd:base64Binary, xsd:anyURI, xsd:normalizedString, 
-          xsd:token, xsd:language, xsd:Name, xsd:NCName, xsd:QName, xsd:dateTime, xsd:date, 
-          xsd:gYearMonth, xsd:gYear, xsd:gMonthDay, xsd:gMonth, xsd:gDay, xsd:time, xsd:duration, 
-          xsd:ID, xsd:IDREF, xsd:IDREFS, xsd:ENTITY, xsd:ENTITIES, xsd:NMTOKEN, xsd:NMTOKENS
-          </td>
+          <td><a href="#HELLO_WORLDWIDE">helloWorldWide</a></td>
+          <td>wide characters</td>
         </tr>
         <tr>
-          <td><a href="#IMPINC_DEMO">importIncludeDemo</a></td>
-          <td>simpleType, complexType, import, include </td>
+          <td><a href="#SIMPLEST">simplest</a></td>
+          <td>simpleType</td>
+        <tr>
+        <tr>
+          <td><a href="#SIMPLETYPES_DEMO">simpleTypesDemo</a></td>
+          <td>
+          <b>Schema components:</b>
+            complexType, simpleType, element, attribute
+          
+          <br><b>simpleType variety:</b> atomic, union, list
+
+          <br><b>BuiltIn Types:</b>
+          boolean, decimal, float, double, integer, positiveInteger, 
+          nonPositiveInteger, negativeInteger, nonNegativeInteger, long, 
+          int, short, byte, unsignedLong, unsignedInt, unsignedShort, 
+          unsignedByte, hexBinary, base64Binary, anyURI, normalizedString, 
+          token, language, Name, NCName, QName, dateTime, date, 
+          gYearMonth, gYear, gMonthDay, gMonth, gDay, time, duration, 
+          ID, IDREF, IDREFS, ENTITY, ENTITIES, NMTOKEN, NMTOKENS
+          
+          <br><b>Facets:</b>
+            minLength, minInclusive, maxInclusive, minExclusive, maxExclusive, pattern etc.
+          
+          <br><b>Other Tags:</b>
+            targetNamespace, mixed content, attribute/element sharing common name
+          </td>
+
+
         </tr>
+        <tr>
+          <td><a href="#PO">purchaseOrder</a></td>
+          <td>
+           <b>Schema components:</b>
+            complexType, simpleType, element, attribute, anonymous element
+
+           <br><b>Facets:</b>
+            pattern
+          </td>
+        <tr>
+        <tr>
+          <td><a href="#MAILS">mails</a></td>
+          <td>
+           <b>Schema components:</b>
+            complexType, simpleType, element, attribute
+
+           <br><b>Facets:</b>
+            enumeration
+          
+            <br><b>Other Tags:</b>
+             Model Group 'sequence' with maxOccurs="unbounded"
+          </td>
+        <tr>
+        <tr>
+          <td><a href="#INCDEMO">includeDemo</a></td>
+          <td>
+           <b>Schema components:</b>
+            complexType, simpleType, element, attribute, include
+          </td>
+        <tr>
+        <tr>
+          <td><a href="#ORG">organization</a></td>
+          <td>
+           <b>Schema components:</b>
+            complexType, simpleType, element, attribute, import
+            
+            <br><b>Other Tags:</b>
+            targetNamespace, nested imports
+          </td>
+        <tr>
       </table>
 
       <a name="ALL_EXAMPLES"><h3>All Examples</h3></a>
@@ -174,7 +262,7 @@
       <br><br>
       <br><br>
 
-      <a name="MAILS_DEMO"><h4>purchaseOrder</h4></a>
+      <a name="PO"><h4>purchaseOrder</h4></a>
       <hr NOSHADE SIZE=3 WIDTH=100%>
       The xsd file: <a href="../../examples/po/po.xsd">po.xsd</a>
       <br><br>
@@ -184,7 +272,7 @@
       <br><br>
       <br><br>
 
-      <a name="MAILS_DEMO"><h4>mails</h4></a>
+      <a name="MAILS"><h4>mails</h4></a>
       <hr NOSHADE SIZE=3 WIDTH=100%>
       The xsd file: <a href="../../examples/mails/mails.xsd">mails.xsd</a>
       <br><br>
@@ -194,7 +282,7 @@
       <br><br>
       <br><br>
 
-      <a name="IMPINC_DEMO"><h4>includeDemo</h4></a>
+      <a name="INCDEMO"><h4>includeDemo</h4></a>
       <hr NOSHADE SIZE=3 WIDTH=100%>
       The xsd file: <a href="../../examples/includeDemo/includeDemo.xsd">includeDemo.xsd</a>
       <br><br>
@@ -204,7 +292,7 @@
       <br><br>
       <br><br>
 
-      <a name="IMPINC_DEMO"><h4>organization</h4></a>
+      <a name="ORG"><h4>organization</h4></a>
       <hr NOSHADE SIZE=3 WIDTH=100%>
       The xsd file: <a href="../../examples/org/org.xsd">org.xsd</a>
       <br><br>
