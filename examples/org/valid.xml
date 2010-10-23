@@ -35,6 +35,7 @@
       <ns2:userId>jimb</ns2:userId>
       <name>Jim Barnette</name>
       <title>org head</title>
+      <joiningDate>1978-02-11</joiningDate>
       <reportees>
         <ns2:userId>paulb</ns2:userId>
         <ns2:userId>donb</ns2:userId>
@@ -44,6 +45,7 @@
       <ns2:userId>paulb</ns2:userId>
       <name>Paul V. Biron</name>
       <title>Engg head</title>
+      <joiningDate>1978-02-15</joiningDate>
       <reportsTo>jimb</reportsTo>
       <reportees>
         <ns2:userId>allenb</ns2:userId>
@@ -54,6 +56,7 @@
       <ns2:userId>donb</ns2:userId>
       <name>Don Box</name>
       <title>Legal head</title>
+      <joiningDate>1978-02-15</joiningDate>
       <reportsTo>jimb</reportsTo>
       <reportees>
         <ns2:userId>danc</ns2:userId>
@@ -64,6 +67,7 @@
       <ns2:userId>allenb</ns2:userId>
       <name>Allen Brown</name>
       <title>Proj1 head</title>
+      <joiningDate>1978-02-15</joiningDate>
       <reportsTo>paulb</reportsTo>
       <reportees>
         <ns2:userId>charlese</ns2:userId>
@@ -74,6 +78,7 @@
       <ns2:userId>leeb</ns2:userId>
       <name>Lee Buck</name>
       <title>Proj2 head</title>
+      <joiningDate>1978-02-15</joiningDate>
       <reportsTo>paulb</reportsTo>
       <reportees>
         <ns2:userId>peterc</ns2:userId>
@@ -84,6 +89,7 @@
       <ns2:userId>charlese</ns2:userId>
       <name>Charles E Campbell</name>
       <title>SMTS</title>
+      <joiningDate>1978-02-15</joiningDate>
       <reportsTo>allenb</reportsTo>
       <reportees></reportees>
     </employee>
@@ -91,6 +97,7 @@
       <ns2:userId>waynec</ns2:userId>
       <name>Wayne Carr</name>
       <title>SMTS</title>
+      <joiningDate>1978-02-15</joiningDate>
       <reportsTo>allenb</reportsTo>
       <reportees></reportees>
     </employee>
@@ -98,6 +105,7 @@
       <ns2:userId>peterc</ns2:userId>
       <name>Peter Chen</name>
       <title>SMTS</title>
+      <joiningDate>1978-02-15</joiningDate>
       <reportsTo>leeb</reportsTo>
       <reportees></reportees>
     </employee>
@@ -105,6 +113,7 @@
       <ns2:userId>davidc</ns2:userId>
       <name>David Cleary</name>
       <title>SMTS</title>
+      <joiningDate>1978-02-15</joiningDate>
       <reportsTo>leeb</reportsTo>
       <reportees></reportees>
     </employee>
@@ -112,6 +121,7 @@
       <ns2:userId>danc</ns2:userId>
       <name>Dan Connolly</name>
       <title>Legal Advisor</title>
+      <joiningDate>1978-02-15</joiningDate>
       <reportsTo>donb</reportsTo>
       <reportees></reportees>
     </employee>
@@ -119,6 +129,7 @@
       <ns2:userId>ugoc</ns2:userId>
       <name>Ugo Corda</name>
       <title>Legal Advisor</title>
+      <joiningDate>1978-02-15</joiningDate>
       <reportsTo>donb</reportsTo>
       <reportees></reportees>
     </employee>

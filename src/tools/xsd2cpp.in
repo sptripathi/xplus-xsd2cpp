@@ -143,7 +143,7 @@ gen_source_files()
   $CAT $XPLUS_META_DIR/log | $GREP -v xplusmeta
   
   if [ $ret -ne 0 ]; then
-    #cleanup_meta
+    cleanup_meta
     exit $ret
   fi
 
@@ -207,7 +207,7 @@ run()
   gen_source_files
   gen_automake_files
   echo
-  #cleanup_meta
+  cleanup_meta
 }
 
 

@@ -52,6 +52,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
   <xsl:variable name="filename" select="normalize-space($filename2)"/>
 
   <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
     <xsl:choose>
       <xsl:when test="$targetNsUri=$xmlSchemaNSUri">
 #ifndef __XSD_PRIMITIVETYPES_H__ 
@@ -205,6 +206,7 @@ namespace Types
   <xsl:variable name="filename" select="normalize-space($filename2)"/>
 
   <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
 #ifndef __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$simpleTypeName"/>_H__ 
 #define __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$simpleTypeName"/>_H__ 
 

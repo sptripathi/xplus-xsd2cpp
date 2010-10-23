@@ -23,11 +23,10 @@
 
       Each example directory, comes with following files:
       <ol>
-        <li> a XML-Schema file(.xsd)
+        <li> one or more XML-Schema file(s)
         <li> a valid.xml file(a valid XML file for reference)
-        <li> a main.cpp file
+        <li> a main.cpp file ( with populateDocument template function populated)
       </ol>
-      <br><br>
       
       As mentioned earlier, xsd2cpp usage is:<br>
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
@@ -39,7 +38,7 @@
         &nbsp;&nbsp;&nbsp;&nbsp;(if unspecified, defaults to xsd-file-name)<br>
         <br>
         2.  xsd2cpp -v<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;prints verion<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;prints version<br>
         <br>
         3.  xsd2cpp -h<br>
         &nbsp;&nbsp;&nbsp;&nbsp;prints help<br>
@@ -47,26 +46,24 @@
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       <br><br>
 
-
-      
-     
-
       <b>To try examples, all you have to do is to, run xsd2cpp in the respective examples directory with output directory 
-      specified as "." and then build.<br>
-      This is so because, we have already provided the main.cpp for all the examples.</b> 
+      specified as "." and then build.</b><br>
+      Each example directory is already provided with the main.cpp having populateDocument() function already filled.
       <br><br>
 
-      You can of course, experiment with the code in the main.cpp, especiallly the template functions like:<br> 
+      You can of course, experiment with the code in the main.cpp, especiallly with the template functions:<br> 
       <code>  
       void populateDocument(DOM::Document* pDoc)<br>
       void updateOrConsumeDocument(DOM::Document* pDoc)<br>
       </code>
+  
+      Note that, for writing sample XML document, roundtripping XML document, or validating XML document you don't have to fill the above mentioned functions in main.cpp file. 
 
       <br><br>
-      We recommend outdir as "." because:
+      It is recommended that you use outdir as ".", for examples because:
       <ul>  
         <li> example directories are already organized with sensible names
-        <li> using  outdir as "." helps in easily consuming main.cpp
+        <li> using outdir as "." helps in easily consuming supplied main.cpp in build
       </ul>  
 
       If for whatever reason you have specified a outdir other than ".", then you would need to:
@@ -137,15 +134,31 @@
         </tr>
         <tr>
           <td><a href="#HELLO_WORLD">helloWorld</a></td>
-          <td>simpleType</td>
+          <td>
+          <b>Schema components:</b> element
+          <br><b>BuiltIn Types:</b> string
+          </td>
         </tr>
         <tr>
           <td><a href="#HELLO_WORLDWIDE">helloWorldWide</a></td>
-          <td>wide characters</td>
+          <td>
+          <b>Schema components:</b> element
+          <br><b>BuiltIn Types:</b> string
+          <br><b>Facets:</b> maxLength
+          <br><b>Other Tags:</b> wide characters
+          </td>
         </tr>
         <tr>
           <td><a href="#SIMPLEST">simplest</a></td>
-          <td>simpleType</td>
+          <td>
+          <b>Schema components:</b>
+            complexType, element, attribute
+          <br><b>BuiltIn Types:</b> string
+          <br><b>Schema controlled Attributes:</b>
+            elementFormDefault
+          <br><b>Other Tags:</b>
+            targetNamespace, mixed content
+          </td>
         <tr>
         <tr>
           <td><a href="#SIMPLETYPES_DEMO">simpleTypesDemo</a></td>
@@ -153,6 +166,9 @@
           <b>Schema components:</b>
             complexType, simpleType, element, attribute
           
+          <br><b>Schema controlled Attributes:</b>
+            elementFormDefault, attributeFormDefault, minOccurs, maxOccurs, fixed
+
           <br><b>simpleType variety:</b> atomic, union, list
 
           <br><b>BuiltIn Types:</b>
@@ -176,31 +192,40 @@
         <tr>
           <td><a href="#PO">purchaseOrder</a></td>
           <td>
-           <b>Schema components:</b>
+          <b>Schema components:</b>
             complexType, simpleType, element, attribute, anonymous element
+          
+          <br><b>Schema controlled Attributes:</b>
+            minOccurs, maxOccurs, fixed
 
-           <br><b>Facets:</b>
+          <br><b>Facets:</b>
             pattern
           </td>
         <tr>
         <tr>
           <td><a href="#MAILS">mails</a></td>
           <td>
-           <b>Schema components:</b>
+          <b>Schema components:</b>
             complexType, simpleType, element, attribute
+          
+          <br><b>Schema controlled Attributes:</b>
+            minOccurs, maxOccurs
 
-           <br><b>Facets:</b>
+          <br><b>Facets:</b>
             enumeration
           
-            <br><b>Other Tags:</b>
-             Model Group 'sequence' with maxOccurs="unbounded"
+          <br><b>Other Tags:</b>
+            Model Group 'sequence' with maxOccurs="unbounded"
           </td>
         <tr>
         <tr>
           <td><a href="#INCDEMO">includeDemo</a></td>
           <td>
-           <b>Schema components:</b>
+          <b>Schema components:</b>
             complexType, simpleType, element, attribute, include
+
+          <br><b>Schema controlled Attributes:</b>
+            minOccurs, maxOccurs
           </td>
         <tr>
         <tr>
@@ -208,6 +233,9 @@
           <td>
            <b>Schema components:</b>
             complexType, simpleType, element, attribute, import
+          
+            <br><b>Schema controlled Attributes:</b>
+            minOccurs, maxOccurs
             
             <br><b>Other Tags:</b>
             targetNamespace, nested imports
@@ -294,8 +322,13 @@
 
       <a name="ORG"><h4>organization</h4></a>
       <hr NOSHADE SIZE=3 WIDTH=100%>
-      The xsd file: <a href="../../examples/org/org.xsd">org.xsd</a>
-      <br><br>
+      The xsd files:
+        <ul>  
+          <li><a href="../../examples/org/org.xsd">org.xsd</a>
+          <li><a href="../../examples/org/engg.xsd">engg.xsd</a>
+          <li><a href="../../examples/org/legal.xsd">legal.xsd</a>
+          <li><a href="../../examples/org/hr.xsd">hr.xsd</a>
+        </ul>  
       The valid.xml file: <a href="../../examples/org/valid.xml">valid.xml</a>
       <br><br>
       The main.cpp file: <a href="../../examples/org/main.cpp">main.cpp</a>

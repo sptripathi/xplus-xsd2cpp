@@ -243,6 +243,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 
   <xsl:variable name="filename" select="concat('include/', $cppTargetNSDirChain, '/Document.h')" />
   <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
 #ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_DOCUMENT_H__
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_DOCUMENT_H__
         
@@ -322,6 +323,7 @@ public:
 
   <!-- Creating  -->
   <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
 #include "<xsl:value-of select="$hdrName"/>"
 
 <xsl:call-template name="T_emit_cppNSBegin_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
@@ -426,6 +428,7 @@ public:
   <xsl:variable name="filename" select="concat('include/', $typeCppNSDirChain, '/Types/', $cppName, '.h')" />
   <!-- Creating  -->
   <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
 #ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
 #include "XSD/xsdUtils.h"
@@ -1594,6 +1597,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
     <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/Types/', $cppName , '.h')" />
     <!-- Creating  -->
     <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
 #include "<xsl:value-of select="$hdrName"/>"
 <xsl:call-template name="T_emit_cppNSBegin_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
 namespace Types
@@ -2483,6 +2487,7 @@ namespace Types
 
   <xsl:variable name="filename" select="concat('include/', $cppTargetNSDirChain, '/', $cppName, '.h')" />
   <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
 #ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
 <xsl:call-template name="GEN_INCLUDELIST_OF_ELEMENT_ATTR_H"/>
@@ -2516,6 +2521,7 @@ using namespace XPlus;
 
   <xsl:variable name="filename" select="concat('include/', $cppTargetNSDirChain, '/', $cppName, '.h')" />
   <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
 #ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
 #include "XSD/UrTypes.h"
@@ -2674,6 +2680,7 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
   <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/', $cppName , '.h')" />
     <!-- Creating  -->
     <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
 #include "<xsl:value-of select="$hdrName"/>"
 <xsl:call-template name="T_emit_cppNSBegin_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
 
@@ -2698,6 +2705,7 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
   <xsl:variable name="filename" select="concat('include/', $cppTargetNSDirChain, '/', 'all-include.h')" />
   <!-- Creating  -->
   <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
 #ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_ALL_INCLUDE_H__
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_ALL_INCLUDE_H__
 
@@ -2751,6 +2759,7 @@ using namespace XPlus;
   <xsl:variable name="filename" select="concat('include/', $cppTargetNSDirChain, '/', 'common-include.h')" />
   <!-- Creating  -->
   <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
 #ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_COMMON_INCLUDE_H__
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_COMMON_INCLUDE_H__
 
@@ -2869,6 +2878,7 @@ using namespace XPlus;
   <xsl:variable name="filename" select="'main.cpp.template'" />
   <xsl:variable name="cntTLE"><xsl:call-template name="T_count_top_level_elements_doc_and_includes"/></xsl:variable>
   <xsl:document method="text" href="{$filename}">
+<xsl:value-of select="$outHeader"/>  
 #include &lt;iostream&gt;
 #include &lt;string&gt;
 

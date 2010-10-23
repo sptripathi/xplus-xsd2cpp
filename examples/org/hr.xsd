@@ -22,9 +22,7 @@
       <xsd:element ref="ns1:userId"/>
       <xsd:element name="name" type="xsd:string"/>
       <xsd:element name="title" type="xsd:string"/>
-      <!--
       <xsd:element name="joiningDate" type="xsd:date"/>
-      -->
       <xsd:element name="reportsTo" type="ns1:UserId" minOccurs="0"/>
       <xsd:element name="reportees" type="ns1:UserIdList"/>
     </xsd:sequence>

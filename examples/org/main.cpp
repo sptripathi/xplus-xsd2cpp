@@ -39,22 +39,27 @@ DOM::Document* createXsdDocument(string inFilePath)
 void populateDocument(DOM::Document* pDoc)
 {
   /*
-   Jim Barnette    : org head
+  Jim Barnette    : org head
 
-   Paul V. Biron : engg head
+  Engg:  
+      Paul V. Biron : engg head
    
-   Allen Brown : proj1 head
-   Charles E. Campbell
-   Wayne Carr
+    Project1: 
+        Allen Brown : proj1 head
+        Charles E. Campbell
+        Wayne Carr
 
-   Lee Buck : proj2 head
-   Peter Chen
-   David Cleary
+    Project2:
+        Lee Buck : proj2 head
+        Peter Chen
+        David Cleary
 
-   Legal:
-   Don Box :legal head
-   Dan Connolly
-   Ugo Corda
+  
+  Legal:
+      Don Box :legal head
+      Dan Connolly
+      Ugo Corda
+
   */
 
   org::Document* xsdDoc = dynamic_cast<org::Document *>(pDoc);
@@ -71,6 +76,7 @@ void populateDocument(DOM::Document* pDoc)
   pEmpl = pOrgn->element_allEmployees()->element_employee_at(0);
   pEmpl->set_name("Jim Barnette");
   pEmpl->set_userId("jimb");
+  pEmpl->set_joiningDate("1978-02-11");
   pEmpl->set_title("org head");
   pEmpl->element_reportees()->add_userId_string("paulb");
   pEmpl->element_reportees()->add_userId_string("donb");
@@ -78,6 +84,7 @@ void populateDocument(DOM::Document* pDoc)
   pEmpl = pOrgn->element_allEmployees()->element_employee_at(1);
   pEmpl->set_name("Paul V. Biron");
   pEmpl->set_userId("paulb");
+  pEmpl->set_joiningDate("1978-02-15");
   pEmpl->set_title("Engg head");
   pEmpl->element_reportees()->add_userId_string("allenb");
   pEmpl->element_reportees()->add_userId_string("leeb");
@@ -86,6 +93,7 @@ void populateDocument(DOM::Document* pDoc)
   pEmpl = pOrgn->element_allEmployees()->element_employee_at(2);
   pEmpl->set_name("Don Box");
   pEmpl->set_userId("donb");
+  pEmpl->set_joiningDate("1978-02-15");
   pEmpl->set_title("Legal head");
   pEmpl->element_reportees()->add_userId_string("danc");
   pEmpl->element_reportees()->add_userId_string("ugoc");
@@ -94,6 +102,7 @@ void populateDocument(DOM::Document* pDoc)
   pEmpl = pOrgn->element_allEmployees()->element_employee_at(3);
   pEmpl->set_name("Allen Brown");
   pEmpl->set_userId("allenb");
+  pEmpl->set_joiningDate("1978-02-15");
   pEmpl->set_title("Proj1 head");
   pEmpl->element_reportees()->add_userId_string("charlese");
   pEmpl->element_reportees()->add_userId_string("waynec");
@@ -102,6 +111,7 @@ void populateDocument(DOM::Document* pDoc)
   pEmpl = pOrgn->element_allEmployees()->element_employee_at(4);
   pEmpl->set_name("Lee Buck");
   pEmpl->set_userId("leeb");
+  pEmpl->set_joiningDate("1978-02-15");
   pEmpl->set_title("Proj2 head");
   pEmpl->element_reportees()->add_userId_string("peterc");
   pEmpl->element_reportees()->add_userId_string("davidc");
@@ -110,36 +120,42 @@ void populateDocument(DOM::Document* pDoc)
   pEmpl = pOrgn->element_allEmployees()->element_employee_at(5);
   pEmpl->set_name("Charles E Campbell");
   pEmpl->set_userId("charlese");
+  pEmpl->set_joiningDate("1978-02-15");
   pEmpl->set_title("SMTS");
   pEmpl->set_reportsTo("allenb");
 
   pEmpl = pOrgn->element_allEmployees()->element_employee_at(6);
   pEmpl->set_name("Wayne Carr");
   pEmpl->set_userId("waynec");
+  pEmpl->set_joiningDate("1978-02-15");
   pEmpl->set_title("SMTS");
   pEmpl->set_reportsTo("allenb");
   
   pEmpl = pOrgn->element_allEmployees()->element_employee_at(7);
   pEmpl->set_name("Peter Chen");
   pEmpl->set_userId("peterc");
+  pEmpl->set_joiningDate("1978-02-15");
   pEmpl->set_title("SMTS");
   pEmpl->set_reportsTo("leeb");
   
   pEmpl = pOrgn->element_allEmployees()->element_employee_at(8);
   pEmpl->set_name("David Cleary");
   pEmpl->set_userId("davidc");
+  pEmpl->set_joiningDate("1978-02-15");
   pEmpl->set_title("SMTS");
   pEmpl->set_reportsTo("leeb");
 
   pEmpl = pOrgn->element_allEmployees()->element_employee_at(9);
   pEmpl->set_name("Dan Connolly");
   pEmpl->set_userId("danc");
+  pEmpl->set_joiningDate("1978-02-15");
   pEmpl->set_title("Legal Advisor");
   pEmpl->set_reportsTo("donb");
   
   pEmpl = pOrgn->element_allEmployees()->element_employee_at(10);
   pEmpl->set_name("Ugo Corda");
   pEmpl->set_userId("ugoc");
+  pEmpl->set_joiningDate("1978-02-15");
   pEmpl->set_title("Legal Advisor");
   pEmpl->set_reportsTo("donb");
   

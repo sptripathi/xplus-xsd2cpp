@@ -142,7 +142,6 @@
    <br><br>
    <br><br>
   
-  The rule of generating the directory...namespace and CPP...namespace from targetNamespace is outlined in a table below.
 
       Currently XmlPlus supports two types of URI in target-namespace:
       <ul>
@@ -452,18 +451,16 @@
   The composition of child-attributes is straightforward, that is child-attributes are specified as direct children of the parent-element. 
   <br><br>
   However, the child-elements are composed through many abstractions:<br><br>
-  <b>FIXME: the tree below may not require complexContent</b>
   <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
     &nbsp;&nbsp;<b>parent-element</b>
     <ul>
       <li> complexType
       <ul>
-        <li> one or more levels(nesting) of MG(sequence/choice/all)
+        <li> one or more levels(nesting) of Model Group(sequence/choice/all), henceforth referred to as MG.
         <ul>
           <li> <b>child-element</b>
         </ul>
-        <li> one level of MGD (currently unsupported)
-        <li> complexContent (currently unsupported)
+        <li> one level of Model Group Definition (currently unsupported), henceforth referred to as MGD.
       </ul>
     </ul>
   </div>  
@@ -645,9 +642,19 @@
           The specified size should be &lt;= maxOccurs of the element.
           <br><br>
 
-        <li> <code><b>pElemNode</b> add_<b>nameElem</b>()</code>
+        <li> <code><b>pElemNode</b> add_node_<b>nameElem</b>()</code>
           <br><br>
           Adds one element to the end of the "list of the element nodes".
+          <br><br>
+
+        <li> <code>void add_<b>nameElem</b>(DOMString val)</code>
+          <br><br>
+          Adds one element to the end of the "list of the element nodes", and sets the value from supplied DOMString value.
+          <br><br>
+
+        <li> <code>void add_<b>nameElem</b>(<b>Type</b> val)</code>
+          <br><br>
+          Adds one element to the end of the "list of the element nodes", and sets the value from supplied <b>Type</b> value.
           <br><br>
 
         <li><code>List&lt;<b>ptrElemNode</b>&gt; elements_<b>nameElem</b>()</code>
@@ -704,15 +711,18 @@
   Your application does not have to use the data-binding library like this. There is an unfolded main.cpp available under examples/simplest/main.cpp. An application could use call flow like used in the examples/simplest/main.cpp.
 
   <br><br>
-  In the generated main.cpp, you would need to write code in some template functions:
-  <ul>
+  In the generated main.cpp, you may need to write code in some template functions:
+  <ol>
     <li> <b>chooseDocumentElement()</b> : to choose the documentElement ie root of the document. <br>The options would be already available, you just need to uncomment the appropriate line. This callback function is available, when there are more than one top-level elements in the source(or included/imported) document(s).
     <br> <br>
     <li> <b>populateDocument()</b> : to populate the Document while writing a fresh XML file<br>
        Write code populate the document with values, starting from root. 
     <br> <br>
-    <li> <b>updateOrConsumeDocument()</b> : callback function where you could test the Document, consume the Document or update the Document, in the -u option(read,operate,write). 
-  </ul>
+    <li> <b>updateOrConsumeDocument()</b> : callback function where you could test the Document, consume the Document or update the Document, in the -u option(read,operate,write). If this function is not filled, then the -u option is as good as -r option.
+  </ol>
+
+  For writing sample XML document, roundtripping XML document, or validating XML document you don't have to fill the 2) and 3) in the above mentioned item list.
+  <br><br>
 
   A relevant sample code-snippet of main.cpp follows:<br>
 

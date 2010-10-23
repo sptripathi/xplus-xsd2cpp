@@ -38,6 +38,14 @@
 <xsl:variable name="cppReservedKeywords" select="$xplusDictDoc/xmlplusDict/CPPReservedKeywords"></xsl:variable>
 
 
+<xsl:variable name="outHeader">
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  Please do not edit.
+ //
+</xsl:variable>
+
+
 <xsl:variable name="newline">
   <xsl:text>
   </xsl:text>
@@ -248,14 +256,6 @@
   <xsl:value-of select="document($currentDocument)/*[local-name()='schema']/@targetNamespace"/>
 </xsl:template>
 
-
-
-<xsl:template name="genFileHeader">
- //
- //  This file was automatically generated.
- //  DO NOT edit!
- //
-</xsl:template>
 
 
 
