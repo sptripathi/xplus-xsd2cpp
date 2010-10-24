@@ -13,7 +13,5 @@ AM_CXXFLAGS= -I@includedir@ -I$(top_srcdir)/include
 bin_PROGRAMS=@xsdname@run
 @xsdname@run_SOURCES=main.cpp
 
-#@xsdname@run_LDADD = $(top_srcdir)/src/lib@xsdname@.la @libdir@/libdom.la @libdir@/libxsd.la @libdir@/libxplus.la @libdir@/libminiPocoFound.la
-
 @xsdname@run_LDADD = $(top_srcdir)/src/lib@xsdname@.la @libdir@/libxsdall.la 
 @xsdname@run_LDFLAGS = -lexpat

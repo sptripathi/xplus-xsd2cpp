@@ -19,7 +19,6 @@
 
 
 #include "XPlus/UString.h"
-#include "XPlus/Exception.h"
 
 namespace UTF8FNS 
 {
@@ -212,6 +211,7 @@ namespace XPlus
     }
     if(pos < len-1) {
       this->erase(this->begin()+pos+1);
+      this->erase(pos+1, len-pos+1);
     }
   }
 

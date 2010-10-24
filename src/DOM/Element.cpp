@@ -33,7 +33,8 @@ namespace DOM
       Node* nextSibling
       ):
     Node(tagName, Node::ELEMENT_NODE, nsURI, nsPrefix, ownerDocument, NULL, parentNode, prevSibling, nextSibling),
-    _tagName(tagName)
+    _tagName(tagName),
+    _textBufferOnDocBuild("")
   {
 
   }

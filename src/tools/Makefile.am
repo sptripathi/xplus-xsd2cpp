@@ -1,12 +1,12 @@
 AM_CXXFLAGS= -g -O0 -I$(top_srcdir)/include -I$(top_srcdir)/foundation/include
-AM_LDFLAGS= -lpthread #-ldom -L$(top_srcdir)/src/DOM/
+AM_LDFLAGS= -lpthread 
 
 bin_PROGRAMS=domParser 
 
 domParser_SOURCES=DOMParse.cpp
 domParser_LDADD = $(top_srcdir)/src/DOM/libdom.la $(top_srcdir)/src/XPlus/libxplus.la $(top_srcdir)/src/Poco/libpoco.la
 
-dist_bin_SCRIPTS=xsd2cpp #xsd2cpp.xsl xsdUtils.xsl
+dist_bin_SCRIPTS=xsd2cpp 
 
 nobase_dist_bin_SCRIPTS=makeTmpl/configure.ac \
                         makeTmpl/Makefile.am.src \

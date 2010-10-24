@@ -61,7 +61,7 @@ void DOMParser::onXmlDecl(void            *userData,
   _docXmlDecl.encoding = encoding;
   _docXmlDecl.standalone = (standalone==1);
 
-  //FIXME : here may not be the right place
+  //FIXME : this may not be the best place
   _docNode->setXmlDecl(_docXmlDecl);
 }
 
@@ -73,7 +73,7 @@ void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet)
     << endl;
 #endif
 
-  _elementTextBuffer = "";
+  createAccumulatedTextNode();
   Node* elemNode = _docNode->createElementNS(
       const_cast<DOMString *>(nsTriplet.nsUri()),
       const_cast<DOMString *>(nsTriplet.nsPrefix()),
@@ -93,22 +93,12 @@ void DOMParser::onElementEnd(void *userData, NodeNSTriplet nsTriplet)
     << nsTriplet.toString()
     << endl;
 #endif
-
-  if(_elementTextBuffer.length()>0) 
-  {
-    DOMStringPtr pBuff = new DOMString(_elementTextBuffer);
-    TextNodeP textNode = _docNode->createTextNode(pBuff);
-    if(!textNode) {
-      throw DOMException("failed to create Text");
-    }
-  }
-  _elementTextBuffer = "";
-
+  
+  createAccumulatedTextNode();
   _docNode->endElementNS(
         const_cast<DOMString *>(nsTriplet.nsUri()),
         const_cast<DOMString *>(nsTriplet.nsPrefix()),
         const_cast<DOMString *>(nsTriplet.localName()) );
-
 }
 
 void DOMParser::onAttribute(void *userData, NodeNSTriplet nsTriplet,
@@ -137,6 +127,7 @@ void DOMParser::onComment(void *userData, const DOMString* dataPtr)
 #ifdef _DOM_DBG
   cout << "onComment data:[" << dataPtr->str() << "]"  << endl;
 #endif
+  createAccumulatedTextNode();
   
   Comment* cmt = _docNode->createComment(const_cast<DOMString *>(dataPtr));
   if(!cmt) {
@@ -150,17 +141,20 @@ void DOMParser::onCharacterData(void *userData,
 #ifdef _DOM_DBG
   cout << "onCharacterData charBuff:[" << charDataPtr->str() << "]" << endl;
 #endif
-
-  if(charDataPtr) {
-    _elementTextBuffer += *charDataPtr;
+  if(!charDataPtr) {
+    return;
   }
 
-  /*
-  TextNodeP textNode = _docNode->createTextNode(const_cast<DOMString *>(charDataPtr));
-  if(!textNode) {
-    throw DOMException("failed to create Text");
+  if(_docNode->stateful()) {
+    _docNode->getCurrentElement()->addTextBufferOnDocBuild(*charDataPtr);
   }
-  */
+  else
+  {
+    TextNodeP textNode = _docNode->createTextNode(const_cast<DOMString *>(charDataPtr));
+    if(!textNode) {
+      throw DOMException("failed to create Text");
+    }
+  }
 }
 
 void DOMParser::onNamespaceStart(void *userData,
@@ -241,6 +235,7 @@ void DOMParser::onPI(void *userData,
     << " data=" << (dataPtr ? dataPtr->str().c_str() : "(null)")
     << endl;
 #endif
+  createAccumulatedTextNode();
   PI* pi = _docNode->createProcessingInstruction(
       const_cast<DOMString *>(targetPtr), 
       const_cast<DOMString *>(dataPtr));
@@ -248,8 +243,27 @@ void DOMParser::onPI(void *userData,
     throw DOMException("failed to create PI");
   }
 }
+
+void DOMParser::createAccumulatedTextNode()
+{
+  if(_docNode->stateful() && _docNode->getCurrentElement())
+  {
+    DOMString text = _docNode->getCurrentElement()->getTextBufferOnDocBuild();
+    //cout << "onElementStart: text:|" << text << "|" << endl;
+    if(text.length() > 0)
+    {
+      DOMStringPtr textPtr = new DOMString(text);
+      TextNodeP textNode = _docNode->createTextNode(textPtr);
+      _docNode->getCurrentElement()->resetTextBufferOnDocBuild();
+      if(!textNode) {
+        throw DOMException("failed to create Text");
+      }
+    }
+  }
+}
     
 //       END :  parser callbacks 
+
 
 
 void DOMParser::printTreePreOrder(const Node *node, int depth)

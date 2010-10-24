@@ -121,8 +121,15 @@ namespace XMLSchema
         if(!_valueNode) {
           _valueNode = this->ownerNode()->createChildTextNode(new DOMString(value));
         }
-        else {
-          _valueNode->setNodeValue(new DOMString(value));
+        else 
+        {
+          //if(append) {
+          if(0) {
+            _valueNode->appendData(new DOMString(value));
+          }
+          else {
+            _valueNode->setNodeValue(new DOMString(value));
+          }
         }
       }
       return _valueNode;

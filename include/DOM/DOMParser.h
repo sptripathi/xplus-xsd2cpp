@@ -32,7 +32,6 @@ class DOMParser : public ExpatParser
   protected:
     Document* _docNode;
     XmlDecl   _docXmlDecl;
-    DOMString _elementTextBuffer;
 
   public:
 
@@ -82,5 +81,6 @@ class DOMParser : public ExpatParser
     
     void onDocumentStart(void *userData);
     void onDocumentEnd(void *userData);
+    void createAccumulatedTextNode();
 };
 #endif

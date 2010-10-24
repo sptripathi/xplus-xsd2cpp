@@ -140,9 +140,9 @@ void outputPI(XPlusCharOutputStream& s, const PI& pi)
   if(pi.getTarget()) 
   {
     s << "<?";
-    s << pi.getTarget() << " ";
+    s << *pi.getTarget() << " ";
     if(pi.getData()) {
-      s << pi.getData();
+      s << *pi.getData();
     }
     s << "?>";
     s << endl;
@@ -325,7 +325,7 @@ void outputTextNode(XPlusCharOutputStream& s, const TextNode& tn)
   // In their place, appropriate padding spaces would be streamed out
   if( tn.prettyPrint()) {
     //dataStr.trim(UTF8FNS::is_TAB_SPACE);  
-    //dataStr.trim(UTF8FNS::isSpaceChar);  
+    dataStr.trim(UTF8FNS::isSpaceChar);  
   }
   if(dataStr.length()==0) {
     return;
@@ -349,9 +349,23 @@ void outputTextNode(XPlusCharOutputStream& s, const TextNode& tn)
 
 void outputComment(XPlusCharOutputStream& s, const Comment& cmt)
 {
-  s << DOMString("<!--")
-    << *cmt.getData()
-    << DOMString("-->");
+  DOMString padding;
+  if( cmt.prettyPrint() )
+  {
+    s << endl;
+    padding = prettyPrintPadding(cmt.getDepth());
+    s << padding;
+  }
+
+  s << DOMString("<!--") << *cmt.getData() << DOMString("-->");
+
+  // only top level comments need to be follwed by a newline because
+  // all non-top level nodes like element/Text output newline before themselves
+  if( cmt.prettyPrint() && (cmt.getParentNode() == cmt.getOwnerDocument()) ) 
+  //if( cmt.prettyPrint() && (cmt.getPreviousSibling() || cmt.getNextSibling() ))
+  {
+    s << "\n";
+  }
 }
 
 XPlusCharOutputStream& operator<<(XPlusCharOutputStream& s, const DOMString& domStr)
