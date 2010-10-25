@@ -10,6 +10,7 @@ EX_DIRS="
         examples/simpleTypesDemo
         examples/simplest
         examples/po"
+      ex_dirs=""
 
 
 W3C_TESTS_DIRS="
@@ -35,6 +36,15 @@ print_usage()
   echo "    -t  test all the example directories"
   echo "    -h  print help"
   echo
+}
+
+change_dir_abort()
+{
+  cd $dir 
+  if [ $? -ne 0 ]; then
+    echo "failed to change-dir: $dir"
+    exit 2
+  fi
 }
 
 get_input_xsd()
@@ -77,7 +87,9 @@ pass_test()
 cleanup_dir()
 {
   log_clean_dir
-  cd $dir && find . | grep -v svn | grep -v README | grep -v xsd | grep -v xml | grep -v "main.cpp"  | xargs rm -rf 2>/dev/null && rm -f *.template *.bak t.xml* sample.xml *.save  
+  change_dir_abort
+  find . | grep -v svn | grep -v README | grep -v xsd | grep -v xml | grep -v "main.cpp"  | xargs rm -rf 2>/dev/null 
+  rm -f *.template *.bak t.xml* sample.xml *.save  
   cd - > /dev/null 2>&1
   echo "   [ CLEANED ]"  
 }

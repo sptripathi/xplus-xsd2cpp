@@ -684,7 +684,7 @@ complexType Content:
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="yes">
-         XsdParseError: Unknown ElemInfoItem  : <xsl:value-of select="local-name()"/>
+         Error: Unknown ElemInfoItem  : <xsl:value-of select="local-name()"/>
         </xsl:message>
       </xsl:otherwise>
     </xsl:choose>
@@ -695,7 +695,7 @@ complexType Content:
 <xsl:template name="ON_COMPLEXTYPE_ATTRIBUTE">
   <xsl:param name="mode" select="''"/>
   <xsl:param name="schemaComponentName" select="''"/>
-  <xsl:param name="pos" select="'0'"/>
+  <xsl:param name="pos" select="'1'"/>
 
   <xsl:call-template name="ON_ELEMENT_OR_ATTRIBUTE_THROUGH_COMPLEXTYPE_FSM">
     <xsl:with-param name="mode" select="$mode"/>
@@ -705,7 +705,7 @@ complexType Content:
 
 <xsl:template name="ON_COMPLEXTYPE_ATTRGROUP">
   <xsl:param name="mode" select="''"/>
-  <xsl:param name="pos" select="'0'"/>
+  <xsl:param name="pos" select="'1'"/>
 
 </xsl:template>
 
@@ -713,12 +713,12 @@ complexType Content:
 <xsl:template name="ON_COMPLEXTYPE_ANYATTR">
   <xsl:param name="mode" select="''"/>
   <xsl:param name="schemaComponentName" select="''"/>
-  <xsl:param name="pos" select="'0'"/>
+  <xsl:param name="pos" select="'1'"/>
   <xsl:param name="cnt" select="'1'"/>
     
   <xsl:if test="not($cnt='1')">
     <xsl:message terminate="yes">
-    XsdParseError: expected count(anyAttribute)=1, got count(anyAttribute)=<xsl:value-of select="$cnt"/> 
+    Error: expected count(anyAttribute)=1, got count(anyAttribute)=<xsl:value-of select="$cnt"/> 
     </xsl:message>
   </xsl:if>
 
@@ -737,17 +737,17 @@ complexType Content:
 <xsl:template name="ON_COMPLEXTYPE_CONTENT_ANNOTATION_H">
   <xsl:param name="mode" select="''"/>
   <xsl:param name="schemaComponentName" select="''"/>
-  <xsl:param name="pos" select="'0'"/>
+  <xsl:param name="pos" select="'1'"/>
   <xsl:param name="cnt" select="'1'"/>
 
-  <xsl:if test="not($pos='0')">
+  <xsl:if test="not($pos='1')">
     <xsl:message terminate="yes">
-    XsdParseError: expected position(annotation)=0, got position(annotation)=<xsl:value-of select="$pos"/> 
+    Error: expected position(annotation)=1, got position(annotation)=<xsl:value-of select="$pos"/> 
     </xsl:message>
   </xsl:if>
   <xsl:if test="not($cnt='1')">
     <xsl:message terminate="yes">
-    XsdParseError: expected count(annotation)=1, got count(annotation)=<xsl:value-of select="$cnt"/> 
+    Error: expected count(annotation)=1, got count(annotation)=<xsl:value-of select="$cnt"/> 
     </xsl:message>
   </xsl:if>
 
@@ -759,21 +759,24 @@ complexType Content:
 <xsl:template name="ON_COMPLEXTYPE_SIMPLECOMPLEXCONTENT_H">
   <xsl:param name="mode" select="''"/>
   <xsl:param name="schemaComponentName" select="''"/>
-  <xsl:param name="pos" select="'0'"/>
+  <xsl:param name="pos" select="'1'"/>
   <xsl:param name="cnt" select="'1'"/>
         
   <xsl:call-template name="T_unsupported_usage">
     <xsl:with-param name="unsupportedItem" select="'complexType/(complexContent|simpleContent)'"/>
   </xsl:call-template>
 
-  <xsl:if test="not($pos='0') and not($pos='1')">
+  <!--
+  <xsl:if test="not($pos='1') and not($pos='2')">
     <xsl:message terminate="yes">
-    XsdParseError: expected position(simpleContent/complexContent)=0|1, got position(simpleContent/complexContent)=<xsl:value-of select="$pos"/> 
+    Error: expected position(simpleContent/complexContent)=0|1, got position(simpleContent/complexContent)=<xsl:value-of select="$pos"/> 
     </xsl:message>
   </xsl:if>
+  -->
+
   <xsl:if test="not($cnt='1')">
     <xsl:message terminate="yes">
-    XsdParseError: expected count(simpleContent/complexContent)=1, got count(simpleContent/complexContent)=<xsl:value-of select="$cnt"/> 
+    Error: expected count(simpleContent/complexContent)=1, got count(simpleContent/complexContent)=<xsl:value-of select="$cnt"/> 
     </xsl:message>
   </xsl:if>
  
@@ -791,16 +794,16 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
 <xsl:template name="ON_COMPLEXTYPE_MG_OR_MGD">
   <xsl:param name="mode" select="''"/>
   <xsl:param name="schemaComponentName" select="''"/>
-  <xsl:param name="pos" select="'0'"/>
+  <xsl:param name="pos" select="'1'"/>
   <xsl:param name="cnt" select="'1'"/>
-  <xsl:if test="not($pos='0') and not($pos='1')">
+  <xsl:if test="not($pos='1') and not($pos='2')">
     <xsl:message terminate="yes">
-    XsdParseError: expected position(compositors)=0, got position(compositors)=<xsl:value-of select="$pos"/> 
+    Error: expected position(compositors)=1|2, got position(compositors)=<xsl:value-of select="$pos"/> 
     </xsl:message>
   </xsl:if>
   <xsl:if test="not($cnt='1')">
     <xsl:message terminate="yes">
-    XsdParseError: expected count(compositors)=1, got count(compositors)=<xsl:value-of select="$cnt"/> 
+    Error: expected count(compositors)=1, got count(compositors)=<xsl:value-of select="$cnt"/> 
     </xsl:message>
   </xsl:if>
   
@@ -836,7 +839,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
    </xsl:when>
    <xsl:otherwise>  
     <xsl:message terminate="yes">
-     XsdParseError: expected (group | all | choice | sequence)?, got <xsl:value-of select="$localName"/> 
+     Error: expected (group | all | choice | sequence)?, got <xsl:value-of select="$localName"/> 
     </xsl:message>
    </xsl:otherwise>  
  </xsl:choose>
@@ -870,7 +873,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
     
   <xsl:if test="not($cnt='1')">
     <xsl:message terminate="yes">
-    XsdParseError: expected count(group)=1, got count(group)=<xsl:value-of select="$cnt"/> 
+    Error: expected count(group)=1, got count(group)=<xsl:value-of select="$cnt"/> 
     </xsl:message>
   </xsl:if>
 
@@ -900,7 +903,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
       </xsl:when>  
       <xsl:otherwise>  
         <xsl:message terminate="yes">
-        XsdParseError: expected (annotation?, (all | choice | sequence)?), got <xsl:value-of select="$localName"/> 
+        Error: expected (annotation?, (all | choice | sequence)?), got <xsl:value-of select="$localName"/> 
         </xsl:message>
       </xsl:otherwise>  
     </xsl:choose>
@@ -928,7 +931,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
     
   <xsl:if test="not($cnt='1')">
     <xsl:message terminate="yes">
-    XsdParseError: expected count(all)=1, got count(all)=<xsl:value-of select="$cnt"/> 
+    Error: expected count(all)=1, got count(all)=<xsl:value-of select="$cnt"/> 
     </xsl:message>
   </xsl:if>
 
@@ -950,7 +953,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
       </xsl:when>  
       <xsl:otherwise>  
         <xsl:message terminate="yes">
-        XsdParseError: expected (annotation?, element*), got <xsl:value-of select="$localName"/> 
+        Error: expected (annotation?, element*), got <xsl:value-of select="$localName"/> 
         </xsl:message>
       </xsl:otherwise>  
     </xsl:choose>
@@ -984,7 +987,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
 
   <xsl:if test="not($cnt='1')">
     <xsl:message terminate="yes">
-    XsdParseError: expected count(choice|sequence)=1, got count(choice|sequence)=<xsl:value-of select="$cnt"/> 
+    Error: expected count(choice|sequence)=1, got count(choice|sequence)=<xsl:value-of select="$cnt"/> 
     </xsl:message>
   </xsl:if>
 
@@ -1031,7 +1034,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
       </xsl:when>  
       <xsl:otherwise>  
         <xsl:message terminate="yes">
-        XsdParseError: expected (annotation?, (element | group | choice | sequence | any)*), got <xsl:value-of select="$localName"/> 
+        Error: expected (annotation?, (element | group | choice | sequence | any)*), got <xsl:value-of select="$localName"/> 
         </xsl:message>
       </xsl:otherwise>  
     </xsl:choose>
@@ -2660,7 +2663,7 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
   <xsl:variable name="cntSimpleTypes" select="count(*[local-name()='simpleType'])"/>
   <xsl:if test="$cntSimpleTypes > 1">
     <xsl:message terminate="yes">
-     XsdParseError: Unknown ElemInfoItem : <xsl:value-of select="local-name()"/>
+     Error: Unknown ElemInfoItem : <xsl:value-of select="local-name()"/>
     </xsl:message>
   </xsl:if>
   
