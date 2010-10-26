@@ -1453,6 +1453,11 @@ namespace <xsl:value-of select="$nsStr"/>{
                         </xsl:call-template>
                     </xsl:when>
                     <xsl:when test="document($currentDocument)/*[local-name()='schema']/*[local-name()='complexType' and @name=$typeLocalPart]">
+                      <xsl:variable name="ctNode" select="document($currentDocument)/*[local-name()='schema']/*[local-name()='complexType' and @name=$typeLocalPart]"/>
+                      <xsl:call-template name="T_get_complexType_details">
+                        <xsl:with-param name="ctNode" select="$ctNode"/>
+                        <xsl:with-param name="documentName" select="$currentDocument"/>
+                      </xsl:call-template>
                       complexType
                     </xsl:when>
                     <xsl:otherwise>
@@ -1471,7 +1476,6 @@ namespace <xsl:value-of select="$nsStr"/>{
                             <xsl:with-param name="node" select="document($currentDocument)/*[local-name()='schema']/*[local-name()=$refNodeType and @name=$typeLocalPart]"/>
                             <xsl:with-param name="documentName" select="$currentDocument"/>
                           </xsl:call-template>
-
                         </xsl:when>
                         <xsl:otherwise>
                           <xsl:value-of select="$refNodeType"/>
@@ -1656,6 +1660,19 @@ namespace <xsl:value-of select="$nsStr"/>{
 
 
 
+<xsl:template name="T_get_complexType_details">
+  <xsl:param name="ctNode"/>
+  <xsl:param name="documentName" select="''"/>
+  
+  <xsl:variable name="details">
+    <xsl:choose>
+      <xsl:when test="$ctNode/simpleContent">complexType simpleType</xsl:when>
+    </xsl:choose>
+  </xsl:variable>
+
+</xsl:template>
+
+
 
 <xsl:template name="T_get_simpleType_details">
   <xsl:param name="stNode"/>
@@ -1734,7 +1751,13 @@ namespace <xsl:value-of select="$nsStr"/>{
 </xsl:template>
 
 
-<!-- expect: simpleType, complexType-->
+<!-- 
+    resolution: 
+    1. simpleType atomic|list|union  string|datetime...(primitiveTypes) 
+    
+    return: simpleType, complexType
+    
+-->
 <xsl:template name="T_get_resolution_type">
   <xsl:param name="resolution"/>
   <xsl:variable name="type">

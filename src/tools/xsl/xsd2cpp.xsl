@@ -440,20 +440,20 @@ using namespace XPlus;
 <xsl:call-template name="T_emit_cppNSBegin_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
 namespace Types 
 {
-  
-/// The class for complexType <xsl:value-of select="$complexTypeName"/>
-/// \n Refer to documentation on structures/methods inside ...
-class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyComplexType
-{
-public:
-  //constructor
-  <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL);
-
-  <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
-    <xsl:with-param name="schemaComponentName" select="$complexTypeName"/>
-  </xsl:call-template>  
-}; //end class <xsl:value-of select="$cppName"/>
-
+  <xsl:choose>
+    <xsl:when test="*[local-name()='sequence' or local-name()='choice' or local-name()='all' or local-name()='group']">
+      <xsl:call-template name="DEFINE_LEVEL1_COMPLEXTYPE_MG_MGD_H">
+        <xsl:with-param name="schemaComponentName" select="$complexTypeName"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:when test="*[local-name()='simpleContent']">
+      <xsl:call-template name="DEFINE_LEVEL1_COMPLEXTYPE_WITH_SIMPLECONTENT_H">
+        <xsl:with-param name="schemaComponentName" select="$complexTypeName"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:when test="*[local-name()='complexContent']">
+    </xsl:when>
+  </xsl:choose>
 } // end namespace Types
 
 <xsl:call-template name="T_emit_cppNSEnd_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
@@ -461,6 +461,125 @@ public:
   </xsl:document>
 </xsl:template>
 
+
+
+<xsl:template name="DEFINE_LEVEL1_COMPLEXTYPE_MG_MGD_H">
+  <xsl:param name="schemaComponentName" select="@name"/>
+
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
+/// The class for complexType <xsl:value-of select="$schemaComponentName"/>
+/// \n Refer to documentation on structures/methods inside ...
+class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyComplexType
+{
+  public:
+  //constructor
+  <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL);
+
+  <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_MG_MGD_H">
+    <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+  </xsl:call-template>  
+}; //end class <xsl:value-of select="$cppName"/>
+</xsl:template>
+
+
+
+<!--
+<simpleContent
+  id = ID
+  {any attributes with non-schema namespace . . .}>
+  Content: (annotation?, (restriction | extension))
+</simpleContent>
+
+<restriction
+  base = QName
+  id = ID
+  {any attributes with non-schema namespace . . .}>
+  Content: (annotation?, (simpleType?, (minExclusive | minInclusive | maxExclusive | maxInclusive | totalDigits | fractionDigits | length | minLength | maxLength | enumeration | whiteSpace | pattern)*)?, ((attribute | attributeGroup)*, anyAttribute?))
+</restriction>
+
+<extension
+  base = QName
+  id = ID
+  {any attributes with non-schema namespace . . .}>
+  Content: (annotation?, ((attribute | attributeGroup)*, anyAttribute?))
+</extension>
+
+<attributeGroup
+  id = ID
+  ref = QName
+  {any attributes with non-schema namespace . . .}>
+  Content: (annotation?)
+</attributeGroup>
+
+<anyAttribute
+  id = ID
+  namespace = ((##any | ##other) | List of (anyURI | (##targetNamespace | ##local)) )  : ##any
+  processContents = (lax | skip | strict) : strict
+  {any attributes with non-schema namespace . . .}>
+  Content: (annotation?)
+</anyAttribute>
+
+-->
+<xsl:template name="DEFINE_LEVEL1_COMPLEXTYPE_WITH_SIMPLECONTENT_H">
+  <xsl:param name="schemaComponentName" select="@name"/>
+
+  <xsl:choose>
+    <xsl:when test="*[local-name()='simpleContent']/*[local-name()='restriction']">
+      <xsl:call-template name="DEFINE_LEVEL1_COMPLEXTYPE_WITH_SIMPLECONTENT_RESTRICTION_H">
+        <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:when test="*[local-name()='simpleContent']/*[local-name()='extension']">
+      <xsl:call-template name="DEFINE_LEVEL1_COMPLEXTYPE_WITH_SIMPLECONTENT_EXTENSION_H">
+        <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+      </xsl:call-template>
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
+
+
+<!-- satya start here -->
+
+<xsl:template name="DEFINE_LEVEL1_COMPLEXTYPE_WITH_SIMPLECONTENT_RESTRICTION_H">
+  <xsl:param name="schemaComponentName" select="@name"/>
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
+
+/// The class for complexType <xsl:value-of select="$schemaComponentName"/>  with simpleContent/restriction
+/// \n Refer to documentation on structures/methods inside ...
+class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyComplexType
+{
+  public:
+  //constructor
+  <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL);
+
+}; //end class <xsl:value-of select="$cppName"/>
+
+</xsl:template>
+
+
+
+<!--
+
+If the type definition ·resolved· to by the ·actual value· of the base [attribute] is a complex type definition (whose own {content type} must be a simple type definition, see below) and the <extension> alternative is chosen, then the {content type} of that complex type definition;
+otherwise (the type definition ·resolved· to by the ·actual value· of the base [attribute] is a simple type definition and the <extension> alternative is chosen), then that simple type definition.
+
+-->
+
+<xsl:template name="DEFINE_LEVEL1_COMPLEXTYPE_WITH_SIMPLECONTENT_EXTENSION_H">
+  <xsl:param name="schemaComponentName" select="@name"/>
+
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
+/// The class for complexType <xsl:value-of select="$schemaComponentName"/> with simpleContent/extension
+/// \n Refer to documentation on structures/methods inside ...
+class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyComplexType
+{
+  public:
+  //constructor
+  <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL);
+
+}; //end class <xsl:value-of select="$cppName"/>
+
+</xsl:template>
 
 
 
@@ -524,8 +643,9 @@ XML Representation Summary: complexType Element Information Item
   Content: (annotation?, (simpleContent | complexContent | ((group | all | choice | sequence)?, ((attribute | attributeGroup)*, anyAttribute?))))
 </complexType>
 -->
-<xsl:template name="DEFINE_BODY_COMPLEXTYPE_H">
+<xsl:template name="DEFINE_BODY_COMPLEXTYPE_MG_MGD_H">
   <xsl:param name="schemaComponentName" select="''"/>
+
   <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
     <xsl:with-param name="mode" select="'typedefinition'"/>
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
@@ -762,11 +882,11 @@ complexType Content:
   <xsl:param name="pos" select="'1'"/>
   <xsl:param name="cnt" select="'1'"/>
         
+  <!--
   <xsl:call-template name="T_unsupported_usage">
     <xsl:with-param name="unsupportedItem" select="'complexType/(complexContent|simpleContent)'"/>
   </xsl:call-template>
 
-  <!--
   <xsl:if test="not($pos='1') and not($pos='2')">
     <xsl:message terminate="yes">
     Error: expected position(simpleContent/complexContent)=0|1, got position(simpleContent/complexContent)=<xsl:value-of select="$pos"/> 
@@ -1617,6 +1737,31 @@ namespace Types
 
 
 
+<xsl:template name="DEFINE_FNS_COMPLEXTYPE_CPP">
+  <xsl:param name="schemaComponentName" select="@name"/>
+
+  <xsl:choose>
+    <xsl:when test="*[local-name()='sequence' or local-name()='choice' or local-name()='all' or local-name()='group']">
+      <xsl:call-template name="DEFINE_FNS_COMPLEXTYPE_WITH_MG_MGD_CPP">
+        <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+      </xsl:call-template>   
+    </xsl:when>
+    <xsl:when test="*[local-name()='simpleContent']">
+      <xsl:call-template name="DEFINE_FNS_COMPLEXTYPE_WITH_SIMPLECONTENT_CPP">
+        <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+      </xsl:call-template>   
+    </xsl:when>
+    <xsl:when test="*[local-name()='complexContent']">
+      <xsl:call-template name="DEFINE_FNS_COMPLEXTYPE_WITH_COMPLEXCONTENT_CPP">
+        <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+      </xsl:call-template>   
+    </xsl:when>
+  </xsl:choose>
+
+</xsl:template>
+
+
+
 <!--
 
 ..
@@ -1637,7 +1782,7 @@ namespace Types
       </complexType>  
 
 -->
-<xsl:template name="DEFINE_FNS_COMPLEXTYPE_CPP">
+<xsl:template name="DEFINE_FNS_COMPLEXTYPE_WITH_MG_MGD_CPP">
   <xsl:param name="schemaComponentName" select="@name"/>
   
   <xsl:variable name="cppNSDerefLevel1Onwards"><xsl:call-template name="T_get_nsDeref_level1Onwards_elemComplxTypeOnly"/></xsl:variable>
@@ -1726,6 +1871,23 @@ namespace Types
 
 
 
+
+
+<xsl:template name="DEFINE_FNS_COMPLEXTYPE_WITH_SIMPLECONTENT_CPP">
+  <xsl:param name="schemaComponentName" select="@name"/>
+
+</xsl:template>
+
+
+<xsl:template name="DEFINE_FNS_COMPLEXTYPE_WITH_COMPLEXCONTENT_CPP">
+  <xsl:param name="schemaComponentName" select="@name"/>
+
+</xsl:template>
+
+
+
+
+
 <xsl:template name="DEFINE_FNS_FOR_MG_CPP">
   <xsl:param name="schemaComponentName" select="@name"/>
   
@@ -1810,6 +1972,7 @@ namespace Types
   </xsl:call-template>
 
 </xsl:template>
+
 
 
 <xsl:template name="ITERATE_IMMEDIATE_CHILDREN_OF_MG_CHOICE_OR_SEQUENCE_CPP">
@@ -2638,10 +2801,25 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
         );
 
   <xsl:for-each select="*[local-name()='complexType']">
-    <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
-      <xsl:with-param name="schemaComponentName" select="$elemName"/>
-    </xsl:call-template>   
+    <xsl:choose>
+      <xsl:when test="*[local-name()='sequence' or local-name()='choice' or local-name()='all' or local-name()='group']">
+        <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_MG_MGD_H">
+          <xsl:with-param name="schemaComponentName" select="$elemName"/>
+        </xsl:call-template>   
+      </xsl:when>
+      <xsl:when test="*[local-name()='simpleContent']">
+        <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_WITH_SIMPLECONTENT_H">
+          <xsl:with-param name="schemaComponentName" select="$elemName"/>
+        </xsl:call-template>   
+      </xsl:when>
+      <xsl:when test="*[local-name()='complexContent']">
+        <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_WITH_COMPLEXCONTENT_H">
+          <xsl:with-param name="schemaComponentName" select="$elemName"/>
+        </xsl:call-template>   
+      </xsl:when>
+    </xsl:choose>
   </xsl:for-each>
+
   <xsl:for-each select="*[local-name()='simpleType']">
     <xsl:variable name="elemType" select="concat('SimpleType_', @name)"/>
     <xsl:call-template name="DEFINE_BODY_SIMPLETYPE">
@@ -2650,6 +2828,20 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
   </xsl:for-each>
 
 }; //end class <xsl:value-of select="@name"/>
+</xsl:template>
+
+
+
+
+<xsl:template name="DEFINE_BODY_COMPLEXTYPE_WITH_SIMPLECONTENT_H">
+  <xsl:param name="schemaComponentName" select="''"/>
+
+</xsl:template>
+
+
+<xsl:template name="DEFINE_BODY_COMPLEXTYPE_WITH_COMPLEXCONTENT_H">
+  <xsl:param name="schemaComponentName" select="''"/>
+
 </xsl:template>
 
 
