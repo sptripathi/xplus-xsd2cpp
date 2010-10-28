@@ -22,6 +22,7 @@
 
 #include <sstream>
 #include <string>
+#include <iostream>
 
 #include "XPlus/Exception.h"
 
@@ -47,7 +48,9 @@ namespace XPlus
     if (iss >> result)
       return result;
       
-    throw StringException("fromString failed:"  + s);
+      
+    throw StringException(string("fromString failed. string:[") + s + "]");
   }
+
 }
 #endif

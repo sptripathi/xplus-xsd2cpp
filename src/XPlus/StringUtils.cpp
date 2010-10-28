@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "XPlus/StringUtils.h"
+#include "XPlus/UString.h"
 
 using namespace std;
 
@@ -37,6 +38,17 @@ namespace XPlus
     }
     return oss.str();
   }
+
+  template <> string toString(const string& s)
+  {
+    return s;
+  }
+
+  template <> string toString(const UString& s)
+  {
+    return s.str();
+  }
+
   template <> bool fromString<bool>(const string& s)
   {
     bool result;
@@ -44,8 +56,20 @@ namespace XPlus
     iss >> std::boolalpha;
     if (iss >> result)
       return result;
+  
 
-    throw StringException("fromString failed");
+    throw StringException(string("fromString failed. string:[") + s + "]");
+  }
+
+
+  template <> string fromString<string>(const string& s)
+  {
+    return s;
+  }
+  
+  template <> UString fromString<UString>(const string& s)
+  {
+    return s;
   }
 
 
