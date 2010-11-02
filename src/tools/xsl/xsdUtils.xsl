@@ -288,7 +288,7 @@ It is however planned to be supported in future releases.
 +---------------------------------------------------------------- 
 |   Unexpected Error.   ErrorCode: <xsl:value-of select="$errorCode"/>
 +----------------------------------------------------------------
-| Hmmm, you found a bug with this tool( to our regret ).              
+| You probably found a bug with this tool( to our regret ).              
 |                                                                      
 | Please report it to us:                                     
 | - file a bug at http://code.google.com/p/xplus-xsd2cpp/issues/list
@@ -1458,7 +1458,6 @@ namespace <xsl:value-of select="$nsStr"/>{
                         <xsl:with-param name="ctNode" select="$ctNode"/>
                         <xsl:with-param name="documentName" select="$currentDocument"/>
                       </xsl:call-template>
-                      complexType
                     </xsl:when>
                     <xsl:otherwise>
                       false
@@ -1659,17 +1658,60 @@ namespace <xsl:value-of select="$nsStr"/>{
 </xsl:template>
 
 
+<!--
+
+{content type}
+    One of :
+    - empty
+    - a simple type definition 
+    - or a pair consisting of a ·content model· (I.e. a Particle (§2.2.3.2)) and one of mixed, element-only. 
+
+
+  returns: "complexType content-type"
+-->
+<xsl:template name="T_get_complexType_contentType">
+  <xsl:param name="ctNode"/>
+  <xsl:param name="documentName" select="''"/>
+
+  <xsl:variable name="elemOnlyOrMixed">
+    <xsl:choose>
+      <xsl:when test="$ctNode/@mixed='true'">mixed</xsl:when>
+      <xsl:otherwise>element-only</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="contentType">
+    <xsl:choose>
+      <xsl:when test="$ctNode/*[local-name()='simpleContent']">simpleType</xsl:when>
+      <xsl:when test="$ctNode/*[local-name()='complexContent']">complexContent,<xsl:value-of select="$elemOnlyOrMixed"/></xsl:when>
+      <xsl:when test="$ctNode/*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
+      <xsl:value-of select="local-name($ctNode/*[local-name()='sequence' or local-name()='choice' or local-name()='all'])"/>,<xsl:value-of select="$elemOnlyOrMixed"/>
+      </xsl:when>
+      <xsl:otherwise>empty</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($contentType)"/>
+</xsl:template>
+
+
+
 
 <xsl:template name="T_get_complexType_details">
   <xsl:param name="ctNode"/>
   <xsl:param name="documentName" select="''"/>
   
+  <xsl:variable name="contentType">
+    <xsl:call-template name="T_get_complexType_contentType">
+      <xsl:with-param name="ctNode" select="$ctNode"/>
+      <xsl:with-param name="documentName" select="$documentName"/>
+    </xsl:call-template>
+  </xsl:variable>
+  
   <xsl:variable name="details">
-    <xsl:choose>
-      <xsl:when test="$ctNode/simpleContent">complexType simpleType</xsl:when>
-    </xsl:choose>
+    complexType <xsl:value-of select="$contentType"/>
   </xsl:variable>
 
+  <xsl:value-of select="normalize-space($details)"/>
 </xsl:template>
 
 
@@ -1789,12 +1831,40 @@ namespace <xsl:value-of select="$nsStr"/>{
   </xsl:choose>
 </xsl:template>
 
+
+
+
 <xsl:template name="T_get_atomic_simpleType_impl_from_resolution">
   <xsl:param name="resolution"/>
   <xsl:value-of select="normalize-space(substring-after($resolution, ' atomic '))"/>
 </xsl:template>
 
 
+
+
+<xsl:template name="T_is_resolution_complexType_with_simpleTypeContent">
+  <xsl:param name="resolution"/>
+
+  <xsl:variable name="isComplexType">
+    <xsl:choose>
+      <xsl:when test="starts-with($resolution, 'complexType ')">true</xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="isSimpleTyeContent">
+    <xsl:choose>
+      <xsl:when test="contains($resolution, ' simpleType')">true</xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="returnBool">
+    <xsl:choose>
+      <xsl:when test="$isComplexType='true' and $isSimpleTyeContent='true'">true</xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($returnBool)"/>
+</xsl:template>
 
 
 <xsl:template name="T_get_cppType_ElementAttr">
@@ -2518,12 +2588,12 @@ namespace <xsl:value-of select="$nsStr"/>{
 
 
 
-<xsl:template name="T_get_cppNSDeref_of_simpleType">
-  <xsl:param name="stName" select="''"/>
+<xsl:template name="T_get_cppNSDeref_of_simpleType_complexType">
+  <xsl:param name="typeQName" select="''"/>
   
   <xsl:variable name="nsPrefix">
     <xsl:call-template name="T_get_nsPrefix_from_QName">
-      <xsl:with-param name="qName" select="$stName"/>
+      <xsl:with-param name="qName" select="$typeQName"/>
     </xsl:call-template>
   </xsl:variable>
   <xsl:variable name="nsUri">
@@ -2614,6 +2684,55 @@ namespace <xsl:value-of select="$nsStr"/>{
 
 
 
+
+<!--
+    in cases like complexType with restriction|extension/@base
+    Type references are resolved and error is thrown in case of error
+-->
+<xsl:template name="T_get_cppType_for_typeRef_from_complexType">
+  <xsl:param name="typeQName" select="''"/>
+
+  <xsl:variable name="nsPrefix">
+    <xsl:call-template name="T_get_nsPrefix_from_QName">
+      <xsl:with-param name="qName" select="$typeQName"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="typeNsUri">
+    <xsl:call-template name="T_get_typeNsUri_for_nsPrefix_inDoc">
+      <xsl:with-param name="nsPrefix" select="$nsPrefix"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="typeLocalPart"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="$typeQName"/></xsl:call-template></xsl:variable>
+  <xsl:variable name="resolution">
+    <xsl:call-template name="T_resolve_typeQName">
+      <xsl:with-param name="typeQName" select="$typeQName"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:if test="normalize-space($resolution)='false'"> 
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">Could not resolve "<xsl:if test="$typeNsUri!=''">{<xsl:value-of select="$typeNsUri"/>}</xsl:if><xsl:value-of select="$typeLocalPart"/>" to any simple-type-definition or complex-type-definition in either the schema-document or in any imported/included schema-documents</xsl:with-param></xsl:call-template>
+  </xsl:if>
+  
+  <xsl:variable name="resolution_type">
+    <xsl:call-template name="T_get_resolution_type">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="cppType">
+    <xsl:choose>
+      <xsl:when test="$resolution_type='simpleType'">
+        <xsl:call-template name="T_get_cppType_simpleType"><xsl:with-param name="stName" select="$typeQName"/></xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$resolution_type='complexType'">
+        <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="$typeLocalPart"/></xsl:call-template>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:value-of select="normalize-space($cppType)"/>
+</xsl:template>
+
+
 <xsl:template name="T_get_nsUri_simpleType_list_itemType">
   <xsl:param name="itemType" select="''"/>
 
@@ -2682,6 +2801,123 @@ namespace <xsl:value-of select="$nsStr"/>{
   </xsl:variable>
   <xsl:value-of select="normalize-space($cppNS)"/>
 </xsl:template>
+
+
+
+<!--
+  TODO: extend it for complexContent
+-->
+<xsl:template name="T_get_complexType_simpleComplexContent_base">
+  <xsl:variable name="base">
+    <xsl:choose>
+      <xsl:when test="*[local-name()='restriction' and @base]">
+        <xsl:value-of select="*[local-name()='restriction']/@base"/>
+      </xsl:when>
+      <xsl:when test="*[local-name()='extension' and @base]">
+        <xsl:value-of select="*[local-name()='extension']/@base"/>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($base)"/>
+</xsl:template>
+
+
+<!--
+  TODO: extend it for complexContent
+-->
+<xsl:template name="T_get_complexType_base">
+  <xsl:variable name="base">
+    <xsl:choose>
+      <xsl:when test="*[local-name()='simpleContent']">
+        <xsl:for-each select="*[local-name()='simpleContent']">
+          <xsl:call-template name="T_get_complexType_simpleComplexContent_base"/>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:when test="*[local-name()='complexContent']">
+      </xsl:when>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($base)"/>
+</xsl:template>
+
+
+
+<xsl:template name="T_get_cppType_complexType_simpleComplexContent_base">
+  <xsl:variable name="base">
+    <xsl:call-template name="T_get_complexType_simpleComplexContent_base"/>
+  </xsl:variable>
+  
+  <xsl:variable name="baseCppType">
+    <xsl:call-template name="T_get_cppType_for_typeRef_from_complexType">
+      <xsl:with-param name="typeQName" select="$base"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($baseCppType)"/>
+</xsl:template>
+
+
+<xsl:template name="T_get_cppType_complexType_base">
+  <xsl:variable name="base">
+    <xsl:call-template name="T_get_complexType_base"/>
+  </xsl:variable>
+  
+  <xsl:variable name="baseCppType">
+    <xsl:call-template name="T_get_cppType_for_typeRef_from_complexType">
+      <xsl:with-param name="typeQName" select="$base"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($baseCppType)"/>
+</xsl:template>
+
+
+
+
+
+<xsl:template name="T_get_nsUri_complexType_simpleComplexContent_base">
+  <xsl:variable name="base">
+    <xsl:call-template name="T_get_complexType_simpleComplexContent_base"/>
+  </xsl:variable>
+
+  <xsl:variable name="nsPrefix">
+    <xsl:call-template name="T_get_nsPrefix_from_QName">
+      <xsl:with-param name="qName" select="$base"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="nsUri">
+    <xsl:call-template name="T_get_typeNsUri_for_nsPrefix_inDoc">
+      <xsl:with-param name="nsPrefix" select="$nsPrefix"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($nsUri)"/>
+</xsl:template>
+
+
+<xsl:template name="T_get_cppNSStr_complexType_base">
+  <xsl:param name="mode" select="'deref'"/>
+
+  <xsl:variable name="base">
+    <xsl:call-template name="T_get_complexType_simpleComplexContent_base"/>
+  </xsl:variable>
+
+  <xsl:variable name="nsPrefix">
+    <xsl:call-template name="T_get_nsPrefix_from_QName">
+      <xsl:with-param name="qName" select="$base"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="nsUri">
+    <xsl:call-template name="T_get_typeNsUri_for_nsPrefix_inDoc">
+      <xsl:with-param name="nsPrefix" select="$nsPrefix"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="cppNS">
+    <xsl:call-template name="T_get_cppNSStr_for_nsUri">
+      <xsl:with-param name="nsUri" select="$nsUri"/>
+      <xsl:with-param name="mode" select="$mode"/>
+  </xsl:call-template><xsl:if test="$mode='deref'">::Types</xsl:if>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($cppNS)"/>
+</xsl:template>
+
 
 
 

@@ -21,7 +21,7 @@
 
 namespace FSM {
 
-void warnNullNode(Node *pNode, const char* nodeName, const char* qName, int minOccurence)
+void warnNullNode(void *pNode, const char* nodeName, const char* qName, int minOccurence)
 {
   if(pNode == NULL)
   {
@@ -177,15 +177,26 @@ void XsdFsmOfFSMs::init(XsdFsmBasePtr *fsms, FSMType fsmType)
   }
 }
 
+void XsdFsmOfFSMs::addFsms(XsdFsmBasePtr *fsms)
+{
+  for(unsigned i=0; !fsms[i].isNull();  i++)
+  {
+    fsms[i]->parentFsm(this);
+    _allFSMs.push_back(fsms[i]);
+  }
+}
+
 XsdFsmOfFSMs::XsdFsmOfFSMs(const XsdFsmOfFSMs& fof):
   _currentFSMIdx(fof.currentFSMIdx()),
   _fsmType(fof.fsmType()),
   _indicesDirtyFsms(fof.indicesDirtyFsms())
 {
+  this->parentFsm(fof.parentFsm());
   const vector<XsdFsmBasePtr>& allFSMs = fof.allFSMs();
   for(unsigned int i=0; i<allFSMs.size(); i++)
   {
     XsdFsmBasePtr ptr = allFSMs[i]->clone();
+    ptr->parentFsm(this);
     _allFSMs.push_back(ptr);
   }
   _indicesDirtyFsms = fof.indicesDirtyFsms();
@@ -568,7 +579,7 @@ XsdFsmBasePtr XsdFsmOfFSMs::currentUnitFsm()
   return NULL;
 }
     
-void XsdFsmOfFSMs::fireRequiredEvents()
+void XsdFsmOfFSMs::fireRequiredEvents(bool docBuilding)
 {
   if(_fsmType == CHOICE) {
     return;
@@ -577,7 +588,7 @@ void XsdFsmOfFSMs::fireRequiredEvents()
   for(unsigned int i=0; i<_allFSMs.size(); i++)
   {
     if(!_allFSMs[i]->isInFinalState()) {
-      _allFSMs[i]->fireRequiredEvents();
+      _allFSMs[i]->fireRequiredEvents(docBuilding);
     }
   }
 }
@@ -630,7 +641,7 @@ Node* XsdSequenceFsmOfFSMs::nextSiblingElementInSchemaOrder(XsdFsmBase *callerFs
   }
   
   if(_parentFsm) {
-    _parentFsm->nextSiblingElementInSchemaOrder(this);
+    return _parentFsm->nextSiblingElementInSchemaOrder(this);
   }
 
   return NULL;
@@ -870,7 +881,9 @@ void XsdFsmArray::init(XsdFsmBase* fsm, unsigned int minOccurence, unsigned int 
 XsdFsmArray::XsdFsmArray(const XsdFsmArray& ref):
   _fsmTree(ref.fsmTree())
 {
+  this->parentFsm(ref.parentFsm());
   _unitFsm = ref.unitFsm()->clone();
+  _unitFsm->parentFsm(this);
   /*
   const list<XsdFsmBasePtr>& fsmList = ref.fsmList();
   list<XsdFsmBasePtr>::const_iterator cit = fsmList.begin();
@@ -1010,7 +1023,7 @@ XsdFsmBase* XsdFsmArray::fsmAt(unsigned int idx)
       node = ((!node->_lc.isNull()) ? node->_lc : node->_rc);
     }
     else {
-      throw XMLSchema::FSMException("fsm error");
+      node = NULL;
     }
   }
   return NULL;
@@ -1024,6 +1037,7 @@ XsdFsmBase* XsdFsmArray::clone() const
 void XsdFsmArray::print() const
 {
   cout << "{ // XsdFsmArray " << endl;
+  cout << " this" << this <<  " parentFsm:" << _parentFsm << endl;
   const list<BinaryFsmTree::TreeNodePtr>& leaves = _fsmTree.getLeaves();
   list<BinaryFsmTree::TreeNodePtr>::const_iterator it = leaves.begin();
   for( ; it!=leaves.end(); it++)
@@ -1205,14 +1219,15 @@ XsdFsmBasePtr XsdFsmArray::currentUnitFsm()
   return NULL;
 }
 
-void XsdFsmArray::resize(unsigned int size)
+void XsdFsmArray::resize(unsigned int size, bool docBuilding)
 {
   //cout << " ------------------ XsdFsmArray::resize called with size=" << size << endl;
   int sz = static_cast<int>(size);
   if( (sz < _fsmTree._minDepth) || (sz > _fsmTree._maxDepth)) {
     ostringstream oss;
-    oss << "size should be in range: [" << 1
-      << "," << 1 << "]";
+    oss << "size should be in range: [" 
+      << _fsmTree._minDepth
+      << "," << _fsmTree._maxDepth << "]";
     throw IndexOutOfBoundsException(oss.str());
   }
 
@@ -1229,16 +1244,17 @@ void XsdFsmArray::resize(unsigned int size)
     const list<BinaryFsmTree::TreeNodePtr> leaves = _fsmTree.getLeaves();
     assert(leaves.size()==1);
     FsmTreeNode* fsmTreeNode = const_cast<FsmTreeNode *>(dynamic_cast<const FsmTreeNode *>(leaves.front().get()));
-    fsmTreeNode->_data->fireRequiredEvents();
+    fsmTreeNode->_data->fireRequiredEvents(docBuilding);
   }
 }
 
-void XsdFsmArray::fireRequiredEvents()
+
+void XsdFsmArray::fireRequiredEvents(bool docBuilding)
 {
   if(_fsmTree._minDepth==0) {
     return;
   }
-  resize(_fsmTree._minDepth);
+  resize(_fsmTree._minDepth, docBuilding);
     
   /*
   const list<BinaryFsmTree::TreeNodePtr> leaves = _fsmTree.getLeaves();
