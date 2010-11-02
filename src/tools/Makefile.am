@@ -20,6 +20,8 @@ nobase_dist_bin_SCRIPTS=makeTmpl/configure.ac \
                         xsl/xsdUtils.xsl \
                         xsl/xsd2cpp.xsl \
                         xsl/xsd2cppST.xsl \
+                        xsl/complexTypeC.xsl \
+                        xsl/complexTypeH.xsl \
                         xsl/xsdIncludes.xsl \
                         xsl/xsd2cppBuiltinSimple.xsl \
                         xsl/xmlplusDict.xml

@@ -162,7 +162,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
       <xsl:value-of select="$cppFsmName"/>,
     </xsl:when>
     <xsl:when test="$mode='element_define_misc_functions'">
-      <xsl:call-template name="DEFINE_FNS_FOR_MEMBER_ELEMENT_ATTRIBUTE">
+      <xsl:call-template name="DEFINE_FNS_FOR_MEMBER_ELEMENT_ATTRIBUTE_CPP">
         <xsl:with-param name="parentSchemaComponentName" select="'Document'"/>
       </xsl:call-template>
     </xsl:when>

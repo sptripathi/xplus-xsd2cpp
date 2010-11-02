@@ -50,7 +50,7 @@ namespace FSM {
   typedef AutoPtr<XsdFsmBase> XsdFsmBasePtr;
   typedef XsdFsmBase* XsdFsmBaseP;
 
-void warnNullNode(Node *pNode, const char* nodeName, const char* qName, int minOccurence);
+void warnNullNode(void *pNode, const char* nodeName, const char* qName, int minOccurence);
 bool matchNamespace(const DOMString* nsUri1, const DOMString* nsUri2);
 void outputErrorToException(XPlus::Exception& ex, list<DOMString> possibleEvents, DOMString gotEvent, bool docBuilding=true);
 
@@ -152,7 +152,7 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
     virtual bool isInitFinalState() const=0;
     virtual list<DOMString> suggestNextEvents() const=0; 
     virtual XsdFsmBasePtr currentUnitFsm()=0;
-    virtual void fireRequiredEvents()=0;
+    virtual void fireRequiredEvents(bool docBuilding=true)=0;
     virtual void print() const =0;
     virtual void finish() {};
     
@@ -167,7 +167,10 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
     NodePtr         _fsmCreatedNode;
 };
 
+
+
 DOMString formatNamespaceName(XsdFsmBase::XsdFsmType fsmType, DOMString* nsUri, DOMString localName);
+
 
 template<class ReturnType>
 class XsdFSM : public XsdFsmBase 
@@ -187,7 +190,10 @@ class XsdFSM : public XsdFsmBase
 
     init();
   }
+
+    // copy constructor
     XsdFSM(const XsdFSM& xsdFsm):
+      //_parentFsm(xsdFsm.parentFsm()),
       _nsName(xsdFsm.nsName()),
       _eventIds(xsdFsm.eventIds()),
       _eventNames(xsdFsm.eventNames()),
@@ -195,6 +201,7 @@ class XsdFSM : public XsdFsmBase
       _fsmType(xsdFsm.fsmType()),
       _fsm(xsdFsm.stateFsm()->clone())
     {
+      this->parentFsm(xsdFsm.parentFsm());
       //init();
     }
 
@@ -216,6 +223,8 @@ class XsdFSM : public XsdFsmBase
       _nsName.print();
       if(_fsm)
         _fsm->print();
+      
+      cout << " this" << this <<  " parentFsm:" << _parentFsm << endl;
       cout << "     } // end UnitFSM" << endl;
     }
 
@@ -335,7 +344,6 @@ class XsdFSM : public XsdFsmBase
       //revisit:
       // if the node is being added at some index in elem[] array then
       // will need to find nexts-sibling here
-
       if(_parentFsm) {
         return _parentFsm->nextSiblingElementInSchemaOrder(this);
       }
@@ -343,15 +351,31 @@ class XsdFSM : public XsdFsmBase
     }
 
     
-    virtual void fireRequiredEvents()
+    virtual void fireRequiredEvents(bool docBuilding=true)
     {
       for(unsigned int j=0; j<_nsName.minOccurence; j++) {
-        this->processEventOnce(true);
+        this->processEventOnce(docBuilding);
       }
     }
 
     virtual bool processEventOnce(bool docBuilding=true)
     {
+
+      // if not building the Document from input-stream
+      // then set the scratchpad context
+      Node *p=NULL, *n=NULL;
+
+      if(!docBuilding && rootFsm()) 
+      {
+        p = previousSiblingElementInSchemaOrder(this);
+        // nextSibling is needed as an anchor only if previousSibling is not there
+        if(!p) { 
+          n = nextSiblingElementInSchemaOrder(this);
+        }
+      }
+      rootFsm()->prevSiblingNodeRunTime(p);
+      rootFsm()->nextSiblingNodeRunTime(n);
+
       bool validEvent = false;
       int  eventId = _eventIds[0];
       if(_fsm && (eventId >= 0)) 
@@ -367,20 +391,6 @@ class XsdFSM : public XsdFsmBase
 
     virtual bool processEvent(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true)
     {
-      // if not building the Document from input-stream
-      // then set the scratchpad context
-      Node *p=NULL, *n=NULL;
-      if(!docBuilding && rootFsm()) 
-      {
-        p = previousSiblingElementInSchemaOrder(this);
-        // nextSibling is needed as an anchor only if previousSibling is not there
-        if(!p) { 
-          n = nextSiblingElementInSchemaOrder(this);
-        }
-      }
-      
-      rootFsm()->prevSiblingNodeRunTime(p);
-      rootFsm()->nextSiblingNodeRunTime(n);
 
       if( (_nsName.localName == localName) &&
           (_fsmType == fsmType) &&
@@ -526,12 +536,14 @@ class XsdFsmOfFSMs : public XsdFsmBase
   virtual bool isInFinalState() const;
   virtual list<DOMString> suggestNextEvents() const; 
   virtual XsdFsmBasePtr currentUnitFsm();
-  virtual void fireRequiredEvents();
+  virtual void fireRequiredEvents(bool docBuilding=true);
   virtual bool isInitFinalState() const;
   virtual Node* rightmostElement() const;
   virtual Node* leftmostElement() const;
   virtual Node* previousSiblingElementInSchemaOrder(XsdFsmBase *callerFsm);
   virtual Node* nextSiblingElementInSchemaOrder(XsdFsmBase *callerFsm);
+
+  void addFsms(XsdFsmBasePtr *fsms);
 
   int currentFSMIdx() const {
     return _currentFSMIdx;
@@ -548,11 +560,15 @@ class XsdFsmOfFSMs : public XsdFsmBase
   const vector<XsdFsmBasePtr>& allFSMs() const {
     return _allFSMs;
   }
+    
+  XsdFsmBase* fsmAt(unsigned int idx) {
+    return _allFSMs[idx].get(); 
+  }
   
   vector<XsdFsmBasePtr>& allFSMs() {
     return _allFSMs;
   }
-  
+
   const map<int,bool>&  indicesDirtyFsms() const {
     return _indicesDirtyFsms;
   }
@@ -560,6 +576,7 @@ class XsdFsmOfFSMs : public XsdFsmBase
   void print() const 
   {
     cout << "   { // XsdFsmOfFSMs count=" << _allFSMs.size()  << endl;
+    cout << " this" << this <<  " parentFsm:" << _parentFsm << endl;
     for(unsigned int i=0; i<_allFSMs.size(); i++) {
       _allFSMs[i]->print();
     }
@@ -760,7 +777,7 @@ struct BinaryFsmTree : public BinaryTree<XsdFsmBasePtr>
 
     void assignBT(const TreeNodePtr& node)
     {
-      cout << "assignBT callled" << endl;
+      //cout << "assignBT callled" << endl;
       if(node.isNull()) {
         return;
       }
@@ -812,12 +829,12 @@ class XsdFsmArray : public XsdFsmBase
     virtual bool isInitFinalState() const;
     virtual list<DOMString> suggestNextEvents() const; 
     virtual XsdFsmBasePtr currentUnitFsm();
-    virtual void fireRequiredEvents();
+    virtual void fireRequiredEvents(bool docBuilding=true);
     virtual void print() const;
     virtual void finish();
     virtual XsdFsmBase* fsmAt(unsigned int idx);
     virtual unsigned int size();
-    virtual void resize(unsigned int size);
+    virtual void resize(unsigned int size, bool docBuilding=true);
 
     // non-interface functions
     virtual Node* rightmostElement() const;

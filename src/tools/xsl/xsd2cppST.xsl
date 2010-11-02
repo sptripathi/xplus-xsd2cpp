@@ -540,8 +540,8 @@ namespace Types
 
   <xsl:variable name="localPartToken"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="$token"/></xsl:call-template></xsl:variable>
   <xsl:variable name="cppNSDeref">
-    <xsl:call-template name="T_get_cppNSDeref_of_simpleType">
-      <xsl:with-param name="stName" select="$token"/>
+    <xsl:call-template name="T_get_cppNSDeref_of_simpleType_complexType">
+      <xsl:with-param name="typeQName" select="$token"/>
     </xsl:call-template>
   </xsl:variable>
   
