@@ -1,5 +1,10 @@
 #!/bin/sh
 
+CNT_TOTAL_TESTS=0
+CNT_FAILED_TESTS=0
+CNT_PASSED_TESTS=0
+
+TEST_FAILED=false
 
 EX_DIRS="
         examples/org
@@ -10,21 +15,31 @@ EX_DIRS="
         examples/simpleTypesDemo
         examples/simplest
         examples/po"
-      ex_dirs=""
-
 
 W3C_TESTS_DIRS="
-       w3c_tests/stE080
-       w3c_tests/stG003
-       w3c_tests/stH005
-       w3c_tests/stZ015
-       w3c_tests/ste099
-       w3c_tests/reDH7a
-       w3c_tests/nist5
-       w3c_tests/digtest"
+       Tests/w3c_tests/stE080
+       Tests/w3c_tests/stG003
+       Tests/w3c_tests/stH005
+       Tests/w3c_tests/stZ015
+       Tests/w3c_tests/ste099
+       Tests/w3c_tests/reDH7a
+       Tests/w3c_tests/nist5
+       Tests/w3c_tests/digtest"
+
+XPLUS_TESTS_DIRS="
+                  Tests/xplus_tests/choice
+                  Tests/xplus_tests/choiceOfSeq
+                  Tests/xplus_tests/scExt
+                  Tests/xplus_tests/scExt2
+                  Tests/xplus_tests/scExt3
+                  Tests/xplus_tests/scExt4
+                  Tests/xplus_tests/scRest
+                 " 
+
 
 #EX_DIRS=
 #W3C_TESTS_DIRS=
+#XPLUS_TESTS_DIRS=
 
 
 print_usage()
@@ -75,13 +90,19 @@ log_tests_dir()
 
 fail_test()
 {
+  CNT_FAILED_TESTS=`expr $CNT_FAILED_TESTS + 1`
+  TEST_FAILED=true
+
   echo "   [ FAILED ]"
-  exit 2
+  #exit 2
 }
 
 pass_test()
 {
-  echo "   [ PASSED ]"
+  if [ $TEST_FAILED != 'true' ]; then
+    CNT_PASSED_TESTS=`expr $CNT_PASSED_TESTS + 1`
+    echo "   [ PASSED ]"
+  fi
 }
 
 cleanup_dir()
@@ -108,6 +129,17 @@ cleanup()
   echo; echo
 
   echo "#------------------------------------------------------"
+  echo "# cleaning up xplus_tests ..."
+  echo "#------------------------------------------------------"
+  for dir in $XPLUS_TESTS_DIRS
+  do
+    cleanup_dir
+  done
+  echo "#------------------------------------------------------"
+
+  echo; echo
+
+  echo "#------------------------------------------------------"
   echo "# cleaning up examples ..."
   echo "#------------------------------------------------------"
   for dir in $EX_DIRS
@@ -118,10 +150,52 @@ cleanup()
 }
   
 
+#  2 testcases
+test_valid()
+{
+  if [ $TEST_FAILED = 'true' ]; then
+    return
+  fi
 
+  # check valid.xml exists
+  if [ ! -f valid.xml ]; then
+    echo "  valid.xml doesn't exist"
+    fail_test
+    return
+  fi
 
+  # validate valid.xml
+  ./build/bin/$run -v valid.xml >> tests.log 2>&1
+  if [ $? -ne 0 ]; then
+    echo "   failed to validate valid.xml"
+    fail_test
+    return
+  fi
+}
+
+#  1 testcase
+test_build()
+{
+  if [ $TEST_FAILED = 'true' ]; then
+    return
+  fi
+
+  # verify that the dir builds
+  xsd2cpp $input_xsd . >> tests.log 2>&1 && ./autogen.sh >> tests.log 2>&1 &&  make install >> tests.log 2>&1
+  if [ $? -ne 0 ]; then
+    echo "   failed to build"
+    fail_test
+    return
+  fi
+}
+
+#  1 testcase
 test_sample()
 {
+  if [ $TEST_FAILED = 'true' ]; then
+    return
+  fi
+
   # write sample.xml
   ./build/bin/$run -s  >> tests.log 2>&1
   
@@ -129,12 +203,18 @@ test_sample()
   if [ ! -f sample.xml ]; then
     echo "   sample.xml doesn't exist"
     fail_test
+    return
   fi
 }
 
 
+#  2 testcases
 test_write()
 {
+  if [ $TEST_FAILED = 'true' ]; then
+    return
+  fi
+
   # write t.xml
   ./build/bin/$run -w  >> tests.log 2>&1
   
@@ -142,6 +222,7 @@ test_write()
   if [ ! -f t.xml ]; then
     echo "   t.xml doesn't exist"
     fail_test
+    return
   fi
 
   # verify diff
@@ -149,11 +230,17 @@ test_write()
   if [ ! -z "$differ" ]; then
     echo "   failed to compare t.xml with valid.xml"
     fail_test
+    return
   fi
 }
 
+#  2 testcases
 test_roundtrip()
 {
+  if [ $TEST_FAILED = 'true' ]; then
+    return
+  fi
+
   # rountrip
   ./build/bin/$run -r ./t.xml >> tests.log 2>&1
   
@@ -161,6 +248,7 @@ test_roundtrip()
   if [ ! -f t.xml.rt.xml ]; then
     echo "   t.xml.rt.xml doesn't exist"
     fail_test
+    return
   fi
 
   # verify diff
@@ -168,11 +256,16 @@ test_roundtrip()
   if [ ! -z "$differ" ]; then
     echo "   failed to compare t.xml.rt.xml with t.xml"
     fail_test
+    return
   fi
 }
 
+# several testcases(8) are run in each test directory
+# this functions does all the tests to be done, inside a particular test directory
 test_dir()
 {
+  TEST_FAILED=false
+
   echo
   cd $dir 
   log_tests_dir
@@ -182,19 +275,8 @@ test_dir()
   echo "   input: $input_xsd"
   run=`basename $input_xsd | cut -d'.' -f1`run
 
-  # check valid.xml exists
-  if [ ! -f valid.xml ]; then
-    echo "  valid.xml doesn't exist"
-    fail_test
-  fi
- 
-  # verify that the dir builds
-  xsd2cpp $input_xsd . >> tests.log 2>&1 && ./autogen.sh >> tests.log 2>&1 &&  make install >> tests.log 2>&1
-  if [ $? -ne 0 ]; then
-    echo "   failed to build"
-    fail_test
-  fi
-  
+  test_build
+  test_valid
   test_sample
   test_write
   test_roundtrip
@@ -203,6 +285,22 @@ test_dir()
   cd - >/dev/null 2>&1
 }
 
+print_test_report()
+{
+  CNT_TOTAL_TESTS=`expr $CNT_PASSED_TESTS + $CNT_FAILED_TESTS`
+  echo; echo
+  echo "#-----------------------------------------"
+  echo "            Test Report                  "
+  echo "#-----------------------------------------"
+  echo " Total Tests  : $CNT_TOTAL_TESTS" 
+  echo " Passed Tests : $CNT_PASSED_TESTS" 
+  echo " Failed Tests : $CNT_FAILED_TESTS" 
+  if [ $CNT_FAILED_TESTS -eq 0 ]; then
+    echo
+    echo "        *** ALL TESTS PASSED ***       "
+  fi
+  echo "#-----------------------------------------"
+}
 
 test_all()
 {
@@ -218,6 +316,17 @@ test_all()
   echo;echo
 
   echo "#------------------------------------------------------"
+  echo "# running tests on xplus_tests ..."
+  echo "#------------------------------------------------------"
+  for dir in $XPLUS_TESTS_DIRS
+  do
+    test_dir
+  done
+  echo "#------------------------------------------------------"
+
+  echo;echo
+
+  echo "#------------------------------------------------------"
   echo "# running tests on examples ..."
   echo "#------------------------------------------------------"
   for dir in $EX_DIRS
@@ -225,11 +334,9 @@ test_all()
     test_dir
   done
   echo "#------------------------------------------------------"
+  
 
-  echo; echo
-  echo "          ============================           "
-  echo "                ALL TESTS PASSED                 "
-  echo "          ============================           "
+  print_test_report
 }
 
 

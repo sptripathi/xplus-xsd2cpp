@@ -152,20 +152,121 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyComplexTyp
 </xsl:template>
 
 
-<!-- satya start here -->
+
+
+<!--
+
+  {content type}:	 the appropriate case among the following:
+
+  1) If the type definition ·resolved· to by the ·actual value· of the base [attribute] is a complex type definition whose own {content type} is a simple type definition and the <restriction> alternative is chosen, then starting from either
+    
+    1.1) the simple type definition corresponding to the <simpleType> among the [children] of <restriction> if there is one;
+    
+    1.2) otherwise (<restriction> has no <simpleType> among its [children]), the simple type definition which is the {content type} of the type definition ·resolved· to by the ·actual value· of the base [attribute]
+
+    a simple type definition which restricts the simple type definition identified in clause 1.1 or clause 1.2 with a set of facet components corresponding to the appropriate element information items among the <restriction>'s [children] (i.e. those which specify facets, if any), as defined in Simple Type Restriction (Facets) (§3.14.6);
+
+
+  2) If the type definition ·resolved· to by the ·actual value· of the base [attribute] is a complex type definition whose own {content type} is mixed and a particle which is ·emptiable·, as defined in Particle Emptiable (§3.9.6) and the <restriction> alternative is chosen, then starting from the simple type definition corresponding to the <simpleType> among the [children] of <restriction> (which must be present), 
+    
+    a simple type definition which restricts that simple type definition with a set of facet components corresponding to the appropriate element information items among the <restriction>'s [children] (i.e. those which specify facets, if any), as defined in Simple Type Restriction (Facets) (§3.14.6); 
+
+-->
 
 <xsl:template name="DEFINE_LEVEL1_COMPLEXTYPE_WITH_SIMPLECONTENT_RESTRICTION_H">
   <xsl:param name="schemaComponentName" select="@name"/>
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
 
-/// The class for complexType <xsl:value-of select="$schemaComponentName"/>  with simpleContent/restriction
+<!--
+
+/// An intermediate C++ class definition, based on the content-model of
+/// complexType "<xsl:value-of select="$schemaComponentName"/>"
+/// \n The C++ class definition of complexType "<xsl:value-of select="$schemaComponentName"/>",
+/// would derive from this intermediate C++ class.
+  <xsl:for-each select="*[local-name()='simpleContent']">
+    <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="concat('_', $schemaComponentName)"/></xsl:call-template>
+  </xsl:for-each>
+-->
+
+  <xsl:variable name="resolution">
+    <xsl:call-template name="T_resolve_typeQName">
+      <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='restriction']/@base"/>
+    </xsl:call-template>
+  </xsl:variable>
+    
+  <xsl:variable name="isComplexTypeWithSimpleTypeContent">
+    <xsl:call-template name="T_is_resolution_complexType_with_simpleTypeContent">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="isSimpleType">
+    <xsl:call-template name="T_is_resolution_simpleType">
+      <xsl:with-param name="resolution" select="$resolution" />
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="isComplexType">
+    <xsl:call-template name="T_is_resolution_complexType">
+      <xsl:with-param name="resolution" select="$resolution" />
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="baseCppTypeWithNSDeref2">
+    <xsl:choose>
+      <!-- case 1 -->
+      <xsl:when test="$isSimpleType='true'">
+        <xsl:choose>
+          <!-- case 1.1 -->
+          <xsl:when test="*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType']">
+            <xsl:for-each select="*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType']">
+              <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="concat('_', $schemaComponentName)"/></xsl:call-template>
+            </xsl:for-each>
+            _<xsl:value-of select="$schemaComponentName"/>
+          </xsl:when>
+          <!-- case 1.2 -->
+          <xsl:otherwise>
+            <xsl:variable name="baseCppType">
+              <xsl:call-template name="T_get_cppType_complexType_base"/>
+            </xsl:variable>
+            <xsl:variable name="cppNSDeref">
+              <xsl:call-template name="T_get_cppNSDeref_of_simpleType_complexType">
+                <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='restriction']/@base"/>
+              </xsl:call-template>
+            </xsl:variable>
+            <xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <!-- case 2
+         TODO: {content type} is mixed and a particle which is ·emptiable·
+      -->
+      <xsl:when test="$isComplexType='true'">
+        <xsl:if test="not(*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType'])">
+          <xsl:message terminate="yes">
+           Error: A "Complex-Type-Definition" with simple content Schema Component, having derivation method as "restriction", whose base attribute resolves to a complex-type-definition, must have a &lt;simpleType&gt; present among the [children] of &lt;restriction&gt;
+          </xsl:message>
+        </xsl:if>
+        <xsl:for-each select="*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType']">
+          <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="concat('_', $schemaComponentName)"/></xsl:call-template>
+        </xsl:for-each>
+        _<xsl:value-of select="$schemaComponentName"/>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:variable>
+      
+  <xsl:variable name="baseCppTypeWithNSDeref" select="normalize-space($baseCppTypeWithNSDeref2)"/>
+
+/// The class for complexType <xsl:value-of select="$schemaComponentName"/> with following structure: 
+/// \n complexType->simpleContent->restriction
 /// \n Refer to documentation on structures/methods inside ...
-class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyComplexType
+class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$baseCppTypeWithNSDeref"/>
 {
   public:
   //constructor
   <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL);
 
+  <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
+    <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+  </xsl:call-template>
 }; //end class <xsl:value-of select="$cppName"/>
 
 </xsl:template>
@@ -173,9 +274,11 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyComplexTyp
 
 
 <!--
+  {content type}:	 the appropriate case among the following:
 
-If the type definition ·resolved· to by the ·actual value· of the base [attribute] is a complex type definition (whose own {content type} must be a simple type definition, see below) and the <extension> alternative is chosen, then the {content type} of that complex type definition;
-otherwise (the type definition ·resolved· to by the ·actual value· of the base [attribute] is a simple type definition and the <extension> alternative is chosen), then that simple type definition.
+  1) If the type definition ·resolved· to by the ·actual value· of the base [attribute] is a complex type definition (whose own {content type} must be a simple type definition, see below) and the <extension> alternative is chosen, then the {content type} of that complex type definition;
+
+  2) otherwise (the type definition ·resolved· to by the ·actual value· of the base [attribute] is a simple type definition and the <extension> alternative is chosen), then that simple type definition.
 
 -->
 
@@ -216,7 +319,8 @@ otherwise (the type definition ·resolved· to by the ·actual value· of the ba
   </xsl:variable>
 
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
-/// The class for complexType <xsl:value-of select="$schemaComponentName"/> with simpleContent/extension
+/// The class for complexType <xsl:value-of select="$schemaComponentName"/> with following structure: 
+/// \n complexType->simpleContent->extension
 /// \n Refer to documentation on structures/methods inside ...
 class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/> 
 {
@@ -247,6 +351,7 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDer
     <xsl:with-param name="mode" select="'define_anonymous_member_element_attr'"/>
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
   </xsl:call-template>  
+
 </xsl:template>
 
 
@@ -737,10 +842,7 @@ public:
 <xsl:template name="INCLUDELIST_OF_SIMPLECONTENT_H">
   <xsl:choose>
 
-    <xsl:when test="*[local-name()='restriction' and @base]">
-    </xsl:when>
-
-    <xsl:when test="*[local-name()='extension' and @base]">
+    <xsl:when test="*[(local-name()='extension' or local-name()='restriction') and @base]">
       <xsl:variable name="baseCppNSDirChain">
         <xsl:call-template name="T_get_cppNSStr_complexType_base">
           <xsl:with-param name="mode" select="'dir_chain'"/>
@@ -923,6 +1025,201 @@ public:
 
 </xsl:template>
 
+
+<!--
+    TODO: refactor code in sections...
+    This section for attribute/element related functions
+
+-->
+<xsl:template name="DECL_PVT_FNS_FOR_MEMBER_ELEMENT_OR_ATTRIBUTE_H">
+  <xsl:variable name="cppTypeSmartPtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
+  <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
+  MEMBER_FN <xsl:value-of select="$cppTypeSmartPtrShort"/><xsl:text> </xsl:text>create_<xsl:value-of select="$cppNameFunction"/>();
+</xsl:template>
+
+
+<xsl:template name="DECL_PUBLIC_FNS_FOR_MEMBER_ELEMENT_ATTRIBUTE_H">
+  <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
+  <xsl:variable name="maxOccurNode"><xsl:call-template name="T_get_maxOccurence"/></xsl:variable>
+  <xsl:variable name="localName" select="local-name()"/>
+  <xsl:variable name="minOccurNode"><xsl:call-template name="T_get_minOccurence"/></xsl:variable>
+  <xsl:variable name="maxOccurGTminOccurNode"><xsl:call-template name="T_is_maxOccurence_gt_minOccurence"/></xsl:variable>
+  <xsl:variable name="maxOccurGT1Node"><xsl:call-template name="T_is_maxOccurence_gt_1"/></xsl:variable>
+  <xsl:variable name="isMaxOccurCompositorsGt1"><xsl:call-template name="T_is_compositorsMaxOccurenceGt1_within_parentElement"><xsl:with-param name="node" select="."/></xsl:call-template></xsl:variable>
+  <xsl:variable name="cppTypeSmartPtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
+  <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypePtrShort_ElementAttr"/></xsl:variable>
+  <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
+  <xsl:variable name="resolution">
+    <xsl:call-template name="T_resolve_elementAttr">
+      <xsl:with-param name="node" select="."/>  
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="isSimpleType">
+    <xsl:call-template name="T_is_resolution_simpleType">
+      <xsl:with-param name="resolution" select="$resolution"/>  
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="atomicSimpleTypeImpl">
+    <xsl:call-template name="T_get_atomic_simpleType_impl_from_resolution">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <!--
+  if a complexType/<MG|MGD> has maxOccurence=1 then MG|MGD functions should be there
+    outside MG/MGD, so as to avoid accessing elements/attributes through MG|MGD
+  -->
+  <xsl:variable name="isUnderSingularMgNesting">
+    <xsl:call-template name="T_is_element_under_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>
+  </xsl:variable>  
+
+
+
+  <!-- public member functions -->
+    
+  <xsl:if test="$maxOccurGT1Node='true' or $isUnderSingularMgNesting='false'">
+
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Returns the list of the element nodes
+  ///  @return the list of element nodes fetched
+  MEMBER_FN List&lt;<xsl:value-of select="$cppTypeSmartPtrShort"/>&gt;<xsl:text> </xsl:text><xsl:value-of select="$localName"/>s_<xsl:value-of select="$cppNameFunction"/>();
+
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Returns the element node at supplied index
+  ///  @param idx index of the element to fetch 
+  ///  @return the element node fetched
+  MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/><xsl:text> </xsl:text><xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>_at(unsigned int idx);
+
+  </xsl:if>
+  
+  <xsl:if test="$isUnderSingularMgNesting='true'">
+
+    <!-- vector elements inside singular MG nesting -->
+    <xsl:if test="$maxOccurGT1Node='true'">
+
+      <xsl:if test="$isSimpleType='true'">
+
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Sets the value of the element at the supplied index with the supplied value
+  ///  @param idx index of the element 
+  ///  @param val the value(as DOMString) to set with 
+  MEMBER_FN void set_<xsl:value-of select="$cppNameFunction"/>(unsigned int idx, DOMString val);
+
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Returns the value of the element at the supplied index with the supplied value.
+  ///  @param idx index of the element 
+  ///  @return the value(as DOMString) of the element 
+  MEMBER_FN DOMString get_<xsl:value-of select="$cppNameFunction"/>_string(unsigned int idx);
+
+        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
+
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Sets the value of the element at the supplied index with the supplied value.
+  ///  @param idx index of the element 
+  ///  @param val the value (as <xsl:value-of select="$atomicSimpleTypeImpl"/>) to set with 
+  MEMBER_FN void set_<xsl:value-of select="$cppNameFunction"/>(unsigned int idx, <xsl:value-of select="$atomicSimpleTypeImpl"/> val);
+
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Returns the value of the element at the supplied index with supplied value.
+  ///  @param idx index of the element 
+  ///  @return the value(as <xsl:value-of select="$atomicSimpleTypeImpl"/>) of the element 
+  MEMBER_FN <xsl:value-of select="$atomicSimpleTypeImpl"/> get_<xsl:value-of select="$cppNameFunction"/>(unsigned int idx);
+
+        </xsl:if>
+      </xsl:if>
+    </xsl:if>   
+
+    <!-- scalar elements inside singular MG nesting -->
+    <xsl:if test="$maxOccurGT1Node='false'">
+
+  ///  For the scalar-<xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Returns the scalar <xsl:value-of select="$localName"/> node
+  ///  @return the <xsl:value-of select="$localName"/> node fetched
+  MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/><xsl:text> </xsl:text><xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>();
+      <xsl:if test="$isSimpleType='true'">
+
+  ///  For the scalar-<xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Sets the value of the <xsl:value-of select="$localName"/> with the supplied value.
+  ///  @param val the value(as DOMString) to set with 
+  MEMBER_FN void set_<xsl:value-of select="$cppNameFunction"/>(DOMString val);
+  
+  ///  For the scalar-<xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Returns the value(as DOMString) of the <xsl:value-of select="$localName"/>
+  MEMBER_FN DOMString get_<xsl:value-of select="$cppNameFunction"/>_string();
+
+        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
+
+  ///  For the scalar-<xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Sets the value of the <xsl:value-of select="$localName"/> with the supplied value.
+  ///  @param val the value(as <xsl:value-of select="$atomicSimpleTypeImpl"/>) to set with 
+  MEMBER_FN void set_<xsl:value-of select="$cppNameFunction"/>(<xsl:value-of select="$atomicSimpleTypeImpl"/> val);
+
+  ///  For the scalar-<xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Returns the value of the <xsl:value-of select="$localName"/>
+  ///  @return the value(as <xsl:value-of select="$atomicSimpleTypeImpl"/>) of the <xsl:value-of select="$localName"/> 
+  MEMBER_FN <xsl:value-of select="$atomicSimpleTypeImpl"/> get_<xsl:value-of select="$cppNameFunction"/>();
+
+        </xsl:if>
+
+      </xsl:if>
+    </xsl:if>   
+
+  </xsl:if>   
+
+
+  <xsl:if test="$isUnderSingularMgNesting='true'">
+
+    <xsl:variable name="returnType">
+      <xsl:choose>
+        <xsl:when test="$maxOccurGT1Node">List&lt;<xsl:value-of select="$cppTypeSmartPtrShort"/>&gt;</xsl:when>
+        <xsl:otherwise><xsl:value-of select="$cppTypePtrShort"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <xsl:if test="$maxOccurGT1Node='true' and $maxOccurGTminOccurNode='true'">
+
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Adds one element to the end of the "list of the element nodes"
+  ///  @return the pointer to the added element
+  MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/> add_node_<xsl:value-of select="$cppNameFunction"/>();
+  
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Sizes-up the "list of the element nodes" with the supplied size
+  ///  @param size the request size(unsigned int) of the list
+  ///  @return the list of "pointer-to-element-node"
+  MEMBER_FN <xsl:value-of select="$returnType"/> set_count_<xsl:value-of select="$cppNameFunction"/>(unsigned int size);
+
+      <xsl:if test="$isSimpleType='true'">
+      
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Adds one element to the end of the "list of the element nodes", and sets the value with supplied DOMString value
+  ///  @param val the value(as DOMString) to set with 
+  MEMBER_FN void add_<xsl:value-of select="$cppNameFunction"/>_string(DOMString val);
+      
+        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
+
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  \n Adds one element to the end of the "list of the element nodes", and sets the value with supplied type value
+  ///  @param val the value(as <xsl:value-of select="$atomicSimpleTypeImpl"/>) to set with 
+  MEMBER_FN void add_<xsl:value-of select="$cppNameFunction"/>(<xsl:value-of select="$atomicSimpleTypeImpl"/> val);  
+        </xsl:if>
+      </xsl:if>
+
+    </xsl:if>
+
+  </xsl:if>  <!-- END if test="$isUnderSingularMgNesting = 'true'" -->
+
+  
+   <!-- functions for optional fields -->
+  <xsl:variable name="isOptionalScalar"><xsl:call-template name="T_isOptinalScalar_ElementAttr"/></xsl:variable>
+  <xsl:if test="$isOptionalScalar='true'">
+
+  ///  For the optional scalar element with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  Marks the element as present 
+  MEMBER_FN void mark_present_<xsl:value-of select="$cppNameFunction"/>();
+
+  </xsl:if>
+  <!-- public member functions : END -->
+</xsl:template>
 
 
 

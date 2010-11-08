@@ -1660,14 +1660,18 @@ namespace <xsl:value-of select="$nsStr"/>{
 
 <!--
 
-{content type}
-    One of :
+  returns: "content-type"
+
+{content type} is one of :
     - empty
     - a simple type definition 
     - or a pair consisting of a ·content model· (I.e. a Particle (§2.2.3.2)) and one of mixed, element-only. 
 
-
-  returns: "complexType content-type"
+  eg.:
+  1. empty
+  2. simpleType
+  3. complexContent,(element-only|mixed)
+  4. (choice|sequence|all),(element-only|mixed)
 -->
 <xsl:template name="T_get_complexType_contentType">
   <xsl:param name="ctNode"/>
@@ -1695,6 +1699,15 @@ namespace <xsl:value-of select="$nsStr"/>{
 
 
 
+<!--
+  returns: "complexType content-type"
+
+  eg.:
+  1. complexType   empty
+  2. complexType   simpleType
+  3. complexType   complexContent,(element-only|mixed)
+  4. complexType   (choice|sequence|all),(element-only|mixed)
+-->
 
 <xsl:template name="T_get_complexType_details">
   <xsl:param name="ctNode"/>
@@ -1811,6 +1824,15 @@ namespace <xsl:value-of select="$nsStr"/>{
     </xsl:choose>
   </xsl:variable>
   <xsl:value-of select="normalize-space($type)"/>
+</xsl:template>
+
+
+<xsl:template name="T_is_resolution_complexType">
+  <xsl:param name="resolution"/>
+  <xsl:choose>
+    <xsl:when test="starts-with($resolution, 'complexType ')">true</xsl:when>
+    <xsl:otherwise>false</xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 

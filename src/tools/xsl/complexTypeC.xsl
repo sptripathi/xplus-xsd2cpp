@@ -565,6 +565,13 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
         </xsl:call-template>  
       </xsl:when>
       <xsl:when test="$localName='restriction'">
+        <xsl:for-each select="*[local-name()='attribute']">
+          <xsl:call-template name="ON_COMPLEXTYPE_ATTRIBUTE">
+            <xsl:with-param name="mode" select="$mode"/>
+            <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+            <xsl:with-param name="pos" select="$pos"/>
+          </xsl:call-template>  
+        </xsl:for-each>
       </xsl:when>
       <xsl:when test="$localName='extension'">
         <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
@@ -779,13 +786,13 @@ namespace Types
   </xsl:variable>
   <xsl:variable name="baseCppNSDeref">
     <xsl:call-template name="T_get_cppNSDeref_of_simpleType_complexType">
-      <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='extension']/@base"/>
+      <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='extension' or local-name()='restriction']/@base"/>
     </xsl:call-template>
   </xsl:variable>
 
   <xsl:variable name="resolution">
     <xsl:call-template name="T_resolve_typeQName">
-      <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='extension']/@base"/>
+      <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='extension' or local-name()='restriction']/@base"/>
     </xsl:call-template>
   </xsl:variable>
   <xsl:variable name="isComplexTypeWithSimpleTypeContent">
@@ -831,6 +838,15 @@ namespace Types
     , _<xsl:value-of select="$mgName"/>(new <xsl:value-of select="$mgName"/>(this) )
   </xsl:for-each>
   {
+    
+    <!-- specific to restriction case -->  
+    <xsl:if test="*[local-name()='simpleContent']/*[local-name()='restriction']">
+    <xsl:for-each select="*[local-name()='simpleContent']">
+    <xsl:call-template name="SET_CFACET_VALUES_IN_SIMPLETYPE_CTOR"/>
+    this->appliedCFacets( appliedCFacets() <xsl:for-each select="*[local-name()='restriction']/*[local-name() != 'simpleType' and local-name() != 'annotation' and local-name() != 'attribute' and local-name() != 'attributeGroup']">| <xsl:call-template name="T_get_enumType_CFacet"><xsl:with-param name="facet" select="local-name(.)"/></xsl:call-template> </xsl:for-each> );
+    </xsl:for-each>
+    </xsl:if>
+
     initFSM();
     if(ownerDoc &amp;&amp; ownerDoc->buildTree())
     {
@@ -841,7 +857,7 @@ namespace Types
   void <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/>initFSM()
   {
     XsdFsmBasePtr fsmsAttrs[] = {
-    <xsl:for-each select="*[local-name()='simpleContent']/*[local-name()='extension']/*[local-name()='attribute']">
+    <xsl:for-each select="*[local-name()='simpleContent']/*[local-name()='extension' or local-name()='restriction']/*[local-name()='attribute']">
       <xsl:call-template name="T_new_XsdFsm_ElementAttr">
         <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
         <xsl:with-param name="thisOrThat" select="'this'"/>
@@ -1160,6 +1176,9 @@ namespace Types
     {
         <xsl:if test="$minOccurence=0">
       mark_present_<xsl:value-of select="$cppNameFunction"/>();
+        </xsl:if>
+        <xsl:if test="local-name(..)='choice'">
+      choose_<xsl:value-of select="$cppNameFunction"/>();  
         </xsl:if>
       <xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>()->stringValue(val);
     }

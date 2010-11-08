@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ns1:myComplexTypeElem ns1:aNNI="unbounded" ns1:globalStringAttr="abc" ns1:anotherNNI="100" ns1:aCommonName="abcde" xmlns:ns1="http://www.example.com/STDemo">
+<ns1:myComplexTypeElem ns1:globalStringAttr="abc" ns1:aNNI="unbounded" ns1:anotherNNI="100" ns1:aCommonName="abcde" xmlns:ns1="http://www.example.com/STDemo">
   Here you will see some examples of simpleType elements
   Following are examples of -atomic- simpleType elements
   <ns1:xBoolean>false</ns1:xBoolean>

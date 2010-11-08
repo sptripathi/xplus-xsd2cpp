@@ -1,0 +1,2212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2006 W3C (R) (MIT ERCIM Keio), All Rights Reserved.
+    W3C liability, trademark and document use rules apply.
+
+    http://www.w3.org/Consortium/Legal/ipr-notice
+    http://www.w3.org/Consortium/Legal/copyright-documents
+
+    Generated from: $Id: examples.xsd,v 1.85 2009/03/19 23:13:46 pdowney Exp $-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ex="http://www.w3.org/2002/ws/databinding/examples/6/09/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:e="http://www.w3.org/2002/ws/databinding/examples/6/09/" xmlns:p="http://www.w3.org/2002/ws/databinding/patterns/6/09/" targetNamespace="http://www.w3.org/2002/ws/databinding/examples/6/09/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anySimpleTypeAttribute" type="ex:AnySimpleTypeAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AnySimpleTypeAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="anySimpleType" type="xs:anySimpleType"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anySimpleTypeElement" type="xs:anySimpleType"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anyTypeElement" type="xs:anyType"/>
+<xs:import xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.w3.org/2001/XMLSchema"/>
+<xs:import xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://example.com/a/namespace"/>
+<xs:import xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://example.com/a/namespace" schemaLocation="http://www.w3.org/2002/ws/databinding/examples/6/09/static/Imported.xsd"/>
+<wsdl xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/">
+        <xs:schema targetNamespace="http://www.w3.org/2002/ws/databinding/examples/6/09/static/1" elementFormDefault="qualified">
+          <xs:element name="importTypesNamespace" type="xs:string"/>
+        </xs:schema>
+        <xs:schema targetNamespace="http://www.w3.org/2002/ws/databinding/examples/6/09/static/2" elementFormDefault="qualified">
+          <xs:import namespace="http://www.w3.org/2002/ws/databinding/examples/6/09/static/1"/>
+        </xs:schema>
+      </wsdl>
+<xs:annotation xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/">
+        <xs:documentation xml:lang="en">Schema Level Documentation</xs:documentation>
+      </xs:annotation>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="documentationElement" type="xs:string">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">This is a string Element</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="identifierName" type="xs:string"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="non-Identifier-Name" type="xs:string"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="stringElement" type="xs:string"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="stringAttribute" type="ex:StringAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="StringAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="string" type="xs:string"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="booleanElement" type="xs:boolean"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="booleanAttribute" type="ex:BooleanAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="BooleanAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="boolean" type="xs:boolean"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="decimalElement" type="xs:decimal"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="decimalAttribute" type="ex:DecimalAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DecimalAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="decimal" type="xs:decimal"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="floatElement" type="xs:float"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="floatAttribute" type="ex:FloatAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="FloatAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="float" type="xs:float"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="doubleElement" type="xs:double"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="doubleAttribute" type="ex:DoubleAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DoubleAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="double" type="xs:double"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="durationElement" type="xs:duration"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="durationAttribute" type="ex:DurationAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DurationAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="duration" type="xs:duration"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="dateTimeElement" type="xs:dateTime"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="dateTimeAttribute" type="ex:DateTimeAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DateTimeAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="dateTime" type="xs:dateTime"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="timeElement" type="xs:time"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="timeAttribute" type="ex:TimeAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="TimeAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="time" type="xs:time"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="dateElement" type="xs:date"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="dateAttribute" type="ex:DateAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DateAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="date" type="xs:date"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gYearMonthElement" type="xs:gYearMonth"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gYearMonthAttribute" type="ex:GYearMonthAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GYearMonthAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="gYearMonth" type="xs:gYearMonth"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gYearElement" type="xs:gYear"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gYearAttribute" type="ex:GYearAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GYearAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="gYear" type="xs:gYear"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gMonthDayElement" type="xs:gMonthDay"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gMonthDayAttribute" type="ex:GMonthDayAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GMonthDayAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="gMonthDay" type="xs:gMonthDay"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gDayElement" type="xs:gDay"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gDayAttribute" type="ex:GDayAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GDayAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="gDay" type="xs:gDay"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gMonthElement" type="xs:gMonth"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gMonthAttribute" type="ex:GMonthAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GMonthAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="gMonth" type="xs:gMonth"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="hexBinaryElement" type="xs:hexBinary"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="hexBinaryAttribute" type="ex:HexBinaryAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="HexBinaryAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="hexBinary" type="xs:hexBinary"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="base64BinaryElement" type="xs:base64Binary"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="base64BinaryAttribute" type="ex:Base64BinaryAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Base64BinaryAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="base64Binary" type="xs:base64Binary"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anyURIElement" type="xs:anyURI"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anyURIAttribute" type="ex:AnyURIAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AnyURIAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="anyURI" type="xs:anyURI"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="QNameElement" type="xs:QName"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="QNameAttribute" type="ex:QNameAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="QNameAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="QName" type="xs:QName"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="normalizedStringElement" type="xs:normalizedString"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="normalizedStringAttribute" type="ex:NormalizedStringAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NormalizedStringAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="normalizedString" type="xs:normalizedString"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="tokenElement" type="xs:token"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="tokenAttribute" type="ex:TokenAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="TokenAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="token" type="xs:token"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="languageElement" type="xs:language"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="languageAttribute" type="ex:LanguageAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="LanguageAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="language" type="xs:language"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NMTOKENElement" type="xs:NMTOKEN"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NMTOKENAttribute" type="ex:NMTOKENAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NMTOKENAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="NMTOKEN" type="xs:NMTOKEN"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NMTOKENSElement" type="xs:NMTOKENS"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NMTOKENSAttribute" type="ex:NMTOKENSAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NMTOKENSAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="NMTOKENS" type="xs:NMTOKENS"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NameElement" type="xs:Name"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nameAttribute" type="ex:NameAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NameAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:Name"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NCNameElement" type="xs:NCName"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NCNameAttribute" type="ex:NCNameAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NCNameAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="NCName" type="xs:NCName"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IDElement" type="xs:ID"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IDAttribute" type="ex:IDAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IDAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="ID" type="xs:ID"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IDREFElement" type="ex:IDREFElementComplextType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IDREFElementComplextType">
+        <xs:sequence>
+          <xs:element name="element" type="xs:IDREF"/>
+          <xs:element name="id" type="xs:ID"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IDREFAttribute" type="ex:IDREFAttributeComplexType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IDREFAttributeComplexType">
+        <xs:sequence>
+          <xs:element name="id" type="xs:ID"/>
+        </xs:sequence>
+        <xs:attribute name="IDREF" type="xs:IDREF"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IDREFSElement" type="ex:IDREFSElementComplextType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IDREFSElementComplextType">
+        <xs:sequence>
+          <xs:element name="element" type="xs:IDREFS"/>
+          <xs:element name="id1" type="xs:ID"/>
+          <xs:element name="id2" type="xs:ID"/>
+          <xs:element name="id3" type="xs:ID"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IDREFSAttribute" type="ex:IDREFSAttributeComplexType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IDREFSAttributeComplexType">
+        <xs:sequence>
+          <xs:element name="id1" type="xs:ID"/>
+          <xs:element name="id2" type="xs:ID"/>
+          <xs:element name="id3" type="xs:ID"/>
+        </xs:sequence>
+        <xs:attribute name="IDREFS" type="xs:IDREFS"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ENTITYElement" type="xs:ENTITY"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ENTITYAttribute" type="ex:ENTITYAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ENTITYAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="ENTITY" type="xs:ENTITY"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ENTITIESElement" type="xs:ENTITIES"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ENTITIESAttribute" type="ex:ENTITIESAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ENTITIESAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="ENTITIES" type="xs:ENTITIES"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="integerElement" type="xs:integer"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="integerAttribute" type="ex:IntegerAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IntegerAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="integer" type="xs:integer"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nonPositiveIntegerElement" type="xs:nonPositiveInteger"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nonPositiveIntegerAttribute" type="ex:NonPositiveIntegerAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NonPositiveIntegerAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="nonPositiveInteger" type="xs:nonPositiveInteger"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="negativeIntegerElement" type="xs:negativeInteger"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="negativeIntegerAttribute" type="ex:NegativeIntegerAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NegativeIntegerAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="negativeInteger" type="xs:negativeInteger"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="longElement" type="xs:long"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="longAttribute" type="ex:LongAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="LongAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="long" type="xs:long"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="intElement" type="xs:int"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="intAttribute" type="ex:IntAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IntAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="int" type="xs:int"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="shortElement" type="xs:short"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="shortAttribute" type="ex:ShortAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ShortAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="short" type="xs:short"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="byteElement" type="xs:byte"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="byteAttribute" type="ex:ByteAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ByteAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="byte" type="xs:byte"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nonNegativeIntegerElement" type="xs:nonNegativeInteger"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nonNegativeIntegerAttribute" type="ex:NonNegativeIntegerAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NonNegativeIntegerAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="nonNegativeInteger" type="xs:nonNegativeInteger"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedLongElement" type="xs:unsignedLong"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedLongAttribute" type="ex:UnsignedLongAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnsignedLongAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="unsignedLong" type="xs:unsignedLong"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedIntElement" type="xs:unsignedInt"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedIntAttribute" type="ex:UnsignedIntAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnsignedIntAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="unsignedInt" type="xs:unsignedInt"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedShortElement" type="xs:unsignedShort"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedShortAttribute" type="ex:UnsignedShortAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnsignedShortAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="unsignedShort" type="xs:unsignedShort"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedByteElement" type="xs:unsignedByte"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedByteAttribute" type="ex:UnsignedByteAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnsignedByteAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="unsignedByte" type="xs:unsignedByte"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="positiveIntegerElement" type="xs:positiveInteger"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="positiveIntegerAttribute" type="ex:PositiveIntegerAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="PositiveIntegerAttribute">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="positiveInteger" type="xs:positiveInteger"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalSimpleType" type="ex:GlobalSimpleType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GlobalSimpleType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="foo"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="beatle" type="ex:Beatle"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Beatle">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="John"/>
+          <xs:enumeration value="Paul"/>
+          <xs:enumeration value="George"/>
+          <xs:enumeration value="Stuart"/>
+          <xs:enumeration value="Pete"/>
+          <xs:enumeration value="Ringo"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nMTOKENEnumerationType" type="ex:NMTOKENEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NMTOKENEnumerationType">
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="token1"/>
+          <xs:enumeration value="token2"/>
+          <xs:enumeration value="token3"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="intEnumerationType" type="ex:IntEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IntEnumerationType">
+        <xs:restriction base="xs:int">
+          <xs:enumeration value="2"/>
+          <xs:enumeration value="3"/>
+          <xs:enumeration value="5"/>
+          <xs:enumeration value="7"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="shortEnumerationType" type="ex:ShortEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ShortEnumerationType">
+        <xs:restriction base="xs:short">
+          <xs:enumeration value="7"/>
+          <xs:enumeration value="11"/>
+          <xs:enumeration value="13"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="longEnumerationType" type="ex:LongEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="LongEnumerationType">
+        <xs:restriction base="xs:long">
+          <xs:enumeration value="9152052"/>
+          <xs:enumeration value="7816230"/>
+          <xs:enumeration value="7235733"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="doubleEnumerationType" type="ex:DoubleEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DoubleEnumerationType">
+        <xs:restriction base="xs:double">
+          <xs:enumeration value="1267.43233E12"/>
+          <xs:enumeration value="7234.34541E12"/>
+          <xs:enumeration value="5733.65565E12"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="integerEnumerationType" type="ex:IntegerEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IntegerEnumerationType">
+        <xs:restriction base="xs:integer">
+          <xs:enumeration value="4000000"/>
+          <xs:enumeration value="5000000"/>
+          <xs:enumeration value="6000000"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="decimalEnumerationType" type="ex:DecimalEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DecimalEnumerationType">
+        <xs:restriction base="xs:decimal">
+          <xs:enumeration value="+1000.0001"/>
+          <xs:enumeration value="-1000.0001"/>
+          <xs:enumeration value="1000.0002"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="floatEnumerationType" type="ex:FloatEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="FloatEnumerationType">
+        <xs:restriction base="xs:float">
+          <xs:enumeration value="1267.43233E12"/>
+          <xs:enumeration value="7234.34541E12"/>
+          <xs:enumeration value="5733.65565E12"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nonNegativeIntegerEnumerationType" type="ex:NonNegativeIntegerEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NonNegativeIntegerEnumerationType">
+        <xs:restriction base="xs:nonNegativeInteger">
+          <xs:enumeration value="12"/>
+          <xs:enumeration value="24"/>
+          <xs:enumeration value="33"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="positiveIntegerEnumerationType" type="ex:PositiveIntegerEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="PositiveIntegerEnumerationType">
+        <xs:restriction base="xs:positiveInteger">
+          <xs:enumeration value="12"/>
+          <xs:enumeration value="24"/>
+          <xs:enumeration value="33"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedLongEnumerationType" type="ex:UnsignedLongEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnsignedLongEnumerationType">
+        <xs:restriction base="xs:unsignedLong">
+          <xs:enumeration value="11111111111111"/>
+          <xs:enumeration value="22222222222222"/>
+          <xs:enumeration value="33333333333333"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedIntEnumerationType" type="ex:UnsignedIntEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnsignedIntEnumerationType">
+        <xs:restriction base="xs:unsignedInt">
+          <xs:enumeration value="1111111111"/>
+          <xs:enumeration value="2222222222"/>
+          <xs:enumeration value="3333333333"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedShortEnumerationType" type="ex:UnsignedShortEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnsignedShortEnumerationType">
+        <xs:restriction base="xs:unsignedShort">
+          <xs:enumeration value="1111"/>
+          <xs:enumeration value="2222"/>
+          <xs:enumeration value="3333"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="tokenEnumerationType" type="ex:TokenEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="TokenEnumerationType">
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="1"/>
+          <xs:enumeration value="2"/>
+          <xs:enumeration value="3"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeSequence" type="ex:ComplexTypeSequence"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeSequence">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="shade" type="xs:string"/>
+          <xs:element name="length" type="xs:int"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="inStock" type="xs:int"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeOnlyAttributes" type="ex:ComplexTypeOnlyAttributes"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeOnlyAttributes">
+        <xs:attribute name="a1" type="xs:string"/>
+        <xs:attribute name="a2" type="xs:int"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeAll" type="ex:ComplexTypeAll"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeAll">
+        <xs:all>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="shade" type="xs:string"/>
+          <xs:element name="length" type="xs:int"/>
+        </xs:all>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="inStock" type="xs:int"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="fruit" type="ex:Fruit"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Fruit">
+        <xs:choice>
+          <xs:element name="apple" type="xs:int"/>
+          <xs:element name="orange" type="xs:string"/>
+          <xs:element name="banana" type="xs:int"/>
+        </xs:choice>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="mortgage" type="ex:Mortgage"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Mortgage">
+        <xs:sequence>
+          <xs:element name="amount" type="xs:int"/>
+          <xs:choice>
+            <xs:element name="repayment" type="ex:Repayment"/>
+            <xs:element name="interestonly" type="ex:InterestOnly"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Repayment">
+        <xs:sequence>
+          <xs:element name="years" type="xs:int"/>
+          <xs:element name="months" type="xs:int"/>
+          <xs:element name="rate" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="InterestOnly">
+        <xs:sequence>
+          <xs:element name="years" type="xs:int"/>
+          <xs:element name="rate" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementMinOccurs1" type="ex:ElementMinOccurs1"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementMinOccurs1">
+        <xs:sequence>
+          <xs:element name="elementMinOccurs1item" type="xs:string" minOccurs="1"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementMinOccursFinite" type="ex:ElementMinOccursFinite"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementMinOccursFinite">
+        <xs:sequence>
+          <xs:element name="elementMinOccursFiniteitem" type="xs:string" minOccurs="3" maxOccurs="3"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="itemColors2" type="ex:ItemColors2"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ItemColors2">
+        <xs:sequence>
+          <xs:element name="itemColor" type="xs:string" minOccurs="2" maxOccurs="2"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="itemColors" type="ex:ItemColors"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ItemColors">
+        <xs:sequence>
+          <xs:element name="itemColor" type="xs:string" minOccurs="2" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementMaxOccurs1" type="ex:ElementMaxOccurs1"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementMaxOccurs1">
+        <xs:sequence>
+          <xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="publications" type="ex:Publications"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Publications">
+        <xs:sequence>
+          <xs:element name="day" type="xs:string" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="summer" type="ex:Summer"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Summer">
+        <xs:sequence>
+          <xs:element name="mnth" type="xs:string" maxOccurs="4"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeOptional" type="ex:AttributeOptional"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeOptional">
+        <xs:sequence>
+          <xs:element name="amount" type="xs:long"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="currency" type="xs:string" use="optional"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeRequired" type="ex:AttributeRequired"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeRequired">
+        <xs:sequence>
+          <xs:element name="percentage" type="xs:int"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="seasonal" type="xs:string" use="required"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeFixed" type="ex:AttributeFixed"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeFixed">
+        <xs:sequence>
+          <xs:element name="fee" type="xs:int"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="currency" type="xs:string" fixed="GBP"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeDefault" type="ex:AttributeDefault"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeDefault">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="defaultedValue" type="xs:string" default="theDefaultValue"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElement" type="xs:string"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementDefault" type="xs:string" default="theDefaultValue"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementMinOccurs0" type="ex:ElementMinOccurs0"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementMinOccurs0">
+        <xs:sequence>
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:element name="middleName" type="xs:string" minOccurs="0"/>
+          <xs:element name="lastName" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nillableMiddleName" type="ex:NillableMiddleName"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NillableMiddleName">
+        <xs:sequence>
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:element name="middleName" type="xs:string" nillable="true"/>
+          <xs:element name="lastName" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nillableOptionalMiddleName" type="ex:NillableOptionalMiddleName"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NillableOptionalMiddleName">
+        <xs:sequence>
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:element name="middleName" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="lastName" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnionMemberTypes">
+        <xs:union memberTypes="xs:int xs:string"/>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unionMemberTypes" type="ex:UnionMemberTypes"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnionDateString">
+        <xs:union memberTypes="xs:date xs:string"/>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unionDateString" type="ex:UnionDateString"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnionSimpleDateString">
+        <xs:union>
+          <xs:simpleType>
+            <xs:restriction base="xs:date"/>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:string"/>
+          </xs:simpleType>
+        </xs:union>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unionSimpleDateString" type="ex:UnionSimpleDateString"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nullEnumerationType" type="ex:NullEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NullEnumerationType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value=""/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementEmptyComplexType">
+        <xs:complexType/>
+      </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementEmptySequence">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementSequence">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="foo" type="xs:string"/>
+            <xs:element name="bar" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementAll">
+        <xs:complexType>
+          <xs:all>
+            <xs:element name="globalElementAllA" type="xs:string"/>
+            <xs:element name="globalElementAllB" type="xs:string"/>
+          </xs:all>
+        </xs:complexType>
+      </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementChoice">
+        <xs:complexType>
+          <xs:choice>
+            <xs:element name="globalElementChoiceA" type="xs:string"/>
+            <xs:element name="globalElementChoiceB" type="xs:string"/>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nestedSequenceElementList" type="ex:NestedSequenceElementList"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NestedItem">
+        <xs:sequence>
+          <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NestedSequenceElementList">
+        <xs:sequence>
+          <xs:element name="nestedItem" minOccurs="0" maxOccurs="unbounded" type="ex:NestedItem"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="mixedContentType" type="ex:MixedContentType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="MixedContentType" mixed="true">
+        <xs:sequence>
+          <xs:element name="elem1" type="xs:string"/>
+          <xs:element name="elem2" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="stringSimpleTypePattern" type="ex:StringSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="StringSimpleTypePattern">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\d{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="intSimpleTypePattern" type="ex:IntSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IntSimpleTypePattern">
+        <xs:restriction base="xs:int">
+          <xs:pattern value="\d{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="integerSimpleTypePattern" type="ex:IntegerSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IntegerSimpleTypePattern">
+        <xs:restriction base="xs:integer">
+          <xs:pattern value="[+\-]?([1-9][0-9]*)|0"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="longSimpleTypePattern" type="ex:LongSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="LongSimpleTypePattern">
+        <xs:restriction base="xs:long">
+          <xs:pattern value="\d{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="decimalSimpleTypePattern" type="ex:DecimalSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DecimalSimpleTypePattern">
+        <xs:restriction base="xs:decimal">
+          <xs:pattern value="\d{4}\.\d{2}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="floatSimpleTypePattern" type="ex:FloatSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="FloatSimpleTypePattern">
+        <xs:restriction base="xs:float">
+          <xs:pattern value="\d{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="doubleSimpleTypePattern" type="ex:DoubleSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DoubleSimpleTypePattern">
+        <xs:restriction base="xs:double">
+          <xs:pattern value="\d{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="shortSimpleTypePattern" type="ex:ShortSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ShortSimpleTypePattern">
+        <xs:restriction base="xs:short">
+          <xs:pattern value="\d{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="nonNegativeIntegerSimpleTypePattern" type="ex:NonNegativeIntegerSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NonNegativeIntegerSimpleTypePattern">
+        <xs:restriction base="xs:nonNegativeInteger">
+          <xs:pattern value="\d{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="positiveIntegerSimpleTypePattern" type="ex:PositiveIntegerSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="PositiveIntegerSimpleTypePattern">
+        <xs:restriction base="xs:positiveInteger">
+          <xs:pattern value="\d{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedLongSimpleTypePattern" type="ex:UnsignedLongSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnsignedLongSimpleTypePattern">
+        <xs:restriction base="xs:unsignedLong">
+          <xs:pattern value="\d{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedIntSimpleTypePattern" type="ex:UnsignedIntSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnsignedIntSimpleTypePattern">
+        <xs:restriction base="xs:unsignedInt">
+          <xs:pattern value="\d{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unsignedShortSimpleTypePattern" type="ex:UnsignedShortSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnsignedShortSimpleTypePattern">
+        <xs:restriction base="xs:unsignedShort">
+          <xs:pattern value="\d{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="dateSimpleTypePattern" type="ex:DateSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DateSimpleTypePattern">
+        <xs:restriction base="xs:date">
+          <xs:pattern value="[^\-]{4}\-[^\-]{2}\-[^\-]{2}"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedMinInclusive" type="ex:RestrictedMinInclusive"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedMinInclusive">
+        <xs:restriction base="xs:integer">
+          <xs:minInclusive value="1"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedMaxInclusive" type="ex:RestrictedMaxInclusive"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedMaxInclusive">
+        <xs:restriction base="xs:integer">
+          <xs:maxInclusive value="3"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedMinExclusive" type="ex:RestrictedMinExclusive"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedMinExclusive">
+        <xs:restriction base="xs:integer">
+          <xs:minExclusive value="1"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedMaxExclusive" type="ex:RestrictedMaxExclusive"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedMaxExclusive">
+        <xs:restriction base="xs:integer">
+          <xs:maxExclusive value="3"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedLength" type="ex:RestrictedLength"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedLength">
+        <xs:restriction base="xs:language">
+          <xs:length value="2"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedMaxLength" type="ex:RestrictedMaxLength"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedMaxLength">
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="12"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedMinLength" type="ex:RestrictedMinLength"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedMinLength">
+        <xs:restriction base="xs:string">
+          <xs:minLength value="2"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anyAttributeStrict" type="ex:AnyAttributeStrict"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AnyAttributeStrict">
+        <xs:sequence>
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:element name="lastName" type="xs:string"/>
+        </xs:sequence>
+        <xs:anyAttribute/>
+      </xs:complexType>
+<xs:attribute xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="eyeColor" type="xs:string"/>
+<xs:attribute xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="hairColor" type="xs:string"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anyAttributeSkip" type="ex:AnyAttributeSkip"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AnyAttributeSkip">
+        <xs:sequence>
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:element name="lastName" type="xs:string"/>
+        </xs:sequence>
+        <xs:anyAttribute processContents="skip"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anyAttributeLax" type="ex:AnyAttributeLax"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AnyAttributeLax">
+        <xs:sequence>
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:element name="lastName" type="xs:string"/>
+        </xs:sequence>
+        <xs:anyAttribute processContents="lax"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="customerName" type="ex:CustomerName"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="firstName" type="xs:string"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="lastName" type="xs:string"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="CustomerName">
+        <xs:sequence>
+          <xs:element ref="ex:firstName"/>
+          <xs:element ref="ex:lastName"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="clientName" type="ex:ClientName"/>
+<xs:attribute xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="phoneNumber" type="xs:string"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ClientName">
+        <xs:sequence>
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:element name="lastName" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute ref="ex:phoneNumber"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="clientDetails" type="ex:ClientDetails"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ClientDetails">
+        <xs:sequence>
+          <xs:element name="forename" type="xs:string"/>
+          <xs:element name="surname" type="xs:string"/>
+          <xs:element name="title" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="phone" type="xs:string"/>
+        <xs:attribute name="title" type="xs:int"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSequenceStrict" type="ex:ExtendedSequenceStrict"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceStrict">
+        <xs:sequence>
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:element name="lastName" type="xs:string"/>
+          <xs:element name="extension" type="ex:StrictExtension" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="title" type="xs:string"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="middleName" type="xs:string"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="StrictExtension">
+        <xs:sequence>
+          <xs:any processContents="strict" minOccurs="0" maxOccurs="unbounded" namespace="##targetNamespace"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSequenceLax" type="ex:ExtendedSequenceLax"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceLax">
+        <xs:sequence>
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:element name="lastName" type="xs:string"/>
+          <xs:element name="extension" type="ex:LaxExtension" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="LaxExtension">
+        <xs:sequence>
+          <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##targetNamespace"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSequenceSkip" type="ex:ExtendedSequenceSkip"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceSkip">
+        <xs:sequence>
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:element name="lastName" type="xs:string"/>
+          <xs:element name="extension" type="ex:SkipExtension" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SkipExtension">
+        <xs:sequence>
+          <xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded" namespace="##targetNamespace"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://www.w3.org/2001/XMLSchema" name="stringElementDefaultNamespace" type="string"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedStringMinLength" type="ex:RestrictedStringMinLength"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedStringMinLength">
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedStringMaxLength" type="ex:RestrictedStringMaxLength"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedStringMaxLength">
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="12"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedStringMinMaxLength" type="ex:RestrictedStringMinMaxLength"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedStringMinMaxLength">
+        <xs:restriction base="xs:string">
+          <xs:minLength value="12"/>
+          <xs:maxLength value="15"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="bareVector" type="ex:BareVector"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="BareVector">
+        <xs:sequence>
+          <xs:element name="item1" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+          <xs:element name="item2" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+          <xs:element name="item3" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeSequenceExtension" type="ex:ComplexTypeSequenceExtension"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeSequenceBase">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeSequenceExtension">
+        <xs:complexContent>
+          <xs:extension base="ex:ComplexTypeSequenceBase">
+            <xs:sequence>
+              <xs:element name="description" type="xs:string"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="assembly" type="ex:Assembly"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Assembly">
+        <xs:sequence>
+          <xs:element name="part" minOccurs="0" maxOccurs="unbounded" type="ex:Part"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="part" type="ex:Part"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Part">
+        <xs:sequence>
+          <xs:element name="number" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Part2">
+        <xs:complexContent>
+          <xs:extension base="ex:Part">
+            <xs:sequence>
+              <xs:element name="description" type="xs:string"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:include xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" schemaLocation="../static/RelativeIncluded.xsd"/>
+<xs:include xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" schemaLocation="http://www.w3.org/2002/ws/databinding/examples/6/09/static/Included.xsd"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="simpleTypeAttributes" type="ex:SimpleTypeAttributes"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SimpleTypeAttributes">
+        <xs:simpleContent>
+          <xs:extension base="xs:string">
+            <xs:attribute name="a1" type="xs:string"/>
+            <xs:attribute name="a2" type="xs:string"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+<xs:include xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" schemaLocation="http://www.w3.org/2002/ws/databinding/examples/6/09/static/ChameleonIncluded.xsd"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="precisionDecimal" type="ex:PrecisionDecimal"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="PrecisionDecimal">
+        <xs:union>
+          <xs:simpleType>
+            <xs:restriction base="xs:decimal">
+              <xs:totalDigits value="16"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:double"/>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="NaN"/>
+              <xs:enumeration value="-INF"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:union>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSimpleType" type="ex:ExtendedSimpleType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSimpleType">
+        <xs:simpleContent>
+          <xs:extension base="xs:string"/>
+        </xs:simpleContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="sequenceMinOccurs1" type="ex:SequenceMinOccurs1"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SequenceMinOccurs1">
+        <xs:sequence minOccurs="1">
+          <xs:element name="sequenceMinOccurs1item" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="articleColors" type="ex:ArticleColors"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ArticleColors">
+        <xs:sequence minOccurs="2" maxOccurs="unbounded">
+          <xs:element name="articleColor" type="xs:string"/>
+          <xs:element name="articleContrast" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="myAgeDetails" type="ex:MyAgeDetails"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="MyAgeDetails">
+        <xs:sequence maxOccurs="1">
+          <xs:element name="myAge" type="xs:short"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="colorList" type="ex:ColorList"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ColorList">
+        <xs:sequence>
+          <xs:element name="colorValue" type="xs:string" minOccurs="0" maxOccurs="2"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="durationList" type="ex:DurationList"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DurationList">
+        <xs:sequence>
+          <xs:element name="durationValue" type="xs:short" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="durationListSequence" type="ex:DurationListSequence"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DurationListSequence">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="durationVal" type="xs:string"/>
+          <xs:element name="durationPercentage" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ageList" type="ex:AgeList"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AgeList">
+        <xs:sequence>
+          <xs:element name="ageValue" type="xs:short" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ageListSequence" type="ex:AgeListSequence"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AgeListSequence">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+          <xs:element name="ageVal" type="xs:string"/>
+          <xs:element name="agePercentage" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="bookPublications" type="ex:BookPublications"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="BookPublications">
+        <xs:sequence maxOccurs="unbounded">
+          <xs:element name="pubDate" type="xs:string"/>
+          <xs:element name="pubISBN" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="winter" type="ex:Winter"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Winter">
+        <xs:sequence maxOccurs="4">
+          <xs:element name="mnth" type="xs:string"/>
+          <xs:element name="weather" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="sequenceMinOccurs0" type="ex:SequenceMinOccurs0"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SequenceMinOccurs0">
+        <xs:sequence minOccurs="0">
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:element name="middleName" type="xs:string"/>
+          <xs:element name="lastName" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="sequenceSequenceElement" type="ex:SequenceSequenceElement"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SequenceSequenceElement">
+        <xs:sequence>
+          <xs:element name="firstName" type="xs:string"/>
+          <xs:sequence minOccurs="0">
+            <xs:element name="middleName" type="xs:string"/>
+            <xs:sequence minOccurs="0">
+              <xs:element name="lastName" type="xs:string"/>
+            </xs:sequence>
+          </xs:sequence>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="decimalSimpleTypeTotalDigits" type="ex:DecimalSimpleTypeTotalDigits"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DecimalSimpleTypeTotalDigits">
+        <xs:restriction base="xs:decimal">
+          <xs:totalDigits value="5"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="decimalSimpleTypeFractionDigits" type="ex:DecimalSimpleTypeFractionDigits"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="DecimalSimpleTypeFractionDigits">
+        <xs:restriction base="xs:decimal">
+          <xs:fractionDigits value="2"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeTypeReference" type="ex:AttributeTypeReference"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SimpleType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="value1"/>
+          <xs:enumeration value="value2"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeTypeReference">
+        <xs:sequence>
+          <xs:element name="element" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="attr" type="ex:SimpleType"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementTypeReference" type="ex:ElementTypeReference"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementTypeReferenced">
+        <xs:sequence>
+          <xs:element name="referenced" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementTypeReference">
+        <xs:sequence>
+          <xs:element name="text" type="ex:ElementTypeReferenced"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="localElementComplexType" type="ex:LocalElementComplexType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="LocalElementComplexType">
+        <xs:sequence>
+          <xs:element name="name">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="firstName" type="xs:string"/>
+                <xs:element name="lastName" type="xs:string"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="idExample" type="ex:IdExample" id="node1"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="IdExample" id="node2">
+        <xs:sequence id="node3">
+          <xs:element name="text" type="xs:string" minOccurs="0" id="node4"/>
+        </xs:sequence>
+        <xs:attribute name="string" type="xs:string" id="node5"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeGroup" type="ex:AttributeGroup"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeGroup">
+        <xs:sequence>
+          <xs:element name="contract" type="xs:string"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="ex:CommonAttributes"/>
+      </xs:complexType>
+<xs:attributeGroup xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="CommonAttributes">
+        <xs:attribute name="id" type="xs:ID" use="optional" form="unqualified"/>
+      </xs:attributeGroup>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementFormQualified" type="ex:ElementFormQualified"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementFormQualified">
+        <xs:sequence>
+          <xs:element name="premium" type="xs:string" form="qualified"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="notNillableElement" type="ex:NotNillableElement"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NotNillableElement">
+        <xs:sequence>
+          <xs:element name="notNillableElement" type="xs:string" nillable="false"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="notMixed" type="ex:NotMixed"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="NotMixed" mixed="false">
+        <xs:sequence>
+          <xs:element name="notMixedElement" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeFormUnqualified" type="ex:AttributeFormUnqualified"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeFormUnqualified">
+        <xs:sequence>
+          <xs:element name="premium" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" form="unqualified"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeConcrete" type="ex:ComplexTypeConcrete"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeConcrete" abstract="false">
+        <xs:sequence>
+          <xs:element name="premium" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalComplexType" type="ex:GlobalComplexType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GlobalComplexType">
+        <xs:sequence>
+          <xs:element name="premium" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalComplexTypeAbstract" type="ex:GlobalComplexTypeAbstract"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GlobalComplexTypeExtra" abstract="true">
+        <xs:sequence>
+          <xs:element name="premium" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GlobalComplexTypeAbstract">
+        <xs:complexContent>
+          <xs:extension base="ex:GlobalComplexTypeExtra"/>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementConcrete" type="xs:string" abstract="false"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementBlock" type="xs:string" block="#all"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementFinal" type="xs:string" final="#all"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalComplexTypeBlock" type="ex:BlockAll"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="BlockAll" block="#all">
+        <xs:sequence>
+          <xs:element name="amount" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeAttribute" type="ex:ComplexTypeAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeAttribute">
+        <xs:sequence>
+          <xs:element name="premium" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="currency" type="xs:string"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeAttributeExtension" type="ex:ComplexTypeAttributeExtension"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeAttributeBase">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeAttributeExtension">
+        <xs:complexContent>
+          <xs:extension base="ex:ComplexTypeAttributeBase">
+            <xs:attribute name="gender" type="xs:string"/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="byteSimpleTypePattern" type="ex:ByteSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ByteSimpleTypePattern">
+        <xs:restriction base="xs:byte">
+          <xs:pattern value="1"/>
+          <xs:pattern value="2"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="choiceMaxOccursFinite" type="ex:ChoiceMaxOccursFinite"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ChoiceMaxOccursFinite">
+        <xs:choice maxOccurs="2">
+          <xs:element name="choiceA" type="xs:string"/>
+          <xs:element name="choiceB" type="xs:string"/>
+        </xs:choice>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="choiceMaxOccursUnbounded" type="ex:ChoiceMaxOccursUnbounded"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ChoiceMaxOccursUnbounded">
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="choiceA" type="xs:string"/>
+          <xs:element name="choiceB" type="xs:string"/>
+        </xs:choice>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="choiceMinOccurs0" type="ex:ChoiceMinOccurs0"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ChoiceMinOccurs0">
+        <xs:choice minOccurs="0">
+          <xs:element name="AChoiceMinOccurs0" type="xs:string"/>
+          <xs:element name="BChoiceMinOccurs0" type="xs:string"/>
+        </xs:choice>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="choiceMinOccursFinite" type="ex:ChoiceMinOccursFinite"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ChoiceMinOccursFinite">
+        <xs:choice minOccurs="2" maxOccurs="2">
+          <xs:element name="AChoiceMinOccursFinite" type="xs:string"/>
+          <xs:element name="BChoiceMinOccursFinite" type="xs:string"/>
+        </xs:choice>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="choiceElement" type="ex:ChoiceElement"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ChoiceElement">
+        <xs:choice>
+          <xs:element name="AChoiceElement" type="xs:string"/>
+          <xs:element name="BChoiceElement" type="xs:string"/>
+        </xs:choice>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="choiceChoice" type="ex:ChoiceChoice"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ChoiceChoice">
+        <xs:choice>
+          <xs:element name="Avalue" type="xs:string"/>
+          <xs:choice>
+            <xs:element name="Bvalue" type="xs:string"/>
+            <xs:element name="Cvalue" type="xs:string"/>
+          </xs:choice>
+        </xs:choice>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="choiceSequence" type="ex:ChoiceSequenceType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ChoiceSequenceType">
+        <xs:choice>
+          <xs:element name="Avalue" type="xs:string"/>
+          <xs:sequence>
+            <xs:element name="Bvalue" type="xs:string"/>
+            <xs:element name="Cvalue" type="xs:string"/>
+          </xs:sequence>
+        </xs:choice>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="sequenceChoice" type="ex:SequenceChoiceType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SequenceChoiceType">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="Avalue" type="xs:string"/>
+            <xs:element name="Bvalue" type="xs:string"/>
+          </xs:choice>
+          <xs:element name="Cvalue" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementGroup" type="ex:ElementGroup"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementGroup">
+        <xs:sequence>
+          <xs:group ref="ex:ElementGroupGroup"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:group xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementGroupGroup">
+        <xs:sequence>
+          <xs:element name="value1" type="xs:string"/>
+          <xs:element name="value2" type="xs:string"/>
+        </xs:sequence>
+      </xs:group>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unique" type="ex:Unique">
+        <xs:unique name="nameUniqueness">
+          <xs:selector xpath="ex:character"/>
+          <xs:field xpath="ex:name"/>
+        </xs:unique>
+      </xs:element>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="Unique">
+        <xs:sequence>
+          <xs:element name="character" maxOccurs="unbounded">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+                <xs:element name="age" type="xs:string" minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="tokenSimpleTypePattern" type="ex:TokenSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="TokenSimpleTypePattern">
+        <xs:restriction base="xs:token">
+          <xs:pattern value="1"/>
+          <xs:pattern value="2"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="appinfoElement" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>This is some Appinfo</xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeOnlyAttributeGroup" type="ex:ComplexTypeOnlyAttributeGroup"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeOnlyAttributeGroup">
+        <xs:attributeGroup ref="ex:CommonOnlyAttributeGroup"/>
+      </xs:complexType>
+<xs:attributeGroup xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="CommonOnlyAttributeGroup">
+        <xs:attribute name="id" type="xs:ID" use="optional" form="unqualified"/>
+      </xs:attributeGroup>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="substitutionGroup" type="xs:string"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="substitutionElement" substitutionGroup="ex:substitutionGroup"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="maxOccurs1" type="ex:MaxOccurs1"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="MaxOccurs1">
+        <xs:sequence>
+          <xs:element name="value" type="xs:string" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="minOccurs1" type="ex:MinOccurs1"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="MinOccurs1">
+        <xs:sequence>
+          <xs:element name="value" type="xs:string" minOccurs="1"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="allElement" type="ex:AllElement"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AllElement">
+        <xs:all>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+          <xs:element name="element3" type="xs:string"/>
+          <xs:element name="element4" type="xs:string"/>
+          <xs:element name="element5" type="xs:string"/>
+        </xs:all>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementDefault" type="ex:ElementDefault"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementDefault">
+        <xs:sequence>
+          <xs:element name="element" type="xs:string" default="default"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="list" type="ex:List"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="List">
+        <xs:list itemType="xs:string"/>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="sequenceElement" type="ex:SequenceElement"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SequenceElement">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+          <xs:element name="element3" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="sequenceSingleRepeatedElement" type="ex:SequenceSingleRepeatedElement"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SequenceSingleRepeatedElement">
+        <xs:sequence>
+          <xs:element name="element" type="xs:string" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:import xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.w3.org/2002/ws/databinding/examples/6/09/strict/" schemaLocation="../strict.xsd"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anyAttributeOtherStrict" type="ex:AnyAttributeOtherStrict"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AnyAttributeOtherStrict">
+        <xs:sequence>
+          <xs:element name="firstElement" type="xs:string"/>
+          <xs:element name="lastElement" type="xs:string"/>
+        </xs:sequence>
+        <xs:anyAttribute processContents="strict" namespace="##other"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anyAttributeOtherLax" type="ex:AnyAttributeOtherLax"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AnyAttributeOtherLax">
+        <xs:sequence>
+          <xs:element name="firstElement" type="xs:string"/>
+          <xs:element name="lastElement" type="xs:string"/>
+        </xs:sequence>
+        <xs:anyAttribute processContents="lax" namespace="##other"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anyAttributeOtherSkip" type="ex:AnyAttributeOtherSkip"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AnyAttributeOtherSkip">
+        <xs:sequence>
+          <xs:element name="firstElement" type="xs:string"/>
+          <xs:element name="lastElement" type="xs:string"/>
+        </xs:sequence>
+        <xs:anyAttribute processContents="skip" namespace="##other"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementAbstract" type="ex:GlobalElementAbstract"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GlobalElementAbstract">
+        <xs:sequence>
+          <xs:element ref="ex:globalElementAbstractSubHead"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementAbstractSubHead" abstract="true"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementAbstractSub" substitutionGroup="ex:globalElementAbstractSubHead"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="simpleTypeEnumerationType" type="ex:SimpleTypeEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SimpleTypeEnumerationType">
+        <xs:restriction base="ex:SimpleTypeEnumerationTypeBase">
+          <xs:enumeration value="One"/>
+          <xs:enumeration value="Two"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SimpleTypeEnumerationTypeBase">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="One"/>
+          <xs:enumeration value="Two"/>
+          <xs:enumeration value="Three"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="languageEnumerationType" type="ex:LanguageEnumerationType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="LanguageEnumerationType">
+        <xs:restriction base="xs:language">
+          <xs:enumeration value="en"/>
+          <xs:enumeration value="en-US"/>
+          <xs:enumeration value="fr"/>
+          <xs:enumeration value="de"/>
+          <xs:enumeration value="it"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementReferenceUnqualified" type="ex:ElementReferenceUnqualified"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementReferenceUnqualifiedElement1" type="xs:string"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementReferenceUnqualifiedElement2" type="xs:string"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementReferenceUnqualified">
+        <xs:sequence>
+          <xs:element ref="elementReferenceUnqualifiedElement1"/>
+          <xs:element ref="elementReferenceUnqualifiedElement2"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementTypeReferenceUnqualified" type="ex:ElementTypeReferenceUnqualified"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementTypeReferenceUnqualifiedRef">
+        <xs:sequence>
+          <xs:element name="referenced" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementTypeReferenceUnqualified">
+        <xs:sequence>
+          <xs:element name="text" type="ElementTypeReferenceUnqualifiedRef"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeReferenceUnqualified" type="ex:AttributeReferenceUnqualified"/>
+<xs:attribute xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeReferenceUnqualifiedAtt" type="xs:string"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeReferenceUnqualified">
+        <xs:sequence>
+          <xs:element name="firstElement" type="xs:string"/>
+          <xs:element name="lastElement" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute ref="attributeReferenceUnqualifiedAtt"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeTypeReferenceUnqualified" type="ex:AttributeTypeReferenceUnqualified"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeTypeReferenceUnqualifiedType">
+        <xs:restriction base="xs:decimal">
+          <xs:totalDigits value="3"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeTypeReferenceUnqualified">
+        <xs:sequence>
+          <xs:element name="firstElement" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="localAttribute" type="AttributeTypeReferenceUnqualifiedType"/>
+      </xs:complexType>
+<xs:attribute xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalAttributeAttr" type="xs:string"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GlobalAttribute">
+        <xs:sequence>
+          <xs:element name="globalAttributeElement" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute ref="ex:globalAttributeAttr"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalAttribute" type="ex:GlobalAttribute"/>
+<xs:attribute xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalAttributeSimpleTypeAttr">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="value1"/>
+            <xs:enumeration value="value2"/>
+            <xs:enumeration value="value3"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalAttributeSimpleTypeComplexType">
+        <xs:sequence>
+          <xs:element name="globalAttributeSimpleTypeElement" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute ref="ex:globalAttributeSimpleTypeAttr"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalAttributeSimpleType" type="ex:globalAttributeSimpleTypeComplexType"/>
+<xs:attribute xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalAttributeUnqualifiedTypeAttr" type="GlobalAttributeUnqualifiedTypeSimpleType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GlobalAttributeUnqualifiedTypeSimpleType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="value1"/>
+          <xs:enumeration value="value2"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GlobalAttributeUnqualifiedType">
+        <xs:sequence>
+          <xs:element name="globalAttributeUnqualifiedTypeElement" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute ref="ex:globalAttributeUnqualifiedTypeAttr"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalAttributeUnqualifiedType" type="ex:GlobalAttributeUnqualifiedType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GlobalComplexTypeEmptyExtension">
+        <xs:complexContent>
+          <xs:extension base="xs:anyType"/>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalComplexTypeEmptyExtension" type="ex:GlobalComplexTypeEmptyExtension"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementComplexTypeEmptyExtension">
+        <xs:complexType>
+          <xs:complexContent>
+            <xs:extension base="xs:anyType"/>
+          </xs:complexContent>
+        </xs:complexType>
+      </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementComplexTypeSequenceExtension">
+        <xs:complexType>
+          <xs:complexContent>
+            <xs:extension base="xs:anyType">
+              <xs:sequence/>
+            </xs:extension>
+          </xs:complexContent>
+        </xs:complexType>
+      </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementSequenceAny">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:any processContents="skip"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementSimpleType">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="value1"/>
+            <xs:enumeration value="value2"/>
+            <xs:enumeration value="value3"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementUnqualifiedType" type="GlobalElementUnqualifiedType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GlobalElementUnqualifiedType">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gYearSimpleTypePattern" type="ex:GYearSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GYearSimpleTypePattern">
+        <xs:restriction base="xs:gYear">
+          <xs:pattern value="2008|2009|2010"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gMonthSimpleTypePattern" type="ex:GMonthSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GMonthSimpleTypePattern">
+        <xs:restriction base="xs:gMonth">
+          <xs:pattern value="--10|--11|--12"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gDaySimpleTypePattern" type="ex:GDaySimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GDaySimpleTypePattern">
+        <xs:restriction base="xs:gDay">
+          <xs:pattern value="---01|---11|---31"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gYearMonthSimpleTypePattern" type="ex:GYearMonthSimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GYearMonthSimpleTypePattern">
+        <xs:restriction base="xs:gYearMonth">
+          <xs:pattern value="2001-12|2002-12|2003-12"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="gMonthDaySimpleTypePattern" type="ex:GMonthDaySimpleTypePattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="GMonthDaySimpleTypePattern">
+        <xs:restriction base="xs:gMonthDay">
+          <xs:pattern value="--12-01|--11-01|--10-01"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="simpleTypeRenamed" type="ex:SimpleTypeRenamed"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SimpleTypeRenamed">
+        <xs:restriction base="xs:string"/>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="localElementSimpleType" type="ex:LocalElementSimpleType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="LocalElementSimpleType">
+        <xs:sequence>
+          <xs:element name="localElement">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="First"/>
+                <xs:enumeration value="Second"/>
+                <xs:enumeration value="Third"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="localAttributeSimpleType" type="ex:LocalAttributeSimpleType"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="LocalAttributeSimpleType">
+        <xs:sequence>
+          <xs:element name="localElement1" type="xs:string"/>
+          <xs:element name="localElement2" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="localAttribute">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="First"/>
+              <xs:enumeration value="Second"/>
+              <xs:enumeration value="Third"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSequenceStrictAny" type="ex:ExtendedSequenceStrictAny"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSequenceStrictAnyElement" type="xs:string"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceStrictAny">
+        <xs:sequence>
+          <xs:element name="firstElement" type="xs:string"/>
+          <xs:element name="lastElement" type="xs:string"/>
+          <xs:element name="extension" type="ex:ExtendedSequenceStrictAnyExtension" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceStrictAnyExtension">
+        <xs:sequence>
+          <xs:any namespace="##any" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSequenceLaxAny" type="ex:ExtendedSequenceLaxAny"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceLaxAny">
+        <xs:sequence>
+          <xs:element name="firstElement" type="xs:string"/>
+          <xs:element name="lastElement" type="xs:string"/>
+          <xs:element name="extension" type="ex:ExtendedSequenceLaxAnyExtension" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceLaxAnyExtension">
+        <xs:sequence>
+          <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSequenceSkipAny" type="ex:ExtendedSequenceSkipAny"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceSkipAny">
+        <xs:sequence>
+          <xs:element name="firstElement" type="xs:string"/>
+          <xs:element name="lastElement" type="xs:string"/>
+          <xs:element name="extension" type="ex:ExtendedSequenceSkipAnyExtension" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceSkipAnyExtension">
+        <xs:sequence>
+          <xs:any namespace="##any" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSequenceSkipOther" type="ex:ExtendedSequenceSkipOther"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceSkipOther">
+        <xs:sequence>
+          <xs:element name="firstElement" type="xs:string"/>
+          <xs:element name="lastElement" type="xs:string"/>
+          <xs:element name="extension" type="ex:ExtendedSequenceSkipOtherExtension" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceSkipOtherExtension">
+        <xs:sequence>
+          <xs:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSequenceLaxOther" type="ex:ExtendedSequenceLaxOther"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceLaxOther">
+        <xs:sequence>
+          <xs:element name="firstElement" type="xs:string"/>
+          <xs:element name="lastElement" type="xs:string"/>
+          <xs:element name="extension" type="ex:ExtendedSequenceLaxOtherExtension" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceLaxOtherExtension">
+        <xs:sequence>
+          <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:import xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.w3.org/2002/ws/databinding/examples/6/09/strict/" schemaLocation="../strict.xsd"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSequenceStrictOther" type="ex:ExtendedSequenceStrictOther"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceStrictOther">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+          <xs:element name="extension" type="ex:ExtendedSequenceStrictOtherExtension" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceStrictOtherExtension">
+        <xs:sequence>
+          <xs:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeFormQualified" type="ex:AttributeFormQualified"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeFormQualified">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="attribute" form="qualified" type="xs:string"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeAnyAttribute" type="ex:ComplexTypeAnyAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeAnyAttribute">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+        </xs:sequence>
+        <xs:anyAttribute processContents="skip"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="simpleContentAnyAttributeSkip" type="ex:SimpleContentAnyAttributeSkip"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SimpleContentAnyAttributeSkip">
+        <xs:simpleContent>
+          <xs:extension base="xs:string">
+            <xs:anyAttribute processContents="skip"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="simpleContentAnyAttributeLax" type="ex:SimpleContentAnyAttributeLax"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SimpleContentAnyAttributeLax">
+        <xs:simpleContent>
+          <xs:extension base="xs:string">
+            <xs:anyAttribute processContents="lax" namespace="##other"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+<xs:import xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.w3.org/2002/ws/databinding/examples/6/09/strict/" schemaLocation="../strict.xsd"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="simpleContentAnyAttributeStrict" type="ex:SimpleContentAnyAttributeStrict"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SimpleContentAnyAttributeStrict">
+        <xs:simpleContent>
+          <xs:extension base="xs:string">
+            <xs:anyAttribute processContents="strict" namespace="##other"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="mixedComplexContent" type="ex:MixedComplexContent"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="MixedComplexContent">
+        <xs:complexContent mixed="true">
+          <xs:restriction base="xs:anyType">
+            <xs:sequence>
+              <xs:element name="element1" type="xs:string"/>
+              <xs:element name="element2" type="xs:string"/>
+              <xs:element name="element3" type="xs:string"/>
+            </xs:sequence>
+          </xs:restriction>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementFormUnqualified" type="ex:ElementFormUnqualified"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementFormUnqualified">
+        <xs:sequence>
+          <xs:element name="element" type="xs:string" form="unqualified"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSimpleContent" type="ex:ExtendedSimpleContent"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSimpleContent">
+        <xs:simpleContent>
+          <xs:extension base="xs:string">
+            <xs:attribute name="attribute"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="sequenceAnyStrict" type="ex:SequenceAnyStrict"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SequenceAnyStrict">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:any processContents="strict" namespace="##any" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="unionSimpleAndMemberTypes" type="ex:UnionSimpleAndMemberTypes"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="UnionSimpleAndMemberTypes">
+        <xs:union memberTypes="xs:string">
+          <xs:simpleType>
+            <xs:restriction base="xs:date"/>
+          </xs:simpleType>
+        </xs:union>    
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementFixed" type="xs:string" fixed="yes"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="globalElementComplexType">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="firstName" type="xs:string"/>
+                <xs:element name="lastName" type="xs:string"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedPattern" type="ex:RestrictedPattern"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedPattern">
+      <xs:restriction base="xs:string">
+        <xs:minLength value="1"/>
+        <xs:maxLength value="6"/>
+        <xs:pattern value="[0-9]{1,6}"/>
+      </xs:restriction>
+    </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedSimpleContent" type="ex:RestrictedSimpleContent"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedSimpleContent">
+       <xs:simpleContent>
+         <xs:restriction base="ex:SomeSimpleContent">
+           <xs:minInclusive value="1"/>
+           <xs:maxInclusive value="99"/>
+         </xs:restriction>
+       </xs:simpleContent>
+     </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SomeSimpleContent">
+       <xs:simpleContent>
+         <xs:extension base="ex:SimpleType">
+           <xs:attribute name="Currency" type="xs:string"/>
+         </xs:extension>
+       </xs:simpleContent>
+     </xs:complexType>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SimpleType">
+       <xs:restriction base="xs:int">
+         <xs:minExclusive value="0"/>
+         <xs:maxExclusive value="100"/>
+       </xs:restriction>
+     </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeProhibited" type="ex:AttributeProhibited"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeProhibited">
+      <xs:sequence>
+        <xs:element name="element1" type="xs:string"/>
+        <xs:element name="element2" type="xs:string"/>
+      </xs:sequence>
+      <xs:attribute name="prohibitedAttribute" use="prohibited" type="xs:string"/>
+    </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeChoiceExtension" type="ex:ComplexTypeChoiceExtension"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeChoiceBase">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeChoiceExtension">
+        <xs:complexContent>
+          <xs:extension base="ex:ComplexTypeChoiceBase">
+            <xs:choice>
+              <xs:element name="element3" type="xs:string"/>
+              <xs:element name="element4" type="xs:string"/>
+            </xs:choice>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeAttributeGroupExtension" type="ex:ComplexTypeAttributeGroupExtension"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeAttributeGroupBase">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeAttributeGroupExtension">
+        <xs:complexContent>
+          <xs:extension base="ex:ComplexTypeAttributeGroupBase">
+            <xs:attributeGroup ref="ex:CommonAttributes"/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:attributeGroup xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="CommonAttributes">
+        <xs:attribute name="id" type="xs:ID" use="optional" form="unqualified"/>
+      </xs:attributeGroup>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedWhitespacePreserve" type="ex:RestrictedWhitespacePreserve"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedWhitespacePreserve">
+        <xs:restriction base="xs:string">
+          <xs:whiteSpace value="preserve"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedWhitespaceCollapse" type="ex:RestrictedWhitespaceCollapse"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedWhitespaceCollapse">
+        <xs:restriction base="xs:string">
+          <xs:whiteSpace value="collapse"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="restrictedWhitespaceReplace" type="ex:RestrictedWhitespaceReplace"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="RestrictedWhitespaceReplace">
+        <xs:restriction base="xs:string">
+          <xs:whiteSpace value="replace"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeAttributeRestriction" type="ex:ComplexTypeAttributeRestriction"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeAttributeRestrictionBase">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="attrRestriction" type="xs:string"/>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeAttributeRestriction">
+        <xs:complexContent>
+          <xs:restriction base="ex:ComplexTypeAttributeRestrictionBase">
+            <xs:sequence>
+              <xs:element name="element1" type="xs:string"/>
+            </xs:sequence>
+            <xs:attribute name="attrRestriction" type="xs:string" use="required"/>
+          </xs:restriction>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeSequenceRestriction" type="ex:ComplexTypeSequenceRestriction"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeSequenceRestrictionBase">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeSequenceRestriction">
+        <xs:complexContent>
+          <xs:restriction base="ex:ComplexTypeSequenceRestrictionBase">
+            <xs:sequence>
+              <xs:element name="element1" type="xs:string"/>
+            </xs:sequence>
+          </xs:restriction>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="localElementComplexTypeEmptyExtension">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="extensionElement">
+              <xs:complexType>
+                <xs:complexContent>
+                  <xs:extension base="ex:ExtensionType"/>
+                </xs:complexContent>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtensionType">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="sequenceSequenceGroup" type="ex:SequenceSequenceGroup"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SequenceSequenceGroup">
+        <xs:sequence>
+          <xs:sequence>
+            <xs:group ref="ex:SeqSeqGroup"/>
+          </xs:sequence>
+        </xs:sequence>
+      </xs:complexType>
+<xs:group xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="SeqSeqGroup">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+        </xs:sequence>
+      </xs:group>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="maxOccurs0" type="ex:MaxOccurs0"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="MaxOccurs0">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string" maxOccurs="0" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="attributeGroupAnyAttribute" type="ex:AttributeGroupAnyAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AttributeGroupAnyAttribute">
+        <xs:attributeGroup ref="ex:CommonAttributes"/>
+      </xs:complexType>
+<xs:attributeGroup xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="CommonAttributes">
+        <xs:attribute name="id" type="xs:ID" use="optional" form="unqualified"/>
+        <xs:anyAttribute processContents="skip"/>
+      </xs:attributeGroup>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementKey" type="ex:ElementKey">
+        <xs:key name="key">
+          <xs:selector xpath=".//item"/>
+          <xs:field xpath="number"/>
+        </xs:key>
+      </xs:element>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ElementKey">
+        <xs:sequence>
+          <xs:element name="item" type="ex:itemType" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="itemType">
+        <xs:sequence>
+          <xs:element name="number" type="xs:integer"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anyAttributeNamespacedFinite" type="ex:AnyAttributeNamespacedFinite"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="AnyAttributeNamespacedFinite">
+        <xs:sequence>
+          <xs:element name="firstElement" type="xs:string"/>
+          <xs:element name="lastElement" type="xs:string"/>
+        </xs:sequence>
+        <xs:anyAttribute processContents="lax" namespace="http://www.w3.org/2002/ws/databinding/examples/6/09/"/>
+      </xs:complexType>
+<xs:attribute xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="otherAttribute">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="value1"/>
+            <xs:enumeration value="value2"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="anyURIEnumerationType" type="ex:URISimpleType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="URISimpleType">
+        <xs:restriction base="xs:anyURI">
+          <xs:enumeration value="http://www.w3.org/2005/08/addressing/reply"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="qNameEnumerationType" type="ex:QNameSimpleType"/>
+<xs:simpleType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="QNameSimpleType">
+        <xs:restriction base="xs:QName">
+          <xs:enumeration value="ex:firstQName"/>
+          <xs:enumeration value="ex:secondQName"/>
+        </xs:restriction>
+      </xs:simpleType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeSequenceChoiceAny" type="ex:ComplexTypeSequenceChoiceAny"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeSequenceChoiceAny">
+        <xs:sequence>
+          <xs:choice>
+            <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##any" processContents="lax"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeExtensionAnnotationOnly" type="ex:ComplexTypeExtensionAnnotationOnly"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeExtensionAnnotationOnly">
+        <xs:complexContent>
+          <xs:extension base="ex:ComplexTypeExtension">
+            <xs:annotation>
+              <xs:documentation>Elements that extend ex:ComplexTypeExtension</xs:documentation>
+            </xs:annotation>  
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeExtension">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeFinal" type="ex:ComplexTypeFinal"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeFinal" final="#all">
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexTypeChoiceAny" type="ex:ComplexTypeChoiceAny"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeChoiceAny">
+          <xs:choice>
+            <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##any" processContents="lax"/>
+          </xs:choice>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexContentRestrictionAnyAttribute" type="ex:ComplexContentRestrictionAnyAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexContentRestrictionAnyAttribute">
+        <xs:complexContent>
+          <xs:restriction base="ex:ComplexTypeToBeRestricted">
+            <xs:sequence>
+              <xs:element name="element1" type="xs:string"/>
+              <xs:element name="element2" type="xs:string"/>
+            </xs:sequence>
+            <xs:anyAttribute processContents="skip"/>
+          </xs:restriction>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeToBeRestricted">    
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string" minOccurs="0"/>
+          <xs:element name="element2" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:anyAttribute processContents="skip"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="complexContentExtensionAnyAttribute" type="ex:ComplexContentExtensionAnyAttribute"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexContentExtensionAnyAttribute">
+        <xs:complexContent>
+          <xs:extension base="ex:ComplexTypeToBeExtended">
+            <xs:sequence>
+              <xs:element name="element3" type="xs:string" minOccurs="0"/>
+              <xs:element name="element4" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+            <xs:anyAttribute processContents="skip"/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ComplexTypeToBeExtended">    
+        <xs:sequence>
+          <xs:element name="element1" type="xs:string"/>
+          <xs:element name="element2" type="xs:string"/>
+        </xs:sequence>
+        <xs:anyAttribute processContents="skip"/>
+      </xs:complexType>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="elementDefaultAnyType"/>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="extendedSequenceNamespacedFinite" type="ex:ExtendedSequenceNamespacedFinite"/>
+<xs:complexType xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="ExtendedSequenceNamespacedFinite">
+        <xs:sequence>
+          <xs:any maxOccurs="2" processContents="lax" namespace="http://www.w3.org/2002/ws/databinding/examples/6/09/"/>
+        </xs:sequence>  
+      </xs:complexType>
+<xs:redefine xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" schemaLocation="../redefineschema.xsd">
+        <xs:complexType name="RedefineType">
+          <xs:complexContent>
+            <xs:extension base="ex:RedefineType">
+              <xs:sequence>
+                <xs:element name="element3" type="xs:string"/>
+              </xs:sequence>
+            </xs:extension>
+          </xs:complexContent>
+        </xs:complexType>
+      </xs:redefine>
+<xs:element xmlns:wsdl11="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" name="redefined" type="ex:RedefineType"/>
+</xs:schema>

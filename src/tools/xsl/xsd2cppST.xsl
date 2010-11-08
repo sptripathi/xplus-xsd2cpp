@@ -882,7 +882,10 @@ namespace Types
       _enumerationCFacet.value(enums);
   </xsl:if>
 
-  <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)!='simpleType' and local-name(.)!='annotation' and local-name(.)!='enumeration']">
+  <!--
+    attribute is not expected inside simpleType, though this template is also callled from complexType/simpleContent where attribute is expected inside restriction, which should not be interpreted as a facet
+  -->
+  <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)!='simpleType' and local-name(.)!='annotation' and local-name(.)!='enumeration' and local-name(.)!='attribute']">
     <xsl:variable name="facet" select="local-name(.)"/>
     <xsl:variable name="facetValue" select="@value"/>
     <xsl:choose>  
@@ -898,7 +901,7 @@ namespace Types
       _<xsl:value-of select="$facet"/>CFacetDouble.value(<xsl:value-of select="$newValue"/>);
           </xsl:when>
           <xsl:otherwise>
-      <xsl:value-of select="$facet"/>CFacet().stringValue("<xsl:value-of select="@value"/>");
+      XMARKER <xsl:value-of select="$facet"/>CFacet().stringValue("<xsl:value-of select="@value"/>");
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>

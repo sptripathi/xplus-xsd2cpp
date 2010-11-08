@@ -419,201 +419,6 @@ public:
 
 
 
-
-
-
-<!--
-    TODO: refactor code in sections...
-    This section for attribute/element related functions
-
--->
-<xsl:template name="DECL_PVT_FNS_FOR_MEMBER_ELEMENT_OR_ATTRIBUTE_H">
-  <xsl:variable name="cppTypeSmartPtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
-  <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
-  MEMBER_FN <xsl:value-of select="$cppTypeSmartPtrShort"/><xsl:text> </xsl:text>create_<xsl:value-of select="$cppNameFunction"/>();
-</xsl:template>
-
-
-<xsl:template name="DECL_PUBLIC_FNS_FOR_MEMBER_ELEMENT_ATTRIBUTE_H">
-  <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
-  <xsl:variable name="maxOccurNode"><xsl:call-template name="T_get_maxOccurence"/></xsl:variable>
-  <xsl:variable name="localName" select="local-name()"/>
-  <xsl:variable name="minOccurNode"><xsl:call-template name="T_get_minOccurence"/></xsl:variable>
-  <xsl:variable name="maxOccurGTminOccurNode"><xsl:call-template name="T_is_maxOccurence_gt_minOccurence"/></xsl:variable>
-  <xsl:variable name="maxOccurGT1Node"><xsl:call-template name="T_is_maxOccurence_gt_1"/></xsl:variable>
-  <xsl:variable name="isMaxOccurCompositorsGt1"><xsl:call-template name="T_is_compositorsMaxOccurenceGt1_within_parentElement"><xsl:with-param name="node" select="."/></xsl:call-template></xsl:variable>
-  <xsl:variable name="cppTypeSmartPtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
-  <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypePtrShort_ElementAttr"/></xsl:variable>
-  <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
-  <xsl:variable name="resolution">
-    <xsl:call-template name="T_resolve_elementAttr">
-      <xsl:with-param name="node" select="."/>  
-    </xsl:call-template>
-  </xsl:variable>
-  <xsl:variable name="isSimpleType">
-    <xsl:call-template name="T_is_resolution_simpleType">
-      <xsl:with-param name="resolution" select="$resolution"/>  
-    </xsl:call-template>
-  </xsl:variable>
-  <xsl:variable name="atomicSimpleTypeImpl">
-    <xsl:call-template name="T_get_atomic_simpleType_impl_from_resolution">
-      <xsl:with-param name="resolution" select="$resolution"/>
-    </xsl:call-template>
-  </xsl:variable>
-  <!--
-  if a complexType/<MG|MGD> has maxOccurence=1 then MG|MGD functions should be there
-    outside MG/MGD, so as to avoid accessing elements/attributes through MG|MGD
-  -->
-  <xsl:variable name="isUnderSingularMgNesting">
-    <xsl:call-template name="T_is_element_under_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>
-  </xsl:variable>  
-
-
-
-      <!-- satya -->
-  <!-- public member functions -->
-    
-  <xsl:if test="$maxOccurGT1Node='true' or $isUnderSingularMgNesting='false'">
-
-  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Returns the list of the element nodes
-  ///  @return the list of element nodes fetched
-  MEMBER_FN List&lt;<xsl:value-of select="$cppTypeSmartPtrShort"/>&gt;<xsl:text> </xsl:text><xsl:value-of select="$localName"/>s_<xsl:value-of select="$cppNameFunction"/>();
-
-  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Returns the element node at supplied index
-  ///  @param idx index of the element to fetch 
-  ///  @return the element node fetched
-  MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/><xsl:text> </xsl:text><xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>_at(unsigned int idx);
-
-      <xsl:if test="$isSimpleType='true'">
-
-  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Sets the value of the element at the supplied index with the supplied value
-  ///  @param idx index of the element 
-  ///  @param val the value(as DOMString) to set with 
-  MEMBER_FN void set_<xsl:value-of select="$cppNameFunction"/>(unsigned int idx, DOMString val);
-
-  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Returns the value of the element at the supplied index with the supplied value.
-  ///  @param idx index of the element 
-  ///  @return the value(as DOMString) of the element 
-  MEMBER_FN DOMString get_<xsl:value-of select="$cppNameFunction"/>_string(unsigned int idx);
-
-        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
-
-  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Sets the value of the element at the supplied index with the supplied value.
-  ///  @param idx index of the element 
-  ///  @param val the value (as <xsl:value-of select="$atomicSimpleTypeImpl"/>) to set with 
-  MEMBER_FN void set_<xsl:value-of select="$cppNameFunction"/>(unsigned int idx, <xsl:value-of select="$atomicSimpleTypeImpl"/> val);
-
-  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Returns the value of the element at the supplied index with supplied value.
-  ///  @param idx index of the element 
-  ///  @return the value(as <xsl:value-of select="$atomicSimpleTypeImpl"/>) of the element 
-  MEMBER_FN <xsl:value-of select="$atomicSimpleTypeImpl"/> get_<xsl:value-of select="$cppNameFunction"/>(unsigned int idx);
-
-        </xsl:if>
-      </xsl:if>
-    </xsl:if>
-
-
-    <xsl:if test="$maxOccurGT1Node='false' and $isUnderSingularMgNesting='true'">
-
-  ///  For the scalar-<xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Returns the scalar <xsl:value-of select="$localName"/> node
-  ///  @return the <xsl:value-of select="$localName"/> node fetched
-  MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/><xsl:text> </xsl:text><xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>();
-      <xsl:if test="$isSimpleType='true'">
-
-  ///  For the scalar-<xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Sets the value of the <xsl:value-of select="$localName"/> with the supplied value.
-  ///  @param val the value(as DOMString) to set with 
-  MEMBER_FN void set_<xsl:value-of select="$cppNameFunction"/>(DOMString val);
-  
-  ///  For the scalar-<xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Returns the value(as DOMString) of the <xsl:value-of select="$localName"/>
-  MEMBER_FN DOMString get_<xsl:value-of select="$cppNameFunction"/>_string();
-
-        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
-
-  ///  For the scalar-<xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Sets the value of the <xsl:value-of select="$localName"/> with the supplied value.
-  ///  @param val the value(as <xsl:value-of select="$atomicSimpleTypeImpl"/>) to set with 
-  MEMBER_FN void set_<xsl:value-of select="$cppNameFunction"/>(<xsl:value-of select="$atomicSimpleTypeImpl"/> val);
-
-  ///  For the scalar-<xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Returns the value of the <xsl:value-of select="$localName"/>
-  ///  @return the value(as <xsl:value-of select="$atomicSimpleTypeImpl"/>) of the <xsl:value-of select="$localName"/> 
-  MEMBER_FN <xsl:value-of select="$atomicSimpleTypeImpl"/> get_<xsl:value-of select="$cppNameFunction"/>();
-
-        </xsl:if>
-
-      </xsl:if>
-   </xsl:if>   
-
-
-  <xsl:if test="$isUnderSingularMgNesting='true'">
-
-    <xsl:variable name="returnType">
-      <xsl:choose>
-        <xsl:when test="$maxOccurGT1Node">List&lt;<xsl:value-of select="$cppTypeSmartPtrShort"/>&gt;</xsl:when>
-        <xsl:otherwise><xsl:value-of select="$cppTypePtrShort"/></xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-
-    <xsl:if test="$maxOccurGT1Node='true' and $maxOccurGTminOccurNode='true'">
-
-  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Adds one element to the end of the "list of the element nodes"
-  ///  @return the pointer to the added element
-  MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/> add_node_<xsl:value-of select="$cppNameFunction"/>();
-  
-  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Sizes-up the "list of the element nodes" with the supplied size
-  ///  @param size the request size(unsigned int) of the list
-  ///  @return the list of "pointer-to-element-node"
-  MEMBER_FN <xsl:value-of select="$returnType"/> set_count_<xsl:value-of select="$cppNameFunction"/>(unsigned int size);
-
-      <xsl:if test="$isSimpleType='true'">
-      
-  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Adds one element to the end of the "list of the element nodes", and sets the value with supplied DOMString value
-  ///  @param val the value(as DOMString) to set with 
-  MEMBER_FN void add_<xsl:value-of select="$cppNameFunction"/>_string(DOMString val);
-      
-        <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
-
-  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  \n Adds one element to the end of the "list of the element nodes", and sets the value with supplied type value
-  ///  @param val the value(as <xsl:value-of select="$atomicSimpleTypeImpl"/>) to set with 
-  MEMBER_FN void add_<xsl:value-of select="$cppNameFunction"/>(<xsl:value-of select="$atomicSimpleTypeImpl"/> val);  
-        </xsl:if>
-      </xsl:if>
-
-    </xsl:if>
-
-  </xsl:if>  <!-- END if test="$isUnderSingularMgNesting = 'true'" -->
-
-  
-   <!-- functions for optional fields -->
-  <xsl:variable name="isOptionalScalar"><xsl:call-template name="T_isOptinalScalar_ElementAttr"/></xsl:variable>
-  <xsl:if test="$isOptionalScalar='true'">
-
-  ///  For the optional scalar element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  Marks the element as present 
-  MEMBER_FN void mark_present_<xsl:value-of select="$cppNameFunction"/>();
-
-  </xsl:if>
-  <!-- public member functions : END -->
-</xsl:template>
-
-
-
-
-
-
 <xsl:template name="DEFINE_DOC_ATTRIBUTE_H">
   <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
@@ -675,7 +480,7 @@ using namespace XPlus;
 <xsl:call-template name="DECLARE_DEFINE_TYPES_CORRESPONDING_TO_MEMBER_ELEMENT_ATTR_H">
   <xsl:with-param name="schemaComponentName" select="$cppName"/>
 </xsl:call-template>
-
+  
 <xsl:call-template name="T_emit_cppNSEnd_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
 #endif
 </xsl:document>
@@ -710,7 +515,7 @@ XML Representation Summary: element Element Information Item
 <xsl:template name="DEFINE_ELEMENT_H">
     <xsl:choose>
       <xsl:when test="*[local-name()='complexType']">
-        <xsl:call-template name="DEFINE_INLINE_COMLEXTYPE_ELEMENT_H"/>
+        <xsl:call-template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_H"/>
       </xsl:when>  
       <xsl:when test="*[local-name()='simpleType']">
         <xsl:call-template name="DEFINE_INLINE_SIMPLETYPE_ELEMENT_ATTR_H"/>
@@ -754,10 +559,30 @@ XML Representation Summary: element Element Information Item
 
 
 
-<xsl:template name="DEFINE_INLINE_COMLEXTYPE_ELEMENT_H">
+<xsl:template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_H">
+  <xsl:variable name="elemName" select="@name"/>
+
+  <xsl:choose>
+    <xsl:when test="*[local-name()='complexType']/*[local-name()='sequence' or local-name()='choice' or local-name()='all' or local-name()='group']">
+      <xsl:call-template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_MG_MGD_H"/>
+    </xsl:when>
+    <xsl:when test="*[local-name()='complexType']/*[local-name()='simpleContent']">
+      <xsl:call-template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_SIMPLECONTENT_H"/>
+    </xsl:when>
+    <xsl:when test="*[local-name()='complexType']/*[local-name()='complexContent']">
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
+
+
+
+
+<xsl:template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_MG_MGD_H">
   <xsl:variable name="elemName" select="@name"/>
   <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
-/// The class for element <xsl:value-of select="$expandedQName"/>
+
+/// The class for element <xsl:value-of select="$expandedQName"/> with following structure: 
+/// \n complexType->ModelGroup-or-ModelGroupDefinition
 /// Read more on structures/methods inside ...
 class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSchema::Types::anyComplexType&gt;
 {
@@ -781,6 +606,111 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
 
 }; //end class <xsl:value-of select="@name"/>
 </xsl:template>
+
+
+
+<xsl:template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_SIMPLECONTENT_H">
+  <xsl:choose>
+    <xsl:when test="*[local-name()='complexType']/*[local-name()='simpleContent']/*[local-name()='restriction']">
+      <xsl:call-template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_SIMPLECONTENT_RESTRICTION_H"/>
+    </xsl:when>
+    <xsl:when test="*[local-name()='complexType']/*[local-name()='simpleContent']/*[local-name()='extension']">
+      <xsl:call-template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_SIMPLECONTENT_EXTENSION_H"/>
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
+
+
+
+<xsl:template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_SIMPLECONTENT_EXTENSION_H">
+  <xsl:variable name="elemName" select="@name"/>
+  <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
+
+  <xsl:variable name="resolution">
+    <xsl:call-template name="T_resolve_typeQName">
+      <xsl:with-param name="typeQName" select="*[local-name()='complexType']/*[local-name()='simpleContent']/*[local-name()='extension']/@base"/>
+    </xsl:call-template>
+  </xsl:variable>
+    
+  <xsl:variable name="isComplexTypeWithSimpleTypeContent">
+    <xsl:call-template name="T_is_resolution_complexType_with_simpleTypeContent">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="isSimpleType">
+    <xsl:call-template name="T_is_resolution_simpleType">
+      <xsl:with-param name="resolution" select="$resolution" />
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:if test="$isSimpleType!='true' and $isComplexTypeWithSimpleTypeContent!='true'">
+    <xsl:message terminate="yes">
+     Error: A "Complex-Type-Definition" with simple content Schema Component, having derivation method as "extension" should have base attribute resolving to either i) a Simple-Type-Definition or ii) a Complex-Type-Definition with content-type as Simple-Type-Definition.
+     Violated in the context of schema component: <xsl:value-of select="$elemName"/>
+    </xsl:message>
+  </xsl:if>
+
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
+
+  <xsl:for-each select="*[local-name()='complexType']">
+
+    <xsl:variable name="baseCppType">
+      <xsl:call-template name="T_get_cppType_complexType_base"/>
+    </xsl:variable>
+    <xsl:variable name="cppNSDeref">
+      <xsl:call-template name="T_get_cppNSDeref_of_simpleType_complexType">
+        <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='extension']/@base"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+
+/// The class for element <xsl:value-of select="$elemName"/> with following structure: 
+/// \n complexType->simpleContent->extension
+/// \n Refer to documentation on structures/methods inside ...
+class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;
+{
+  public:
+
+  /// constructor for the element node
+  MEMBER_FN <xsl:value-of select="$elemName"/>(DOMString* tagName,
+      DOMString* nsUri=NULL,
+      DOMString* nsPrefix=NULL,
+      XMLSchema::TDocument* ownerDoc=NULL,
+      Node* parentNode=NULL,
+      Node* previousSiblingElement=NULL,
+      Node* nextSiblingElement=NULL
+      );
+
+  <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
+    <xsl:with-param name="schemaComponentName" select="$elemName"/>
+  </xsl:call-template>   
+
+}; //end class <xsl:value-of select="$cppName"/>
+  </xsl:for-each>
+
+</xsl:template>
+
+
+
+
+<xsl:template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_SIMPLECONTENT_RESTRICTION_H">
+  <xsl:variable name="elemName" select="@name"/>
+  <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
+
+/// The class for element <xsl:value-of select="$elemName"/> with following structure: 
+/// \n complexType->simpleContent->restriction
+/// \n Refer to documentation on structures/methods inside ...
+class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;XMLSchema::Types::anyComplexType&gt;
+{
+  public:
+  //constructor
+  <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL);
+
+}; //end class <xsl:value-of select="$cppName"/>
+
+</xsl:template>
+
 
 
 

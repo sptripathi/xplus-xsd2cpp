@@ -156,14 +156,15 @@ gen_source_files()
          $file > $tmpFile
     $MV $tmpFile $file
   done
-
-  ## no need to beautify the cpp files
-  #for file in `$FIND $OUTDIR/src/ -name "*.cpp"`
-  #do
-  #  tmpFile=/tmp/`$BASENAME $file`.tmp
-  #  $SED -e 's/MEMBER_VAR //g' -e 's/MEMBER_FN //g' $file > $tmpFile
-  #  $MV $tmpFile $file
-  #done
+  for file in `$FIND $OUTDIR/src/ -name "*.cpp"`
+  do
+    tmpFile=/tmp/`$BASENAME $file`.tmp
+    $SED -e 's/MEMBER_VAR //g' -e 's/MEMBER_FN //g' \
+         -e 's/XMARKER //g' \
+         $file > $tmpFile
+    tmpFile=/tmp/`$BASENAME $file`.tmp
+    $MV $tmpFile $file
+  done
     
 
   # create main.cpp if it doesnt exist already
