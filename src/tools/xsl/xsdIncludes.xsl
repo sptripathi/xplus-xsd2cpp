@@ -147,7 +147,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
     <xsl:when test="$mode='decl_elem_getter'">
       <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypePtrShort_ElementAttr"/></xsl:variable>
       <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
-  MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/><xsl:text> </xsl:text>get_<xsl:value-of select="$cppNameFunction"/>();
+  MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/><xsl:text> </xsl:text>element_<xsl:value-of select="$cppNameFunction"/>();
     </xsl:when>
     <xsl:when test="$mode='init_fsm_set_cb'">
       <xsl:variable name="schemaComponentName">Document</xsl:variable>

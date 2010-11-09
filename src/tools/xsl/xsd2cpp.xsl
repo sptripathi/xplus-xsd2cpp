@@ -259,8 +259,15 @@ using namespace FSM;
 
 class Document : public XMLSchema::TDocument
 {
-private:
-  <xsl:for-each select="*[local-name()='element']">
+  private:
+  
+  <!--
+    Note: ref elements should be be iterated here, because they are accessed separately anyway... ???
+    TODO::verify
+    - in case of refd element is in a included doc
+    - in case of refd element is in a self doc
+  -->
+  <xsl:for-each select="*[local-name()='element' and not(@ref)]">
     <xsl:variable name="cppTypeUseCase"><xsl:call-template name="T_get_cppTypeUseCase_ElementAttr"/></xsl:variable>
     <xsl:variable name="cppNameUseCase"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'declaration'"/></xsl:call-template></xsl:variable>
   MEMBER_VAR <xsl:value-of select="$cppTypeUseCase"/><xsl:text> </xsl:text><xsl:value-of select="$cppNameUseCase"/>;
@@ -274,7 +281,7 @@ private:
   </xsl:call-template>  
   
   // attributes, elements
-  <xsl:for-each select="*[local-name()='element']">
+  <xsl:for-each select="*[local-name()='element' and not(@ref)]">
     <xsl:call-template name="DECL_PVT_FNS_FOR_MEMBER_ELEMENT_OR_ATTRIBUTE_H"/>  
   </xsl:for-each>
   <xsl:call-template name="ITERATE_SCHEMA_INCLUDES">
@@ -285,7 +292,7 @@ public:
   Document(bool buildTree=true);
   virtual ~Document() {}
     
-    <xsl:for-each select="*[local-name()='element']">
+    <xsl:for-each select="*[local-name()='element' and not(@ref)]">
       <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
   MEMBER_FN void set_root_<xsl:value-of select="$cppName"/>();
     </xsl:for-each>        
@@ -295,7 +302,7 @@ public:
     </xsl:call-template>  
 
 
-  <xsl:for-each select="*[local-name()='element']">
+  <xsl:for-each select="*[local-name()='element' and not(@ref)]">
     <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypePtrShort_ElementAttr"/></xsl:variable>
     <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
   MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/><xsl:text> </xsl:text>element_<xsl:value-of select="$cppNameFunction"/>();
@@ -385,7 +392,7 @@ public:
   }
 
   <xsl:if test="$cntTLE > 1">
-    <xsl:for-each select="*[local-name()='element']">
+    <xsl:for-each select="*[local-name()='element' and not(@ref)]">
       <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
     void Document::set_root_<xsl:value-of select="$cppName"/>() 
     {
@@ -403,7 +410,7 @@ public:
 
 
   /* element functions  */
-  <xsl:for-each select="*[local-name()='element']">
+  <xsl:for-each select="*[local-name()='element' and not(@ref)]">
     <xsl:call-template name="DEFINE_FNS_FOR_MEMBER_ELEMENT_ATTRIBUTE_CPP">
       <xsl:with-param name="parentSchemaComponentName" select="'Document'"/>
     </xsl:call-template>

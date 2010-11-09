@@ -37,6 +37,7 @@ XPLUS_TESTS_DIRS="
                   Tests/xplus_tests/scRest2
                   Tests/xplus_tests/scRest3
                   Tests/xplus_tests/scRest4
+                  Tests/xplus_tests/netEnabled
                  " 
 
 

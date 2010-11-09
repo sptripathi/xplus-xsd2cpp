@@ -125,9 +125,8 @@
   <xsl:param name="rel_xsd_path" />
  
   <xsl:variable name="abs_xsd_path">
-    <xsl:if test="not(starts-with($rel_xsd_path,'/'))"><xsl:value-of select="$input_xsd_dirname"/></xsl:if><xsl:value-of select="$rel_xsd_path"/>
+    <xsl:if test="not(starts-with($rel_xsd_path,'/')) and not(starts-with($rel_xsd_path,'http://'))"><xsl:value-of select="$input_xsd_dirname"/></xsl:if><xsl:value-of select="$rel_xsd_path"/>
   </xsl:variable>
-  
 
   <xsl:value-of select="normalize-space($abs_xsd_path)" />
 </xsl:template>
@@ -167,7 +166,7 @@
   <xsl:variable name="filename" select="concat($CWD,'/.xplusmeta/', $lastIdx)" />
   <xsl:variable name="currentDocument">
     <xsl:choose>
-      <xsl:when test="starts-with(document($filename)/doc/@name, '/')">
+      <xsl:when test="starts-with(document($filename)/doc/@name, '/') or starts-with(document($filename)/doc/@name, 'http://')">
         <xsl:value-of select="document($filename)/doc/@name"/>
       </xsl:when>
       <xsl:otherwise>
@@ -2526,12 +2525,31 @@ namespace <xsl:value-of select="$nsStr"/>{
 </xsl:template>
 
 
+<xsl:template name="T_is_schema_anyType_typeLocalPartNsUri">
+  <xsl:param name="typeLocalPart"/>
+  <xsl:param name="typeNsUri"/>
+  <xsl:variable name="boolResult">
+    <xsl:choose>
+      <xsl:when test="($typeLocalPart='anyType') and ($typeNsUri=$xmlSchemaNSUri)">true</xsl:when>  
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($boolResult)"/>
+</xsl:template>
+
+
 <xsl:template name="T_is_builtin_type_typeLocalPartNsUri">
   <xsl:param name="typeLocalPart"/>
   <xsl:param name="typeNsUri"/>
   
   <xsl:variable name="isAnySimpleType">
     <xsl:call-template name="T_is_schema_anySimpleType_typeLocalPartNsUri">
+      <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
+      <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="isAnyType">
+    <xsl:call-template name="T_is_schema_anyType_typeLocalPartNsUri">
       <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
       <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
     </xsl:call-template>
@@ -2550,7 +2568,7 @@ namespace <xsl:value-of select="$nsStr"/>{
   </xsl:variable>
   <xsl:variable name="boolResult">
     <xsl:choose>
-      <xsl:when test="($isAnySimpleType='true') or ($isBuiltinPrimitive='true') or ($isBuiltinDerived='true')">true</xsl:when>  
+      <xsl:when test="($isAnySimpleType='true') or ($isAnyType='true') or ($isBuiltinPrimitive='true') or ($isBuiltinDerived='true')">true</xsl:when>  
       <xsl:otherwise>false</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
