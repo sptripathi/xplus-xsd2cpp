@@ -254,12 +254,21 @@ namespace XMLSchema
       _allCFacets.push_back(&_totalDigitsCFacet);
       _allCFacets.push_back(&_fractionDigitsCFacet);
       
-      /*
-      _allCFacets.push_back(&_maxInclusiveCFacet);
-      _allCFacets.push_back(&_maxExclusiveCFacet);
-      _allCFacets.push_back(&_minExclusiveCFacet);
-      _allCFacets.push_back(&_minInclusiveCFacet);
-      */
+      _allCFacets.push_back(&_maxInclusiveCFacetDouble);
+      _allCFacets.push_back(&_maxInclusiveCFacetDuration);
+      _allCFacets.push_back(&_maxInclusiveCFacetDateTime);
+
+      _allCFacets.push_back(&_maxExclusiveCFacetDouble);
+      _allCFacets.push_back(&_maxExclusiveCFacetDuration);
+      _allCFacets.push_back(&_maxExclusiveCFacetDateTime);
+
+      _allCFacets.push_back(&_minExclusiveCFacetDouble);
+      _allCFacets.push_back(&_minExclusiveCFacetDuration);
+      _allCFacets.push_back(&_minExclusiveCFacetDateTime);
+
+      _allCFacets.push_back(&_minInclusiveCFacetDouble);
+      _allCFacets.push_back(&_minInclusiveCFacetDuration);
+      _allCFacets.push_back(&_minInclusiveCFacetDateTime);
     }
 
     void anySimpleType::endElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)
@@ -915,14 +924,14 @@ namespace XMLSchema
     }
     
     void anySimpleType::applyMaxInclusiveCFacet() {
-      cout << "satya: applyMaxInclusiveCFacet for" << _primitiveType << endl;
+      cout << " applyMaxInclusiveCFacet for" << _primitiveType << endl;
     }
 
     void anySimpleType::applyMaxExclusiveCFacet() {
     }
 
     void anySimpleType::applyMinInclusiveCFacet() {
-      cout << "satya: applyMinInclusiveCFacet for" << _primitiveType << endl;
+      cout << " applyMinInclusiveCFacet for" << _primitiveType << endl;
     }
 
     void anySimpleType::applyMinExclusiveCFacet() {

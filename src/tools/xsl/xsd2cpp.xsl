@@ -458,6 +458,7 @@ using namespace XPlus;
 <xsl:template name="DEFINE_DOC_ELEMENT_H">
   <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
+  <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
   <xsl:variable name="cppTargetNSConcatStr"><xsl:call-template name="T_get_cppTargetNSConcatStr"/></xsl:variable>
   <xsl:variable name="cppTargetNSDirChain"><xsl:call-template name="T_get_cppTargetNSDirChain"/></xsl:variable>
 
@@ -476,11 +477,22 @@ using namespace XPlus;
 
 <xsl:call-template name="DEFINE_ELEMENT_H"/>
 
-  //types which this class needs, as INNER CLASSES
+
+  //
+  // Following types(mostly typedefs) are the ones, based on above C++ class definition
+  // for the top-level element <xsl:value-of select="$expandedQName"/>
+  //
+<!--
+  Note that following template call suggests that it declares typedefs for this element
+  inside another class of a parent element. However, for top-level elements there is no
+  parent element, and there is only the abstraction of Document as parent.
+  Therefore, the typdefs go in global context within appropriate namespace, so that they
+  are usable as top-level types.
+-->
 <xsl:call-template name="DECLARE_DEFINE_TYPES_CORRESPONDING_TO_MEMBER_ELEMENT_ATTR_H">
   <xsl:with-param name="schemaComponentName" select="$cppName"/>
 </xsl:call-template>
-  
+
 <xsl:call-template name="T_emit_cppNSEnd_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
 #endif
 </xsl:document>
@@ -698,16 +710,100 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
   <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
 
-/// The class for element <xsl:value-of select="$elemName"/> with following structure: 
+  <xsl:variable name="resolution">
+    <xsl:call-template name="T_resolve_typeQName">
+      <xsl:with-param name="typeQName" select="*[local-name()='complexType']/*[local-name()='simpleContent']/*[local-name()='restriction']/@base"/>
+    </xsl:call-template>
+  </xsl:variable>
+    
+  <xsl:variable name="isComplexTypeWithSimpleTypeContent">
+    <xsl:call-template name="T_is_resolution_complexType_with_simpleTypeContent">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="isSimpleType">
+    <xsl:call-template name="T_is_resolution_simpleType">
+      <xsl:with-param name="resolution" select="$resolution" />
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="isComplexType">
+    <xsl:call-template name="T_is_resolution_complexType">
+      <xsl:with-param name="resolution" select="$resolution" />
+    </xsl:call-template>
+  </xsl:variable>
+
+
+  <!-- actually just one iteration, for one complexType -->
+  <xsl:for-each select="*[local-name()='complexType']">
+
+    <xsl:variable name="baseCppTypeWithNSDeref2">
+      <xsl:choose>
+        <!-- case 1 -->
+        <xsl:when test="$isSimpleType='true'">
+          <xsl:choose>
+            <!-- case 1.1 -->
+            <xsl:when test="*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType']">
+              <xsl:for-each select="*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType']">
+                <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="concat('_', $elemName)"/></xsl:call-template>
+              </xsl:for-each>
+              _<xsl:value-of select="$elemName"/>
+            </xsl:when>
+            <!-- case 1.2 -->
+            <xsl:otherwise>
+              <xsl:variable name="baseCppType">
+                <xsl:call-template name="T_get_cppType_complexType_base"/>
+              </xsl:variable>
+              <xsl:variable name="cppNSDeref">
+                <xsl:call-template name="T_get_cppNSDeref_of_simpleType_complexType">
+                  <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='restriction']/@base"/>
+                </xsl:call-template>
+              </xsl:variable>
+              <xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <!-- case 2
+           TODO: {content type} is mixed and a particle which is ·emptiable·
+        -->
+        <xsl:when test="$isComplexType='true'">
+          <xsl:if test="not(*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType'])">
+            <xsl:message terminate="yes">
+             Error: A "Complex-Type-Definition" with simple content Schema Component, having derivation method as "restriction", whose base attribute resolves to a complex-type-definition, must have a &lt;simpleType&gt; present among the [children] of &lt;restriction&gt;
+            </xsl:message>
+          </xsl:if>
+          <xsl:for-each select="*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType']">
+            <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="concat('_', $elemName)"/></xsl:call-template>
+          </xsl:for-each>
+          _<xsl:value-of select="$elemName"/>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:variable>
+        
+    <xsl:variable name="baseCppTypeWithNSDeref" select="normalize-space($baseCppTypeWithNSDeref2)"/>
+
+/// The class for element <xsl:value-of select="$expandedQName"/> with following structure: 
 /// \n complexType->simpleContent->restriction
 /// \n Refer to documentation on structures/methods inside ...
-class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;XMLSchema::Types::anyComplexType&gt;
+class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:value-of select="$baseCppTypeWithNSDeref"/>&gt;
 {
   public:
-  //constructor
-  <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL);
+  
+  /// constructor for the element node
+  MEMBER_FN <xsl:value-of select="$elemName"/>(DOMString* tagName,
+      DOMString* nsUri=NULL,
+      DOMString* nsPrefix=NULL,
+      XMLSchema::TDocument* ownerDoc=NULL,
+      Node* parentNode=NULL,
+      Node* previousSiblingElement=NULL,
+      Node* nextSiblingElement=NULL
+      );
 
+  <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
+    <xsl:with-param name="schemaComponentName" select="$elemName"/>
+  </xsl:call-template>
 }; //end class <xsl:value-of select="$cppName"/>
+
+  </xsl:for-each>
 
 </xsl:template>
 

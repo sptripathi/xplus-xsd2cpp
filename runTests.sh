@@ -34,6 +34,9 @@ XPLUS_TESTS_DIRS="
                   Tests/xplus_tests/scExt3
                   Tests/xplus_tests/scExt4
                   Tests/xplus_tests/scRest
+                  Tests/xplus_tests/scRest2
+                  Tests/xplus_tests/scRest3
+                  Tests/xplus_tests/scRest4
                  " 
 
 

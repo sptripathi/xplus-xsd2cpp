@@ -177,17 +177,6 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyComplexTyp
   <xsl:param name="schemaComponentName" select="@name"/>
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
 
-<!--
-
-/// An intermediate C++ class definition, based on the content-model of
-/// complexType "<xsl:value-of select="$schemaComponentName"/>"
-/// \n The C++ class definition of complexType "<xsl:value-of select="$schemaComponentName"/>",
-/// would derive from this intermediate C++ class.
-  <xsl:for-each select="*[local-name()='simpleContent']">
-    <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="concat('_', $schemaComponentName)"/></xsl:call-template>
-  </xsl:for-each>
--->
-
   <xsl:variable name="resolution">
     <xsl:call-template name="T_resolve_typeQName">
       <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='restriction']/@base"/>

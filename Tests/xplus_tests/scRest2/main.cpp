@@ -47,9 +47,9 @@ void populateDocument(DOM::Document* pDoc)
 {
   NoNS::Document* xsdDoc = dynamic_cast<NoNS::Document *>(pDoc);
   // write code to populate the Document here
-  xsdDoc->element_root()->value(99);
-  xsdDoc->element_root()->set_attr_id("ID2");
 
+  xsdDoc->element_root()->set_attr_id("ID3");
+  xsdDoc->element_root()->value(100);
 }
 
 void updateOrConsumeDocument(DOM::Document* pDoc)
