@@ -14,7 +14,9 @@ EX_DIRS="
         examples/mails
         examples/simpleTypesDemo
         examples/simplest
-        examples/po"
+        examples/po
+        examples/netEnabled
+        "
 
 W3C_TESTS_DIRS="
        Tests/w3c_tests/stE080
@@ -37,7 +39,6 @@ XPLUS_TESTS_DIRS="
                   Tests/xplus_tests/scRest2
                   Tests/xplus_tests/scRest3
                   Tests/xplus_tests/scRest4
-                  Tests/xplus_tests/netEnabled
                  " 
 
 
