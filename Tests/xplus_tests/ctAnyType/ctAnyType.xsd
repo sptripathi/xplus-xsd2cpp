@@ -1,0 +1,6 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+
+  <complexType name="anyThing" mixed="true"/>
+  <xs:element name="root" type="anyThing"/>
+
+</xs:schema>

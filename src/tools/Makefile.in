@@ -234,7 +234,9 @@ nobase_dist_bin_SCRIPTS = makeTmpl/configure.ac \
                         xsl/complexTypeH.xsl \
                         xsl/xsdIncludes.xsl \
                         xsl/xsd2cppBuiltinSimple.xsl \
-                        xsl/xmlplusDict.xml
+                        xsl/constraints.xsl \
+                        xsl/xmlplusDict.xml \
+                        xsl/rules.xml
 
 EXTRA_DIST = xsd2cpp.in Makefile.am.src.in Makefile.am.top_srcdir.in 
 do_subst = sed -e 's,[@]bindir[@],$(bindir),g' \

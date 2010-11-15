@@ -24,6 +24,15 @@
 <xmlplusDict>
 
   <primitiveTypes>
+    <type name="anyType">>
+      <impl implType="XMLSchema::Types::anyType" adt="true">
+      </impl>  
+    </type>
+    <type name="anySimpleType">>
+      <impl implType="XMLSchema::Types::anySimpleType" adt="true">
+      </impl>  
+    </type>
+
     <type name="string">>
       <impl implType="DOM::DOMString" adt="false">
       </impl>  

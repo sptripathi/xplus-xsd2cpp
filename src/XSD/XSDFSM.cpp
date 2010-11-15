@@ -135,16 +135,15 @@ bool matchNamespace(const DOMString* nsUri1, const DOMString* nsUri2)
 }
 
 
-bool NSNamePairOccur::operator==(const NSNamePairOccur& pairNSName)
+bool NSNamePairOccur::operator==(const NSNamePairOccur& pairNSName) const
 {
-
   if( matchNamespace(this->nsUri, pairNSName.nsUri) &&
       (this->localName == pairNSName.localName)
     )
   {
     return true;
   }
-  false;  
+  return false;  
 }
 
 
@@ -176,14 +175,75 @@ void XsdFsmOfFSMs::init(XsdFsmBasePtr *fsms, FSMType fsmType)
     _allFSMs.push_back(fsms[i]);
   }
 }
+  
+void XsdFsmOfFSMs::replaceOrAppendUniqueUnitFsms(XsdFsmBasePtr* fsms)
+{
+  for(unsigned idx1=0; !fsms[idx1].isNull();  idx1++)
+  {
+    XsdFsmBase* pNewFsm = fsms[idx1]->clone();
+    pNewFsm->parentFsm(this);
+    bool match = false;
+    for(unsigned int idx2=0; idx2<_allFSMs.size(); idx2++)
+    {
+      XsdFsmBase* pCurrentFsm = _allFSMs[idx2].get();
+      if( pNewFsm && pCurrentFsm && 
+          ( pNewFsm->nsName() == pCurrentFsm->nsName() )
+      )
+      {
+        //replace
+        match = true;
+        _allFSMs.erase(_allFSMs.begin()+idx2);
+        //_allFSMs.insert(_allFSMs.begin()+idx2, pNewFsm);
+        _allFSMs.push_back(pNewFsm);
+        break;
+      }
 
-void XsdFsmOfFSMs::addFsms(XsdFsmBasePtr *fsms)
+      // append
+      if(!match) {
+        _allFSMs.push_back(pNewFsm);
+      }
+    }
+  }
+}
+
+void XsdFsmOfFSMs::appendUniqueUnitFsms(const vector<XsdFsmBasePtr>& fsms)
+{
+  for(unsigned i=0; i < fsms.size();  i++)
+  {
+    XsdFsmBase* pNewFsm = fsms[i]->clone();
+    pNewFsm->parentFsm(this);
+    bool match = false;
+    for(unsigned int j=0; j<_allFSMs.size(); j++)
+    {
+      XsdFsmBase* pCurrentFsm = _allFSMs[j].get();
+      if( pNewFsm && pCurrentFsm && 
+          ( pNewFsm->nsName() == pCurrentFsm->nsName() )
+      )
+      {
+        match = true;
+        break;
+      }
+      if(!match) {
+        _allFSMs.push_back(pNewFsm);
+      }
+    }
+  }
+}
+
+void XsdFsmOfFSMs::appendFsms(XsdFsmBasePtr* fsms)
 {
   for(unsigned i=0; !fsms[i].isNull();  i++)
   {
     fsms[i]->parentFsm(this);
     _allFSMs.push_back(fsms[i]);
   }
+}
+
+void XsdFsmOfFSMs::replaceFsmAt(XsdFsmBase* fsm, unsigned int idx)
+{
+  _allFSMs.erase(_allFSMs.begin()+idx);
+  fsm->parentFsm(this);
+  _allFSMs.insert(_allFSMs.begin()+idx, fsm);
 }
 
 XsdFsmOfFSMs::XsdFsmOfFSMs(const XsdFsmOfFSMs& fof):
@@ -459,7 +519,7 @@ bool XsdFsmOfFSMs::isInFinalStateAll() const
   return areAllFsmsInFinalState();
 }
 
-//TODO: in choice case, do i need to handle differently
+//FIXME: in choice case, does it need to be handled differently
 bool XsdFsmOfFSMs::isInitFinalState() const
 {
   for(unsigned int i=0; i<_allFSMs.size(); i++)
@@ -1037,7 +1097,7 @@ XsdFsmBase* XsdFsmArray::clone() const
 void XsdFsmArray::print() const
 {
   cout << "{ // XsdFsmArray " << endl;
-  cout << " this" << this <<  " parentFsm:" << _parentFsm << endl;
+  cout << " this: " << this <<  " parentFsm: " << _parentFsm << endl;
   const list<BinaryFsmTree::TreeNodePtr>& leaves = _fsmTree.getLeaves();
   list<BinaryFsmTree::TreeNodePtr>::const_iterator it = leaves.begin();
   for( ; it!=leaves.end(); it++)

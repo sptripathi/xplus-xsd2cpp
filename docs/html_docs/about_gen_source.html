@@ -369,19 +369,21 @@
       </td>
     </tr>
     <tr>
-      <td>nested(anonymous) element</td>
+      <td>local element</td>
       <td>
-        &lt;schema&gt;<br>
-        &nbsp;&nbsp;&lt;element name="element1" ...&gt;<br>
-        &nbsp;&nbsp;...<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&lt;element name="element2" ...&gt;<br>
-        &nbsp;&nbsp; &nbsp;&nbsp;...<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;element name="myElement type="MyElemType"/&gt;</b><br>
-        &nbsp;&nbsp; &nbsp;&nbsp;...<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&lt;/element&gt;<br>
-        &nbsp;&nbsp;...<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&lt;/element&gt;<br>
-        &lt;/schema&gt;<br>
+        <pre>
+        &lt;schema&gt;
+          &lt;element name="element1" ...&gt;
+            ...
+            &lt;element name="element2" ...&gt;
+              ...
+              <b>&lt;element name="myElement type="MyElemType"/&gt;</b>
+              ...
+            &lt;/element&gt;
+            ...
+          &lt;/element&gt;
+        &lt;/schema&gt;
+        </pre>
       </td>
       <td>
         <ul>
@@ -392,14 +394,14 @@
       </td>
     </tr>
     <tr>
-      <td>nested(anonymous) attribute</td>
+      <td>local attribute</td>
       <td>
         &lt;schema&gt;<br>
         &nbsp;&nbsp;&lt;element name="element1" ...&gt;<br>
         &nbsp;&nbsp;...<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&lt;element name="element2" ...&gt;<br>
         &nbsp;&nbsp; &nbsp;&nbsp;...<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;attribute type="MyAttrType"/&gt;</b><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;attribute name="myAttr" type="MyAttrType"/&gt;</b><br>
         &nbsp;&nbsp; &nbsp;&nbsp;...<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&lt;/element&gt;<br>
         &nbsp;&nbsp;...<br>

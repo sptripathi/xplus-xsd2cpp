@@ -33,6 +33,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 <xsl:include href="complexTypeC.xsl"/>
 <xsl:include href="complexTypeH.xsl"/>
 <xsl:include href="xsdIncludes.xsl"/>
+<xsl:include href="constraints.xsl"/>
 
 <xsl:template match="/">
 
@@ -330,7 +331,6 @@ public:
   <xsl:variable name="elementDefaultQualified"><xsl:call-template name="T_get_elementDefaultQualified"/></xsl:variable>
   <xsl:variable name="cntTLE"><xsl:call-template name="T_count_top_level_elements_doc_and_includes"/></xsl:variable>
 
-  <!-- Creating  -->
   <xsl:document method="text" href="{$filename}">
 <xsl:value-of select="$outHeader"/>  
 #include "<xsl:value-of select="$hdrName"/>"
@@ -844,7 +844,6 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
   <xsl:variable name="schemaComponentName" select="@name" />
   <xsl:variable name="filename" select="concat('src/', $cppTargetNSDirChain, '/', $cppName, '.cpp')" />
   <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/', $cppName , '.h')" />
-    <!-- Creating  -->
     <xsl:document method="text" href="{$filename}">
 <xsl:value-of select="$outHeader"/>  
 #include "<xsl:value-of select="$hdrName"/>"

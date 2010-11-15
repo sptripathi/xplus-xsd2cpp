@@ -5,6 +5,18 @@
   <xsd:element name="Date" type="xsd:dateTime" />
   <xsd:attribute name="name" type="xsd:string" />
 
+<!--
+ <xsd:element name="header">
+  <xsd:complexType>
+   <xsd:simpleContent>
+    <xsd:extension base="xsd:string">
+     <xsd:attribute ref="name" use="required" />
+    </xsd:extension>
+   </xsd:simpleContent>
+  </xsd:complexType>
+ </xsd:element>
+-->
+
  <xsd:complexType name="mailsType">
   <xsd:sequence minOccurs="1" maxOccurs="unbounded">
    <xsd:element name="mail" type="mailType"/>

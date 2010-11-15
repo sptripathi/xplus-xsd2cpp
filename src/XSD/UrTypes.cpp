@@ -66,10 +66,24 @@ namespace XMLSchema
         _fsm = new XsdSequenceFsmOfFSMs(fsms);
         */
 
+        XsdFsmBasePtr fsmsAttrs[] = { NULL };
+        XsdFsmBase* fsmAttrs = new XsdAllFsmOfFSMs(fsmsAttrs);
+
+        XsdFsmBasePtr fsmsElems[] = { NULL };
+        XsdFsmBase* fsmElems = new XsdSequenceFsmOfFSMs(fsmsElems); 
+
+        XsdFsmBaseP elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(ownerElement()->getNamespaceURI(), 
+              *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
+
+        XsdFsmBasePtr fsms[] = { fsmAttrs, fsmElems, elemEndFsm, NULL };
+        _fsm = new XsdSequenceFsmOfFSMs(fsms);
+
+        /*
         XsdFsmBaseP elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(ownerElement()->getNamespaceURI(), 
               *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
         XsdFsmBasePtr ptrFsms[] = { elemEndFsm, NULL };
         _fsm = new XsdFsmOfFSMs(ptrFsms, XsdFsmOfFSMs::SEQUENCE);
+        */
       }
 
     }

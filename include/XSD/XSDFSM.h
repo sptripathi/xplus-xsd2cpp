@@ -61,7 +61,8 @@ struct NSNamePairOccur {
   unsigned int minOccurence;
   unsigned int maxOccurence;
  
-  NSNamePairOccur(DOMString* pNsUri, DOMString localNameStr, unsigned int minOccur, unsigned int maxOccur):
+  NSNamePairOccur(DOMString* pNsUri=NULL, DOMString localNameStr="", 
+                unsigned int minOccur=0, unsigned int maxOccur=0):
     nsUri(pNsUri),
     localName(localNameStr),
     minOccurence(minOccur),
@@ -69,7 +70,7 @@ struct NSNamePairOccur {
   {
   }
 
-  bool operator==(const NSNamePairOccur& pairNSName);
+  bool operator==(const NSNamePairOccur& pairNSName) const;
 
   void print() const {
   cout << "{" << ( (nsUri)? *nsUri : "" ) << "}"
@@ -141,6 +142,10 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
       }
       return fsm;
     }
+    
+    inline const NSNamePairOccur& nsName() const {
+      return _nsName;
+    }
 
     virtual bool processEvent(DOMString* nsUri, DOMString localName, XsdFsmType fsmType, bool docBuilding=true)=0; 
     virtual bool processEventThrow(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true)=0; 
@@ -165,13 +170,16 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
     NodePtr         _prevSiblNodeRunTime;
     NodePtr         _nextSiblNodeRunTime;
     NodePtr         _fsmCreatedNode;
+    
+    // applicable only to XsdFsm(UnitFsm)
+    NSNamePairOccur          _nsName;
 };
 
 
 
 DOMString formatNamespaceName(XsdFsmBase::XsdFsmType fsmType, DOMString* nsUri, DOMString localName);
 
-
+// Another meaningful name for this class is UnitFsm (TODO: rename it later)
 template<class ReturnType>
 class XsdFSM : public XsdFsmBase 
 {
@@ -182,25 +190,26 @@ class XsdFSM : public XsdFsmBase
     XsdFSM(NSNamePairOccur pair, 
         XsdFsmBase::XsdFsmType fsmType, 
         noargs_function_base_ptr cbFunctor=NULL):
-      _nsName(pair),
+      //_nsName(pair),
       _cbFunctor(cbFunctor),
       _fsmType(fsmType),
       _fsm(NULL)
   {
+    _nsName = pair;
 
     init();
   }
 
     // copy constructor
     XsdFSM(const XsdFSM& xsdFsm):
-      //_parentFsm(xsdFsm.parentFsm()),
-      _nsName(xsdFsm.nsName()),
+      //_nsName(xsdFsm.nsName()),
       _eventIds(xsdFsm.eventIds()),
       _eventNames(xsdFsm.eventNames()),
       _cbFunctor(xsdFsm.cbFunctor()),
       _fsmType(xsdFsm.fsmType()),
       _fsm(xsdFsm.stateFsm()->clone())
     {
+      _nsName = xsdFsm.nsName(); // FIXME: will operator = work ?
       this->parentFsm(xsdFsm.parentFsm());
       //init();
     }
@@ -224,7 +233,7 @@ class XsdFSM : public XsdFsmBase
       if(_fsm)
         _fsm->print();
       
-      cout << " this" << this <<  " parentFsm:" << _parentFsm << endl;
+      cout << "       this: " << this <<  " parentFsm: " << _parentFsm << endl;
       cout << "     } // end UnitFSM" << endl;
     }
 
@@ -462,9 +471,6 @@ class XsdFSM : public XsdFsmBase
       return new XsdFSM(*this);
     }
   
-    inline const NSNamePairOccur& nsName() const {
-      return _nsName;
-    }
     inline const vector<int>& eventIds() const {
       return _eventIds;
     }
@@ -491,7 +497,6 @@ class XsdFSM : public XsdFsmBase
 
     //void init();
 
-    NSNamePairOccur          _nsName;
     /*
        int                      _eventId;
        DOMString                _eventName;
@@ -543,7 +548,10 @@ class XsdFsmOfFSMs : public XsdFsmBase
   virtual Node* previousSiblingElementInSchemaOrder(XsdFsmBase *callerFsm);
   virtual Node* nextSiblingElementInSchemaOrder(XsdFsmBase *callerFsm);
 
-  void addFsms(XsdFsmBasePtr *fsms);
+  void appendUniqueUnitFsms(const vector<XsdFsmBasePtr>& fsmVec);
+  void replaceOrAppendUniqueUnitFsms(XsdFsmBasePtr* fsms);
+  void appendFsms(XsdFsmBasePtr* fsms);
+  void replaceFsmAt(XsdFsmBase* fsm, unsigned int idx);
 
   int currentFSMIdx() const {
     return _currentFSMIdx;
@@ -576,7 +584,7 @@ class XsdFsmOfFSMs : public XsdFsmBase
   void print() const 
   {
     cout << "   { // XsdFsmOfFSMs count=" << _allFSMs.size()  << endl;
-    cout << " this" << this <<  " parentFsm:" << _parentFsm << endl;
+    cout << "     this: " << this <<  " parentFsm: " << _parentFsm << endl;
     for(unsigned int i=0; i<_allFSMs.size(); i++) {
       _allFSMs[i]->print();
     }

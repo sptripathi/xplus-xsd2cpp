@@ -39,11 +39,16 @@ XPLUS_TESTS_DIRS="
                   Tests/xplus_tests/scRest2
                   Tests/xplus_tests/scRest3
                   Tests/xplus_tests/scRest4
+                  Tests/xplus_tests/ccRest
+                  Tests/xplus_tests/ccRest2
+                  Tests/xplus_tests/ccExt
+                  Tests/xplus_tests/ccExtAny
+                  Tests/xplus_tests/ctAnyType
                  " 
 
 
-#EX_DIRS=
-#W3C_TESTS_DIRS=
+EX_DIRS=
+W3C_TESTS_DIRS=
 #XPLUS_TESTS_DIRS=
 
 

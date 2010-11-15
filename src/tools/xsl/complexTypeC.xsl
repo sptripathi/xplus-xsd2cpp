@@ -42,9 +42,11 @@ complexType Content:
 -->
 <xsl:template name="RUN_FSM_COMPLEXTYPE_CONTENT">
   <xsl:param name="mode" select="''"/>
+
   <xsl:param name="schemaComponentName" select="''"/>
   <xsl:variable name="cntAnnotation" select="count(*[local-name()='annotation'])"/>
-  <xsl:variable name="cntContent" select="count(*[local-name()='complexContent' or local-name()='simpleContent'])"/>
+  <xsl:variable name="cntSimpleContent" select="count(*[local-name()='simpleContent'])"/>
+  <xsl:variable name="cntComplexContent" select="count(*[local-name()='complexContent'])"/>
   <xsl:variable name="cntCompositors" select="count(*[local-name()='group' or local-name()='all' or local-name()='choice' or local-name()='sequence'])"/>
   <xsl:variable name="cntAttrGroup" select="count(*[local-name()='attribute' or local-name()='attributeGroup'])"/>
   <xsl:variable name="cntAnyAttr" select="count(*[local-name()='anyAttribute'])"/>
@@ -65,7 +67,7 @@ complexType Content:
           <xsl:with-param name="mode" select="$mode"/>
           <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
           <xsl:with-param name="pos" select="$pos"/>
-          <xsl:with-param name="cnt" select="$cntContent"/>
+          <xsl:with-param name="cnt" select="$cntSimpleContent"/>
         </xsl:call-template>  
       </xsl:when>  
       <xsl:when test="$localName='complexContent'">
@@ -73,7 +75,7 @@ complexType Content:
           <xsl:with-param name="mode" select="$mode"/>
           <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
           <xsl:with-param name="pos" select="$pos"/>
-          <xsl:with-param name="cnt" select="$cntContent"/>
+          <xsl:with-param name="cnt" select="$cntComplexContent"/>
         </xsl:call-template>  
       </xsl:when>  
       <xsl:when test="$localName='group' or $localName='all' or $localName='choice' or $localName='sequence'">
@@ -111,8 +113,70 @@ complexType Content:
         </xsl:message>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:for-each>        
+  </xsl:for-each>
+
+  <!-- 
+      TODO:satya: remove following if concluded that its not needed
+      additional loop over type resolved to by base attribute 
+      For now only looping through the attributes inside base only if it's a complex-type-definition
+  -->
+  <!--
+  <xsl:if test="*[local-name()='complexContent']">
+    <xsl:variable name="baseQName">
+      <xsl:call-template name="T_get_complexType_base"/>
+    </xsl:variable>
     
+    <xsl:variable name="baseResolution">
+      <xsl:call-template name="T_resolve_typeQName">
+        <xsl:with-param name="typeQName" select="$baseQName"/>
+      </xsl:call-template>
+    </xsl:variable>
+    
+    <xsl:variable name="resolutionFoundInDoc">
+      <xsl:call-template name="T_get_resolution_foundInDoc">
+        <xsl:with-param name="resolution" select="$baseResolution"/>
+      </xsl:call-template>  
+    </xsl:variable>
+
+    <xsl:variable name="isBaseComplexType">
+      <xsl:call-template name="T_is_resolution_complexType">
+        <xsl:with-param name="resolution" select="$baseResolution"/>
+      </xsl:call-template>  
+    </xsl:variable>
+
+    <xsl:if test="$isBaseComplexType='true'">
+      <xsl:variable name="baseTypeLocalPart">
+        <xsl:call-template name="T_get_localPart_of_QName">
+          <xsl:with-param name="qName" select="$baseQName"/>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:variable name="meCTNode" select="."/>
+      <xsl:variable name="baseComplexTypeNode" select="document($resolutionFoundInDoc)/*[local-name()='schema']/*[local-name()='complexType' and @name=$baseTypeLocalPart]"/>
+
+      <xsl:for-each select="$baseComplexTypeNode/*[local-name()='attribute']">
+        <xsl:variable name="effNodeName"><xsl:call-template name="T_get_name_ElementAttr"/></xsl:variable>
+        <xsl:variable name="nodeTargetNsUri"><xsl:call-template name="T_get_targetNsUri_ElementAttr"/></xsl:variable>
+
+        <xsl:variable name="isMatchingAttrPresentInsideSelf">
+          <xsl:call-template name="T_is_attribute_present_inside_node_complexType_with_complexContent">
+            <xsl:with-param name="ctNode" select="$meCTNode"/>
+            <xsl:with-param name="effNodeName" select="$effNodeName"/>
+            <xsl:with-param name="nodeTargetNsUri" select="$nodeTargetNsUri"/>
+          </xsl:call-template>
+        </xsl:variable>
+
+        <xsl:if test="$isMatchingAttrPresentInsideSelf='false'">
+          <xsl:call-template name="ON_COMPLEXTYPE_ATTRIBUTE">
+            <xsl:with-param name="mode" select="$mode"/>
+            <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+          </xsl:call-template>
+        </xsl:if>
+      </xsl:for-each>
+
+    </xsl:if>
+
+  </xsl:if>
+  -->  
 </xsl:template>
 
 
@@ -542,13 +606,13 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
         
   <xsl:if test="not($pos='1') and not($pos='2')">
     <xsl:message terminate="yes">
-    Error: expected position(simpleContent|complexContent)=1|2, got position(simpleContent|complexContent)=<xsl:value-of select="$pos"/> 
+    Error: expected position(simpleContent)=1|2, got position(simpleContent)=<xsl:value-of select="$pos"/> 
     </xsl:message>
   </xsl:if>
 
   <xsl:if test="not($cnt='1')">
     <xsl:message terminate="yes">
-    Error: expected count(simpleContent|complexContent)=1, got count(simpleContent|complexContent)=<xsl:value-of select="$cnt"/> 
+    Error: expected count(simpleContent)=1, got count(simpleContent)=<xsl:value-of select="$cnt"/> 
     </xsl:message>
   </xsl:if>
 
@@ -593,22 +657,45 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
   <xsl:param name="pos" select="'1'"/>
   <xsl:param name="cnt" select="'1'"/>
         
-  <xsl:call-template name="T_unsupported_usage">
-    <xsl:with-param name="unsupportedItem" select="'complexType/(complexContent|simpleContent)'"/>
-  </xsl:call-template>
-
   <xsl:if test="not($pos='1') and not($pos='2')">
     <xsl:message terminate="yes">
-    Error: expected position(simpleContent/complexContent)=0|1, got position(simpleContent/complexContent)=<xsl:value-of select="$pos"/> 
+    Error: expected position(complexContent)=1|2, got position(complexContent)=<xsl:value-of select="$pos"/> 
     </xsl:message>
   </xsl:if>
 
   <xsl:if test="not($cnt='1')">
     <xsl:message terminate="yes">
-    Error: expected count(simpleContent/complexContent)=1, got count(simpleContent/complexContent)=<xsl:value-of select="$cnt"/> 
+    Error: expected count(complexContent)=1, got count(complexContent)=<xsl:value-of select="$cnt"/> 
     </xsl:message>
   </xsl:if>
- 
+
+  <xsl:variable name="cntAnnotation" select="count(*[local-name()='annotation'])"/>
+  <xsl:variable name="cntAnyAttr" select="count(*[local-name()='anyAttribute'])"/>
+  <xsl:for-each select="*">
+    <xsl:variable name="localName" select="local-name()"/>
+    <xsl:variable name="pos" select="position()"/>
+    <xsl:choose>
+      <xsl:when test="$localName='annotation'">
+        <xsl:call-template name="ON_CONTENT_ANNOTATION_H">
+          <xsl:with-param name="pos" select="$pos"/>
+          <xsl:with-param name="cnt" select="$cntAnnotation"/>
+        </xsl:call-template>  
+      </xsl:when>
+      <xsl:when test="$localName='restriction'">
+        <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
+          <xsl:with-param name="mode" select="$mode"/>
+          <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+        </xsl:call-template>  
+      </xsl:when>
+      <xsl:when test="$localName='extension'">
+        <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
+          <xsl:with-param name="mode" select="$mode"/>
+          <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+        </xsl:call-template>  
+      </xsl:when>
+    </xsl:choose>
+  </xsl:for-each>
+
 </xsl:template>
 
 
@@ -622,7 +709,6 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
     <xsl:variable name="complexTypeName" select="@name" />
     <xsl:variable name="filename" select="concat('src/', $cppTargetNSDirChain, '/Types/',  $cppName, '.cpp')" />
     <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/Types/', $cppName , '.h')" />
-    <!-- Creating  -->
     <xsl:document method="text" href="{$filename}">
 <xsl:value-of select="$outHeader"/>  
 #include "<xsl:value-of select="$hdrName"/>"
@@ -706,7 +792,7 @@ namespace Types
       XMLSchema::XmlElement&lt;anyComplexType&gt;(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement),
     </xsl:when>
     <xsl:when test="local-name()='complexType'">
-  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOM::Node* ownerNode, DOM::ElementP ownerElem, XMLSchema::TDocument* ownerDoc):
+  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOM::Node* ownerNode, DOM::ElementP ownerElem, XMLSchema::TDocument* ownerDoc, bool childBuildsTree):
   XMLSchema::Types::anyComplexType(ownerNode, ownerElem, ownerDoc, <xsl:value-of select="$mixedContent"/>),
     </xsl:when>
     <xsl:otherwise></xsl:otherwise>
@@ -722,7 +808,15 @@ namespace Types
     this->mixedContent(<xsl:value-of select="$mixedContent"/>);
   </xsl:if>  
     initFSM();
+
+    <xsl:choose>
+      <xsl:when test="local-name(..)!='element'">
+    if(ownerDoc &amp;&amp; ownerDoc->buildTree() &amp;&amp; !childBuildsTree)
+      </xsl:when>
+      <xsl:otherwise>
     if(ownerDoc &amp;&amp; ownerDoc->buildTree())
+      </xsl:otherwise>
+    </xsl:choose>
     {
       _fsm->fireRequiredEvents();
     }
@@ -774,6 +868,9 @@ namespace Types
 </xsl:template>
 
 
+
+
+
 <!--
   complexType/simpleContent/(restriction|extension)
   TODO: restriction is yet to be handled...most of the code is still extension specific
@@ -823,22 +920,24 @@ namespace Types
       Node* previousSiblingElement,
       Node* nextSiblingElement
       ):
-      XMLSchema::XmlElement&lt;<xsl:value-of select="$baseCppType"/>&gt;(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement),
+      XMLSchema::XmlElement&lt;<xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement),
     </xsl:when>
     <xsl:when test="local-name()='complexType'">
-  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOM::Node* ownerNode, DOM::ElementP ownerElem, XMLSchema::TDocument* ownerDoc):
+  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOM::Node* ownerNode, DOM::ElementP ownerElem, XMLSchema::TDocument* ownerDoc, bool childBuildsTree):
      <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(ownerNode, ownerElem, ownerDoc),
     </xsl:when>
     <xsl:otherwise></xsl:otherwise>
   </xsl:choose>
     _fsmElems(NULL),
     _fsmAttrs(NULL)
+    <!-- FIXME: following for loop is unnecessary for simpleContent case -->
+    <!--
   <xsl:for-each select="*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
     <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
     , _<xsl:value-of select="$mgName"/>(new <xsl:value-of select="$mgName"/>(this) )
   </xsl:for-each>
+    -->
   {
-    
     <!-- specific to restriction case -->  
     <xsl:if test="*[local-name()='simpleContent']/*[local-name()='restriction']">
     <xsl:for-each select="*[local-name()='simpleContent']">
@@ -848,7 +947,15 @@ namespace Types
     </xsl:if>
 
     initFSM();
+
+    <xsl:choose>
+      <xsl:when test="local-name(..)!='element'">
+    if(ownerDoc &amp;&amp; ownerDoc->buildTree() &amp;&amp; !childBuildsTree)
+      </xsl:when>
+      <xsl:otherwise>
     if(ownerDoc &amp;&amp; ownerDoc->buildTree())
+      </xsl:otherwise>
+    </xsl:choose>
     {
       _fsm->fireRequiredEvents();
     }
@@ -885,7 +992,7 @@ namespace Types
       XsdFsmBase* pAttrFsm = pFsmSeq->fsmAt(0);
       XsdFsmOfFSMs* attrFsm = dynamic_cast&lt;XsdFsmOfFSMs*&gt;(pFsmSeq->fsmAt(0));
       if(attrFsm) {
-        attrFsm->addFsms(fsmsAttrs);
+        attrFsm->appendFsms(fsmsAttrs);
       }
       else {
         throw XMLSchema::FSMException("The attribute FSM or parent component, is NULL"); 
@@ -914,8 +1021,176 @@ namespace Types
 
 
 
+
 <xsl:template name="DEFINE_FNS_COMPLEXTYPE_WITH_COMPLEXCONTENT_CPP">
   <xsl:param name="schemaComponentName" select="@name"/>
+  
+    <xsl:variable name="ctNodeSelf" select="."/>
+    <xsl:variable name="baseQName">
+      <xsl:call-template name="T_get_complexType_base"/>
+    </xsl:variable>
+    <xsl:variable name="baseResolution">
+      <xsl:call-template name="T_resolve_typeQName">
+        <xsl:with-param name="typeQName" select="$baseQName"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:variable name="baseResolutionFoundInDoc">
+      <xsl:call-template name="T_get_resolution_foundInDoc">
+        <xsl:with-param name="resolution" select="$baseResolution"/>
+      </xsl:call-template>  
+    </xsl:variable>
+    <xsl:variable name="isBaseAnyType"><xsl:call-template name="T_is_schema_anyType"><xsl:with-param name="typeStr" select="$baseQName"/></xsl:call-template></xsl:variable>
+    <!--
+    <xsl:variable name="baseTypeLocalPart">
+      <xsl:call-template name="T_get_localPart_of_QName">
+        <xsl:with-param name="qName" select="$baseQName"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:variable name="baseComplexTypeNode" select="document($baseResolutionFoundInDoc)/*[local-name()='schema']/*[local-name()='complexType' and @name=$baseTypeLocalPart]"/>
+      -->
+
+  <xsl:variable name="baseCppType">
+    <xsl:call-template name="T_get_cppType_complexType_base"/>
+  </xsl:variable>
+  <xsl:variable name="baseCppNSDeref">
+    <xsl:call-template name="T_get_cppNSDeref_of_simpleType_complexType">
+      <xsl:with-param name="typeQName" select="*[local-name()='complexContent']/*[local-name()='extension' or local-name()='restriction']/@base"/>
+    </xsl:call-template>
+  </xsl:variable>
+  
+  <xsl:variable name="cppNSDerefLevel1Onwards"><xsl:call-template name="T_get_nsDeref_level1Onwards_elemComplxTypeOnly"/></xsl:variable>
+  
+  <xsl:variable name="mixedContent"><xsl:call-template name="T_get_mixedContent_CTNode"/></xsl:variable>
+  //constructor
+  <xsl:choose>
+    <xsl:when test="local-name(..)='element'">
+  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOMString* tagName,
+      DOMString* nsUri,
+      DOMString* nsPrefix,
+      XMLSchema::TDocument* ownerDoc,
+      Node* parentNode,
+      Node* previousSiblingElement,
+      Node* nextSiblingElement
+      ):
+      XMLSchema::XmlElement&lt;<xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement),
+    </xsl:when>
+    <xsl:when test="local-name()='complexType'">
+  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOM::Node* ownerNode, DOM::ElementP ownerElem, XMLSchema::TDocument* ownerDoc, bool childBuildsTree):
+      <xsl:choose>
+        <xsl:when test="$isBaseAnyType='true'">
+      <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(ownerNode, ownerElem, ownerDoc),
+        </xsl:when>
+        <xsl:otherwise>
+      <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(ownerNode, ownerElem, ownerDoc, true),
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:otherwise></xsl:otherwise>
+  </xsl:choose>
+    _fsmElems(NULL),
+    _fsmAttrs(NULL)
+  <xsl:for-each select="*[local-name()='complexContent']/*[local-name()='extension' or local-name()='restriction']/*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
+    <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
+    , _<xsl:value-of select="$mgName"/>(new <xsl:value-of select="$mgName"/>(this) )
+  </xsl:for-each>
+  {
+    this->mixedContent(<xsl:value-of select="$mixedContent"/>);
+    initFSM();
+
+    <xsl:choose>
+      <xsl:when test="local-name(..)!='element'">
+    if(ownerDoc &amp;&amp; ownerDoc->buildTree() &amp;&amp; !childBuildsTree)
+      </xsl:when>
+      <xsl:otherwise>
+    if(ownerDoc &amp;&amp; ownerDoc->buildTree())
+      </xsl:otherwise>
+    </xsl:choose>
+    {
+      _fsm->fireRequiredEvents();
+    }
+  }
+
+  void <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/>initFSM()
+  {
+    XsdFsmBasePtr fsmsAttrs[] = {
+    <xsl:for-each select="*[local-name()='complexContent']/*[local-name()='extension' or local-name()='restriction']/*[local-name()='attribute']">
+      <xsl:call-template name="T_new_XsdFsm_ElementAttr">
+        <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+        <xsl:with-param name="thisOrThat" select="'this'"/>
+      </xsl:call-template>,
+    </xsl:for-each>
+      NULL
+    };
+
+    XsdFsmBase* fsmElems = NULL;
+  <xsl:for-each select="*[local-name()='complexContent']/*[local-name()='extension' or local-name()='restriction']/*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
+    <xsl:variable name="maxOccurChoiceOrSeq"><xsl:call-template name="T_get_maxOccurence"/></xsl:variable>
+    <xsl:variable name="listSuffix"><xsl:if test="$maxOccurChoiceOrSeq>1">List</xsl:if></xsl:variable>
+    <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
+    fsmElems = _<xsl:value-of select="$mgName"/>;
+  </xsl:for-each>
+
+    XsdSequenceFsmOfFSMs* pFsmSeq = dynamic_cast&lt;XsdSequenceFsmOfFSMs*&gt;(_fsm.get());
+    if(pFsmSeq)
+    {
+      XsdFsmOfFSMs* pAttrFsm = dynamic_cast&lt;XsdFsmOfFSMs *&gt;(pFsmSeq->fsmAt(0));
+      if(pAttrFsm) {
+      <xsl:choose>  
+        
+        <xsl:when test="*[local-name()='complexContent']/*[local-name()='restriction']">
+        pAttrFsm->replaceOrAppendUniqueUnitFsms(fsmsAttrs);
+        </xsl:when>
+
+        <xsl:when test="*[local-name()='complexContent']/*[local-name()='extension']">
+        pAttrFsm->appendFsms(fsmsAttrs);
+        </xsl:when>
+
+      </xsl:choose>  
+      }
+      else {
+        throw XMLSchema::FSMException("The attribute FSM or parent component, is NULL"); 
+      }
+
+      <xsl:choose>  
+        <xsl:when test="*[local-name()='complexContent']/*[local-name()='restriction']">
+      pFsmSeq->replaceFsmAt(fsmElems, 1);
+        </xsl:when>
+
+        <xsl:when test="*[local-name()='complexContent']/*[local-name()='extension']">
+      XsdFsmBase* fsmElemsAppended = NULL;
+      XsdFsmBase* fsmElems0 = pFsmSeq->fsmAt(1);
+      XsdFsmBasePtr fsms[] = { fsmElems0, fsmElems, NULL };
+      fsmElemsAppended = new XsdSequenceFsmOfFSMs(fsms);
+      pFsmSeq->replaceFsmAt(fsmElemsAppended, 1);
+        </xsl:when>
+      </xsl:choose>  
+    }
+    else {
+      throw XMLSchema::FSMException("The sequence FSM of parent component, is NULL"); 
+    }
+  }
+
+  /* element functions  */
+  <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
+    <xsl:with-param name="mode" select="'define_member_element_fns'"/>
+    <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+  </xsl:call-template>  
+
+  /* attribute  functions  */
+  <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
+    <xsl:with-param name="mode" select="'define_member_attribute_fns'"/>
+    <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+  </xsl:call-template>  
+
+  <xsl:for-each select="*[local-name()='complexContent']/*[local-name()='extension' or local-name()='restriction']/*[local-name()='choice' or local-name()='sequence' or local-name()='all']">
+    <xsl:call-template name="DEFINE_FNS_FOR_MG_CPP">
+      <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+    </xsl:call-template>  
+  </xsl:for-each>
+
+  <!-- FIXME: revisit for complexContent fsm -->
+  <xsl:call-template name="DEFINE_TYPES_LEVEL1COMPLEXTYPE_NEEDS_CPP"/>
 
 </xsl:template>
 
@@ -957,10 +1232,13 @@ namespace Types
   <xsl:for-each select="*[local-name()='choice' or local-name()='sequence' or local-name()='all' or local-name()='element']">
     <xsl:variable name="localName" select="local-name(.)"/>
     <xsl:variable name="maxOccurence"><xsl:call-template name="T_get_maxOccurence"/></xsl:variable>
+    <xsl:variable name="maxOccurenceStr"><xsl:call-template name="T_get_maxOccurence_string"/></xsl:variable>
     <xsl:variable name="minOccurence"><xsl:call-template name="T_get_minOccurence"/></xsl:variable>
     <xsl:variable name="maxOccurGTminOccur"><xsl:call-template name="T_is_maxOccurence_gt_minOccurence"/></xsl:variable>
     <xsl:variable name="maxOccurGT1"><xsl:call-template name="T_is_maxOccurence_gt_1"/></xsl:variable>
     <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
+
+    <!--
     <xsl:variable name="resolution">
       <xsl:call-template name="T_resolve_elementAttr">
         <xsl:with-param name="node" select="."/>  
@@ -972,11 +1250,11 @@ namespace Types
       </xsl:call-template>
     </xsl:variable>
     <xsl:variable name="atomicSimpleTypeImpl">
-      <xsl:call-template name="T_get_atomic_simpleType_impl_from_resolution">
+      <xsl:call-template name="T_get_simpleType_impl_from_resolution">
         <xsl:with-param name="resolution" select="$resolution"/>
       </xsl:call-template>
     </xsl:variable>
-
+-->
     <xsl:choose>
       <!-- case1 : for MGs, begin -->
       <xsl:when test="$localName='choice' or $localName='sequence' or $localName='all'">
@@ -997,7 +1275,7 @@ namespace Types
       if( (size &gt; <xsl:value-of select="$maxOccurence"/>) || (size &lt; <xsl:value-of select="$minOccurence"/>)) {
         ostringstream oss;
         oss &lt;&lt; "size should be in range: [" &lt;&lt; <xsl:value-of select="$minOccurence"/>
-          &lt;&lt; "," &lt;&lt; <xsl:value-of select="$minOccurence"/> &lt;&lt; "]";
+          &lt;&lt; "," &lt;&lt; <xsl:value-of select="$maxOccurenceStr"/> &lt;&lt; "]";
         throw IndexOutOfBoundsException(oss.str());
       }
 
@@ -1073,6 +1351,27 @@ namespace Types
           </xsl:choose>
          </xsl:variable>
 
+        <xsl:variable name="resolution">
+          <xsl:call-template name="T_resolve_elementAttr">
+            <xsl:with-param name="node" select="."/>  
+          </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="isSimpleType">
+          <xsl:call-template name="T_is_resolution_simpleType">
+            <xsl:with-param name="resolution" select="$resolution"/>  
+          </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="isEmptyComplexType">
+          <xsl:call-template name="T_is_resolution_empty_complexType">
+            <xsl:with-param name="resolution" select="$resolution"/>  
+          </xsl:call-template>
+        </xsl:variable>        
+        <xsl:variable name="atomicSimpleTypeImpl">
+          <xsl:call-template name="T_get_simpleType_impl_from_resolution">
+            <xsl:with-param name="resolution" select="$resolution"/>
+          </xsl:call-template>
+        </xsl:variable>         
+
         <xsl:if test="$parentMgName='choice'">
         <xsl:choose>
           <xsl:when test="$maxOccurGT1='true'">
@@ -1081,7 +1380,7 @@ namespace Types
       if( (size &gt; <xsl:value-of select="$maxOccurence"/>) || (size &lt; <xsl:value-of select="$minOccurence"/>)) {
         ostringstream oss;
         oss &lt;&lt; "size should be in range: [" &lt;&lt; <xsl:value-of select="$minOccurence"/>
-          &lt;&lt; "," &lt;&lt; <xsl:value-of select="$minOccurence"/> &lt;&lt; "]";
+          &lt;&lt; "," &lt;&lt; <xsl:value-of select="$maxOccurenceStr"/> &lt;&lt; "]";
         throw IndexOutOfBoundsException(oss.str());
       }
 
@@ -1144,7 +1443,7 @@ namespace Types
       return <xsl:value-of select="$localName"/>s_<xsl:value-of select="$cppNameFunction"/>().at(idx);
     }
 
-      <xsl:if test="$isSimpleType='true'">
+      <xsl:if test="$isSimpleType='true' or $isEmptyComplexType='true'">
     void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_<xsl:value-of select="$cppNameFunction"/>(unsigned int idx, DOMString val)
     {
       <xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>_at(idx)->stringValue(val);
@@ -1171,7 +1470,7 @@ namespace Types
 
 
     <xsl:if test="$maxOccurence=1">
-      <xsl:if test="$isSimpleType='true'">
+      <xsl:if test="$isSimpleType='true' or $isEmptyComplexType='true'">
     void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_<xsl:value-of select="$cppNameFunction"/>(DOMString val)
     {
         <xsl:if test="$minOccurence=0">
@@ -1219,7 +1518,7 @@ namespace Types
       if( (size &gt; <xsl:value-of select="$maxOccurence"/>) || (size &lt; <xsl:value-of select="$minOccurence"/>)) {
         ostringstream oss;
         oss &lt;&lt; "set_count_<xsl:value-of select="$cppNameFunction"/>: size should be in range: [" &lt;&lt; <xsl:value-of select="$minOccurence"/>
-          &lt;&lt; "," &lt;&lt; <xsl:value-of select="$maxOccurence"/> &lt;&lt; "]";
+          &lt;&lt; "," &lt;&lt; <xsl:value-of select="$maxOccurenceStr"/> &lt;&lt; "]";
         throw IndexOutOfBoundsException(oss.str());
       }
 
@@ -1238,7 +1537,7 @@ namespace Types
       return <xsl:value-of select="$localName"/><xsl:if test="$maxOccurGT1='true'">s</xsl:if>_<xsl:value-of select="$cppNameFunction"/>();
     }
 
-          <xsl:if test="$isSimpleType='true'">
+          <xsl:if test="$isSimpleType='true' or $isEmptyComplexType='true'">
       
     void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>add_<xsl:value-of select="$cppNameFunction"/>_string(DOMString val)
     {
@@ -1352,8 +1651,13 @@ namespace Types
       <xsl:with-param name="resolution" select="$resolution"/>  
     </xsl:call-template>
   </xsl:variable>
+  <xsl:variable name="isEmptyComplexType">
+    <xsl:call-template name="T_is_resolution_empty_complexType">
+      <xsl:with-param name="resolution" select="$resolution"/>  
+    </xsl:call-template>
+  </xsl:variable>
   <xsl:variable name="atomicSimpleTypeImpl">
-    <xsl:call-template name="T_get_atomic_simpleType_impl_from_resolution">
+    <xsl:call-template name="T_get_simpleType_impl_from_resolution">
       <xsl:with-param name="resolution" select="$resolution"/>
     </xsl:call-template>
   </xsl:variable>
@@ -1431,11 +1735,6 @@ namespace Types
   </xsl:if>
   
   <xsl:if test="$localName='attribute'">
-      <!--
-      <xsl:if test="$isSimpleType!='true'">
-        this is an error
-      </xsl:if>  
-      -->
     void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_<xsl:value-of select="$cppNameFunction"/>(DOMString val)
     {
         <xsl:if test="$isOptionalScalar='true'">
@@ -1517,7 +1816,7 @@ namespace Types
     return <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->set_count_<xsl:value-of select="$cppNameFunction"/>(size);
   }
 
-        <xsl:if test="$isSimpleType='true'">
+        <xsl:if test="$isSimpleType='true' or $isEmptyComplexType='true'">
       
     void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>add_<xsl:value-of select="$cppNameFunction"/>_string(DOMString val)
     {
@@ -1540,7 +1839,7 @@ namespace Types
 
 
       <xsl:if test="$maxOccurGT1Node='true'">
-        <xsl:if test="$isSimpleType='true'">
+        <xsl:if test="$isSimpleType='true' or $isEmptyComplexType='true'">
   void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_<xsl:value-of select="$cppNameFunction"/>(unsigned int idx, DOMString val)
   {
     <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->set_<xsl:value-of select="$cppNameFunction"/>(idx, val);
@@ -1568,7 +1867,7 @@ namespace Types
 
 
       <xsl:if test="$maxOccurNode=1">
-        <xsl:if test="$isSimpleType='true'">
+        <xsl:if test="$isSimpleType='true' or $isEmptyComplexType='true'">
   void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>set_<xsl:value-of select="$cppNameFunction"/>(DOMString val)
   {
     <xsl:call-template name="T_gen_access_chain_singular_mg_nesting"><xsl:with-param name="mgNode" select=".."/></xsl:call-template>->set_<xsl:value-of select="$cppNameFunction"/>(val);
