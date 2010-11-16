@@ -197,11 +197,11 @@ void XsdFsmOfFSMs::replaceOrAppendUniqueUnitFsms(XsdFsmBasePtr* fsms)
         _allFSMs.push_back(pNewFsm);
         break;
       }
+    }
 
-      // append
-      if(!match) {
-        _allFSMs.push_back(pNewFsm);
-      }
+    // append
+    if(!match) {
+      _allFSMs.push_back(pNewFsm);
     }
   }
 }
@@ -705,6 +705,43 @@ Node* XsdSequenceFsmOfFSMs::nextSiblingElementInSchemaOrder(XsdFsmBase *callerFs
   }
 
   return NULL;
+}
+
+
+AnyTypeFSM::AnyTypeFSM(XsdFsmBasePtr* attrFsms, XsdFsmBasePtr contentFsm, XsdFsmBasePtr elemEndFsm)
+{
+  XsdFsmBasePtr oneFsmOfAttrs = new XsdAllFsmOfFSMs(attrFsms);
+
+  XsdFsmBasePtr elemFsmModel[] = { oneFsmOfAttrs, contentFsm, elemEndFsm, NULL };
+
+  XsdSequenceFsmOfFSMs::init(elemFsmModel);
+}
+
+void AnyTypeFSM::appendAttributeFsms(XsdFsmBasePtr* fsmsAttrs)
+{
+  XsdFsmOfFSMs* pAttrFsm = dynamic_cast<XsdFsmOfFSMs *>(this->fsmAt(0));
+  if(pAttrFsm) {
+    pAttrFsm->appendFsms(fsmsAttrs);
+  }
+  else {
+    throw XMLSchema::FSMException("The attribute FSM or parent component, is NULL"); 
+  }
+}
+
+void AnyTypeFSM::replaceOrAppendUniqueAttributeFsms(XsdFsmBasePtr* fsmsAttrs)
+{
+  XsdFsmOfFSMs* pAttrFsm = dynamic_cast<XsdFsmOfFSMs *>(this->fsmAt(0));
+  if(pAttrFsm) {
+    pAttrFsm->replaceOrAppendUniqueUnitFsms(fsmsAttrs);
+  }
+  else {
+    throw XMLSchema::FSMException("The attribute FSM or parent component, is NULL"); 
+  }
+}
+
+void AnyTypeFSM::replaceContentFsm(XsdFsmBase* contentFsm)
+{
+  this->replaceFsmAt(contentFsm, 1);
 }
 
 

@@ -833,6 +833,8 @@ namespace Types
   </xsl:for-each>
       NULL
     };
+    <!-- satya 15th Nov -->
+    <!--
     _fsmAttrs = new XsdAllFsmOfFSMs(fsmsAttrs);
   <xsl:for-each select="*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
     <xsl:variable name="maxOccurChoiceOrSeq"><xsl:call-template name="T_get_maxOccurence"/></xsl:variable>
@@ -843,6 +845,18 @@ namespace Types
     XsdFsmBasePtr elemEndFsm = new XsdFSM&lt;void *&gt;(NSNamePairOccur(ownerElement()->getNamespaceURI(), *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
     XsdFsmBasePtr fsms[] = { _fsmAttrs, _fsmElems, elemEndFsm, NULL };
     _fsm = new XsdSequenceFsmOfFSMs(fsms);
+    -->
+
+    _fsm->replaceOrAppendUniqueAttributeFsms(fsmsAttrs);
+  <xsl:for-each select="*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
+    <xsl:variable name="maxOccurChoiceOrSeq"><xsl:call-template name="T_get_maxOccurence"/></xsl:variable>
+    <xsl:variable name="listSuffix"><xsl:if test="$maxOccurChoiceOrSeq>1">List</xsl:if></xsl:variable>
+    <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
+    _fsm->replaceContentFsm(_<xsl:value-of select="$mgName"/>);
+  </xsl:for-each>    
+    _fsmAttrs = _fsm->attributeFsm();
+    _fsmElems = _fsm->contentFsm();
+
   }
 
   /* element functions  */
@@ -973,6 +987,11 @@ namespace Types
       NULL
     };
 
+    _fsm->appendAttributeFsms(fsmsAttrs);
+    _fsmAttrs = _fsm->attributeFsm();
+    _fsmElems = _fsm->contentFsm();
+
+    /*
     <xsl:choose>
       <xsl:when test="$isSimpleType='true'">
     _fsmAttrs = new XsdAllFsmOfFSMs(fsmsAttrs);
@@ -1003,6 +1022,7 @@ namespace Types
     }
       </xsl:when>
     </xsl:choose>
+    */
   }
 
   /* element functions  */
@@ -1123,52 +1143,32 @@ namespace Types
       NULL
     };
 
-    XsdFsmBase* fsmElems = NULL;
-  <xsl:for-each select="*[local-name()='complexContent']/*[local-name()='extension' or local-name()='restriction']/*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
-    <xsl:variable name="maxOccurChoiceOrSeq"><xsl:call-template name="T_get_maxOccurence"/></xsl:variable>
-    <xsl:variable name="listSuffix"><xsl:if test="$maxOccurChoiceOrSeq>1">List</xsl:if></xsl:variable>
-    <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
-    fsmElems = _<xsl:value-of select="$mgName"/>;
-  </xsl:for-each>
+    XsdFsmBase* myContentfsm = NULL;
+    <xsl:for-each select="*[local-name()='complexContent']/*[local-name()='extension' or local-name()='restriction']/*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
+      <xsl:variable name="maxOccurChoiceOrSeq"><xsl:call-template name="T_get_maxOccurence"/></xsl:variable>
+      <xsl:variable name="listSuffix"><xsl:if test="$maxOccurChoiceOrSeq>1">List</xsl:if></xsl:variable>
+      <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
+    myContentfsm = _<xsl:value-of select="$mgName"/>;
+    </xsl:for-each>
 
-    XsdSequenceFsmOfFSMs* pFsmSeq = dynamic_cast&lt;XsdSequenceFsmOfFSMs*&gt;(_fsm.get());
-    if(pFsmSeq)
-    {
-      XsdFsmOfFSMs* pAttrFsm = dynamic_cast&lt;XsdFsmOfFSMs *&gt;(pFsmSeq->fsmAt(0));
-      if(pAttrFsm) {
-      <xsl:choose>  
-        
-        <xsl:when test="*[local-name()='complexContent']/*[local-name()='restriction']">
-        pAttrFsm->replaceOrAppendUniqueUnitFsms(fsmsAttrs);
-        </xsl:when>
+    <xsl:choose>  
+      <xsl:when test="*[local-name()='complexContent']/*[local-name()='restriction']">
+    _fsm->replaceOrAppendUniqueAttributeFsms(fsmsAttrs);
+    _fsm->replaceContentFsm(myContentfsm);
+      </xsl:when>
+      <xsl:when test="*[local-name()='complexContent']/*[local-name()='extension']">
+    _fsm->appendAttributeFsms(fsmsAttrs);
+    
+    XsdFsmBase* contentFsmJoined = NULL;
+    XsdFsmBase* contentFsmParent = _fsm->contentFsm();
+    XsdFsmBasePtr fsms[] = { contentFsmParent, myContentfsm, NULL };
+    contentFsmJoined = new XsdSequenceFsmOfFSMs(fsms);
+    _fsm->replaceContentFsm(contentFsmJoined);    
+      </xsl:when>
+    </xsl:choose>
 
-        <xsl:when test="*[local-name()='complexContent']/*[local-name()='extension']">
-        pAttrFsm->appendFsms(fsmsAttrs);
-        </xsl:when>
-
-      </xsl:choose>  
-      }
-      else {
-        throw XMLSchema::FSMException("The attribute FSM or parent component, is NULL"); 
-      }
-
-      <xsl:choose>  
-        <xsl:when test="*[local-name()='complexContent']/*[local-name()='restriction']">
-      pFsmSeq->replaceFsmAt(fsmElems, 1);
-        </xsl:when>
-
-        <xsl:when test="*[local-name()='complexContent']/*[local-name()='extension']">
-      XsdFsmBase* fsmElemsAppended = NULL;
-      XsdFsmBase* fsmElems0 = pFsmSeq->fsmAt(1);
-      XsdFsmBasePtr fsms[] = { fsmElems0, fsmElems, NULL };
-      fsmElemsAppended = new XsdSequenceFsmOfFSMs(fsms);
-      pFsmSeq->replaceFsmAt(fsmElemsAppended, 1);
-        </xsl:when>
-      </xsl:choose>  
-    }
-    else {
-      throw XMLSchema::FSMException("The sequence FSM of parent component, is NULL"); 
-    }
+    _fsmAttrs = _fsm->attributeFsm();
+    _fsmElems = _fsm->contentFsm();
   }
 
   /* element functions  */

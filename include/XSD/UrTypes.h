@@ -136,7 +136,7 @@ namespace XMLSchema
         Node*           _ownerNode;
         TDocument*      _ownerDoc;
 
-        XsdFsmBasePtr   _fsm;
+        AnyTypeFSMPtr   _fsm;
 
         DOMString       _value;
         TextNode*       _valueNode;

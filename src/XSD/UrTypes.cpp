@@ -52,40 +52,20 @@ namespace XMLSchema
     {
       if(_ownerElem)
       {
-
-        // use following fsm allocation for supporting xsi 
-        /*
-        XsdFsmBasePtr fsmsAttrs[] = {
+        XsdFsmBasePtr fsmsAttrs[] = { 
+          new XsdFSM<void *>( NSNamePairOccur(new DOMString("http://www.w3.org/2001/XMLSchema-instance"), DOMString("type"), 0, 1), XsdFsmBase::ATTRIBUTE, NULL),
+          new XsdFSM<void *>( NSNamePairOccur(new DOMString("http://www.w3.org/2001/XMLSchema-instance"), DOMString("nil"), 0, 1), XsdFsmBase::ATTRIBUTE, NULL),
           new XsdFSM<void *>( NSNamePairOccur(new DOMString("http://www.w3.org/2001/XMLSchema-instance"), DOMString("schemaLocation"), 0, 1), XsdFsmBase::ATTRIBUTE, NULL),
-
-          NULL
+          new XsdFSM<void *>( NSNamePairOccur(new DOMString("http://www.w3.org/2001/XMLSchema-instance"), DOMString("noNamespaceSchemaLocation"), 0, 1), XsdFsmBase::ATTRIBUTE, NULL),
+          NULL 
         };
-        XsdFsmBasePtr fsmAttrsAll = new XsdAllFsmOfFSMs(fsmsAttrs);
-        XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(ownerElement()->getNamespaceURI(), *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
-        XsdFsmBasePtr fsms[] = { fsmAttrsAll, elemEndFsm, NULL };
-        _fsm = new XsdSequenceFsmOfFSMs(fsms);
-        */
-
-        XsdFsmBasePtr fsmsAttrs[] = { NULL };
-        XsdFsmBase* fsmAttrs = new XsdAllFsmOfFSMs(fsmsAttrs);
-
-        XsdFsmBasePtr fsmsElems[] = { NULL };
-        XsdFsmBase* fsmElems = new XsdSequenceFsmOfFSMs(fsmsElems); 
-
+        XsdFsmBasePtr fsmsContent[] = { NULL };
+        XsdFsmBase* contentFsm = new XsdSequenceFsmOfFSMs(fsmsContent); 
         XsdFsmBaseP elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(ownerElement()->getNamespaceURI(), 
               *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
-
-        XsdFsmBasePtr fsms[] = { fsmAttrs, fsmElems, elemEndFsm, NULL };
-        _fsm = new XsdSequenceFsmOfFSMs(fsms);
-
-        /*
-        XsdFsmBaseP elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(ownerElement()->getNamespaceURI(), 
-              *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
-        XsdFsmBasePtr ptrFsms[] = { elemEndFsm, NULL };
-        _fsm = new XsdFsmOfFSMs(ptrFsms, XsdFsmOfFSMs::SEQUENCE);
-        */
+        
+        _fsm = new AnyTypeFSM(fsmsAttrs, contentFsm, elemEndFsm);
       }
-
     }
 
     void anyType::setErrorContext(XPlus::Exception& ex)
@@ -192,9 +172,13 @@ namespace XMLSchema
         }
       }
 
+      // FIXME:
+      // disabling for now... later, open it up and allow xsi variables like type, schemaLocation etc.
+      /*
       ostringstream err;
       err << "Unexpected : " << formatNamespaceName(XsdFsmBase::ATTRIBUTE, nsUri, *localName) ;
       throw XMLSchema::FSMException(DOMString(err.str()));
+      */
     }
 
     TextNodeP anyType::createTextNode(DOMString* data)

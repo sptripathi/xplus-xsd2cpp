@@ -4,7 +4,10 @@ CNT_TOTAL_TESTS=0
 CNT_FAILED_TESTS=0
 CNT_PASSED_TESTS=0
 
+
 TEST_FAILED=false
+FAILED_DIRS=""
+
 
 EX_DIRS="
         examples/org
@@ -47,8 +50,8 @@ XPLUS_TESTS_DIRS="
                  " 
 
 
-EX_DIRS=
-W3C_TESTS_DIRS=
+#EX_DIRS=
+#W3C_TESTS_DIRS=
 #XPLUS_TESTS_DIRS=
 
 
@@ -80,10 +83,12 @@ get_input_xsd()
     if [ -f README ]; then
       input_xsd=`cat README | grep INPUT_XSD | cut -d= -f2 | sed -e 's/ *//g'`
       if [ -z "$input_xsd" ]; then
-        echo "unable to ascertain input_xsd, exiting..."; exit 2
+        echo "unable to ascertain input_xsd, exiting..."
+        fail_test
       fi
     else  
-      echo "unable to ascertain input_xsd in dir:$dir, exiting..."; exit 2
+      echo "unable to ascertain input_xsd in dir:$dir, exiting..."
+      fail_test
     fi
   fi
 }
@@ -102,6 +107,7 @@ fail_test()
 {
   CNT_FAILED_TESTS=`expr $CNT_FAILED_TESTS + 1`
   TEST_FAILED=true
+  FAILED_DIRS="$FAILED_DIRS $dir"
 
   echo "   [ FAILED ]"
   #exit 2
@@ -308,6 +314,8 @@ print_test_report()
   if [ $CNT_FAILED_TESTS -eq 0 ]; then
     echo
     echo "        *** ALL TESTS PASSED ***       "
+  else
+    echo " tests failed : $FAILED_DIRS"
   fi
   echo "#-----------------------------------------"
 }

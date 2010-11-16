@@ -695,6 +695,33 @@ struct XsdGroupFsmOfFSMs : public XsdFsmOfFSMs
 };
 typedef AutoPtr<XsdGroupFsmOfFSMs> XsdGroupFsmOfFSMsPtr;
 
+
+struct AnyTypeFSM : public XsdSequenceFsmOfFSMs
+{
+  AnyTypeFSM() { }
+
+  AnyTypeFSM(XsdFsmBasePtr* attrFsms, XsdFsmBasePtr contentFsm, XsdFsmBasePtr elemEndFsm);
+
+  virtual ~AnyTypeFSM() {}
+
+  inline XsdAllFsmOfFSMs* attributeFsm() {
+    XsdFsmBase* attrFsm = this->fsmAt(0);
+    return dynamic_cast<XsdAllFsmOfFSMs *>(attrFsm);
+  }
+  inline XsdFsmBase* contentFsm() {
+    return this->fsmAt(1);
+  }
+
+  void replaceOrAppendUniqueAttributeFsms(XsdFsmBasePtr* fsms);
+  void appendAttributeFsms(XsdFsmBasePtr* fsms);
+  void replaceContentFsm(XsdFsmBase* contentFsm);
+
+};
+typedef AutoPtr<AnyTypeFSM> AnyTypeFSMPtr;
+
+
+
+
 class BinaryFsmTree;
 struct FsmTreeNode : public XPlus::TreeNode<XsdFsmBasePtr>
 {
