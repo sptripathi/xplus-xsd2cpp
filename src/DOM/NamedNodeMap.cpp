@@ -72,9 +72,11 @@ namespace DOM
     return NULL;
   }
 
+  // returns NULL if node with matching name has a non-null namespace
+  // TODO: verify this behaviour with spec
   Node* NamedNodeMap::getNamedItem(DOMString* name)
   {
-    return NULL; //TODO  
+    return getNamedItemNS(NULL, name);
   }
 
   Node* NamedNodeMap::setNamedItem(Node* pNode)
@@ -86,26 +88,58 @@ namespace DOM
     return pNode;
   }
 
+  // no-op if it has a non-null namespace
+  // TODO: verify this behaviour with spec
   Node* NamedNodeMap::removeNamedItem(DOMString* name) {
-    return NULL; //TODO  
-
+    removeNamedItemNS(NULL, name);
   }
 
   // Introduced in DOM Level 2:
   Node* NamedNodeMap::getNamedItemNS(DOMString* namespaceURI, DOMString* localName)
   {
-    return NULL; //TODO  
+    if(!localName) {
+      return NULL;
+    }
+    std::map<DOMStringPtr, NodePtr>::iterator it = this->begin();
+    for( ; it != this->end(); it++)
+    {
+      if( 
+          ( *it->first == *localName) && 
+          ( it->second.get() != NULL ) &&
+          matchNamespace(it->second->getNamespaceURI(), namespaceURI)
+        )
+      {
+        return it->second;
+      }
+    }
+    return NULL; 
   }
 
-  Node* NamedNodeMap::setNamedItemNS(Node* arg) 
+  Node* NamedNodeMap::setNamedItemNS(Node* pNode) 
   {
-    return NULL; //TODO  
+    return setNamedItem(pNode);
   }
 
   Node* NamedNodeMap::removeNamedItemNS(DOMString* namespaceURI,
       DOMString* localName)
   {
-    return NULL; //TODO  
+    if(!localName) {
+      return NULL;
+    }
 
+    std::map<DOMStringPtr, NodePtr>::iterator it = this->begin();
+    for( ; it != this->end(); it++)
+    {
+      if( 
+          ( *it->first == *localName) && 
+          ( it->second.get() != NULL ) &&
+          matchNamespace(it->second->getNamespaceURI(), namespaceURI)
+        )
+      {
+        this->erase(it);
+        return it->second;
+      }
+    }
+    return NULL;
   }    
 }

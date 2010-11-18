@@ -79,7 +79,8 @@ namespace XMLSchema
         inline virtual NodeP ownerNode() {
           return _ownerNode;
         }
-        virtual TElementP ownerElement();
+        virtual TElement* ownerElement();
+        virtual const TElement* ownerElement() const;
         inline virtual TDocumentP ownerDocument() {
           return _ownerDoc;
         }
@@ -114,17 +115,59 @@ namespace XMLSchema
         inline virtual unsigned int lengthFacet() {
           return _value.countCodePoints(); 
         }
+    
+        // NB: xsi attributes's values are not the values from Schema Doc.
+        // All the xsi attributes appear in instance doc, and their values are
+        // reported as seen in the instance doc.
+        const DOMString* xsiTypeValue();
+        bool isXsiNil();
+        const DOMString* xsiSchemaLocationValue();
+        const DOMString* xsiNoNamespaceSchemaLocationValue();
+
+        // the string "xsi" and not this prefix's nsUri in the context
+        static DOMString   s_xsiStr; 
+        // pointer to DOMString : "http://www.w3.org/2001/XMLSchema-instance"
+        static DOMString   s_xsiUri;
+        // the string "type" and not this attribute's value in the context
+        static DOMString   s_xsiTypeStr; 
+        // the string "nil" and not this attribute's value in the context
+        static DOMString   s_xsiNilStr;
+        // the string "schemaLocation" and not this attribute's value in the context
+        static DOMString   s_xsiSchemaLocationStr;
+        // the string "noNamespaceSchemaLocation" and not this attribute's value in the context
+        static DOMString   s_xsiNoNamespaceSchemaLocationStr;
+
+        // respective static pointers to the above xsi strings
+        static DOMStringPtr   s_xsiStrPtr; 
+        static DOMStringPtr   s_xsiUriPtr;
+        static DOMStringPtr   s_xsiTypeStrPtr; 
+        static DOMStringPtr   s_xsiNilStrPtr;
+        static DOMStringPtr   s_xsiSchemaLocationStrPtr;
+        static DOMStringPtr   s_xsiNoNamespaceSchemaLocationStrPtr;
 
       protected:
 
-        virtual TextNodeP setTextNodeValue(DOMString value); 
 
+        //
+        //                 MEMBER FUNCTIONS 
+        //
+        virtual TextNodeP setTextNodeValue(DOMString value); 
         void setErrorContext(XPlus::Exception& ex);
-        
         void checkFixed(DOMString value);
+        DOM::Attribute* createDOMAttributeUnderCurrentElement(DOMString *attrName, DOMString *attrNsUri=NULL, DOMString *attrNsPrefix=NULL, DOMString *attrValue=NULL);
+
+        DOM::Attribute* createAttributeXsiType();
+        DOM::Attribute* createAttributeXsiNil();
+        DOM::Attribute* createAttributeXsiSchemaLocation();
+        DOM::Attribute* createAttributeXsiNoNamespaceSchemaLocation();
+
+
+        //
+        //                 MEMBER VARIABLES 
+        //
 
         eAnyTypeUseCase _anyTypeUseCase;
-
+        
         // in case of anyType and derivatives ownerElement() is same
         // Node as ownerNode(). However in case of element ownerElement()
         // is element itself(this pointer)

@@ -147,5 +147,6 @@ namespace DOM
   //typedef DOMString* DOMStringPtr;
   typedef DOMString* DOMStringP;
 
+  bool matchNamespace(const DOMString* nsUri1, const  DOMString* nsUri2);
 }
 #endif

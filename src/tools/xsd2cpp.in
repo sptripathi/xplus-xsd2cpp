@@ -91,7 +91,7 @@ init()
 
 cleanup_meta()
 {
-  $RM -f $XPLUS_META_DIR/*
+  $RM -rf $XPLUS_META_DIR
 }
 
 gen_source_files()

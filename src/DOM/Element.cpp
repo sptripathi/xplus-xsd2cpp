@@ -61,64 +61,73 @@ namespace DOM
   }
 
   void Element::setAttribute(DOMString* name,
-      DOMString* value) {
-    return; //TODO
+      DOMString* value) 
+  {
+    Attribute* pAttr = new Attribute(name, value);
+    this->setAttributeNode(pAttr);
   }
 
   void Element::removeAttribute(DOMString* name)
   {
-    return; //TODO
+    _attributes.removeNamedItem(name);
   }
 
-  AttributeP Element::getAttributeNode(DOMString* name)
+  Attribute*  Element::getAttributeNode(DOMString* name)
   {
-    return NULL; //TODO
+    return dynamic_cast<Attribute *>(_attributes.getNamedItem(name));
   }
 
-  AttributeP Element::setAttributeNode(Attribute* newAttr)
+  Attribute*  Element::setAttributeNode(Attribute* newAttr)
   {
     _attributes.setNamedItem(newAttr);
     return newAttr;
   }
 
-  AttributeP Element::removeAttributeNode(AttributeP oldAttr)
+  Attribute*  Element::removeAttributeNode(Attribute*  oldAttr)
   {
     return NULL; //TODO
   }
 
 
   // Introduced in DOM Level 2:
-  DOMString* Element::getAttributeNS(DOMString* namespaceURI,
+  const DOMString* Element::getAttributeNS(DOMString* namespaceURI,
       DOMString* localName)
   {
-    return NULL; //TODO
+    Node* pAttr = _attributes.getNamedItemNS(namespaceURI, localName);
+    if(pAttr) {
+      return pAttr->getNodeValue();
+    }
+    return NULL;
   }
 
   void Element::setAttributeNS(DOMString* namespaceURI,
       DOMString* qualifiedName,
       DOMString* value)
   {
-    return; //TODO
+    //TODO: split qualifiedName to get localName ... then
+    //Attribute* pAttr = new Attribute(localName, value, namespaceURI);
+    //this->setAttributeNode(pAttr);
+    return; 
   }
 
   void Element::removeAttributeNS(DOMString* namespaceURI,
       DOMString* localName)
   {
-    return; //TODO
-  }
-  AttributeP Element::getAttributeNodeNS(DOMString* namespaceURI,
-      DOMString* localName)
-  {
-    return false; //TODO
+    _attributes.removeNamedItemNS(namespaceURI, localName);
   }
 
-  AttributeP Element::setAttributeNodeNS(AttributeP newAttr)
+  Attribute*  Element::getAttributeNodeNS(DOMString* namespaceURI, DOMString* localName)
   {
-    return NULL; //TODO
+    return dynamic_cast<Attribute *>(_attributes.getNamedItemNS(namespaceURI, localName));
   }
 
-  NodeList*  Element::getElementsByTagNameNS(DOMString* namespaceURI,
-      DOMString* localName)
+  Attribute*  Element::setAttributeNodeNS(Attribute* newAttr)
+  {
+    _attributes.setNamedItem(newAttr);
+    return newAttr;
+  }
+
+  NodeList*  Element::getElementsByTagNameNS(DOMString* namespaceURI, DOMString* localName)
   {
     //TODO:
     NodeList *tmp = new NodeList();
@@ -127,13 +136,13 @@ namespace DOM
 
   bool Element::hasAttribute(DOMString* name)
   {
-    return false; //TODO
+    return (getAttributeNode(name) != NULL);
   }
 
   bool Element::hasAttributeNS(DOMString* namespaceURI,
       DOMString* localName)
   {
-    return false; //TODO
+    return (getAttributeNodeNS(namespaceURI, localName) != NULL);
   }
 
   

@@ -317,9 +317,14 @@ namespace DOM
         (_nodeType == ATTRIBUTE_NODE)
       )
     {
+      TextNode *pText = NULL;
       if(value) {
-        return new TextNode(value, this->getOwnerDocument(), this);
+        pText = new TextNode(value, this->getOwnerDocument(), this);
       }
+      if(_nodeType == ATTRIBUTE_NODE) {
+        setNodeValue(value);
+      }
+      return pText;
     }
     else {
       throw DOMException("TextNode is allowed only inside ATTRIBUTE_NODE or ELEMENT_NODE");

@@ -71,7 +71,7 @@ namespace DOM
     virtual NodeList* getElementsByTagName(DOMString* name);
 
         // Introduced in DOM Level 2:
-    virtual DOMString* getAttributeNS(DOMString* namespaceURI,
+    virtual const DOMString* getAttributeNS(DOMString* namespaceURI,
                                      DOMString* localName);
     virtual void setAttributeNS(DOMString* namespaceURI,
                                 DOMString* qualifiedName,

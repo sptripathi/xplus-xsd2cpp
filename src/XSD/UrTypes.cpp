@@ -30,10 +30,28 @@ using namespace std;
 
 namespace XMLSchema
 {
+
   template<> void ConstrainingFacet<vector<string> >::validateCFacetValueWrtParent(vector<string> val)
   { }
 
-  namespace Types {
+  namespace Types 
+  {
+  
+  DOMString   anyType::s_xsiStr                          = "xsi"; 
+  DOMString   anyType::s_xsiUri                          = "http://www.w3.org/2001/XMLSchema-instance";
+  DOMString   anyType::s_xsiTypeStr                      = "type"; 
+  DOMString   anyType::s_xsiNilStr                       = "nil";
+  DOMString   anyType::s_xsiSchemaLocationStr            = "schemaLocation";
+  DOMString   anyType::s_xsiNoNamespaceSchemaLocationStr = "noNamespaceSchemaLocation";
+
+
+  DOMStringPtr   anyType::s_xsiStrPtr                          = new DOMString(s_xsiStr); 
+  DOMStringPtr   anyType::s_xsiUriPtr                          = new DOMString(s_xsiUri);
+  DOMStringPtr   anyType::s_xsiTypeStrPtr                      = new DOMString(s_xsiTypeStr); 
+  DOMStringPtr   anyType::s_xsiNilStrPtr                       = new DOMString(s_xsiNilStr);
+  DOMStringPtr   anyType::s_xsiSchemaLocationStrPtr            = new DOMString(s_xsiSchemaLocationStr);
+  DOMStringPtr   anyType::s_xsiNoNamespaceSchemaLocationStrPtr = new DOMString(s_xsiNoNamespaceSchemaLocationStr);
+
     
     anyType::anyType(
         NodeP ownerNode,
@@ -53,10 +71,22 @@ namespace XMLSchema
       if(_ownerElem)
       {
         XsdFsmBasePtr fsmsAttrs[] = { 
-          new XsdFSM<void *>( NSNamePairOccur(new DOMString("http://www.w3.org/2001/XMLSchema-instance"), DOMString("type"), 0, 1), XsdFsmBase::ATTRIBUTE, NULL),
-          new XsdFSM<void *>( NSNamePairOccur(new DOMString("http://www.w3.org/2001/XMLSchema-instance"), DOMString("nil"), 0, 1), XsdFsmBase::ATTRIBUTE, NULL),
-          new XsdFSM<void *>( NSNamePairOccur(new DOMString("http://www.w3.org/2001/XMLSchema-instance"), DOMString("schemaLocation"), 0, 1), XsdFsmBase::ATTRIBUTE, NULL),
-          new XsdFSM<void *>( NSNamePairOccur(new DOMString("http://www.w3.org/2001/XMLSchema-instance"), DOMString("noNamespaceSchemaLocation"), 0, 1), XsdFsmBase::ATTRIBUTE, NULL),
+          new XsdFSM<DOM::Attribute *>( NSNamePairOccur(s_xsiUriPtr, *s_xsiTypeStrPtr, 0, 1),
+                                        XsdFsmBase::ATTRIBUTE, 
+                                        new object_noargs_mem_fun_t<DOM::Attribute*, anyType>(this, &anyType::createAttributeXsiType)),
+
+          new XsdFSM<DOM::Attribute *>( NSNamePairOccur(s_xsiUriPtr, *s_xsiNilStrPtr, 0, 1),
+                                        XsdFsmBase::ATTRIBUTE,
+                                        new object_noargs_mem_fun_t<DOM::Attribute*, anyType>(this, &anyType::createAttributeXsiNil)),
+
+          new XsdFSM<DOM::Attribute *>( NSNamePairOccur(s_xsiUriPtr, *s_xsiSchemaLocationStrPtr, 0, 1),
+                                        XsdFsmBase::ATTRIBUTE, 
+                                        new object_noargs_mem_fun_t<DOM::Attribute*, anyType>(this, &anyType::createAttributeXsiSchemaLocation)),
+
+          new XsdFSM<DOM::Attribute *>( NSNamePairOccur(s_xsiUriPtr, *s_xsiNoNamespaceSchemaLocationStrPtr, 0, 1),
+                                        XsdFsmBase::ATTRIBUTE, 
+                                        new object_noargs_mem_fun_t<DOM::Attribute*, anyType>(this, &anyType::createAttributeXsiNoNamespaceSchemaLocation)),
+
           NULL 
         };
         XsdFsmBasePtr fsmsContent[] = { NULL };
@@ -75,14 +105,21 @@ namespace XMLSchema
       }
     }
 
-    TElementP anyType::ownerElement() 
+    TElement* anyType::ownerElement() 
     {
       return dynamic_cast<TElement *>(_ownerElem);
     }
 
+    const TElement* anyType::ownerElement() const
+    {
+      return ownerElement();
+    }
+
+
     void anyType::checkFixed(DOMString value) 
     {
-      if(fixed() & (value != _value)) {
+      if(fixed() & (value != _value)) 
+      {
         ValidationException ex("Fixed value of the node can not be changed");
         ex.setContext("fixed-value", _value);
         ex.setContext("supplied-value", value);
@@ -117,13 +154,8 @@ namespace XMLSchema
         }
         else 
         {
-          //if(append) {
-          if(0) {
-            _valueNode->appendData(new DOMString(value));
-          }
-          else {
-            _valueNode->setNodeValue(new DOMString(value));
-          }
+          //_valueNode->appendData(new DOMString(value));
+          _valueNode->setNodeValue(new DOMString(value));
         }
       }
       return _valueNode;
@@ -147,7 +179,7 @@ namespace XMLSchema
         }
       }
       ostringstream err;
-      err << "Unexpected Element: " << formatNamespaceName(XsdFsmBase::ELEMENT_START, nsUri, *localName);
+      err << "Failed to create : " << formatNamespaceName(XsdFsmBase::ELEMENT_START, nsUri, *localName);
       throw XMLSchema::FSMException(DOMString(err.str()));
     }
 
@@ -156,6 +188,13 @@ namespace XMLSchema
     {
       if(!localName) {
         throw XPlus::NullPointerException("createAttributeNS: localName is NULL");
+      }
+      
+      if(!value || (value->length() == 0) )
+      {
+        ostringstream err;
+        err << "empty value for : " << formatNamespaceName(XsdFsmBase::ATTRIBUTE, nsUri, *localName);
+        throw XMLSchema::ValidationException(DOMString(err.str()));
       }
 
       if(_fsm && _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ATTRIBUTE))
@@ -172,13 +211,9 @@ namespace XMLSchema
         }
       }
 
-      // FIXME:
-      // disabling for now... later, open it up and allow xsi variables like type, schemaLocation etc.
-      /*
       ostringstream err;
-      err << "Unexpected : " << formatNamespaceName(XsdFsmBase::ATTRIBUTE, nsUri, *localName) ;
+      err << "Failed to create : " << formatNamespaceName(XsdFsmBase::ATTRIBUTE, nsUri, *localName) ;
       throw XMLSchema::FSMException(DOMString(err.str()));
-      */
     }
 
     TextNodeP anyType::createTextNode(DOMString* data)
@@ -212,6 +247,88 @@ namespace XMLSchema
       }
     }
 
+    DOM::Attribute* anyType::createDOMAttributeUnderCurrentElement( DOMString *attrName, 
+                                                                    DOMString *attrNsUri, 
+                                                                    DOMString *attrNsPrefix, 
+                                                                    DOMString *attrValue
+                                                                  )
+    {
+      return new DOM::Attribute( attrName, attrValue, attrNsUri, attrNsPrefix, ownerElement(), ownerDocument());
+    }
+
+    
+    DOM::Attribute* anyType::createAttributeXsiType()
+    {
+      Attribute* attr = createDOMAttributeUnderCurrentElement(s_xsiTypeStrPtr, s_xsiUriPtr, s_xsiStrPtr); 
+      _fsm->fsmCreatedNode(attr);
+      return attr;
+    }
+
+    DOM::Attribute* anyType::createAttributeXsiNil()
+    {
+      Attribute* attr = createDOMAttributeUnderCurrentElement(s_xsiNilStrPtr, s_xsiUriPtr, s_xsiStrPtr);
+      _fsm->fsmCreatedNode(attr);
+      return attr;
+    }
+
+    DOM::Attribute* anyType::createAttributeXsiSchemaLocation()
+    {
+      Attribute* attr = createDOMAttributeUnderCurrentElement(s_xsiSchemaLocationStrPtr, s_xsiUriPtr, s_xsiStrPtr);
+      _fsm->fsmCreatedNode(attr);
+      return attr;
+    }
+
+    DOM::Attribute* anyType::createAttributeXsiNoNamespaceSchemaLocation()
+    {
+      Attribute* attr = createDOMAttributeUnderCurrentElement(s_xsiNoNamespaceSchemaLocationStrPtr, s_xsiUriPtr, s_xsiStrPtr);
+      _fsm->fsmCreatedNode(attr);
+      return attr;
+    }
+
+    // in following xsi attrs fns, return value of these attrs
+    const DOMString* anyType::xsiTypeValue()
+    {
+      if(ownerElement()) {
+        return ownerElement()->getAttributeNS(s_xsiUriPtr, s_xsiTypeStrPtr);
+      }
+      return NULL;
+    }
+
+    bool anyType::isXsiNil()
+    {
+      const DOMString* pNilStr = NULL;
+      if(ownerElement()) {
+        pNilStr = ownerElement()->getAttributeNS(s_xsiUriPtr, s_xsiNilStrPtr);
+      }
+      if(!pNilStr || (*pNilStr == "false") ) {
+        return false;
+      }
+      else if(*pNilStr == "true") {
+        return true; 
+      }
+      else {
+        ostringstream err;
+        err << "Valid values for attribute {} nil are : true|false. "
+          << " Got " << *pNilStr << endl;
+        throw XMLSchema::ValidationException(DOMString(err.str()));
+      }
+    }
+
+    const DOMString* anyType::xsiSchemaLocationValue()
+    {
+      if(ownerElement()) {
+        return ownerElement()->getAttributeNS(s_xsiUriPtr, s_xsiSchemaLocationStrPtr);
+      }
+      return NULL;
+    }
+
+    const DOMString* anyType::xsiNoNamespaceSchemaLocationValue()
+    {
+      if(ownerElement()) {
+        return ownerElement()->getAttributeNS(s_xsiUriPtr, s_xsiNoNamespaceSchemaLocationStrPtr);
+      }
+      return NULL;
+    }
 
 
     //                                                 //
@@ -274,7 +391,7 @@ namespace XMLSchema
       anyType::endElementNS(nsUri, nsPrefix, localName);
       if(!_valueNode && (_primitiveType != PD_STRING)) {
         ostringstream err;
-        err << "empty-value for element: " << formatNamespaceName(XsdFsmBase::ELEMENT_START, nsUri, *localName);
+        err << "empty value for : " << formatNamespaceName(XsdFsmBase::ELEMENT_START, nsUri, *localName);
         throw XMLSchema::ValidationException(DOMString(err.str()));
       }
     }
