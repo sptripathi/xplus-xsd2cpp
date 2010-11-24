@@ -23,17 +23,18 @@
 
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 targetNamespace="http://www.w3.org/2001/XMLSchema"
 >
 
-<xsl:output method="text"/>
+<xsl:output method="xml"/>
 
+<xsl:include href="test.xsl"/>
 <xsl:include href="xsd2cppST.xsl"/>
 <xsl:include href="complexTypeC.xsl"/>
 <xsl:include href="complexTypeH.xsl"/>
 <xsl:include href="xsdIncludes.xsl"/>
 <xsl:include href="constraints.xsl"/>
+
 
 <xsl:template match="/">
 
@@ -208,7 +209,8 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
         <xsl:with-param name="documentName" select="@schemaLocation"/>
       </xsl:call-template>
     </xsl:variable>
-    <xsl:if test="$myTargetNsUri!=$targetNsUriIncludedDoc">
+    <!-- FIXME -->
+    <xsl:if test="$myTargetNsUri!=$targetNsUriIncludedDoc and $targetNsUriIncludedDoc!=''">
       <xsl:call-template name="T_terminate_with_msg">
         <xsl:with-param name="msg">
   Invalid include. A document can not include "another document with different target-namespace" than that of itself. 
@@ -217,6 +219,8 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
         </xsl:with-param>
       </xsl:call-template>
     </xsl:if>  
+
+    <!-- FIXME -->
     <xsl:if test="@namespace">
       <xsl:call-template name="T_terminate_with_msg">
         <xsl:with-param name="msg">
@@ -542,6 +546,7 @@ XML Representation Summary: element Element Information Item
       <xsl:when test="@type or @ref">
         <xsl:variable name="typeLocalPart"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="@type"/></xsl:call-template></xsl:variable>
         <xsl:variable name="typeNsUri"><xsl:call-template name="T_get_nsUri_for_QName"><xsl:with-param name="qName" select="@type"/></xsl:call-template></xsl:variable>
+
         <xsl:variable name="resolvedType">
           <xsl:call-template name="T_resolve_typeLocalPartNsUri">
             <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
@@ -645,27 +650,33 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
   <xsl:variable name="elemName" select="@name"/>
   <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
 
-  <xsl:variable name="resolution">
+
+  <xsl:variable name="baseResolution">
     <xsl:call-template name="T_resolve_typeQName">
       <xsl:with-param name="typeQName" select="*[local-name()='complexType']/*[local-name()='simpleContent']/*[local-name()='extension']/@base"/>
     </xsl:call-template>
   </xsl:variable>
-    
-  <xsl:variable name="isComplexTypeWithSimpleTypeContent">
-    <xsl:call-template name="T_is_resolution_complexType_with_simpleTypeContent">
-      <xsl:with-param name="resolution" select="$resolution"/>
+   
+  <xsl:variable name="xmlBaseTypeDefinition">
+    <xsl:call-template name="T_get_resolution_typeDefinition_contents">
+      <xsl:with-param name="resolution" select="$baseResolution"/>
     </xsl:call-template>
   </xsl:variable>
-  <xsl:variable name="isSimpleType">
-    <xsl:call-template name="T_is_resolution_simpleType">
-      <xsl:with-param name="resolution" select="$resolution" />
+  <xsl:variable name="isComplexType">
+    <xsl:call-template name="T_is_resolution_complexType">
+      <xsl:with-param name="resolution" select="$baseResolution" />
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="contentTypeVariety">
+    <xsl:call-template name="T_get_contentType_variety_from_resolution">
+      <xsl:with-param name="resolution" select="$xmlBaseTypeDefinition"/>
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:if test="$isSimpleType!='true' and $isComplexTypeWithSimpleTypeContent!='true'">
+  <xsl:if test="$isComplexType='true' and $contentTypeVariety!='simple'">
     <xsl:message terminate="yes">
      Error: A "Complex-Type-Definition" with simple content Schema Component, having derivation method as "extension" should have base attribute resolving to either i) a Simple-Type-Definition or ii) a Complex-Type-Definition with content-type as Simple-Type-Definition.
-     Violated in the context of schema component: <xsl:value-of select="$elemName"/>
+     Violated in the context of schema component: <xsl:value-of select="$schemaComponentName"/>
     </xsl:message>
   </xsl:if>
 
@@ -723,11 +734,6 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
     </xsl:call-template>
   </xsl:variable>
     
-  <xsl:variable name="isComplexTypeWithSimpleTypeContent">
-    <xsl:call-template name="T_is_resolution_complexType_with_simpleTypeContent">
-      <xsl:with-param name="resolution" select="$resolution"/>
-    </xsl:call-template>
-  </xsl:variable>
   <xsl:variable name="isSimpleType">
     <xsl:call-template name="T_is_resolution_simpleType">
       <xsl:with-param name="resolution" select="$resolution" />

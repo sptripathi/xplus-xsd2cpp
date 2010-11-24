@@ -27,8 +27,6 @@ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 targetNamespace="http://www.w3.org/2001/XMLSchema"
 >
 
-<xsl:output method="text"/>
-
 <xsl:include href="xsd2cppST.xsl"/>
 
 <xsl:template match="/">

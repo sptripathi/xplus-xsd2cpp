@@ -23,15 +23,9 @@
 
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 targetNamespace="http://www.w3.org/2001/XMLSchema"
 >
 
-<xsl:output method="text"/>
-
-<!--
-<xsl:include href="xsdUtils.xsl"/>
--->
 
 <xsl:template name="ITERATE_SCHEMA_INCLUDES">
   <xsl:param name="mode" select="''"/>

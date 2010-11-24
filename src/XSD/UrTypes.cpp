@@ -1139,6 +1139,7 @@ namespace XMLSchema
         throw LogicalError(err.str());
       }
 
+      //FIXME: such an error should be thrown in stringValue fn also
       if(!mixedContent() && !text.matchCharSet(UTF8FNS::isSpaceChar)) {
         ostringstream err;
         err << "Character content other than whitespace is not allowed"

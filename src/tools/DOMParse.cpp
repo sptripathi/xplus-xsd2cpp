@@ -48,6 +48,7 @@ void parse(string inFile, ostream& os)
   is.open(inFile.c_str(), ios::binary);
   Document docNode;
   is >> docNode; 
+  docNode.prettyPrint(true);
 
   /* write back DOM to output stream  */
   os << docNode;

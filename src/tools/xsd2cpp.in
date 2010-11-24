@@ -51,6 +51,7 @@ GEN_XSD_SOURCES=""
 GEN_XSD_INCLUDES=""
 NSALIASES_FILE="none"
 XPLUS_META_DIR=""
+XPLUS_SCHEMAINFO_DIR=""
 
 
 get_abs_path()
@@ -87,6 +88,7 @@ init()
   XSD2CPP_XSL_PATH=$ABSPATH
 
   XPLUS_META_DIR=$CWD/.xplusmeta
+  XPLUS_SCHEMAINFO_DIR=$CWD/.xplus.schemaInfo
 }
 
 cleanup_meta()
@@ -100,7 +102,7 @@ gen_source_files()
   PID=$$
   if [ "$OUTDIR" = "." ] || [  "$OUTDIR" = ".." ]; then
     
-    BACKUP_DIR=$OUTDIR/xplus.bak.$PID
+    BACKUP_DIR=$OUTDIR/xplus.bak/$PID
 
     if [ -e "$OUTDIR/src" ]; then
       echo "* the directory $OUTDIR/src already exists, backing up in $BACKUP_DIR"
@@ -114,7 +116,7 @@ gen_source_files()
     fi
 
   else
-    BACKUP_DIR=xplus.bak.$PID
+    BACKUP_DIR=xplus.bak/$PID
     if [ -e "$OUTDIR" ]; then
       echo "* the directory $OUTDIR already exists, backing up in $BACKUP_DIR"
       $MKDIR -p $BACKUP_DIR
@@ -136,11 +138,12 @@ gen_source_files()
   fi
 
   $MKDIR -p $XPLUS_META_DIR
+  $MKDIR -p $XPLUS_SCHEMAINFO_DIR
   XSLTPROC_OPTIONS="--stringparam input_doc $ABSXSD --stringparam CWD $CWD --stringparam w3cXmlSchema false --stringparam NSALIASES_FILE $NSALIASES_FILE "
   $XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD > $XPLUS_META_DIR/log 2>&1
   ret=$?
 
-  $CAT $XPLUS_META_DIR/log | $GREP -v xplusmeta
+  $CAT $XPLUS_META_DIR/log | $GREP -v xplusmeta | $GREP -v xplus.schemaInfo
   
   if [ $ret -ne 0 ]; then
     cleanup_meta
@@ -204,6 +207,8 @@ gen_automake_files()
 
 run()
 {
+  # FIXME remove schemaInfo after run too if not set debug 
+  $RM -rf $XPLUS_SCHEMAINFO_DIR
   cleanup_meta
   gen_source_files
   gen_automake_files

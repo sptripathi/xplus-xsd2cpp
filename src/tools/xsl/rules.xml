@@ -48,5 +48,50 @@
   </ruleGroup>
 
 
+
+  <ruleGroup id="XSD1.1.ComplexTypeDefinition.XMLRepresentationOK">
+
+    <title> Schema Representation Constraint: Complex Type Definition Representation OK </title>
+    
+    <!--
+      In addition to the conditions imposed on <complexType> element information items by the schema for schema documents, all of the following also apply:
+    -->
+    
+    <rule id="XSD1.1.ComplexTypeDefinition.XMLRepresentationOK.1">
+  If the &lt;simpleContent&gt; alternative is chosen, the &lt;complexType&gt; element must not have mixed = true.
+   </rule>
+   <rule id="XSD1.1.ComplexTypeDefinition.XMLRepresentationOK.2">
+  If &lt;openContent&gt; is present and has mode ≠ 'none', then there must be an &lt;any&gt; among the [children] of &lt;openContent&gt;
+   </rule>
+   <rule id="XSD1.1.ComplexTypeDefinition.XMLRepresentationOK.3">
+  If &lt;openContent&gt; is present and has mode = 'none', then there must not be an &lt;any&gt; among the [children] of &lt;openContent&gt;
+   </rule>
+   <rule id="XSD1.1.ComplexTypeDefinition.XMLRepresentationOK.4">
+  If the &lt;complexContent&gt; alternative is chosen and the mixed [attribute] is present on both &lt;complexType&gt; and &lt;complexContent&gt; then ·actual values· of those [attributes] must be the same.
+    </rule>
+
+  </ruleGroup>
+
+
+<!--
+Schema Representation Constraint: Attribute Declaration Representation OK
+In addition to the conditions imposed on <attribute> element information items by the schema for schema documents, all of the following also apply:
+1 default and fixed must not both be present.
+2 If default and use are both present, use must have the ·actual value· optional.
+3 If the item's parent is not <schema>, then all of the following must be true:
+3.1 One of ref or name is present, but not both.
+3.2 If ref is present, then all of <simpleType>, form and type are absent.
+4 The type attribute and a <simpleType> child element must not both be present.
+5 If fixed and use are both present, use must not have the ·actual value· prohibited.
+6 If the targetNamespace attribute is present then all of the following must be true:
+6.1 The name attribute is present.
+6.2 The form attribute is absent.
+6.3 If the ancestor <schema> does not have a targetNamespace [attribute] or its ·actual value· is different from the ·actual value· of targetNamespace of <attribute>, then all of the following are true:
+6.3.1 <attribute> has <complexType> as an ancestor
+6.3.2 There is a <restriction> ancestor between the <attribute> and the nearest <complexType> ancestor, and the ·actual value· of the base [attribute] of <restriction> does not ·match· the name of ·xs:anyType·.
+
+
+-->
+
 </root>
 

@@ -23,12 +23,8 @@
 
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 targetNamespace="http://www.w3.org/2001/XMLSchema"
 >
-
-<xsl:output method="text"/>
-
 
 <xsl:template name="T_rule_violated">
   <xsl:param name="ruleId"/>
@@ -91,11 +87,6 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
         <xsl:with-param name="typeQName" select="$baseQName"/>
       </xsl:call-template>
     </xsl:variable>
-    <xsl:variable name="baseResolutionFoundInDoc">
-      <xsl:call-template name="T_get_resolution_foundInDoc">
-        <xsl:with-param name="resolution" select="$baseResolution"/>
-      </xsl:call-template>  
-    </xsl:variable>
     <xsl:variable name="isSimpleTypeBase">
       <xsl:call-template name="T_is_resolution_simpleType">
         <xsl:with-param name="resolution" select="$baseResolution"/>  
@@ -104,7 +95,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 
     <xsl:if test="$isSimpleTypeBase='true' and $derivationMethod != 'extension'">
       <xsl:message>
-      <xsl:value-of select="$baseResolution"/>
+      <xsl:value-of select="$derivationMethod"/>
       </xsl:message>
       <xsl:call-template name="T_rule_violated">
         <xsl:with-param name="ruleId" select="'ComplexTypeDefinition.PropertiesCorrect.2'"/>
@@ -115,6 +106,62 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 
 </xsl:template>
 
+<!--
+                            XSD1.0
+                         ============   
+
+Schema Representation Constraint: Complex Type Definition Representation OK
+In addition to the conditions imposed on <complexType> element information items by the schema for schemas, all of the following must be true:
+1 If the <complexContent> alternative is chosen, the type definition ·resolved· to by the ·actual value· of the base [attribute] must be a complex type definition;
+2 If the <simpleContent> alternative is chosen, all of the following must be true:
+2.1 The type definition ·resolved· to by the ·actual value· of the base [attribute] must be one of the following:
+2.1.1 a complex type definition whose {content type} is a simple type definition;
+2.1.2 only if the <restriction> alternative is also chosen, a complex type definition whose {content type} is mixed and a particle which is ·emptiable·, as defined in Particle Emptiable (§3.9.6);
+2.1.3 only if the <extension> alternative is also chosen, a simple type definition.
+2.2 If clause 2.1.2 above is satisfied, then there must be a <simpleType> among the [children] of <restriction>.
+Note: Although not explicitly ruled out either here or in Schema for Schemas (normative) (§A), specifying <xs:complexType . . .mixed='true' when the <simpleContent> alternative is chosen has no effect on the corresponding component, and should be avoided. This may be ruled out in a subsequent version of this specification.
+3 The corresponding complex type definition component must satisfy the conditions set out in Constraints on Complex Type Definition Schema Components (§3.4.6);
+4 If clause 2.2.1 or clause 2.2.2 in the correspondence specification above for {attribute wildcard} is satisfied, the intensional intersection must be expressible, as defined in Attribute Wildcard Intersection (§3.10.6).
+
+  
+
+                                  XSD 1.1
+                                ===========
+
+Schema Representation Constraint: Complex Type Definition Representation OK
+In addition to the conditions imposed on <complexType> element information items by the schema for schema documents, all of the following also apply:
+1 If the <simpleContent> alternative is chosen, the <complexType> element must not have mixed = true.
+2 If <openContent> is present and has mode ≠ 'none', then there must be an <any> among the [children] of <openContent>.
+3 If <openContent> is present and has mode = 'none', then there must not be an <any> among the [children] of <openContent>.
+4 If the <complexContent> alternative is chosen and the mixed [attribute] is present on both <complexType> and <complexContent>, then ·actual values· of those [attributes] must be the same.
+
+
+Impl: choosing XSD1.1 here as it is terse
+
+-->
+
+<xsl:template name="T_ComplexTypeDefinition_XMLRepresentation_OK">
+  <xsl:param name="ctNode" select="."/>
+  <xsl:variable name="complexContentNode" select="$ctNode/*[local-name()='complexContent']"/>
+
+  <!-- XSD1.1.ComplexTypeDefinition.XMLRepresentationOK.1 -->
+  <xsl:if test="$ctNode/*[local-name()='simpleContent'] and $ctNode/@mixed='true'">
+    <xsl:call-template name="T_rule_violated">
+      <xsl:with-param name="ruleId" select="'XSD1.1.ComplexTypeDefinition.XMLRepresentationOK.1'"/>
+    </xsl:call-template>
+  </xsl:if>
+
+  <!-- TODO:XSD1.1.ComplexTypeDefinition.XMLRepresentationOK.2 -->
+
+  <!-- TODO: XSD1.1.ComplexTypeDefinition.XMLRepresentationOK.3 -->
+
+  <!-- XSD1.1.ComplexTypeDefinition.XMLRepresentationOK.4 -->
+  <xsl:if test="$ctNode/@mixed and $complexContentNode/@mixed and $ctNode/@mixed != @complexContentNode/@mixed">
+    <xsl:call-template name="T_rule_violated">
+      <xsl:with-param name="ruleId" select="'XSD1.1.ComplexTypeDefinition.XMLRepresentationOK.4'"/>
+    </xsl:call-template>
+  </xsl:if>
+</xsl:template>
 
 
 </xsl:stylesheet>

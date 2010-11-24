@@ -23,11 +23,8 @@
 
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 targetNamespace="http://www.w3.org/2001/XMLSchema"
 >
-
-<xsl:output method="text"/>
 
 
 <xsl:template name="DEFINE_LEVEL1_COMPLEXTYPE_H">
@@ -276,24 +273,25 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$baseCppT
 <xsl:template name="DEFINE_LEVEL1_COMPLEXTYPE_WITH_SIMPLECONTENT_EXTENSION_H">
   <xsl:param name="schemaComponentName" select="@name"/>
 
-  <xsl:variable name="resolution">
+  <xsl:variable name="baseResolution">
     <xsl:call-template name="T_resolve_typeQName">
       <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='extension']/@base"/>
     </xsl:call-template>
   </xsl:variable>
-    
-  <xsl:variable name="isComplexTypeWithSimpleTypeContent">
-    <xsl:call-template name="T_is_resolution_complexType_with_simpleTypeContent">
-      <xsl:with-param name="resolution" select="$resolution"/>
+   
+  <xsl:variable name="isComplexType">
+    <xsl:call-template name="T_is_resolution_complexType">
+      <xsl:with-param name="resolution" select="$baseResolution" />
     </xsl:call-template>
   </xsl:variable>
-  <xsl:variable name="isSimpleType">
-    <xsl:call-template name="T_is_resolution_simpleType">
-      <xsl:with-param name="resolution" select="$resolution" />
+  <xsl:variable name="contentTypeVariety">
+    <xsl:call-template name="T_get_contentType_variety_from_resolution">
+      <xsl:with-param name="resolution" select="$baseResolution"/>
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:if test="$isSimpleType!='true' and $isComplexTypeWithSimpleTypeContent!='true'">
+
+  <xsl:if test="$isComplexType='true' and $contentTypeVariety!='simple'">
     <xsl:message terminate="yes">
      Error: A "Complex-Type-Definition" with simple content Schema Component, having derivation method as "extension" should have base attribute resolving to either i) a Simple-Type-Definition or ii) a Complex-Type-Definition with content-type as Simple-Type-Definition.
      Violated in the context of schema component: <xsl:value-of select="$schemaComponentName"/>
@@ -333,9 +331,6 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDer
 <xsl:template name="DEFINE_LEVEL1_COMPLEXTYPE_WITH_COMPLEXCONTENT_H">
   <xsl:param name="schemaComponentName" select="@name"/>
 
-  <xsl:call-template name="T_SchemaComponentConstraint_ComplexTypeDefinition_Properties_Correct">
-    <xsl:with-param name="ctNode" select="."/>
-  </xsl:call-template>
 
   <xsl:variable name="baseCppType">
     <xsl:call-template name="T_get_cppType_complexType_base"/>
@@ -427,6 +422,18 @@ XML Representation Summary: complexType Element Information Item
 -->
 <xsl:template name="DEFINE_BODY_COMPLEXTYPE_H">
   <xsl:param name="schemaComponentName" select="''"/>
+  
+  <!--
+    CHECKS: putting the constraints checks here as this template is called from all flows of complexType
+  -->
+  <xsl:call-template name="T_SchemaComponentConstraint_ComplexTypeDefinition_Properties_Correct">
+    <xsl:with-param name="ctNode" select="."/>
+  </xsl:call-template>
+  
+  <xsl:call-template name="T_ComplexTypeDefinition_XMLRepresentation_OK">
+    <xsl:with-param name="ctNode" select="."/>
+  </xsl:call-template>
+
 
   <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
     <xsl:with-param name="mode" select="'typedefinition'"/>
@@ -646,7 +653,7 @@ public:
         </xsl:call-template>
       </xsl:variable>
       <xsl:variable name="isEmptyComplexType">
-        <xsl:call-template name="T_is_resolution_empty_complexType">
+        <xsl:call-template name="T_is_resolution_a_complexTypeDefn_of_empty_variety">
           <xsl:with-param name="resolution" select="$resolution"/>  
         </xsl:call-template>
       </xsl:variable>
@@ -657,6 +664,7 @@ public:
         </xsl:call-template>
       </xsl:variable>
       
+    
     <xsl:choose>
       <xsl:when test="$maxOccurGT1Child='true'">
 
@@ -685,6 +693,7 @@ public:
     ///  @param idx index of the element 
     ///  @return the value(as DOMString) of the element 
     MEMBER_FN DOMString get_<xsl:value-of select="$cppNameFunction"/>_string(unsigned int idx);
+
 
           <xsl:if test="$atomicSimpleTypeImpl!='' and $atomicSimpleTypeImpl!='DOM::DOMString'">
 
@@ -1143,7 +1152,7 @@ public:
     </xsl:call-template>
   </xsl:variable>
   <xsl:variable name="isEmptyComplexType">
-    <xsl:call-template name="T_is_resolution_empty_complexType">
+    <xsl:call-template name="T_is_resolution_a_complexTypeDefn_of_empty_variety">
       <xsl:with-param name="resolution" select="$resolution"/>  
     </xsl:call-template>
   </xsl:variable>

@@ -52,7 +52,6 @@ namespace XMLSchema
   namespace Types 
   {
 
-
     //                                                          //
     //                     anyType                              //
     //                                                          //
@@ -60,6 +59,13 @@ namespace XMLSchema
     class anyType   : public virtual XPlus::XPlusObject 
     {
       public:
+
+        enum eContentTypeVariety {
+          CONTENT_TYPE_VARIETY_EMPTY,
+          CONTENT_TYPE_VARIETY_SIMPLE,
+          CONTENT_TYPE_VARIETY_ELEMENT_ONLY,
+          CONTENT_TYPE_VARIETY_MIXED
+        };
 
         enum eAnyTypeUseCase {
           ANY_TYPE,
@@ -105,6 +111,13 @@ namespace XMLSchema
         virtual void fixed(bool b) {
           // TODO: verify that fixed can not be set for non-simpletype
           _fixed = b;
+        }
+
+        inline void contentTypeVariety(eContentTypeVariety variety) {
+          _contentTypeVariety = variety;
+        }
+        inline eContentTypeVariety contentTypeVariety() const {
+          return variety;
         }
 
         //FIXME
@@ -166,7 +179,8 @@ namespace XMLSchema
         //                 MEMBER VARIABLES 
         //
 
-        eAnyTypeUseCase _anyTypeUseCase;
+        eAnyTypeUseCase         _anyTypeUseCase;
+        eContentTypeVariety     _contentTypeVariety;
         
         // in case of anyType and derivatives ownerElement() is same
         // Node as ownerNode(). However in case of element ownerElement()

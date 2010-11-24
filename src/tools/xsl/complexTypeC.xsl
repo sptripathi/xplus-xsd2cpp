@@ -23,14 +23,8 @@
 
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 targetNamespace="http://www.w3.org/2001/XMLSchema"
 >
-
-<xsl:output method="text"/>
-
-
-
 
 
 <!--
@@ -906,11 +900,6 @@ namespace Types
       <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='extension' or local-name()='restriction']/@base"/>
     </xsl:call-template>
   </xsl:variable>
-  <xsl:variable name="isComplexTypeWithSimpleTypeContent">
-    <xsl:call-template name="T_is_resolution_complexType_with_simpleTypeContent">
-      <xsl:with-param name="resolution" select="$resolution"/>
-    </xsl:call-template>
-  </xsl:variable>
   <xsl:variable name="isSimpleType">
     <xsl:call-template name="T_is_resolution_simpleType">
       <xsl:with-param name="resolution" select="$resolution" />
@@ -991,39 +980,7 @@ namespace Types
     _fsmAttrs = _fsm->attributeFsm();
     _fsmElems = _fsm->contentFsm();
 
-    /*
-    <xsl:choose>
-      <xsl:when test="$isSimpleType='true'">
-    _fsmAttrs = new XsdAllFsmOfFSMs(fsmsAttrs);
-
-    XsdFsmBasePtr fsmsElems[] = { NULL };
-    _fsmElems = new XsdSequenceFsmOfFSMs(fsmsElems); 
-
-    XsdFsmBasePtr elemEndFsm = new XsdFSM&lt;void *&gt;(NSNamePairOccur(ownerElement()->getNamespaceURI(), *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
-
-    XsdFsmBasePtr fsms[] = { _fsmAttrs, _fsmElems, elemEndFsm, NULL };
-    _fsm = new XsdSequenceFsmOfFSMs(fsms);
-      </xsl:when>
-      <xsl:when test="$isComplexTypeWithSimpleTypeContent='true'">
-    XsdSequenceFsmOfFSMs* pFsmSeq = dynamic_cast&lt;XsdSequenceFsmOfFSMs*&gt;(_fsm.get());
-    if(pFsmSeq)
-    {
-      XsdFsmBase* pAttrFsm = pFsmSeq->fsmAt(0);
-      XsdFsmOfFSMs* attrFsm = dynamic_cast&lt;XsdFsmOfFSMs*&gt;(pFsmSeq->fsmAt(0));
-      if(attrFsm) {
-        attrFsm->appendFsms(fsmsAttrs);
-      }
-      else {
-        throw XMLSchema::FSMException("The attribute FSM or parent component, is NULL"); 
-      }
-    }
-    else {
-      throw XMLSchema::FSMException("The sequence FSM of parent component, is NULL"); 
-    }
-      </xsl:when>
-    </xsl:choose>
-    */
-  }
+   }
 
   /* element functions  */
   <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
@@ -1049,15 +1006,11 @@ namespace Types
     <xsl:variable name="baseQName">
       <xsl:call-template name="T_get_complexType_base"/>
     </xsl:variable>
+
     <xsl:variable name="baseResolution">
       <xsl:call-template name="T_resolve_typeQName">
         <xsl:with-param name="typeQName" select="$baseQName"/>
       </xsl:call-template>
-    </xsl:variable>
-    <xsl:variable name="baseResolutionFoundInDoc">
-      <xsl:call-template name="T_get_resolution_foundInDoc">
-        <xsl:with-param name="resolution" select="$baseResolution"/>
-      </xsl:call-template>  
     </xsl:variable>
     <xsl:variable name="isBaseAnyType"><xsl:call-template name="T_is_schema_anyType"><xsl:with-param name="typeStr" select="$baseQName"/></xsl:call-template></xsl:variable>
     <!--
@@ -1362,7 +1315,7 @@ namespace Types
           </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="isEmptyComplexType">
-          <xsl:call-template name="T_is_resolution_empty_complexType">
+          <xsl:call-template name="T_is_resolution_a_complexTypeDefn_of_empty_variety">
             <xsl:with-param name="resolution" select="$resolution"/>  
           </xsl:call-template>
         </xsl:variable>        
@@ -1652,7 +1605,7 @@ namespace Types
     </xsl:call-template>
   </xsl:variable>
   <xsl:variable name="isEmptyComplexType">
-    <xsl:call-template name="T_is_resolution_empty_complexType">
+    <xsl:call-template name="T_is_resolution_a_complexTypeDefn_of_empty_variety">
       <xsl:with-param name="resolution" select="$resolution"/>  
     </xsl:call-template>
   </xsl:variable>
