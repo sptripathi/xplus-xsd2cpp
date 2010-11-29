@@ -55,12 +55,9 @@ XPLUS_NEGTESTS_DIRS="
                   Tests/xplus_neg_tests/ccExt2
                     "
 
-EX_DIRS=
-W3C_TESTS_DIRS=
-XPLUS_TESTS_DIRS="
-                  Tests/xplus_tests/scExt2
-                  Tests/xplus_tests/scExt4
-                  "
+#EX_DIRS=
+#W3C_TESTS_DIRS=
+#XPLUS_TESTS_DIRS=
 
 
 print_usage()
