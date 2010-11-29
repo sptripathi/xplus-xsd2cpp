@@ -220,12 +220,6 @@ class XsdFSM : public XsdFsmBase
       return this;
     }
 
-    /*
-    virtual bool processEvent(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType); 
-    virtual bool processEventThrow(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType); 
-    virtual bool isInFinalState();
-    virtual list<DOMString> suggestNextEvents(); 
-    */
     void print() const 
     {
       cout << "     { //UnitFSM(" << _fsmType <<  ") " << endl;

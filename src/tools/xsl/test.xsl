@@ -24,7 +24,7 @@ extension-element-prefixes="exsl"
   <xsl:param name="xmlVar"/>
   <xsl:param name="filePath"/>
   
-  <xsl:document method="xml" href="{$filePath}">
+  <xsl:document method="xml" href="{$filePath}" indent="yes">
     <xsl:copy-of select="$xmlVar"/>
   </xsl:document>
 </xsl:template>

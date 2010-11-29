@@ -662,6 +662,8 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
       <xsl:with-param name="resolution" select="$baseResolution"/>
     </xsl:call-template>
   </xsl:variable>
+
+  <!--
   <xsl:variable name="isComplexType">
     <xsl:call-template name="T_is_resolution_complexType">
       <xsl:with-param name="resolution" select="$baseResolution" />
@@ -679,6 +681,7 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
      Violated in the context of schema component: <xsl:value-of select="$schemaComponentName"/>
     </xsl:message>
   </xsl:if>
+  -->
 
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
 
@@ -779,11 +782,13 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
            TODO: {content type} is mixed and a particle which is ·emptiable·
         -->
         <xsl:when test="$isComplexType='true'">
+          <!--
           <xsl:if test="not(*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType'])">
             <xsl:message terminate="yes">
              Error: A "Complex-Type-Definition" with simple content Schema Component, having derivation method as "restriction", whose base attribute resolves to a complex-type-definition, must have a &lt;simpleType&gt; present among the [children] of &lt;restriction&gt;
             </xsl:message>
           </xsl:if>
+          -->
           <xsl:for-each select="*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType']">
             <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="concat('_', $elemName)"/></xsl:call-template>
           </xsl:for-each>
@@ -1039,45 +1044,33 @@ using namespace XPlus;
   <xsl:variable name="filename" select="'main.cpp.template'" />
   <xsl:variable name="cntTLE"><xsl:call-template name="T_count_top_level_elements_doc_and_includes"/></xsl:variable>
   <xsl:document method="text" href="{$filename}">
-<xsl:value-of select="$outHeader"/>  
+<xsl:value-of select="$outHeaderCanEdit"/>  
 #include &lt;iostream&gt;
 #include &lt;string&gt;
 
 #include "XSD/UserOps.h"
 #include "<xsl:value-of select="$cppTargetNSDirChain"/>/all-include.h"
 
+void populateDocument(<xsl:value-of select="$cppTargetNSDeref"/>::Document* xsdDoc);
+void updateOrConsumeDocument(<xsl:value-of select="$cppTargetNSDeref"/>::Document* xsdDoc);
   <xsl:if test="$cntTLE > 1">
 void chooseDocumentElement(<xsl:value-of select="$cppTargetNSDeref"/>::Document* xsdDoc);
   </xsl:if>  
 
-int main (int argc, char**argv)
+int main (int argc, char** argv)
 {
-  XSD_USER_OPS::xsd_main(argc, argv);
-}
+  XSD::UserOps&lt;<xsl:value-of select="$cppTargetNSDeref"/>::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  <xsl:if test="$cntTLE > 1">cbStruct.cbChooseDocumentElement      =  chooseDocumentElement;</xsl:if>
 
-DOM::Document* createXsdDocument(bool buildTree)
-{
-  <xsl:value-of select="$cppTargetNSDeref"/>::Document* xsdDoc = new <xsl:value-of select="$cppTargetNSDeref"/>::Document(buildTree);
-  <xsl:if test="$cntTLE > 1">
-  chooseDocumentElement(xsdDoc);
-  </xsl:if>  
-  return xsdDoc;
-}
-
-DOM::Document* createXsdDocument(string inFilePath)
-{
-  XPlusFileInputStream is;
-  is.open(inFilePath.c_str(), ios::binary);
-
-  <xsl:value-of select="$cppTargetNSDeref"/>::Document* xsdDoc = new <xsl:value-of select="$cppTargetNSDeref"/>::Document(false);
-
-  is >> *xsdDoc; 
-  return xsdDoc;
+  XSD::UserOps&lt;<xsl:value-of select="$cppTargetNSDeref"/>::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
 }
 
 //
-// Following functions are templates.
-// You need to put code in the context
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
 //
 
   <xsl:if test="$cntTLE > 1">
@@ -1097,17 +1090,17 @@ void chooseDocumentElement(<xsl:value-of select="$cppTargetNSDeref"/>::Document*
   </xsl:if>  
 
 // template function to populate the Tree with values
-void populateDocument(DOM::Document* pDoc)
+// write code to populate the Document here ...
+void populateDocument(<xsl:value-of select="$cppTargetNSDeref"/>::Document* xsdDoc)
 {
-  <xsl:value-of select="$cppTargetNSDeref"/>::Document* xsdDoc = dynamic_cast&lt;<xsl:value-of select="$cppTargetNSDeref"/>::Document *&gt;(pDoc);
-  // write code to populate the Document here
 
 }
 
-void updateOrConsumeDocument(DOM::Document* pDoc)
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(<xsl:value-of select="$cppTargetNSDeref"/>::Document* xsdDoc)
 {
-  <xsl:value-of select="$cppTargetNSDeref"/>::Document* xsdDoc = dynamic_cast&lt;<xsl:value-of select="$cppTargetNSDeref"/>::Document *&gt;(pDoc);
-  // write code to operate on the populated-Document here
 
 }
 

@@ -37,7 +37,11 @@
         <li><a>xsltproc</a>
       </ul>  
 
-      Please read the OS specific subsections to find how to install the prerequisites.
+      Please read the OS specific subsections to find how to install the prerequisites.<br><br>
+      <strong>Note:</strong> suggested package names, may sometimes not be correct/exact, please find the exact package name, based on your OS.<br>
+      For example a following search on Fedora, lists various available packages matching this pattern.<br>
+      <code>$ yum search expat</code>
+      </ol>
       </p>
 
       <br>
@@ -45,26 +49,28 @@
       <hr NOSHADE SIZE=3 WIDTH=100%>
 
       <ol>
-        <li> If not already installed, install automake, autoconf, libtool
-        <br>
+        <li> If not already installed, install automake, autoconf, libtool <br>
         <code>$ sudo apt-get install automake autoconf libtool</code>
         <br> <br>
-        <li>If not already installed, install xsltproc and expat
-        <br>
-        <code>$ sudo apt-get install xsltproc libexpat1</code><br>
+        <li>If not already installed, install xsltproc <br>
+        <code>$ sudo apt-get install xsltproc</code>
+        <br> <br>
+        <li>If not already installed, install expat library and devel packages<br> 
+        <code>$ sudo apt-get install xsltproc libexpat libexpat-dev</code><br>
       </ol>  
 
       <a name="PREREQ_LIKES_OF_REDHAT"><h4>Install prerequisites on Redhat, Fedora etc.</h4></a>
       <hr NOSHADE SIZE=3 WIDTH=100%>
 
       <ol>
-        <li> If not already installed, install automake, autoconf, libtool
-        <br>
+        <li> If not already installed, install automake, autoconf, libtool <br>
         <code>$ sudo yum install automake autoconf libtool</code>
-        <br><br>
-        <li> If not already installed, install xsltproc, expat
-        <br>
-        <code>$ sudo yum install xsltproc libexpat1</code><br>
+        <br> <br>
+        <li>If not already installed, install xsltproc<br>
+        <code>$ sudo yum install xsltproc</code>
+        <br> <br>
+        <li>If not already installed, install expat library and devel packages<br>
+        <code>$ sudo yum install  expat expat-devel</code><br>
       </ol>
 
       <a name="PREREQ_MACOSX"><h4>Install prerequisites on Mac OS X</h4></a>
@@ -77,12 +83,13 @@
         <br>
         <strong>Note:</strong> on Mac OS X, there is a binary named <b>libtool</b>, which is different from what we need.
         On Mac OSX, We need <b>glibtool</b>, which is exactly what the port install of libtool would bring.
-        <br><br>
-        <li> If not already installed, install xsltproc, expat
-        <br>
-        <code>$ sudo port install xsltproc</code><br>
-        <code>$ sudo port install libexpat1</code><br>
-      </ol>
+        <br> <br>
+        <li>If not already installed, install xsltproc<br>
+        <code>$ sudo port install xsltproc</code>
+        <br> <br>
+        <li>If not already installed, install expat library and devel packages<br>
+        <code>$ sudo port install expat expat-devel</code><br>
+
       <br><br>
 
       <a name="BUILD"><h3>Build the source</h3></a>

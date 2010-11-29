@@ -279,6 +279,7 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$baseCppT
     </xsl:call-template>
   </xsl:variable>
    
+  <!-- 
   <xsl:variable name="isComplexType">
     <xsl:call-template name="T_is_resolution_complexType">
       <xsl:with-param name="resolution" select="$baseResolution" />
@@ -297,6 +298,7 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$baseCppT
      Violated in the context of schema component: <xsl:value-of select="$schemaComponentName"/>
     </xsl:message>
   </xsl:if>
+  -->
 
   <xsl:variable name="baseCppType">
     <xsl:call-template name="T_get_cppType_complexType_base"/>
@@ -433,6 +435,18 @@ XML Representation Summary: complexType Element Information Item
   <xsl:call-template name="T_ComplexTypeDefinition_XMLRepresentation_OK">
     <xsl:with-param name="ctNode" select="."/>
   </xsl:call-template>
+
+  <xsl:call-template name="T_ComplexTypeDefinition_DerivationValid">
+    <xsl:with-param name="ctNode" select="."/>
+  </xsl:call-template>
+
+  <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
+    <xsl:with-param name="mode" select="'check_element_attribute_repr_ok'"/>
+    <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+  </xsl:call-template>  
+  <!--
+    CHECKS: END
+  -->
 
 
   <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
@@ -1099,15 +1113,26 @@ public:
     </xsl:when>
 
     <xsl:when test="$mode='define_member_attribute_fns'">
-      <xsl:if test="$multiples='true'">
+      <xsl:if test="$localName='attribute'">
+
+        <xsl:if test="$multiples='true'">
 #ifndef __<xsl:value-of select="$schemaComponentName"/>_<xsl:value-of select="$cppNameFunction"/>_member_attrs_fns
 #define __<xsl:value-of select="$schemaComponentName"/>_<xsl:value-of select="$cppNameFunction"/>_member_attrs_fns
-      </xsl:if>
-      <xsl:if test="$localName='attribute'">
+        </xsl:if>
         <xsl:call-template name="DEFINE_FNS_FOR_MEMBER_ELEMENT_ATTRIBUTE_CPP"><xsl:with-param name="schemaComponentName" select="$schemaComponentName"/></xsl:call-template>
-      </xsl:if>
-      <xsl:if test="$multiples='true'">
+        <xsl:if test="$multiples='true'">
 #endif // __<xsl:value-of select="$schemaComponentName"/>_<xsl:value-of select="$cppNameFunction"/>_member_attrs_fns
+        </xsl:if>
+
+      </xsl:if>
+    </xsl:when>
+    
+    <xsl:when test="$mode='check_element_attribute_repr_ok'">
+      <xsl:if test="$localName='attribute'">
+        <xsl:call-template name="T_AttributeDeclarationRepresentationOK"/>
+      </xsl:if>
+      <xsl:if test="$localName='element'">
+        <xsl:call-template name="T_ElementDeclarationRepresentationOK"/>
       </xsl:if>
     </xsl:when>
 

@@ -1,7 +1,8 @@
 
  //
  //  This file was automatically generated using XmlPlus xsd2cpp tool.
- //  Please do not edit.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
  //
   
 #include <iostream>
@@ -10,52 +11,40 @@
 #include "XSD/UserOps.h"
 #include "ns1/all-include.h"
 
+void populateDocument(ns1::Document* xsdDoc);
+void updateOrConsumeDocument(ns1::Document* xsdDoc);
     
 
-int main (int argc, char**argv)
+int main (int argc, char** argv)
 {
-  XSD_USER_OPS::xsd_main(argc, argv);
-}
+  XSD::UserOps<ns1::Document>::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
 
-DOM::Document* createXsdDocument(bool buildTree)
-{
-  ns1::Document* xsdDoc = new ns1::Document(buildTree);
-    
-  return xsdDoc;
-}
-
-DOM::Document* createXsdDocument(string inFilePath)
-{
-  XPlusFileInputStream is;
-  is.open(inFilePath.c_str(), ios::binary);
-
-  ns1::Document* xsdDoc = new ns1::Document(false);
-
-  is >> *xsdDoc; 
-  return xsdDoc;
+  XSD::UserOps<ns1::Document> opHandle(cbStruct);
+  opHandle.run(argc, argv);
 }
 
 //
-// Following functions are templates.
-// You need to put code in the context
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
 //
 
     
 
 // template function to populate the Tree with values
-void populateDocument(DOM::Document* pDoc)
+// write code to populate the Document here ...
+void populateDocument(ns1::Document* xsdDoc)
 {
-  ns1::Document* xsdDoc = dynamic_cast<ns1::Document *>(pDoc);
-  // write code to populate the Document here
-
   xsdDoc->element_elem()->set_e1("e1 value");
-
 }
 
-void updateOrConsumeDocument(DOM::Document* pDoc)
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(ns1::Document* xsdDoc)
 {
-  ns1::Document* xsdDoc = dynamic_cast<ns1::Document *>(pDoc);
-  // write code to operate on the populated-Document here
 
 }
 

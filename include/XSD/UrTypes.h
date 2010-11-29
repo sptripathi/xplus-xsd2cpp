@@ -117,7 +117,7 @@ namespace XMLSchema
           _contentTypeVariety = variety;
         }
         inline eContentTypeVariety contentTypeVariety() const {
-          return variety;
+          return _contentTypeVariety;
         }
 
         //FIXME

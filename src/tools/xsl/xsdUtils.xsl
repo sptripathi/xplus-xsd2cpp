@@ -45,26 +45,68 @@
  //
 </xsl:variable>
 
+<xsl:variable name="outHeaderCanEdit">
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+</xsl:variable>
+
 
 <xsl:variable name="newline">
   <xsl:text>
   </xsl:text>
 </xsl:variable>
 
-
+<!-- 3.4.7 Complex Type Definition of anyType -->
 <xsl:variable name="anyTypeDefinition">
   <complexTypeDefinition>
     <name>anyType</name>
+    <targetNamespace>http://www.w3.org/2001/XMLSchema</targetNamespace>
     <baseTypeDef>anyType</baseTypeDef>
+    <derivationMethod>restriction</derivationMethod>
+    <abstract>true</abstract>
+    <defaultAttributesApply>true</defaultAttributesApply>    
     <contentType>
       <variety>mixed</variety>
-      <particle></particle>
+      <particle>
+        <minOccurs>1</minOccurs>
+        <maxOccurs>1</maxOccurs>
+        <term>
+          <MG>  
+            <compositor>sequence</compositor>
+            <particles>
+              <!--
+              a list containing one particle with the properties shown below in Inner 
+              Particle for Content Type of anyType (§3.4.7). 
+              -->
+              <particle>
+                <minOccurs>0</minOccurs>
+                <maxOccurs>unbounded</maxOccurs>
+                <term>
+                  <wildcard>
+                    <namespaceConstraint>
+                      <variety>any</variety>
+                      <namespaces></namespaces>
+                      <disallowedNames></disallowedNames>
+                    </namespaceConstraint>
+                    <processContents>lax</processContents>
+                  </wildcard>
+                </term>
+              </particle>
+            </particles>
+          </MG>
+        </term>
+      </particle>
       <final></final>
+      <block></block>
       <prohibitedSubstitutions></prohibitedSubstitutions>
       <assertions></assertions>
       <abstract>false</abstract>
       <foundInDoc>XMLSchema.xsd</foundInDoc>
     </contentType>
+    <abstract>false</abstract>
   </complexTypeDefinition>
 </xsl:variable>
 
@@ -1589,11 +1631,6 @@ Schema Component: Element Declaration, a kind of Term
     <xsl:choose>
       <xsl:when test="normalize-space($cachedComponentDefn)!='false'">
         <xsl:copy-of select="$cachedComponentDefn"/>
-        <!--
-        <xsl:message>
-            **************** using element/attribute cache ****************
-        </xsl:message>
-        -->
       </xsl:when>
       <xsl:when test="$node/@ref">
         <xsl:copy-of select="exsl:node-set($typeDefinition)/*"/>
@@ -1601,10 +1638,39 @@ Schema Component: Element Declaration, a kind of Term
       <xsl:when test="local-name($node)='element'">
           <element>
             <name><xsl:value-of select="$elemAttrName"/></name>
+            <id><xsl:value-of select="$node/@id"/></id>
             <targetNamespace><xsl:value-of select="$elemAttrTargetNsUri"/></targetNamespace>
             <typeDefinition>
               <xsl:copy-of select="exsl:node-set($typeDefinition)/*"/>
             </typeDefinition>
+            <final>
+            <xsl:choose>
+              <xsl:when test="$node/@final='#all'">
+                extension restriction
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="$node/@final"/>     
+              </xsl:otherwise>
+            </xsl:choose>
+            </final>
+            <block>
+            <xsl:choose>
+              <xsl:when test="$node/@final='#all'">
+                extension restriction substitution
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="$node/@block"/>     
+              </xsl:otherwise>
+            </xsl:choose>
+            </block>            
+            <abstract>
+              <xsl:choose>
+                <xsl:when test="$node/@abstract">
+                  <xsl:value-of select="$node/@abstract"/>
+                </xsl:when>
+                <xsl:otherwise>false</xsl:otherwise>
+              </xsl:choose>
+            </abstract>
             <typeTable>
               <!-- A sequence of Type Alternative components  -->
               <typeAlternatives></typeAlternatives>
@@ -1627,15 +1693,15 @@ Schema Component: Element Declaration, a kind of Term
               <!-- One of {default, fixed}. Required. -->
               <variety>
                 <xsl:choose>
-                  <xsl:when test="@default">default</xsl:when>
-                  <xsl:when test="@fixed">fixed</xsl:when>
+                  <xsl:when test="$node/@default">default</xsl:when>
+                  <xsl:when test="$node/@fixed">fixed</xsl:when>
                 </xsl:choose>
               </variety>
               <!-- An ·actual value·. Required. -->
               <value>
                 <xsl:choose>
-                  <xsl:when test="@default"><xsl:value-of select="@default"/></xsl:when>
-                  <xsl:when test="@fixed"><xsl:value-of select="@fixed"/></xsl:when>
+                  <xsl:when test="$node/@default"><xsl:value-of select="$node/@default"/></xsl:when>
+                  <xsl:when test="$node/@fixed"><xsl:value-of select="$node/@fixed"/></xsl:when>
                 </xsl:choose>
               </value>
               <!-- A character string. Required.  -->
@@ -1646,13 +1712,13 @@ Schema Component: Element Declaration, a kind of Term
             <substGroupAffiliations>TODO</substGroupAffiliations>
             <substGroupExclusions>TODO</substGroupExclusions>
             <disallowedSubstitutions>TODO</disallowedSubstitutions>
-            <abstract><xsl:value-of select="@abstract"/></abstract>
             <foundInDoc><xsl:value-of select="$documentName"/></foundInDoc>
           </element>
       </xsl:when>
       <xsl:when test="local-name($node)='attribute'">
           <attribute>
             <name><xsl:value-of select="$elemAttrName"/></name>
+            <id><xsl:value-of select="$node/@id"/></id>
             <targetNamespace><xsl:value-of select="$elemAttrTargetNsUri"/></targetNamespace>
             <typeDefinition>
               <xsl:copy-of select="exsl:node-set($typeDefinition)/*"/>
@@ -1682,21 +1748,21 @@ Schema Component: Element Declaration, a kind of Term
               <!-- One of {default, fixed}. Required. -->
               <variety>
                 <xsl:choose>
-                  <xsl:when test="@default">default</xsl:when>
-                  <xsl:when test="@fixed">fixed</xsl:when>
+                  <xsl:when test="$node/@default">default</xsl:when>
+                  <xsl:when test="$node/@fixed">fixed</xsl:when>
                 </xsl:choose>
               </variety>
               <!-- An ·actual value·. Required. -->
               <value>
                 <xsl:choose>
-                  <xsl:when test="@default"><xsl:value-of select="@default"/></xsl:when>
-                  <xsl:when test="@fixed"><xsl:value-of select="@fixed"/></xsl:when>
+                  <xsl:when test="$node/@default"><xsl:value-of select="$node/@default"/></xsl:when>
+                  <xsl:when test="$node/@fixed"><xsl:value-of select="$node/@fixed"/></xsl:when>
                 </xsl:choose>
               </value>
               <!-- A character string. Required.  -->
               <lexicalForm></lexicalForm>
             </valueConstraint>            
-            <inheritable><xsl:value-of select="@inheritable"/></inheritable>            
+            <inheritable><xsl:value-of select="$node/@inheritable"/></inheritable>            
           </attribute>
       </xsl:when>
       <xsl:otherwise></xsl:otherwise>
@@ -1798,12 +1864,6 @@ Schema Component: Element Declaration, a kind of Term
     </xsl:call-template>
   </xsl:variable> 
   
-    <!--
-  <xsl:message>
-  T|<xsl:value-of select="$currentDocument"/>|type=<xsl:value-of select="$typeQName"/>|<xsl:value-of select="$resolution"/>|
-  </xsl:message>
-  -->
-
   <xsl:copy-of select="$resolution"/>
 </xsl:template>
 
@@ -1813,20 +1873,6 @@ Schema Component: Element Declaration, a kind of Term
 <!--
     returns resolution:
     (structure varies for simpleType and complexType)
-
-    # simpleType  |  variety            |   impl-primitive-Type
-    ==============|=====================|=======================================
-      simpleType  |  atomic|list|union  |   string|datetime...(primitiveTypes)
-
-
-    # complexType |  contentType 
-    ==============|============================================================
-      complexType |  empty
-      complexType |  simpleType
- #FIXME complexContent should be further resolved to : empty | simpleType | (MG,(element-only|mixed)) 
-      complexType |  complexContent,(element-only|mixed) 
-      complexType |  (choice|sequence|all),(element-only|mixed)
-
 -->
 <xsl:template name="T_resolve_typeLocalPartNsUri">
   <xsl:param name="typeLocalPart"/>
@@ -1885,7 +1931,10 @@ Schema Component: Element Declaration, a kind of Term
 
         <xsl:choose>  
           <xsl:when test="$isBuiltinType='false'">
+            <!--  
             <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">The type "{<xsl:value-of select="$xmlSchemaNSUri"/>}<xsl:value-of select="$typeLocalPart"/>" in document "<xsl:value-of select="$currentDocument"/>" is not a valid builtin XMLSchema type-definition</xsl:with-param></xsl:call-template>
+            -->
+            false
           </xsl:when>  
 
           <!-- it's a builtin type -->
@@ -2234,27 +2283,69 @@ XSD1.1:
 <xsl:template name="T_get_explicitContent_of_complexType_with_complexContent">
   <xsl:param name="ctNode"/>
   <xsl:param name="documentName" select="''"/>
-
-
 <!--
     When the mapping rule below refers to "the [children]", then for a <complexType> source declaration with a <complexContent> child, then the [children]  of <extension>  or <restriction> (whichever appears as a child of <complexContent>) are meant. If no <complexContent> is present, then the [children] of the <complexType> source declaration itself are meant. 
 -->
 
-  <!--
-    FIXME: satya:
-      for the Implicit-Complex-Content case, the following variable may need to select MGs directly inside complexType node...
-  -->
   <xsl:variable name="nodeComplexContent" select="$ctNode/*[local-name()='complexContent']"/>
-  <xsl:variable name="nodeComplexContentMG" select="$nodeComplexContent/*[local-name()='group' or local-name()='all' or local-name()='choice' or local-name()='sequence']"/>
-  
-  <xsl:variable name="cntMGs" select="count($nodeComplexContent/*[local-name()='group' or local-name()='all' or local-name()='choice' or local-name()='sequence'])"/>
-  <xsl:variable name="cntNonAnnotationChildrenOfAllOrSeq" select="count($nodeComplexContent/*[local-name()='all' or local-name()='sequence']/*[local-name()!= 'annotation'])"/>
-  <xsl:variable name="cntNonAnnotationChildrenOfChoiceWithExplicitMinOccurs0" select="count($nodeComplexContent/*[local-name()='choice' and @minOccurs=0]/*[local-name()!= 'annotation'])"/>
+  <xsl:variable name="nodesChildrenMG1" select="$nodeComplexContent/*/*[local-name()='group' or local-name()='all' or local-name()='choice' or local-name()='sequence']"/>
+  <xsl:variable name="nodesChildrenMG2" select="$ctNode/*[local-name()='group' or local-name()='all' or local-name()='choice' or local-name()='sequence']"/>
+
+  <xsl:variable name="childrenMG">
+    <xsl:copy-of select="$nodesChildrenMG1"/>
+    <xsl:copy-of select="$nodesChildrenMG2"/>
+  </xsl:variable>
+  <xsl:variable name="nodeChildMG" select="exsl:node-set($childrenMG)/*"/>
+  <xsl:variable name="cntChildrenMG" select="count($nodeChildMG)"/>
+
+  <xsl:variable name="pred.2.1.1">
+    <xsl:choose>
+      <xsl:when test="count($nodeChildMG)=0">true</xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="pred.2.1.2">
+    <xsl:choose>
+      <xsl:when test="$nodeChildMG[local-name()='all' or local-name()='sequence'] and count($nodeChildMG[local-name()='all' or local-name()='sequence']/*[local-name()!= 'annotation'])=0">
+        true
+      </xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="pred.2.1.3">
+    <xsl:choose>
+      <xsl:when test="$nodeChildMG[local-name()='choice' and @minOccurs=0] and count($nodeChildMG[local-name()='choice' and @minOccurs=0]/*[local-name()!= 'annotation'])=0">
+        true
+      </xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="pred.2.1.4">
+    <xsl:choose>
+      <xsl:when test="$nodeChildMG[(local-name()='group' or local-name()='all' or local-name()='choice' or local-name()='sequence') and @maxOccurs=0]">
+        true
+      </xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>  
+
+  <xsl:variable name="pred.2.1">
+    <xsl:choose>
+      <xsl:when test="normalize-space($pred.2.1.1)='true' or normalize-space($pred.2.1.2)='true' or normalize-space($pred.2.1.3)='true' or normalize-space($pred.2.1.4)='true'">
+        true
+      </xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
 
   <xsl:variable name="explicitContent">
     <xsl:choose>
 
-      <xsl:when test="$cntMGs=0 or $cntNonAnnotationChildrenOfAllOrSeq=0 or $cntNonAnnotationChildrenOfChoiceWithExplicitMinOccurs0">
+      <xsl:when test="normalize-space($pred.2.1)='true'">
            <explicitContent>
               <empty/>
            </explicitContent>   
@@ -2264,14 +2355,15 @@ XSD1.1:
         the particle corresponding to the <all>, <choice>, <group> or <sequence> among the [children].
       -->
       <xsl:otherwise>
+
         <xsl:variable name="maxOccurenceMGNode">
           <xsl:call-template name="T_get_maxOccurence">
-            <xsl:with-param name="node" select="$complexContentMGNode"/>
+            <xsl:with-param name="node" select="$nodeChildMG"/>
           </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="minOccurenceMGNode">
           <xsl:call-template name="T_get_minOccurence">
-            <xsl:with-param name="node" select="$complexContentMGNode"/>
+            <xsl:with-param name="node" select="$nodeChildMG"/>
           </xsl:call-template>
         </xsl:variable>
             <explicitContent>
@@ -2279,10 +2371,12 @@ XSD1.1:
                 <minOccurs><xsl:value-of select="$maxOccurenceMGNode"/></minOccurs>
                 <maxOccurs><xsl:value-of select="$minOccurenceMGNode"/></maxOccurs>
                 <term>
-                    <compositor><xsl:value-of select="local-name($complexContentMGNode)"/></compositor>
+                  <MG>
+                    <compositor><xsl:value-of select="local-name($nodeChildMG)"/></compositor>
                     <particles> 
                     <!-- not-empty: skipping evaluation for now, add later if needed --> 
                     </particles>
+                  </MG>  
                 </term>
               </particle>
             </explicitContent>
@@ -2381,8 +2475,10 @@ XML Mapping Summary for Model Group Schema Component Property Representation
                 <minOccurs>=1</minOccurs> 
                 <maxOccurs>1</maxOccurs>
                 <term>
+                  <MG>  
                     <compositor>sequence</compositor>
                     <particles></particles>
+                  </MG>  
                 </term>      
               </particle>
            </effectiveContent>   
@@ -2578,10 +2674,12 @@ XML Mapping Summary for Model Group Schema Component Property Representation
                 <minOccurs>1</minOccurs>
                 <maxOccurs>1</maxOccurs>
                 <term>
+                  <MG>  
                     <compositor>group|all|choice|sequence</compositor>
                     <particles> 
                     </particles>
                     <annotations></annotations>
+                  </MG>  
                 </term>
                 <annotations></annotations>
               </particle>
@@ -2607,14 +2705,14 @@ XML Mapping Summary for Model Group Schema Component Property Representation
               <xsl:choose>
                 <!-- 4.2.3.1
                   FIXME:  
-                  satya: reference to explicitContent in 4.2.3.1 maybe an spec error, should it be effectiveContent?
+                  reference to explicitContent in 4.2.3.1 maybe an spec error, should it be effectiveContent?
                 -->
-                <xsl:when test="normalize-space($nodeBaseParticle/term/compositor/text())='all' and  $nodeExplicitContent/empty">
+                <xsl:when test="normalize-space($nodeBaseParticle/term/MG/compositor/text())='all' and  $nodeExplicitContent/empty">
                   <xsl:copy-of select="$nodeBaseParticle"/>
                 </xsl:when>
                 
                 <!-- 4.2.3.2 -->
-                <xsl:when test="normalize-space($nodeBaseParticle/term/compositor/text())='all' and normalize-space($nodeEffectiveContent/particle/term/compositor/text()) = 'all' ">
+                <xsl:when test="normalize-space($nodeBaseParticle/term/MG/compositor/text())='all' and normalize-space($nodeEffectiveContent/particle/term/MG/compositor/text()) = 'all' ">
                   <!--
                   a model group whose {compositor} is all and whose {particles} are the {particles} of the {term} of 
                   the ·base particle· followed by the {particles} of the {term} of the ·effective content·. 
@@ -2623,10 +2721,12 @@ XML Mapping Summary for Model Group Schema Component Property Representation
                     <minOccurs><xsl:value-of select="nodeEffectiveContent/particle/minOccurs/text()"/></minOccurs>
                     <maxOccurs>1</maxOccurs>
                     <term>
+                      <MG>  
                         <compositor>all</compositor>
                         <particles> 
                           <!-- if needed, add as in note above -->
                         </particles>
+                      </MG>  
                     </term>
                     <annotations></annotations>
                   </particle>
@@ -2642,10 +2742,12 @@ XML Mapping Summary for Model Group Schema Component Property Representation
                     <minOccurs>1</minOccurs>
                     <maxOccurs>1</maxOccurs>
                     <term>
+                      <MG>  
                         <compositor>sequence</compositor>
                         <particles> 
                           <!-- if needed, add as in note above -->
                         </particles>
+                      </MG>  
                     </term>
                     <annotations></annotations>
                   </particle>
@@ -2678,18 +2780,14 @@ XML Mapping Summary for Model Group Schema Component Property Representation
   6.1 If the ·wildcard element· is ·absent· or is present and has mode = 'none' , then the ·explicit content type·.
   
   6.2 otherwise
-
-  {variety} The {variety} of the ·explicit content type· if it's not empty; otherwise element-only.
-  
-  {particle} The {particle} of the ·explicit content type· if the {variety} of the ·explicit content type· is not empty; otherwise a Particle as follows:
+    {variety} The {variety} of the ·explicit content type· if it's not empty; otherwise element-only.
+    {particle} The {particle} of the ·explicit content type· if the {variety} of the ·explicit content type· is not empty; otherwise a Particle as follows:
     {min occurs} 1
     {max occurs} 1
     {term} a model group whose {compositor} is sequence and whose {particles} is empty.
-  
-  {open content}
-    An Open Content as follows:
-      ....
-      .......
+    {open content} An Open Content as follows:
+        ....
+        .......
 -->
 
 <xsl:template name="T_get_contentType_of_complexType_with_complexContent">
@@ -2719,39 +2817,80 @@ XML Mapping Summary for Model Group Schema Component Property Representation
 <xsl:template name="T_get_contentType_of_complexType_with_simpleContent">
   <xsl:param name="ctNode"/>
   <xsl:param name="documentName" select="''"/>
+  
+  <xsl:variable name="nodeSimpleContent" select="$ctNode/*[local-name()='simpleContent']"/>
 
-  <!--
+<!--
+ implemented according to: http://www.w3.org/TR/xmlschema11-1/#dcl.ctd.ctsc
+-->
   <xsl:variable name="derivationMethod">
     <xsl:call-template name="T_get_complexType_derivation_method">
       <xsl:with-param name="ctNode" select="$ctNode"/>
     </xsl:call-template>
   </xsl:variable>
-  <xsl:variable name="baseTypeDef">
-    <xsl:variable name="baseQName">
-      <xsl:call-template name="T_get_complexType_base">
-        <xsl:with-param name="ctNode" select="$ctNode"/>
-      </xsl:call-template>  
-    </xsl:variable>
-    <xsl:variable name="baseResolution">
-      <xsl:call-template name="T_resolve_typeQName">
-        <xsl:with-param name="typeQName" select="$baseQName"/>
-      </xsl:call-template>
-    </xsl:variable>
-    <xsl:copy-of select="exsl:node-set($baseResolution)/*"/>
+  <xsl:variable name="baseQName">
+    <xsl:call-template name="T_get_complexType_base">
+      <xsl:with-param name="ctNode" select="$ctNode"/>
+    </xsl:call-template>  
   </xsl:variable>
+  <xsl:variable name="baseResolution">
+    <xsl:call-template name="T_resolve_typeQName">
+      <xsl:with-param name="typeQName" select="$baseQName"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="nodeBaseTypeDef" select="exsl:node-set($baseResolution)/*"/>
   
-  <xsl:variable name="nodeBaseTypeDef" select="exsl:node-set($baseTypeDef)"/>
+  <!-- FIXME emptiable particle test, is not yet implemented -->  
+  <xsl:variable name="isBaseTypeDefHavingEmptiableParticle">true</xsl:variable>
 
-  <xsl:variable name="simpleTypeDefinition">
+  <xsl:variable name="mySimpleTypeDefinition">
     <xsl:choose>
-      <xsl:when test="normalize-space($nodeBaseTypeDef/contentType/variety/text())='simple' and  $derivationMethod='restriction'">
+      <xsl:when test="name($nodeBaseTypeDef)='complexTypeDefinition' and normalize-space($nodeBaseTypeDef/contentType/variety/text())='simple' and  $derivationMethod='restriction'">
+        <xsl:choose>
+          <xsl:when test="$nodeSimpleContent/*[local-name()='restriction']/simpleType">
+            <xsl:call-template name="T_get_simpleType_definition">
+              <xsl:with-param name="stNode" select="$nodeSimpleContent/*[local-name()='restriction']/simpleType"/>
+              <xsl:with-param name="documentName" select="$documentName"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:copy-of select="$nodeBaseTypeDef/contentType/simpleTypeDefinition"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
+
+      <xsl:when test="name($nodeBaseTypeDef)='complexTypeDefinition' and normalize-space($nodeBaseTypeDef/contentType/variety/text())='mixed' and $isBaseTypeDefHavingEmptiableParticle='true' and  $derivationMethod='restriction'">
+        <xsl:choose>
+          <xsl:when test="$nodeSimpleContent/*[local-name()='restriction']/simpleType">
+            <xsl:call-template name="T_get_simpleType_definition">
+              <xsl:with-param name="stNode" select="$nodeSimpleContent/*[local-name()='restriction']/simpleType"/>
+              <xsl:with-param name="documentName" select="$documentName"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:copy-of select="$anySimpleTypeDefinition"/>
+          </xsl:otherwise>
+        </xsl:choose>      
+      </xsl:when>
+
+      <xsl:when test="name($nodeBaseTypeDef)='complexTypeDefinition' and  $derivationMethod='extension'">
+        <xsl:copy-of select="$nodeBaseTypeDef/contentType/simpleTypeDefinition"/>
+      </xsl:when>
+
+      <xsl:when test="name($nodeBaseTypeDef)='simpleTypeDefinition' and  $derivationMethod='extension'">
+        <xsl:copy-of select="$nodeBaseTypeDef"/>
+      </xsl:when>
+      
+      <xsl:otherwise>
+        <xsl:copy-of select="$anySimpleTypeDefinition"/>
+      </xsl:otherwise>
+
     </xsl:choose>
   </xsl:variable>
-  -->
+
   <contentType>
     <variety>simple</variety>
-    <simpleTypeDefinition>TODO</simpleTypeDefinition>
+    <xsl:copy-of select="$mySimpleTypeDefinition"/>
   </contentType>
 </xsl:template>
 
@@ -2828,15 +2967,6 @@ Schema Component: Particle
 <!--
   returns: "complexType content-type"
 
-  eg.:
-
-  1. complexType   empty
-  2. complexType   simpleType
- #FIXME complexContent should be further resolved to : empty | simpleType | (MG,(element-only|mixed)) 
-  3. complexType   complexContent,(element-only|mixed)
-  4. complexType   (choice|sequence|all),(element-only|mixed)
-
-
 Schema Component: Complex Type Definition, a kind of Type Definition
 {
   {annotations}               A sequence of Annotation components.
@@ -2860,7 +2990,6 @@ Schema Component: Complex Type Definition, a kind of Type Definition
 
                   Mapping Rules for Complex Types with Explicit Complex Content
                   =============================================================
-
     When the <complexType> source declaration has a <complexContent> child
 
     {base type definition}  The type definition ·resolved· to by the ·actual value·
@@ -2880,10 +3009,7 @@ Schema Component: Complex Type Definition, a kind of Type Definition
 
           XML Mapping Summary for Complex Type Definition with complex content Schema Component
           =====================================================================================
-          Property                  Representation
- 
         {base type definition}      ·xs:anyType·
- 
         {derivation method}         restriction 
 
 
@@ -2930,12 +3056,51 @@ Schema Component: Complex Type Definition, a kind of Type Definition
       <xsl:if test="$ctNode/@name">
       <name><xsl:value-of select="$ctNode/@name"/></name>
       </xsl:if>
-      <targetNamespace>TODO</targetNamespace>
+      <id><xsl:value-of select="$ctNode/@id"/></id>
+      <targetNamespace>
+        <xsl:call-template name="T_get_targetNsUriDoc">
+          <xsl:with-param name="documentName" select="$documentName"/>
+        </xsl:call-template>
+      </targetNamespace>
       <baseTypeDef><xsl:copy-of select="$baseTypeDef"/></baseTypeDef>
       <derivationMethod><xsl:value-of select="$derivationMethod"/></derivationMethod>
-      <abstract>TODO</abstract>
+      <abstract>
+        <xsl:choose>  
+          <xsl:when test="$ctNode/@abstract">
+            <xsl:value-of select="$ctNode/@abstract"/>
+          </xsl:when>
+          <xsl:otherwise>false</xsl:otherwise>
+        </xsl:choose>        
+      </abstract>
+      <defaultAttributesApply>
+        <xsl:choose>  
+          <xsl:when test="$ctNode/@adefaultAttributesApply">
+            <xsl:value-of select="$ctNode/@defaultAttributesApply"/>
+          </xsl:when>
+          <xsl:otherwise>true</xsl:otherwise>
+        </xsl:choose>        
+      </defaultAttributesApply>      
       <prohibitedSubstitutions></prohibitedSubstitutions>
-      <final></final>
+      <final>
+        <xsl:choose>  
+          <xsl:when test="$ctNode/@final='#all'">
+          extension restriction
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$ctNode/@final"/>
+          </xsl:otherwise>
+        </xsl:choose>  
+      </final>
+      <block>
+        <xsl:choose>  
+          <xsl:when test="$ctNode/@block='#all'">
+          extension restriction
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$ctNode/@block"/>
+          </xsl:otherwise>
+        </xsl:choose>  
+      </block>      
       <foundInDoc><xsl:value-of select="$documentName"/></foundInDoc>
     </complexTypeDefinition>
   </xsl:variable>
@@ -3004,7 +3169,7 @@ Schema Component: Simple Type Definition, a kind of Type Definition
   <xsl:variable name="details">
     <xsl:choose>
 
-      <!-- FIXME: what is the simpleType is a restriction on a simpleType of variety union -->
+      <!-- FIXME: what if the simpleType is a restriction on a simpleType of variety union -->
       <!--
       <xsl:when test="$stNode//*[local-name()='list' or local-name()='union']">
       -->
@@ -3074,7 +3239,10 @@ Schema Component: Simple Type Definition, a kind of Type Definition
                   <name><xsl:value-of select="$stNode/@name"/></name>
                   </xsl:if>
                   <variety>atomic</variety>
-                   <!-- FIXME : resolution baseQname and put that definition below --> 
+                   <!-- Note : resolution of baseQname is not further resolved once
+                        it reaches  to a qName which is a builtin type..
+                        So is the case here...
+                   -->
                   <baseTypeDef><xsl:value-of select="$baseQname"/></baseTypeDef>
                   <primType><xsl:value-of select="$primTypeLocalPart"/></primType>
                   <implType><xsl:value-of select="$implType"/></implType>
@@ -3122,17 +3290,38 @@ Schema Component: Simple Type Definition, a kind of Type Definition
                   <name><xsl:value-of select="$stNode/@name"/></name>
                   </xsl:if>
                   <variety><xsl:value-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/variety"/></variety>
-                  <targetNamespace>TODO</targetNamespace>
-                  <final>TODO</final>
+                  <final>
+                    <xsl:choose>  
+                      <xsl:when test="$stNode/@final='#all'">
+                      list union extension restriction
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="$stNode/@final"/>
+                      </xsl:otherwise>
+                    </xsl:choose>  
+                  </final>
+                  <targetNamespace>
+                    <xsl:call-template name="T_get_targetNsUriDoc">
+                      <xsl:with-param name="documentName" select="$documentName"/>
+                    </xsl:call-template>
+                  </targetNamespace>
+                  <final>
+                    <xsl:choose>  
+                      <xsl:when test="$stNode/@final='#all'">
+                      list union extension restriction
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="$stNode/@final"/>
+                      </xsl:otherwise>
+                    </xsl:choose> 
+                  </final>
                   <baseTypeDef><xsl:copy-of select="$nodeBaseTypeDefinition"/></baseTypeDef>
                   <primType><xsl:value-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/primType"/></primType>
                   <facets>TODO</facets>
                   <fundamentalFacets>TODO</fundamentalFacets>
-                  <annotations>TODO</annotations>
                   <implType><xsl:value-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/implType"/></implType>
                   <foundInDoc><xsl:value-of select="$documentName"/></foundInDoc>
                 </simpleTypeDefinition>
-
               </xsl:otherwise>
 
             </xsl:choose>
@@ -3154,13 +3343,35 @@ Schema Component: Simple Type Definition, a kind of Type Definition
                   <name><xsl:value-of select="$stNode/@name"/></name>
                   </xsl:if>
                   <variety><xsl:value-of select="exsl:node-set($baseTypeDef/simpleTypeDefinition/variety)"/></variety>
-                  <targetNamespace>TODO</targetNamespace>
-                  <final>TODO</final>
+                  <final>
+                    <xsl:choose>  
+                      <xsl:when test="$stNode/@final='#all'">
+                      list union extension restriction
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="$stNode/@final"/>
+                      </xsl:otherwise>
+                    </xsl:choose>  
+                  </final>
+                  <targetNamespace>
+                    <xsl:call-template name="T_get_targetNsUriDoc">
+                      <xsl:with-param name="documentName" select="$documentName"/>
+                    </xsl:call-template>
+                  </targetNamespace>
+                  <final>
+                    <xsl:choose>  
+                      <xsl:when test="$stNode/@final='#all'">
+                      list union extension restriction
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="$stNode/@final"/>
+                      </xsl:otherwise>
+                    </xsl:choose>  
+                  </final>
                   <baseTypeDef><xsl:copy-of select="$inlineSimpleTypeDef"/></baseTypeDef>
                   <primType><xsl:value-of select="exsl:node-set($inlineSimpleTypeDef/simpleTypeDefinition/primType)"/></primType>
                   <facets>TODO</facets>
                   <fundamentalFacets>TODO</fundamentalFacets>
-                  <annotations>TODO</annotations>
                   <implType><xsl:value-of select="exsl:node-set($inlineSimpleTypeDef/simpleTypeDefinition/implType)"/></implType>
                   <foundInDoc><xsl:value-of select="$documentName"/></foundInDoc>
                 </simpleTypeDefinition>
@@ -4168,7 +4379,6 @@ Schema Component: Simple Type Definition, a kind of Type Definition
 
 
 
-<!-- satya -->
 <xsl:template name="T_get_cppType_simpleType">
   <xsl:param name="stName"/>
 

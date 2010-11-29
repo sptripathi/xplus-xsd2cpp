@@ -1,56 +1,50 @@
 
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
 #include <iostream>
 #include <string>
 
 #include "XSD/UserOps.h"
 #include "xmldsig/all-include.h"
 
+void populateDocument(xmldsig::Document* xsdDoc);
+void updateOrConsumeDocument(xmldsig::Document* xsdDoc);
     
 
-int main (int argc, char**argv)
+int main (int argc, char** argv)
 {
-  XSD_USER_OPS::xsd_main(argc, argv);
-}
+  XSD::UserOps<xmldsig::Document>::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
 
-DOM::Document* createXsdDocument(bool buildTree)
-{
-  xmldsig::Document* xsdDoc = new xmldsig::Document(buildTree);
-    
-  return xsdDoc;
-}
-
-DOM::Document* createXsdDocument(string inFilePath)
-{
-  XPlusFileInputStream is;
-  is.open(inFilePath.c_str(), ios::binary);
-
-  xmldsig::Document* xsdDoc = new xmldsig::Document(false);
-
-  is >> *xsdDoc; 
-  return xsdDoc;
+  XSD::UserOps<xmldsig::Document> opHandle(cbStruct);
+  opHandle.run(argc, argv);
 }
 
 //
-// Following functions are templates.
-// You need to put code in the context
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
 //
 
     
 
 // template function to populate the Tree with values
-void populateDocument(DOM::Document* pDoc)
+// write code to populate the Document here ...
+void populateDocument(xmldsig::Document* xsdDoc)
 {
-  xmldsig::Document* xsdDoc = dynamic_cast<xmldsig::Document *>(pDoc);
-  // write code to populate the Document here
-
   xsdDoc->element_DSAKeyValue()->set_Y("ctA8YGxrtngg/zKVvqEOefnwmViFztcnPBYPlJsvh6yKI4iDm68fnp4Mi3RrJ6bZAygFrUIQLxLjV+OJtgJAEto0xAs+Mehuq1DkSFEpP3oDzCTOsrOiS1DwQe4oIb7zVk/9l7aPtJMHW0LVlMdwZNFNNJoqMcT2ZfCPrfvYvQ0=");
-
 }
 
-void updateOrConsumeDocument(DOM::Document* pDoc)
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(xmldsig::Document* xsdDoc)
 {
-  xmldsig::Document* xsdDoc = dynamic_cast<xmldsig::Document *>(pDoc);
-  // write code to operate on the populated-Document here
 
 }
 

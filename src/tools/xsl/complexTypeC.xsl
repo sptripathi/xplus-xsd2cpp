@@ -1640,17 +1640,7 @@ namespace Types
       </xsl:if>
 
       <xsl:choose>
-        <xsl:when test="@default and @fixed">
-          <xsl:message terminate="yes">
- Only one of the attributes 'fixed' and 'default' allowed. Found both on <xsl:value-of select="local-name()"/>  "<xsl:value-of select="$expandedQName"/>"
-          </xsl:message>
-        </xsl:when>
         <xsl:when test="@default">
-          <xsl:if test="local-name()='attribute' and @use and @use!='optional'">
-          <xsl:message terminate="yes">
- An attribute with 'default' value specified, can not have 'use' value other than "optional". Violated by attribute "<xsl:value-of select="$expandedQName"/>"
-          </xsl:message>
-          </xsl:if>
       node->stringValue("<xsl:value-of select="@default"/>");    
         </xsl:when>
         <xsl:when test="@fixed">

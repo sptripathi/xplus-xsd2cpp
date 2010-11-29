@@ -4,10 +4,11 @@ CNT_TOTAL_TESTS=0
 CNT_FAILED_TESTS=0
 CNT_PASSED_TESTS=0
 
-
+# xmllint core dumps, on certain schemas, dont use it in tests
+XMLLINT=`which xmllint`
 TEST_FAILED=false
 FAILED_DIRS=""
-
+INPUT_XSD=""
 
 EX_DIRS="
         examples/org
@@ -18,6 +19,7 @@ EX_DIRS="
         examples/simpleTypesDemo
         examples/simplest
         examples/po
+        examples/ipo
         examples/netEnabled
         "
 
@@ -38,21 +40,27 @@ XPLUS_TESTS_DIRS="
                   Tests/xplus_tests/scExt2
                   Tests/xplus_tests/scExt3
                   Tests/xplus_tests/scExt4
-                  Tests/xplus_tests/scRest
-                  Tests/xplus_tests/scRest2
-                  Tests/xplus_tests/scRest3
-                  Tests/xplus_tests/scRest4
                   Tests/xplus_tests/ccRest
                   Tests/xplus_tests/ccRest2
                   Tests/xplus_tests/ccExt
-                  Tests/xplus_tests/ccExtAny
                   Tests/xplus_tests/ctAnyType
                  " 
 
+XPLUS_NEGTESTS_DIRS="
+                  Tests/xplus_neg_tests/scRest
+                  Tests/xplus_neg_tests/scRest2
+                  Tests/xplus_neg_tests/scRest3
+                  Tests/xplus_neg_tests/scRest4
+                  Tests/xplus_neg_tests/ccExtAny
+                  Tests/xplus_neg_tests/ccExt2
+                    "
 
-#EX_DIRS=
-#W3C_TESTS_DIRS=
-#XPLUS_TESTS_DIRS=
+EX_DIRS=
+W3C_TESTS_DIRS=
+XPLUS_TESTS_DIRS="
+                  Tests/xplus_tests/scExt2
+                  Tests/xplus_tests/scExt4
+                  "
 
 
 print_usage()
@@ -75,19 +83,19 @@ change_dir_abort()
   fi
 }
 
-get_input_xsd()
+get_INPUT_XSD()
 {
-  input_xsd=`ls -1 *.xsd`
-  cnt_xsds=`echo "$input_xsd" | wc -l | sed -e 's/ *//g'`
+  INPUT_XSD=`ls -1 *.xsd`
+  cnt_xsds=`echo "$INPUT_XSD" | wc -l | sed -e 's/ *//g'`
   if [ $cnt_xsds -ne 1 ]; then
     if [ -f README ]; then
-      input_xsd=`cat README | grep INPUT_XSD | cut -d= -f2 | sed -e 's/ *//g'`
-      if [ -z "$input_xsd" ]; then
-        echo "unable to ascertain input_xsd, exiting..."
+      INPUT_XSD=`cat README | grep INPUT_XSD | cut -d= -f2 | sed -e 's/ *//g'`
+      if [ -z "$INPUT_XSD" ]; then
+        echo "unable to ascertain INPUT_XSD, exiting..."
         fail_test
       fi
     else  
-      echo "unable to ascertain input_xsd in dir:$dir, exiting..."
+      echo "unable to ascertain INPUT_XSD in dir:$dir, exiting..."
       fail_test
     fi
   fi
@@ -156,6 +164,17 @@ cleanup()
   echo; echo
 
   echo "#------------------------------------------------------"
+  echo "# cleaning up xplus_neg_tests ..."
+  echo "#------------------------------------------------------"
+  for dir in $XPLUS_NEGTESTS_DIRS
+  do
+    cleanup_dir
+  done
+  echo "#------------------------------------------------------"
+
+  echo; echo
+
+  echo "#------------------------------------------------------"
   echo "# cleaning up examples ..."
   echo "#------------------------------------------------------"
   for dir in $EX_DIRS
@@ -187,6 +206,15 @@ test_valid()
     fail_test
     return
   fi
+
+  if [ ! -z  "$XMLLINT" ]; then
+    $XMLLINT --noout --schema $INPUT_XSD valid.xml > /dev/null 2>&1 
+    if [ $? -ne 0 ]; then
+      echo "  failed to validate valid.xml using xmllint"
+      #fail_test
+      #return
+    fi
+  fi
 }
 
 #  1 testcase
@@ -197,7 +225,7 @@ test_build()
   fi
 
   # verify that the dir builds
-  xsd2cpp $input_xsd . >> tests.log 2>&1 && ./autogen.sh >> tests.log 2>&1 &&  make install >> tests.log 2>&1
+  xsd2cpp $INPUT_XSD . >> tests.log 2>&1 && ./autogen.sh >> tests.log 2>&1 &&  make install >> tests.log 2>&1
   if [ $? -ne 0 ]; then
     echo "   failed to build"
     fail_test
@@ -276,6 +304,11 @@ test_roundtrip()
   fi
 }
 
+neg_test_dir()
+{
+  echo "no implementation of negative tests..."
+}
+
 # several testcases(8) are run in each test directory
 # this functions does all the tests to be done, inside a particular test directory
 test_dir()
@@ -287,9 +320,9 @@ test_dir()
   log_tests_dir
   
   > tests.log
-  get_input_xsd
-  echo "   input: $input_xsd"
-  run=`basename $input_xsd | cut -d'.' -f1`run
+  get_INPUT_XSD
+  echo "   input: $INPUT_XSD"
+  run=`basename $INPUT_XSD | cut -d'.' -f1`run
 
   test_build
   test_valid
@@ -341,6 +374,19 @@ test_all()
     test_dir
   done
   echo "#------------------------------------------------------"
+
+
+
+  echo "#------------------------------------------------------"
+  echo "# running tests on xplus_neg_tests ..."
+  echo "#------------------------------------------------------"
+  for dir in $XPLUS_NEGTESTS_DIRS
+  do
+    neg_test_dir
+  done
+  echo "#------------------------------------------------------"
+
+  
 
   echo;echo
 

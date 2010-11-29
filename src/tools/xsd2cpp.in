@@ -52,7 +52,7 @@ GEN_XSD_INCLUDES=""
 NSALIASES_FILE="none"
 XPLUS_META_DIR=""
 XPLUS_SCHEMAINFO_DIR=""
-
+DEBUG=0
 
 get_abs_path()
 {
@@ -140,6 +140,10 @@ gen_source_files()
   $MKDIR -p $XPLUS_META_DIR
   $MKDIR -p $XPLUS_SCHEMAINFO_DIR
   XSLTPROC_OPTIONS="--stringparam input_doc $ABSXSD --stringparam CWD $CWD --stringparam w3cXmlSchema false --stringparam NSALIASES_FILE $NSALIASES_FILE "
+  if [ $DEBUG -eq 1 ]; then
+    XSLTPROC_OPTIONS="-v $XSLTPROC_OPTIONS"
+  fi
+
   $XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD > $XPLUS_META_DIR/log 2>&1
   ret=$?
 
@@ -241,7 +245,7 @@ print_version()
 
 #main
 
-args=`$GETOPT hv $*`
+args=`$GETOPT hdv $*`
 if [ $? != 0 ]; then
   print_usage
   exit 2
@@ -257,6 +261,9 @@ do
     -v)
       print_version
       exit
+      shift;;
+    -d)
+      DEBUG=1
       shift;;
     --)
       shift; break;;

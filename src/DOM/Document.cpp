@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include "DOM/DOMAllInc.h"
+#include "Poco/Bugcheck.h"
 
 using namespace std;
 
@@ -96,12 +97,11 @@ namespace DOM
   ElementP Document::createElementNS(DOMString* nsUri, DOMString* qualifiedName)
   {
     if(!qualifiedName) {
-      // TODO: throw exception
-      return NULL;
+      throw DOMException("createElementNS: qualifiedName arg is NULL");
     }
     vector<XPlus::UString> tokens;
     qualifiedName->tokenize(':', tokens);
-    assert(tokens.size()==2);
+    poco_assert(tokens.size()==2);
     return createElementNS(nsUri, new DOMString(tokens[0]), new DOMString(tokens[1]));
   }
     
@@ -109,11 +109,10 @@ namespace DOM
   {
     if(_stateful) {
       if(_currentElement && _currentElement->getParentNode()) {
-        //_currentElement = dynamic_cast<ElementP>(_currentElement->getParentNode().get()); 
         _currentElement = dynamic_cast<ElementP>(_currentElement->getParentNode()); 
       }
       else {
-        //TODO: throw exception: found an element end without a context _currentElement
+        throw DOMException("endElementNS: found end of an element end without context");
       }
     }
   }
@@ -130,7 +129,7 @@ namespace DOM
         ownerElement = _currentElement;
       }
       else {
-        //TODO: throw exception : attrNode without owner element
+        throw DOMException("createAttributeNS: found an attrNode without any owner element");
       }
     }
     return new Attribute( localName, value, nsUri, nsPrefix, ownerElement, this);
@@ -256,11 +255,9 @@ namespace DOM
     }
 
     _unprefixedNamepspaces.push_back(nsUriStr);
-    /*
-    ostringstream nsPrefix;
-    nsPrefix << "ns" << _unprefixedNamepspaces.size()+1;
-    _unprefixedNamepspaces.insert(std::pair<DOMString, DOMString>( DOMString(nsPrefix.str()), nsUriStr) );
-    */
+    //ostringstream nsPrefix;
+    //nsPrefix << "ns" << _unprefixedNamepspaces.size()+1;
+    //_unprefixedNamepspaces.insert(std::pair<DOMString, DOMString>( DOMString(nsPrefix.str()), nsUriStr) );
   }
   
   void Document::registerNsPrefixNsUri(DOMString* nsPrefix, DOMString* nsUri)

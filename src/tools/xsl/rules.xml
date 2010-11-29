@@ -73,25 +73,154 @@
   </ruleGroup>
 
 
-<!--
-Schema Representation Constraint: Attribute Declaration Representation OK
-In addition to the conditions imposed on <attribute> element information items by the schema for schema documents, all of the following also apply:
-1 default and fixed must not both be present.
-2 If default and use are both present, use must have the ·actual value· optional.
-3 If the item's parent is not <schema>, then all of the following must be true:
-3.1 One of ref or name is present, but not both.
-3.2 If ref is present, then all of <simpleType>, form and type are absent.
-4 The type attribute and a <simpleType> child element must not both be present.
-5 If fixed and use are both present, use must not have the ·actual value· prohibited.
-6 If the targetNamespace attribute is present then all of the following must be true:
-6.1 The name attribute is present.
-6.2 The form attribute is absent.
-6.3 If the ancestor <schema> does not have a targetNamespace [attribute] or its ·actual value· is different from the ·actual value· of targetNamespace of <attribute>, then all of the following are true:
-6.3.1 <attribute> has <complexType> as an ancestor
-6.3.2 There is a <restriction> ancestor between the <attribute> and the nearest <complexType> ancestor, and the ·actual value· of the base [attribute] of <restriction> does not ·match· the name of ·xs:anyType·.
 
 
--->
+  <ruleGroup id="AttributeDeclarationRepresentationOK">
+
+    <title> Schema Representation Constraint: Attribute Declaration Representation OK </title>
+    
+    <rule id="AttributeDeclarationRepresentationOK.1">
+  default and fixed must not both be present.
+    </rule>
+    
+    <rule id="AttributeDeclarationRepresentationOK.2">
+  If default and use are both present, use must have the ·actual value· optional.
+    </rule>
+    
+    <rule id="AttributeDeclarationRepresentationOK.3">
+  If the item's parent is not &lt;schema&gt;, then all of the following must be true:
+    1  One of ref or name is present, but not both.
+    2  If ref is present, then all of &lt;simpleType&gt;, form and type are absent.
+    </rule>
+    
+    <rule id="AttributeDeclarationRepresentationOK.4">
+  The type attribute and a &lt;simpleType&gt; child element must not both be present.
+    </rule>
+    
+    <rule id="AttributeDeclarationRepresentationOK.5">
+  If fixed and use are both present, use must not have the ·actual value· prohibited.
+    </rule>
+    
+    <rule id="AttributeDeclarationRepresentationOK.6">
+  If the targetNamespace attribute is present then all of the following must be true:
+    1  The name attribute is present.
+    2  The form attribute is absent.
+    3  If the ancestor &lt;schema&gt; does not have a targetNamespace [attribute] or its ·actual value· is different from the ·actual value· of targetNamespace of &lt;attribute&gt;, then all of the following are true:
+      3.1  &lt;attribute&gt; has &lt;complexType&gt; as an ancestor
+      3.2  There is a &lt;restriction&gt; ancestor between the &lt;attribute&gt; and the nearest &lt;complexType&gt; ancestor, and the ·actual value· of the base [attribute] of &lt;restriction&gt; does not ·match· the name of ·xs:anyType·.    
+    </rule>
+    
+  </ruleGroup>
+
+
+  <ruleGroup id="ElementDeclarationRepresentationOK">
+
+    <title> Schema Representation Constraint: Element Declaration Representation OK </title>
+    
+    <rule id="ElementDeclarationRepresentationOK.1">
+  default and fixed are not both present.
+    </rule>
+
+    <rule id="ElementDeclarationRepresentationOK.2">
+  If the item's parent is not &lt;schema&gt; then all of the following are true:
+    1  One of ref or name is present, but not both.
+    2  If ref is present, then all of &lt;complexType&gt; &lt;simpleType&gt; &lt;key&gt; &lt;keyref&gt; &lt;unique&gt; nillable, default, fixed, form, block and type are absent, i.e. only minOccurs, maxOccurs, id and &lt;annotation&gt; are allowed to appear together with ref.
+    </rule>
+
+    <rule id="ElementDeclarationRepresentationOK.3">
+  The &lt;element&gt; element does not have both a &lt;simpleType&gt; or &lt;complexType&gt; child and a type attribute.
+    </rule>
+
+    <rule id="ElementDeclarationRepresentationOK.4">
+  If targetNamespace is present then all of the following are true:
+    1 name is present.
+    2 form is not present.
+    3 If the ancestor &lt;schema&gt; does not have a targetNamespace [attribute] or its ·actual value· is different from the ·actual value· of targetNamespace of &lt;element>, then all of the following are true:
+      3.1 &lt;element&gt; has &lt;complexType&gt; as an ancestor
+      3.2 There is a &lt;restriction&gt; ancestor between the &lt;element&gt; and the nearest &lt;complexType&gt; ancestor, and the ·actual value· of the base [attribute] of &lt;restriction&gt; does not ·match· the name of ·xs:anyType·.    
+    </rule>
+
+    <rule id="ElementDeclarationRepresentationOK.5">
+  Every &lt;alternative&gt; element but the last has a test [attribute]; the last &lt;alternative&gt; element may have such an [attribute].
+    </rule>
+
+  </ruleGroup>
+
+
+  <!--
+    unmapped : not clear, where in spec are they mentioned
+  -->
+  <ruleGroup id="ElementDeclarationRepresentationOK.unmapped">
+
+    <title> Schema Representation Constraint: Element Declaration Representation OK - Unmapped </title>
+    
+    <rule id="ElementDeclarationRepresentationOK.unmapped.1">
+    The allowed values for abstract attribute on Element Declaration, are {true, false}
+    </rule>
+    
+    <rule id="ElementDeclarationRepresentationOK.unmapped.2">
+    The allowed values for nillable attribute on Element Declaration, are {true, false}
+    </rule>
+    
+    <rule id="ElementDeclarationRepresentationOK.unmapped.3">
+    The allowed values for abstract attribute on Element Declaration, are {restriction, extension}
+    </rule>
+    
+    <rule id="ElementDeclarationRepresentationOK.unmapped.4">
+    The allowed values for abstract attribute on Element Declaration, are {restriction, extension}
+    </rule>
+    
+    <rule id="ElementDeclarationRepresentationOK.unmapped.5">
+    The allowed values for abstract attribute on Element Declaration, are {qualified, unqualified}
+    </rule>
+
+  </ruleGroup>
+
+
+
+  <ruleGroup id="ComplexTypeDefinition.DerivationValid.extension">
+    <title> Schema Component Constraint: ComplexTypeDefinition Derivation Valid (Extension)</title>
+    
+    <rule id="ComplexTypeDefinition.DerivationValid.extension.1">
+    For every complex type T with {base type definition} B where T.{derivation method} = extension
+    
+    1) If B is a complex type definition, then  all of the following are true:
+        1.1)  B.{final} does not contain extension.
+        ....
+        .....
+      
+      (refer to complete set of rules at http://www.w3.org/TR/xmlschema11-1/#sec-cos-ct-extends)
+    </rule>
+
+
+    <rule id="ComplexTypeDefinition.DerivationValid.extension.2">
+    For every complex type T with {base type definition} B where T.{derivation method} = extension
+
+    2) If B is a simple type definition, then  all of the following are true:
+        2.1)  T.{content type}.{variety} = simple and T.{content type}.{simple type definition} = B.
+        2.2)  B.{final} does not contain extension.
+      
+      (refer to complete set of rules at http://www.w3.org/TR/xmlschema11-1/#sec-cos-ct-extends)
+    </rule>
+    
+    
+  </ruleGroup>
+
+  <ruleGroup id="ComplexTypeDefinition.DerivationValid.restriction">
+    <title> Schema Component Constraint: ComplexTypeDefinition Derivation Valid (Restriction)</title>
+    
+    <rule id="ComplexTypeDefinition.DerivationValid.restriction.all">
+    For every complex type T with {base type definition} B where T.{derivation method} = restriction, all of the following must be true:
+
+    1) B is a complex type definition whose {final} does not contain restriction.
+    2) One or more of the following is true:
+       ...
+       ....
+
+      (refer to complete set of rules at http://www.w3.org/TR/xmlschema11-1/#sec-derivation-ok-restriction)
+    </rule>
+  </ruleGroup>
+
 
 </root>
 

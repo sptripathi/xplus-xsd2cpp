@@ -1,42 +1,41 @@
 
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
 #include <iostream>
 #include <string>
 
 #include "XSD/UserOps.h"
 #include "org/all-include.h"
 
-  
+void populateDocument(org::Document* xsdDoc);
+void updateOrConsumeDocument(org::Document* xsdDoc);
+    
+
 int main (int argc, char**argv)
 {
-  XSD_USER_OPS::xsd_main(argc, argv);
-}
-
-DOM::Document* createXsdDocument(bool buildTree)
-{
-  org::Document* xsdDoc = new org::Document(buildTree);
+  XSD::UserOps<org::Document>::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
   
-  return xsdDoc;
-}
 
-DOM::Document* createXsdDocument(string inFilePath)
-{
-  XPlusFileInputStream is;
-  is.open(inFilePath.c_str(), ios::binary);
-
-  org::Document* xsdDoc = new org::Document(false);
-
-  is >> *xsdDoc; 
-  return xsdDoc;
+  XSD::UserOps<org::Document> opHandle(cbStruct);
+  opHandle.run(argc, argv);
 }
 
 //
-// Following functions are templates.
-// You need to put code in the context
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
 //
 
-  
+    
+
 // template function to populate the Tree with values
-void populateDocument(DOM::Document* pDoc)
+// write code to populate the Document here ...
+void populateDocument(org::Document* xsdDoc)
 {
   /*
   Jim Barnette    : org head
@@ -62,8 +61,6 @@ void populateDocument(DOM::Document* pDoc)
 
   */
 
-  org::Document* xsdDoc = dynamic_cast<org::Document *>(pDoc);
-  // write code to populate the Document here
   org::organization* pOrgn = xsdDoc->element_organization();
   pOrgn->set_leaderId("jimb");
   pOrgn->set_attr_id("nasa");
@@ -184,13 +181,13 @@ void populateDocument(DOM::Document* pDoc)
   pLegalDept->set_leaderId("donb");
   pLegalDept->element_legalAdvisors()->add_userId_string("danc");
   pLegalDept->element_legalAdvisors()->add_userId_string("ugoc");
-  
 }
 
-void updateOrConsumeDocument(DOM::Document* pDoc)
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(org::Document* xsdDoc)
 {
-  org::Document* xsdDoc = dynamic_cast<org::Document *>(pDoc);
-  // write code to operate on the populated-Document here
 
 }
 

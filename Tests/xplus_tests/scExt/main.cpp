@@ -1,7 +1,8 @@
 
  //
  //  This file was automatically generated using XmlPlus xsd2cpp tool.
- //  Please do not edit.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
  //
   
 #include <iostream>
@@ -10,53 +11,41 @@
 #include "XSD/UserOps.h"
 #include "NoNS/all-include.h"
 
+void populateDocument(NoNS::Document* xsdDoc);
+void updateOrConsumeDocument(NoNS::Document* xsdDoc);
     
 
-int main (int argc, char**argv)
+int main (int argc, char** argv)
 {
-  XSD_USER_OPS::xsd_main(argc, argv);
-}
+  XSD::UserOps<NoNS::Document>::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
 
-DOM::Document* createXsdDocument(bool buildTree)
-{
-  NoNS::Document* xsdDoc = new NoNS::Document(buildTree);
-    
-  return xsdDoc;
-}
-
-DOM::Document* createXsdDocument(string inFilePath)
-{
-  XPlusFileInputStream is;
-  is.open(inFilePath.c_str(), ios::binary);
-
-  NoNS::Document* xsdDoc = new NoNS::Document(false);
-
-  is >> *xsdDoc; 
-  return xsdDoc;
+  XSD::UserOps<NoNS::Document> opHandle(cbStruct);
+  opHandle.run(argc, argv);
 }
 
 //
-// Following functions are templates.
-// You need to put code in the context
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
 //
 
     
 
 // template function to populate the Tree with values
-void populateDocument(DOM::Document* pDoc)
+// write code to populate the Document here ...
+void populateDocument(NoNS::Document* xsdDoc)
 {
-  NoNS::Document* xsdDoc = dynamic_cast<NoNS::Document *>(pDoc);
-  // write code to populate the Document here
-
   xsdDoc->element_root()->set_attr_id("ID1");
   xsdDoc->element_root()->stringValue("simple content with extension");
-
 }
 
-void updateOrConsumeDocument(DOM::Document* pDoc)
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(NoNS::Document* xsdDoc)
 {
-  NoNS::Document* xsdDoc = dynamic_cast<NoNS::Document *>(pDoc);
-  // write code to operate on the populated-Document here
 
 }
 

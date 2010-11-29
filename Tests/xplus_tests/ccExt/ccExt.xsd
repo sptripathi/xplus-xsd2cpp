@@ -13,7 +13,7 @@
   </xs:complexType>
 
   <xs:complexType name="ComplexTypeCCExtn">
-    <xs:complexContent mixed="true">
+    <xs:complexContent>
       <xs:extension base="ComplexTypeSeq">
         <xs:sequence>
           <xs:element name="e4" minOccurs="1" maxOccurs="1"/>

@@ -19,11 +19,35 @@
 
 #include "DOM/Stream.h"
 #include "XSD/UserOps.h"
+#include "Poco/Bugcheck.h"
 
 using namespace std;
 
+
+#if 0
 namespace XSD_USER_OPS
 {
+
+  DOM::Document* createXsdDocumentFromFileAssertNotNull(const string& filePath, const UserOpsCbStruct& cbStruct)
+  {
+    DOM::Document* pDoc = NULL;
+    if(cbStruct.cbCreateXsdDocument) {
+      pDoc = cbStruct.cbCreateXsdDocumentFromFile(filePath);
+    }
+    poco_assert(pDoc != NULL);
+    return pDoc;
+  }
+
+  DOM::Document* createXsdDocumentAssertNotNull(bool buildTree, const UserOpsCbStruct& cbStruct)
+  {
+    DOM::Document* pDoc = NULL;
+    if(cbStruct.cbCreateXsdDocument) {
+      pDoc = cbStruct.cbCreateXsdDocument(buildTree);
+    }
+    poco_assert(pDoc != NULL);
+    return pDoc;
+  }
+
   void doc2xml(DOM::Document* docNode, string outFile)
   {
     // output xml file
@@ -33,15 +57,17 @@ namespace XSD_USER_OPS
       << endl << endl;
   }
 
-  void writePopulatedDoc()
+  void writePopulatedDoc(const UserOpsCbStruct& cbStruct)
   {
     cout << "Going to populate Document and write xml file..." << endl;
     string outFile="t.xml";
     try 
     {
-      AutoPtr<DOM::Document> pDoc = createXsdDocument(true);
+      AutoPtr<DOM::Document> pDoc = createXsdDocumentAssertNotNull(true, cbStruct);
       pDoc->prettyPrint(true);
-      populateDocument(pDoc);
+      if(cbStruct.cbPopulateDocument) {
+        cbStruct.cbPopulateDocument(pDoc);
+      }
       doc2xml(pDoc, outFile);
     }
     catch(XPlus::Exception& ex) {
@@ -53,17 +79,17 @@ namespace XSD_USER_OPS
     }
   }
 
-  void writeSample()
+  void writeSample(const UserOpsCbStruct& cbStruct)
   {
     cout << "writeSample:" << endl;
     string outFile = "sample.xml";
 
-    AutoPtr<DOM::Document> pDoc = createXsdDocument(true);
+    AutoPtr<DOM::Document> pDoc = createXsdDocumentAssertNotNull(true, cbStruct);
     pDoc->prettyPrint(true);
     doc2xml(pDoc, outFile);
   }
 
-  void readUpdateWriteFile(string inFilePath)
+  void readUpdateWriteFile(string inFilePath, const UserOpsCbStruct& cbStruct)
   {
     cout << "readUpdateWriteFile:" << inFilePath << endl;
     cout << "Going to: \n"
@@ -74,9 +100,11 @@ namespace XSD_USER_OPS
     string outFile = inFilePath+ ".row.xml";
     try 
     {
-      AutoPtr<DOM::Document> pDoc = createXsdDocument(inFilePath);
+      AutoPtr<DOM::Document> pDoc = createXsdDocumentFromFileAssertNotNull(inFilePath, cbStruct);
       pDoc->prettyPrint(true);
-      updateOrConsumeDocument(pDoc);
+      if(cbStruct.cbUpdateOrConsumeDocument) {
+        cbStruct.cbUpdateOrConsumeDocument(pDoc);
+      }
       doc2xml(pDoc, outFile);
     }
     catch(XPlus::Exception& ex) {
@@ -88,12 +116,12 @@ namespace XSD_USER_OPS
     }
   }
 
-  void roundtripFile(string inFilePath)
+  void roundtripFile(string inFilePath, const UserOpsCbStruct& cbStruct)
   {
     cout << "Going to roundtrip file:" << inFilePath << endl;
     try 
     {
-      AutoPtr<DOM::Document> pDoc = createXsdDocument(inFilePath);
+      AutoPtr<DOM::Document> pDoc = createXsdDocumentFromFileAssertNotNull(inFilePath, cbStruct);
       pDoc->prettyPrint(true);
       string outFile = inFilePath + ".rt.xml";
       doc2xml(pDoc, outFile);
@@ -104,7 +132,7 @@ namespace XSD_USER_OPS
     }
   }
 
-  void validateFile(string inFilePath)
+  void validateFile(string inFilePath, const UserOpsCbStruct& cbStruct)
   {
     cout << "validating file:" << inFilePath << endl;
     // this is one way of validation:
@@ -113,7 +141,7 @@ namespace XSD_USER_OPS
     // be reported in the catch block
     try
     {
-      AutoPtr<DOM::Document> pDoc = createXsdDocument(inFilePath);
+      AutoPtr<DOM::Document> pDoc = createXsdDocumentFromFileAssertNotNull(inFilePath, cbStruct);
     }
     catch(XPlus::Exception& ex)
     {
@@ -163,7 +191,7 @@ namespace XSD_USER_OPS
     cout << endl;
   }
 
-  int xsd_main (int argc, char**argv)
+  int xsd_main (int argc, char**argv, const UserOpsCbStruct& cbStruct)
   {
     int c;
 
@@ -179,7 +207,7 @@ namespace XSD_USER_OPS
         {"verbose", no_argument,       &verbose_flag, 1},
         /* These options don't set a flag.
            We distinguish them by their indices. */
-        {"help",   no_argument,        0, 'h'},
+        {"help",       no_argument,       0, 'h'},
         {"sample",     no_argument,       0, 's'},
         {"write",      no_argument,       0, 'w'},
         {"validate",   required_argument, 0, 'v'},
@@ -214,26 +242,26 @@ namespace XSD_USER_OPS
           break;
 
         case 's':
-          writeSample();
+          writeSample(cbStruct);
           break;
 
         case 'w':
-          writePopulatedDoc();
+          writePopulatedDoc(cbStruct);
           break;
 
         case 'r':
           inFile = optarg;
-          roundtripFile(inFile);
+          roundtripFile(inFile, cbStruct);
           break;
 
         case 'v':
           inFile = optarg;
-          validateFile(inFile);
+          validateFile(inFile, cbStruct);
           break;
 
         case 'u':
           inFile = optarg;
-          readUpdateWriteFile(inFile);
+          readUpdateWriteFile(inFile, cbStruct);
           break;
 
         case '?':
@@ -260,4 +288,5 @@ namespace XSD_USER_OPS
     }
   }
 }
+#endif
 
