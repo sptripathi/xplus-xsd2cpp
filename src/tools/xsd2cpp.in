@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # This file is part of XmlPlus package
@@ -53,6 +53,7 @@ NSALIASES_FILE="none"
 XPLUS_META_DIR=""
 XPLUS_SCHEMAINFO_DIR=""
 DEBUG=0
+PROFILE=0
 
 get_abs_path()
 {
@@ -143,16 +144,21 @@ gen_source_files()
   if [ $DEBUG -eq 1 ]; then
     XSLTPROC_OPTIONS="-v $XSLTPROC_OPTIONS"
   fi
-
-  $XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD > $XPLUS_META_DIR/log 2>&1
-  ret=$?
-
-  $CAT $XPLUS_META_DIR/log | $GREP -v xplusmeta | $GREP -v xplus.schemaInfo
-  
-  if [ $ret -ne 0 ]; then
-    cleanup_meta
-    exit $ret
+  if [ $PROFILE -eq 1 ]; then
+    XSLTPROC_OPTIONS="--profile $XSLTPROC_OPTIONS"
   fi
+  
+  #$XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD > $XPLUS_META_DIR/log 2>&1
+  #ret=$?
+  #$CAT $XPLUS_META_DIR/log | $GREP -v xplusmeta | $GREP -v xplus.schemaInfo
+  $XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD 2>&1 | $GREP -v "xplus.schemaInfo"
+  
+  #ret=$?
+  #if [ $ret -ne 0 ]; then
+  #  echo "failed to generate source... $ret"
+  #  cleanup_meta
+  #  exit $ret
+  #fi
 
   #beautify
   for file in `$FIND include/ -name "*.h"`
@@ -245,7 +251,7 @@ print_version()
 
 #main
 
-args=`$GETOPT hdv $*`
+args=`$GETOPT hdpv $*`
 if [ $? != 0 ]; then
   print_usage
   exit 2
@@ -264,6 +270,9 @@ do
       shift;;
     -d)
       DEBUG=1
+      shift;;
+    -p)
+      PROFILE=1
       shift;;
     --)
       shift; break;;

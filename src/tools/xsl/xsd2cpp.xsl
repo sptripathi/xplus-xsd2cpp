@@ -34,6 +34,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 <xsl:include href="complexTypeH.xsl"/>
 <xsl:include href="xsdIncludes.xsl"/>
 <xsl:include href="constraints.xsl"/>
+<xsl:include href="resolution.xsl"/>
 
 
 <xsl:template match="/">
@@ -54,7 +55,9 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
   ***** exporting  schema: <xsl:value-of select="$input_doc"/>
   </xsl:message>
   -->
+  <!--
   <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="$input_doc"/></xsl:call-template>
+  -->
   <xsl:call-template name="GEN_MAIN_CPP"/>
   <xsl:apply-templates select="*[local-name()='schema']"/>
     
@@ -153,7 +156,9 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
         ************ applying imported schema: <xsl:value-of select="@schemaLocation"/>
         </xsl:message>
         -->
+        <!--
         <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="@schemaLocation"/></xsl:call-template>
+        -->
         <xsl:apply-templates select="document(@schemaLocation)" mode="IMPORTED_DOC"/>
       </xsl:when>  
       <xsl:when test="local-name()='include'">
@@ -162,7 +167,9 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
         ************ applying included schema: <xsl:value-of select="@schemaLocation"/>
         </xsl:message>
         -->
+        <!--
         <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="@schemaLocation"/></xsl:call-template>
+        -->
         <xsl:apply-templates select="document(@schemaLocation)" mode="INCLUDED_DOC"/>
       </xsl:when>
     </xsl:choose>
@@ -348,6 +355,7 @@ public:
     initFSM();
     DOM::Document::attributeDefaultQualified(<xsl:value-of select="$attributeDefaultQualified"/>);
     DOM::Document::elementDefaultQualified(<xsl:value-of select="$elementDefaultQualified"/>);
+      
 
     <xsl:if test="$cntTLE=1">
     if(buildTree()) {
@@ -608,7 +616,7 @@ XML Representation Summary: element Element Information Item
 /// The class for element <xsl:value-of select="$expandedQName"/> with following structure: 
 /// \n complexType->ModelGroup-or-ModelGroupDefinition
 /// Read more on structures/methods inside ...
-class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSchema::Types::anyComplexType&gt;
+class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSchema::Types::anyType&gt;
 {
   public:
 

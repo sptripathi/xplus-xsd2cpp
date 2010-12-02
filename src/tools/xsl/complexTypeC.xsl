@@ -770,8 +770,30 @@ namespace Types
   <xsl:param name="schemaComponentName" select="@name"/>
   
   <xsl:variable name="cppNSDerefLevel1Onwards"><xsl:call-template name="T_get_nsDeref_level1Onwards_elemComplxTypeOnly"/></xsl:variable>
-  
-  <xsl:variable name="mixedContent"><xsl:call-template name="T_get_mixedContent_CTNode"/></xsl:variable>
+  <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
+
+  <xsl:variable name="resolution">
+    <xsl:choose>
+      <xsl:when test="local-name(..)='element'">
+         <xsl:call-template name="T_resolve_elementAttr">
+           <xsl:with-param name="node" select=".."/>
+         </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="T_resolve_typeLocalPartNsUri">
+          <xsl:with-param name="typeLocalPart" select="@name"/>
+          <xsl:with-param name="typeNsUri" select="$targetNsUri"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>  
+  </xsl:variable>
+
+  <xsl:variable name="contentTypeVarietyEnum">
+    <xsl:call-template name="T_get_contentType_variety_cppEnum_from_resolution">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>  
+  </xsl:variable>
+
   //constructor
   <xsl:choose>
     <xsl:when test="local-name(..)='element'">
@@ -783,11 +805,11 @@ namespace Types
       Node* previousSiblingElement,
       Node* nextSiblingElement
       ):
-      XMLSchema::XmlElement&lt;anyComplexType&gt;(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement),
+      XMLSchema::XmlElement&lt;anyType&gt;(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement),
     </xsl:when>
     <xsl:when test="local-name()='complexType'">
   <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOM::Node* ownerNode, DOM::ElementP ownerElem, XMLSchema::TDocument* ownerDoc, bool childBuildsTree):
-  XMLSchema::Types::anyComplexType(ownerNode, ownerElem, ownerDoc, <xsl:value-of select="$mixedContent"/>),
+  XMLSchema::Types::anyType(ownerNode, ownerElem, ownerDoc),
     </xsl:when>
     <xsl:otherwise></xsl:otherwise>
   </xsl:choose>
@@ -798,11 +820,8 @@ namespace Types
     , _<xsl:value-of select="$mgName"/>(new <xsl:value-of select="$mgName"/>(this) )
   </xsl:for-each>
   {
-  <xsl:if test="local-name(..)='element'">
-    this->mixedContent(<xsl:value-of select="$mixedContent"/>);
-  </xsl:if>  
+    this->contentTypeVariety(<xsl:value-of select="$contentTypeVarietyEnum"/>);
     initFSM();
-
     <xsl:choose>
       <xsl:when test="local-name(..)!='element'">
     if(ownerDoc &amp;&amp; ownerDoc->buildTree() &amp;&amp; !childBuildsTree)
@@ -909,9 +928,6 @@ namespace Types
 
   
   <xsl:variable name="cppNSDerefLevel1Onwards"><xsl:call-template name="T_get_nsDeref_level1Onwards_elemComplxTypeOnly"/></xsl:variable>
-  <!--- 
-  <xsl:variable name="mixedContent"><xsl:call-template name="T_get_mixedContent_CTNode"/></xsl:variable>
-  -->
   //constructor
   <xsl:choose>
     <xsl:when test="local-name(..)='element'">
@@ -1033,8 +1049,35 @@ namespace Types
   </xsl:variable>
   
   <xsl:variable name="cppNSDerefLevel1Onwards"><xsl:call-template name="T_get_nsDeref_level1Onwards_elemComplxTypeOnly"/></xsl:variable>
-  
-  <xsl:variable name="mixedContent"><xsl:call-template name="T_get_mixedContent_CTNode"/></xsl:variable>
+  <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
+
+  <xsl:variable name="resolution">
+    <xsl:choose>
+      <xsl:when test="local-name(..)='element'">
+         <xsl:call-template name="T_resolve_elementAttr">
+           <xsl:with-param name="node" select=".."/>
+         </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="T_resolve_typeLocalPartNsUri">
+          <xsl:with-param name="typeLocalPart" select="@name"/>
+          <xsl:with-param name="typeNsUri" select="$targetNsUri"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>  
+  </xsl:variable>
+
+  <xsl:variable name="contentTypeVarietyEnum">
+    <xsl:call-template name="T_get_contentType_variety_cppEnum_from_resolution">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>  
+  </xsl:variable>
+  <xsl:variable name="contentTypeVariety">
+    <xsl:call-template name="T_get_contentType_variety_from_resolution">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>  
+  </xsl:variable>
+
   //constructor
   <xsl:choose>
     <xsl:when test="local-name(..)='element'">
@@ -1068,7 +1111,7 @@ namespace Types
     , _<xsl:value-of select="$mgName"/>(new <xsl:value-of select="$mgName"/>(this) )
   </xsl:for-each>
   {
-    this->mixedContent(<xsl:value-of select="$mixedContent"/>);
+    this->contentTypeVariety(<xsl:value-of select="$contentTypeVarietyEnum"/>);
     initFSM();
 
     <xsl:choose>

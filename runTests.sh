@@ -11,7 +11,6 @@ FAILED_DIRS=""
 INPUT_XSD=""
 
 EX_DIRS="
-        examples/org
         examples/includeDemo
         examples/helloWorld
         examples/helloWorldWide
@@ -21,6 +20,7 @@ EX_DIRS="
         examples/po
         examples/ipo
         examples/netEnabled
+        examples/org
         "
 
 W3C_TESTS_DIRS="

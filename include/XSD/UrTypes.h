@@ -69,8 +69,7 @@ namespace XMLSchema
 
         enum eAnyTypeUseCase {
           ANY_TYPE,
-          ANY_SIMPLE_TYPE,
-          ANY_COMPLEX_TYPE
+          ANY_SIMPLE_TYPE
         };
 
         anyType(
@@ -120,6 +119,37 @@ namespace XMLSchema
           return _contentTypeVariety;
         }
 
+        inline eAnyTypeUseCase anyTypeUseCase() {
+          return _anyTypeUseCase;
+        }
+
+        inline unsigned int countText() {
+          return _textNodes.size();
+        }
+        inline DOMString getTextAt(unsigned int pos) {
+          return *_textNodes.at(pos)->getData();
+        }
+        // edit existing-text at a position( position among text
+        // inside anyComplexType)
+        void replaceTextAt(DOMString text, unsigned int pos) {
+          _textNodes.at(pos)->setNodeValue(new DOMString(text));
+        }
+        // pos: position among all nodes inside anyComplexType
+        void setTextAmongChildrenAt(DOMString text, unsigned int pos);
+        void setTextEnd(DOMString text);
+        void setTextAfterNode(DOMString text, DOM::Node *refNode);
+
+        //debug
+        void printTextNodes() 
+        {
+          List<TextNode *>::iterator it = _textNodes.begin();
+          unsigned int i=0;
+          for(; it != _textNodes.end(); ++it, ++i) {
+            cout << "text[" << i << "] = [" << *((*it)->getData()) << "]" << endl;
+          }
+        }
+        
+
         //FIXME
         //NB: returns lenth as used in CFacets:
         // eg in string it's number of code-points
@@ -164,15 +194,19 @@ namespace XMLSchema
         //
         //                 MEMBER FUNCTIONS 
         //
-        virtual TextNodeP setTextNodeValue(DOMString value); 
         void setErrorContext(XPlus::Exception& ex);
+        virtual TextNodeP setTextNodeValue(DOMString value); 
+        void indexAddedTextNode(TextNode *txtNode);
+        TextNode* addTextNodeValueAtPos(DOMString value, unsigned int pos);
+        void checksOnSetValue(DOMString value);
         void checkFixed(DOMString value);
-        DOM::Attribute* createDOMAttributeUnderCurrentElement(DOMString *attrName, DOMString *attrNsUri=NULL, DOMString *attrNsPrefix=NULL, DOMString *attrValue=NULL);
 
+        DOM::Attribute* createDOMAttributeUnderCurrentElement(DOMString *attrName, DOMString *attrNsUri=NULL, DOMString *attrNsPrefix=NULL, DOMString *attrValue=NULL);
         DOM::Attribute* createAttributeXsiType();
         DOM::Attribute* createAttributeXsiNil();
         DOM::Attribute* createAttributeXsiSchemaLocation();
         DOM::Attribute* createAttributeXsiNoNamespaceSchemaLocation();
+        
 
 
         //
@@ -181,24 +215,22 @@ namespace XMLSchema
 
         eAnyTypeUseCase         _anyTypeUseCase;
         eContentTypeVariety     _contentTypeVariety;
+        bool                    _fixed;
         
         // in case of anyType and derivatives ownerElement() is same
         // Node as ownerNode(). However in case of element ownerElement()
         // is element itself(this pointer)
-        Element*        _ownerElem;
-
+        Element*                _ownerElem;
         // Node(Element or Attribute) which holds value of my type
         // eg. <element name="elem1" type="T">
         // T's ownerNode is elem1 Node
-        Node*           _ownerNode;
-        TDocument*      _ownerDoc;
+        Node*                   _ownerNode;
+        TDocument*              _ownerDoc;
+        AnyTypeFSMPtr           _fsm;
 
-        AnyTypeFSMPtr   _fsm;
+        DOMString               _value;
+        List<TextNode* >        _textNodes; 
 
-        DOMString       _value;
-        TextNode*       _valueNode;
-
-        bool            _fixed;
     };
 
 
@@ -384,11 +416,12 @@ namespace XMLSchema
 
     };
 
-    
+
+#if 0
     //                                                      //
     //                     anyComplexType                   // 
     //                                                      //
-    class anyComplexType : protected anyType
+    class anyComplexType : public anyType
     {
       public:
         anyComplexType(
@@ -450,6 +483,7 @@ namespace XMLSchema
 
         bool                _mixedContent;
     };
+#endif
 
   } // end namespace Types 
 } // end namespace XMLSchema

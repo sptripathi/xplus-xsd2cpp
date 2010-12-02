@@ -36,8 +36,8 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
   <xsl:variable name="filename" select="concat('include/', $typeCppNSDirChain, '/Types/', $cppName, '.h')" />
   <xsl:document method="text" href="{$filename}">
 <xsl:value-of select="$outHeader"/>  
-#ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
-#define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
+#ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_types_<xsl:value-of select="$cppName"/>_H__
+#define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_types_<xsl:value-of select="$cppName"/>_H__
 #include "XSD/xsdUtils.h"
 
 <xsl:call-template name="GEN_INCLUDELIST_OF_COMPLEXTYPE_SIMPLETYPE_INCLUDE_H"/>
@@ -64,7 +64,7 @@ namespace Types
       </xsl:call-template>
     </xsl:when>
     <xsl:otherwise>
-  typedef XMLSchema::Types::anyComplexType <xsl:value-of select="$cppName"/>;
+  typedef XMLSchema::Types::anyType <xsl:value-of select="$cppName"/>;
     </xsl:otherwise>
   </xsl:choose>
 } // end namespace Types
@@ -82,7 +82,7 @@ namespace Types
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
 /// The class for complexType <xsl:value-of select="$schemaComponentName"/>
 /// \n Refer to documentation on structures/methods inside ...
-class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyComplexType
+class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyType
 {
   public:
   //constructor
@@ -182,11 +182,6 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyComplexTyp
     </xsl:call-template>
   </xsl:variable>
     
-  <xsl:variable name="isComplexTypeWithSimpleTypeContent">
-    <xsl:call-template name="T_is_resolution_complexType_with_simpleTypeContent">
-      <xsl:with-param name="resolution" select="$resolution"/>
-    </xsl:call-template>
-  </xsl:variable>
   <xsl:variable name="isSimpleType">
     <xsl:call-template name="T_is_resolution_simpleType">
       <xsl:with-param name="resolution" select="$resolution" />
@@ -671,7 +666,7 @@ public:
           <xsl:with-param name="resolution" select="$resolution"/>  
         </xsl:call-template>
       </xsl:variable>
-
+      
       <xsl:variable name="atomicSimpleTypeImpl">
         <xsl:call-template name="T_get_simpleType_impl_from_resolution">
           <xsl:with-param name="resolution" select="$resolution"/>

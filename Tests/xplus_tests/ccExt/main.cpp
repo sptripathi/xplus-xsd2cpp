@@ -44,15 +44,13 @@ void populateDocument(NoNS::Document* xsdDoc)
   
   pRootElem->set_count_e1(2);
   // need revisit for API on anyType :
-  /*
-  pRootElem->set_e1(0, "e1 value");
-  pRootElem->set_e1(1, "e1 value2");
+  pRootElem->element_e1_at(0)->stringValue("e1 value");
+  pRootElem->element_e1_at(1)->stringValue("e1 value2");
 
-  pRootElem->set_e2("e2 value");
-  pRootElem->set_e3("e3 value");
-  pRootElem->set_e4("e4 value");
-  pRootElem->set_e5("e5 value");
-  */
+  pRootElem->element_e2()->stringValue("e2 value");
+  pRootElem->element_e3()->stringValue("e3 value");
+  pRootElem->element_e4()->stringValue("e4 value");
+  pRootElem->element_e5()->stringValue("e5 value");
 }
 
 // write code to operate(update/consume/test etc.) on the Document here...

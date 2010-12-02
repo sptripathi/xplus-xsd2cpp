@@ -25,6 +25,7 @@ nobase_dist_bin_SCRIPTS=makeTmpl/configure.ac \
                         xsl/xsdIncludes.xsl \
                         xsl/xsd2cppBuiltinSimple.xsl \
                         xsl/constraints.xsl \
+                        xsl/resolution.xsl \
                         xsl/test.xsl \
                         xsl/xmlplusDict.xml \
                         xsl/rules.xml

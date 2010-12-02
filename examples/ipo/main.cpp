@@ -9,20 +9,22 @@
 #include <string>
 
 #include "XSD/UserOps.h"
-#include "NoNS/all-include.h"
+#include "IPO/all-include.h"
 
-void populateDocument(NoNS::Document* xsdDoc);
-void updateOrConsumeDocument(NoNS::Document* xsdDoc);
+void populateDocument(IPO::Document* xsdDoc);
+void updateOrConsumeDocument(IPO::Document* xsdDoc);
+  
+void chooseDocumentElement(IPO::Document* xsdDoc);
     
 
-int main (int argc, char** argv)
+int main (int argc, char**argv)
 {
-  XSD::UserOps<NoNS::Document>::UserOpsCbStruct cbStruct;
+  XSD::UserOps<IPO::Document>::UserOpsCbStruct cbStruct;
   cbStruct.cbPopulateDocument           =  populateDocument;
   cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
-  
+  cbStruct.cbChooseDocumentElement      =  chooseDocumentElement;
 
-  XSD::UserOps<NoNS::Document> opHandle(cbStruct);
+  XSD::UserOps<IPO::Document> opHandle(cbStruct);
   opHandle.run(argc, argv);
 }
 
@@ -31,24 +33,31 @@ int main (int argc, char** argv)
 // You need to put "code" in the respective contexts.
 //
 
+  
+// choose the element inside Document that you want as root using
+// a call like : xsdDoc->set_root_xyz();
+void chooseDocumentElement(IPO::Document* xsdDoc)
+{
+  // uncomment one of folowing to choose root
+  
+  xsdDoc->set_root_purchaseOrder();
+  
+  //xsdDoc->set_root_comment();
+    
+}
     
 
 // template function to populate the Tree with values
 // write code to populate the Document here ...
-void populateDocument(NoNS::Document* xsdDoc)
+void populateDocument(IPO::Document* xsdDoc)
 {
-  xsdDoc->element_root()->set_attr_a1("IDA1");
-  xsdDoc->element_root()->set_attr_a2("200");
-  
-  // need revisit for API on anyType :
-  xsdDoc->element_root()->element_e1()->stringValue("e1 value");
-  xsdDoc->element_root()->element_e3()->stringValue("e3 value");
+
 }
 
 // write code to operate(update/consume/test etc.) on the Document here...
 // This Document is typically already populated(eg. read from an input
 // xml file)
-void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+void updateOrConsumeDocument(IPO::Document* xsdDoc)
 {
 
 }

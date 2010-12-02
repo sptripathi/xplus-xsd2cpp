@@ -36,38 +36,43 @@ namespace XMLSchema
 
   namespace Types 
   {
-  
-  DOMString   anyType::s_xsiStr                          = "xsi"; 
-  DOMString   anyType::s_xsiUri                          = "http://www.w3.org/2001/XMLSchema-instance";
-  DOMString   anyType::s_xsiTypeStr                      = "type"; 
-  DOMString   anyType::s_xsiNilStr                       = "nil";
-  DOMString   anyType::s_xsiSchemaLocationStr            = "schemaLocation";
-  DOMString   anyType::s_xsiNoNamespaceSchemaLocationStr = "noNamespaceSchemaLocation";
+
+    DOMString     anyType::s_xsiStr                             = "xsi"; 
+    DOMString     anyType::s_xsiUri                             = "http://www.w3.org/2001/XMLSchema-instance";
+    DOMString     anyType::s_xsiTypeStr                         = "type"; 
+    DOMString     anyType::s_xsiNilStr                          = "nil";
+    DOMString     anyType::s_xsiSchemaLocationStr               = "schemaLocation";
+    DOMString     anyType::s_xsiNoNamespaceSchemaLocationStr    = "noNamespaceSchemaLocation";
+
+    DOMStringPtr  anyType::s_xsiStrPtr                          = new DOMString(s_xsiStr); 
+    DOMStringPtr  anyType::s_xsiUriPtr                          = new DOMString(s_xsiUri);
+    DOMStringPtr  anyType::s_xsiTypeStrPtr                      = new DOMString(s_xsiTypeStr); 
+    DOMStringPtr  anyType::s_xsiNilStrPtr                       = new DOMString(s_xsiNilStr);
+    DOMStringPtr  anyType::s_xsiSchemaLocationStrPtr            = new DOMString(s_xsiSchemaLocationStr);
+    DOMStringPtr  anyType::s_xsiNoNamespaceSchemaLocationStrPtr = new DOMString(s_xsiNoNamespaceSchemaLocationStr);
 
 
-  DOMStringPtr   anyType::s_xsiStrPtr                          = new DOMString(s_xsiStr); 
-  DOMStringPtr   anyType::s_xsiUriPtr                          = new DOMString(s_xsiUri);
-  DOMStringPtr   anyType::s_xsiTypeStrPtr                      = new DOMString(s_xsiTypeStr); 
-  DOMStringPtr   anyType::s_xsiNilStrPtr                       = new DOMString(s_xsiNilStr);
-  DOMStringPtr   anyType::s_xsiSchemaLocationStrPtr            = new DOMString(s_xsiSchemaLocationStr);
-  DOMStringPtr   anyType::s_xsiNoNamespaceSchemaLocationStrPtr = new DOMString(s_xsiNoNamespaceSchemaLocationStr);
-
-    
     anyType::anyType(
         NodeP ownerNode,
         ElementP ownerElem,
         TDocumentP ownerDoc,
-        eAnyTypeUseCase anyTypeUseCase
+        eAnyTypeUseCase typeUseCase
         ):
+      _anyTypeUseCase(typeUseCase),  
       _ownerNode(ownerNode),
       _ownerElem(ownerElem),
       _ownerDoc(ownerDoc),
-      //_fsmCreatedNode(NULL),
       _value(""),
       _fsm(NULL),
-      _valueNode(NULL),
       _fixed(false)
     {
+      if(anyTypeUseCase() == ANY_SIMPLE_TYPE) {
+        _contentTypeVariety = CONTENT_TYPE_VARIETY_SIMPLE;
+      }
+      else {
+        _contentTypeVariety = CONTENT_TYPE_VARIETY_MIXED; // for anyType
+      }
+
       if(_ownerElem)
       {
         XsdFsmBasePtr fsmsAttrs[] = { 
@@ -115,7 +120,6 @@ namespace XMLSchema
       return ownerElement();
     }
 
-
     void anyType::checkFixed(DOMString value) 
     {
       if(fixed() & (value != _value)) 
@@ -127,6 +131,37 @@ namespace XMLSchema
       }
     }
 
+    void anyType::checksOnSetValue(DOMString value)
+    {
+      if( (contentTypeVariety() == CONTENT_TYPE_VARIETY_ELEMENT_ONLY) &&
+          !value.matchCharSet(UTF8FNS::isSpaceChar)
+        )
+      {
+        ostringstream err;
+        err << "Character content other than whitespace is not allowed"
+          " because the content type is 'element-only'";
+        ValidationException ex(err.str()); 
+        ex.setContext("element", *this->ownerElement()->getNodeName());
+        throw ex;
+      }
+
+      if( (contentTypeVariety() == CONTENT_TYPE_VARIETY_EMPTY) &&
+          !value.matchCharSet(UTF8FNS::isSpaceChar) // FIXME: is space allowed for empty content????
+        )
+      {
+        ostringstream err;
+        err << "Character content other than whitespace is not allowed"
+          " because the content type is 'empty'";
+        ValidationException ex(err.str()); 
+        ex.setContext("element", *this->ownerElement()->getNodeName());
+        throw ex;
+      }
+
+      checkFixed(value);
+    }
+
+
+
     // 1. sets the value (in _value)
     // 2. creates the DOM TextNode with this value if the TextNode was not 
     //    there, else sets the value in the TextNode
@@ -134,9 +169,13 @@ namespace XMLSchema
     {
       try
       {
-        checkFixed(value);
-        _value = value;
-        setTextNodeValue(_value);
+        checksOnSetValue(value);
+        // FIXME: what should be the value in case of compplexType, anyType
+        if(anyTypeUseCase() == ANY_SIMPLE_TYPE)
+        {
+          _value = value;
+        }
+        setTextNodeValue(value);
       }
       catch(XPlus::Exception& ex)
       {
@@ -145,20 +184,121 @@ namespace XMLSchema
       }
     }
 
-    TextNodeP anyType::setTextNodeValue(DOMString value) 
+    // here pos is the position of this node among all children 
+    // and not just the text nodes
+    void anyType::setTextAmongChildrenAt(DOMString text, unsigned int pos)
     {
-      if(this->ownerNode()) 
+      checksOnSetValue(text);
+      this->addTextNodeValueAtPos(text, pos);
+    }
+
+    void anyType::setTextEnd(DOMString text)
+    {
+      checksOnSetValue(text);
+      this->setTextAmongChildrenAt(text, -1);
+    }
+
+    void anyType::setTextAfterNode(DOMString text, DOM::Node *refNode)
+    {
+      checksOnSetValue(text);
+      if(!this->ownerNode()) {
+        ostringstream err;
+        err << "can not set text in an ComplexType without an owner parent-node";
+        throw LogicalError(err.str());
+      }
+      DOM::TextNode *txtNode = this->ownerNode()->createChildTextNodeAfterNode(new DOMString(text), refNode);
+      if(!txtNode) {
+        ostringstream err;
+        err << "anyType: failed to add Text Node";
+        throw XSDException(err.str());
+      }
+      indexAddedTextNode(txtNode);
+    }
+
+    TextNode* anyType::setTextNodeValue(DOMString value)
+    {
+      // NB: note that sometimes this anyType wouldnt have an owner Node, but it will be
+      // set a value with using stringValue(xyz), which in turn will call this function.
+      // eg. SimpleTypeListTmpl::stringValue ()
+      // For this reason we shouldn't throw an error if ownerNode is NULL, rather just do
+      // nothing inside this function
+      if(!this->ownerNode()) {
+        return NULL;
+      }
+
+      TextNode* valueNode = NULL;
+      if(anyTypeUseCase() == ANY_SIMPLE_TYPE)
       {
-        if(!_valueNode) {
-          _valueNode = this->ownerNode()->createChildTextNode(new DOMString(value));
+        if(_textNodes.size() == 0) {
+          valueNode = this->ownerNode()->createChildTextNode(new DOMString(value));
+          _textNodes.push_back(valueNode);
         }
         else 
         {
-          //_valueNode->appendData(new DOMString(value));
-          _valueNode->setNodeValue(new DOMString(value));
+          valueNode = _textNodes.at(0);
+          valueNode->setNodeValue(new DOMString(value));
         }
       }
-      return _valueNode;
+      else
+      {
+        valueNode = this->addTextNodeValueAtPos(value, -1);
+      }
+      return valueNode;
+    }
+
+
+    TextNode* anyType::addTextNodeValueAtPos(DOMString text, unsigned int pos)
+    {
+      DOM::TextNode *txtNode = NULL;
+      if(!this->ownerNode()) {
+        ostringstream err;
+        err << "can not set text in an ComplexType without an owner parent-element";
+        throw LogicalError(err.str());
+      }
+
+
+      if(pos==-1) 
+      {
+        txtNode = this->ownerNode()->createChildTextNode(new DOMString(text));
+        if(!txtNode) {
+          ostringstream err;
+          err << "anyType: failed to add Text Node";
+          XSDException ex(err.str()); 
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          throw ex;
+        }
+        _textNodes.push_back(txtNode);
+      }
+      else 
+      {
+        txtNode = this->ownerNode()->createChildTextNodeAt(new DOMString(text), pos);
+        if(!txtNode)
+        {
+          ostringstream err;
+          err << "anyType: failed to add Text Node";
+          XSDException ex(err.str()); 
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          throw ex;
+        }
+        indexAddedTextNode(txtNode);
+      }
+      return txtNode;
+    }
+
+
+    void anyType::indexAddedTextNode(TextNode *txtNode)
+    {
+      unsigned int posText = txtNode->countPreviousSiblingsOfType(DOM::Node::TEXT_NODE);
+      if(posText>_textNodes.size()) {
+        ostringstream err;
+        err << "anyType: Text Node added, though don't know where to index.";
+        throw LogicalError(err.str());
+      }
+      List<DOM::TextNode *>::iterator it = _textNodes.begin();
+      for(unsigned int i=0; i<posText; ++i) {
+        ++it;
+      }
+      _textNodes.insert(it, txtNode);
     }
 
 
@@ -216,11 +356,13 @@ namespace XMLSchema
       throw XMLSchema::FSMException(DOMString(err.str()));
     }
 
-    TextNodeP anyType::createTextNode(DOMString* data)
+    TextNode* anyType::createTextNode(DOMString* data)
     {
       if(data) {
         stringValue(*data);
-        return _valueNode;
+        TextNode* p = _textNodes.back();
+        return p;
+        //return _textNodes.back();
       }
       return NULL;
     }
@@ -389,7 +531,7 @@ namespace XMLSchema
     void anySimpleType::endElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)
     {
       anyType::endElementNS(nsUri, nsPrefix, localName);
-      if(!_valueNode && (_primitiveType != PD_STRING)) {
+      if( (_textNodes.size()==0) && (_primitiveType != PD_STRING)) {
         ostringstream err;
         err << "empty value for : " << formatNamespaceName(XsdFsmBase::ELEMENT_START, nsUri, *localName);
         throw XMLSchema::ValidationException(DOMString(err.str()));
@@ -1085,125 +1227,6 @@ namespace XMLSchema
       }
     }
 
-
-
-    //                                                 //
-    //                     anyComplexType              //
-    //                                                 //
-
-    anyComplexType::anyComplexType(
-        NodeP ownerNode,
-        ElementP ownerElem,
-        TDocumentP ownerDoc,
-        bool mixedContent
-        ):
-      anyType(ownerNode, ownerElem, ownerDoc, anyType::ANY_COMPLEX_TYPE),
-      _mixedContent(mixedContent)
-    {
-    }
-
-    TextNode* anyComplexType::createTextNode(DOMString* data)
-    {
-      if(data) {
-        return setTextNodeValue(*data);
-      }
-      return NULL;
-    }
-    
-    TextNode* anyComplexType::setTextNodeValue(DOMString value) 
-    {
-      return this->addTextNodeValueAtPos(value, -1);
-    }
-
-    void anyComplexType::indexAddedTextNode(TextNode *txtNode)
-    {
-      unsigned int posText = txtNode->countPreviousSiblingsOfType(DOM::Node::TEXT_NODE);
-      if(posText>_textNodes.size()) {
-        ostringstream err;
-        err << "anyComplexType: Text Node added, though don't know where to index.";
-        throw LogicalError(err.str());
-      }
-      List<DOM::TextNode *>::iterator it = _textNodes.begin();
-      for(unsigned int i=0; i<posText; ++i) {
-        ++it;
-      }
-      _textNodes.insert(it, txtNode);
-    }
-
-    TextNode* anyComplexType::addTextNodeValueAtPos(DOMString text, unsigned int pos)
-    {
-      DOM::TextNode *txtNode = NULL;
-      if(!this->ownerNode()) {
-        ostringstream err;
-        err << "can not set text in an ComplexType without an owner parent-element";
-        throw LogicalError(err.str());
-      }
-
-      //FIXME: such an error should be thrown in stringValue fn also
-      if(!mixedContent() && !text.matchCharSet(UTF8FNS::isSpaceChar)) {
-        ostringstream err;
-        err << "Character content other than whitespace is not allowed"
-               " because the content type is 'element-only'";
-        ValidationException ex(err.str()); 
-        ex.setContext("element", *this->ownerElement()->getNodeName());
-        throw ex;
-      }
-
-      if(pos==-1) 
-      {
-        txtNode = this->ownerNode()->createChildTextNode(new DOMString(text));
-        if(!txtNode) {
-          ostringstream err;
-          err << "anyComplexType: failed to add Text Node";
-          XSDException ex(err.str()); 
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          throw ex;
-        }
-        _textNodes.push_back(txtNode);
-      }
-      else 
-      {
-        txtNode = this->ownerNode()->createChildTextNodeAt(new DOMString(text), pos);
-        if(!txtNode)
-        {
-          ostringstream err;
-          err << "anyComplexType: failed to add Text Node";
-          XSDException ex(err.str()); 
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          throw ex;
-        }
-        indexAddedTextNode(txtNode);
-      }
-      return txtNode;
-    }
-
-    // here pos is the position of this node among all children 
-    // and not just the text nodes
-    void anyComplexType::setTextAmongChildrenAt(DOMString text, unsigned int pos)
-    {
-      this->addTextNodeValueAtPos(text, pos);
-    }
-
-    void anyComplexType::setTextEnd(DOMString text)
-    {
-      this->setTextAmongChildrenAt(text, -1);
-    }
-
-    void anyComplexType::setTextAfterNode(DOMString text, DOM::Node *refNode)
-    {
-      if(!this->ownerNode()) {
-        ostringstream err;
-        err << "can not set text in an ComplexType without an owner parent-element";
-        throw LogicalError(err.str());
-      }
-      DOM::TextNode *txtNode = this->ownerNode()->createChildTextNodeAfterNode(new DOMString(text), refNode);
-      if(!txtNode) {
-        ostringstream err;
-        err << "anyComplexType: failed to add Text Node";
-        throw XSDException(err.str());
-      }
-      indexAddedTextNode(txtNode);
-    }
         
   }// end namespace Types
 
