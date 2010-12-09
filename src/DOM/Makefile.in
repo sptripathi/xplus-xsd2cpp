@@ -74,7 +74,7 @@ libdom_la_LIBADD =
 am_libdom_la_OBJECTS = xmlparse.lo xmlrole.lo xmltok.lo xmltok_impl.lo \
 	xmltok_ns.lo Attribute.lo CharacterData.lo Comment.lo \
 	Document.lo DOMParser.lo Element.lo ExpatParser.lo \
-	NamedNodeMap.lo Node.lo Stream.lo TextNode.lo
+	NamedNodeMap.lo Node.lo Stream.lo TextNode.lo XmlDecl.lo
 libdom_la_OBJECTS = $(am_libdom_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -239,6 +239,7 @@ libdom_la_SOURCES = \
  Node.cpp \
  Stream.cpp \
  TextNode.cpp \
+ XmlDecl.cpp \
   $(top_srcdir)/include/DOM/Attribute.h \
   $(top_srcdir)/include/DOM/CDATASection.h \
   $(top_srcdir)/include/DOM/CharacterData.h \
@@ -279,9 +280,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/DOM/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/DOM/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/DOM/Makefile
+	  $(AUTOMAKE) --foreign src/DOM/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -351,6 +352,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Node.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Stream.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TextNode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XmlDecl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmlparse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmlrole.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmltok.Plo@am__quote@

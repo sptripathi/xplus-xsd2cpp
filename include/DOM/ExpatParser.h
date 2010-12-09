@@ -118,9 +118,8 @@ public:
                  const DOM::DOMString  *version,
                  const DOM::DOMString  *encoding,
                  int             standalone)=0;
-  virtual void onElementStart(void *userData, DOM::NodeNSTriplet nsTriplet)=0; 
-  virtual void onAttribute(void *userData, DOM::NodeNSTriplet nsTriplet,  
-                   const DOM::DOMString* value) = 0;
+  virtual void onElementStart(void *userData, DOM::NodeNSTriplet nsTriplet, vector<DOM::AttributeInfo> attrVec)=0; 
+  virtual void onAttribute(void *userData, DOM::AttributeInfo attrInfo) = 0;
 
   virtual void onElementEnd(void *userData, DOM::NodeNSTriplet nsTriplet)=0; 
   virtual void onNamespaceStart(void *userData, const DOM::DOMString* prefix,

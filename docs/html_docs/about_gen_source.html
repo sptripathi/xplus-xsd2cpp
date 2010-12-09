@@ -1,35 +1,23 @@
 <html>
 
   <head>
-    <title>About generated source</title>
+    <title>About Generated Source</title>
   </head>
 
-  <h2>About generated source</h2>
-  <hr NOSHADE SIZE=10 WIDTH=100%>
+  <h2>About generated source <hr NOSHADE SIZE=10 WIDTH=100%> </h2>
 
   <body>
     <form>
       <ul>
         <li><a href="#DOXY_DOC">The doxygen documentation</a>
         <li><a href="#NS">Namespaces</a>
-          <ul>
-            <li><a href="#GEN_SOURCE_NS">Understanding namespaces of the generated source</a>
-            <li><a href="#XML_NS">Namespaces of the elements and attributes in the XML instance document</a>
-            <li><a href="#NAMING">Naming of the C++ Classes corresponding to elements and attributes of XML-Schema</a>
-          </ul>
         <li><a href="#SIMPLETYPE_IMPL">simpleType to implementation-type mapping</a>
         <li><a href="#API">Understanding API</a>
-          <ul>
-            <li><a href="#API_ATTRIBUTES">Working on attributes</a>
-            <li><a href="#API_MG">Access MGs</a>
-            <li><a href="#API_ELEMENTS">Working on elements</a>
-          </ul>
         <li><a href="#MAIN_CPP">The main.cpp file</a>
         <li><a href="#SRC_USE_CASE">Use Cases with generated source</a>
       </ul>
 
-  <a name="DOXY_DOC"><h3>The doxygen documentation</h3></a>
-  <hr NOSHADE SIZE=7 WIDTH=100%>
+  <a name="DOXY_DOC"><h3>The doxygen documentation<hr NOSHADE SIZE=7 WIDTH=100%></h3></a>
   You should generate doxygen documentation for the generated code from your XML-Schema while going through this documentation.<br>
   <br>  
   In the output directory, run:<br>
@@ -39,11 +27,14 @@
   The html documentation is generated in doc/html path relative to the output directory. Open doc/html/index.html in the browser of your choice, to read the documentation.
   <br><br>
 
-  <a name="NS"><h3>Namespaces</h3></a>
-  <hr NOSHADE SIZE=7 WIDTH=100%>
+  <a name="NS"><h3>Namespaces <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+    <ul>
+      <li><a href="#GEN_SOURCE_NS">Understanding namespaces of the generated source</a>
+      <li><a href="#XML_NS">Namespaces of the elements and attributes in the XML instance document</a>
+      <li><a href="#NAMING">Naming of the C++ Classes corresponding to elements and attributes of XML-Schema</a>
+    </ul>
 
-  <a name="GEN_SOURCE_NS"><h4>Understanding namespaces of the generated source</h4></a>
-  <hr NOSHADE SIZE=5 WIDTH=100%>
+  <a name="GEN_SOURCE_NS"><h4>Understanding namespaces of the generated source<hr NOSHADE SIZE=5 WIDTH=100%></h4></a>
 
   The C++ type-definition for each schema-component has two namespaces:
   <ul>
@@ -207,8 +198,7 @@
 
 
   <br><br>
-  <a name="XML_NS"><h4>Namespaces of the elements and attributes in the XML instance document</h4></a>
-  <hr NOSHADE SIZE=5 WIDTH=100%>
+  <a name="XML_NS"><h4>Namespaces of the elements and attributes in the XML instance document<hr NOSHADE SIZE=5 WIDTH=100%></h4></a>
 
   XML-Namespace of an element/attribute in a valid instance XML document, is based on the XML-Schema specification. An implementation like XmlPlus has nothing to do here.<br>
 
@@ -302,8 +292,7 @@
   </table>
 
   <br><br>
-  <a name="NAMING"><h4>Naming of the C++ Classes corresponding to the XML-Schema components</h4></a>
-  <hr NOSHADE SIZE=5 WIDTH=100%>
+  <a name="NAMING"><h4>Naming of the C++ Classes corresponding to the XML-Schema components <hr NOSHADE SIZE=5 WIDTH=100%> </h4></a>
 
   Folowing table enumerates different C++ types for schema-components(elements/attributes/simpleType/complexType etc.).<br> 
   Note that the namespace (directory..namespace and CPP...namespace) corresponding to the targetNamespace of the XML-Schema is prepended to the respective types, and are ommitted here for sake of simplicity.
@@ -424,8 +413,7 @@
   </table>
 
   <br><br>
-  <a name="SIMPLETYPE_IMPL"><h3>simpleType to implementation-type mapping</h3></a>
-  <hr NOSHADE SIZE=7 WIDTH=100%>
+  <a name="SIMPLETYPE_IMPL"><h3>simpleType to implementation-type mapping <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
 
   This C++ data-binding mapping for XML Schema simpleTypes, is available in excel file <b>xsd.xls</b> in the docs directory.
   <br>Open this file and view the tab named "XSD_Builtiin_DataTypes".
@@ -469,12 +457,16 @@
 
   <br><br>
   Following sections describe the various relevant APIs:
+   <ul>
+     <li><a href="#API_ATTRIBUTES">Working on attributes</a>
+     <li><a href="#API_MG">Access MGs</a>
+     <li><a href="#API_ELEMENTS">Working on elements</a>
+   </ul>
   <br><br>
   
   <ul>
   
-  <li><a name="DOCUMENT_CLASS"><h4>The Document class</h4></a>
-  <hr NOSHADE SIZE=3 WIDTH=100%>
+  <li><a name="DOCUMENT_CLASS"><h4>The Document class <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
 
   For every unique targetNamespace URI among all XML-Schema files(the input and the imported ones), there would be one Document class generated.<br>
   The Document class has a notion similar to that of the DOM Document. The root of the XML-Document is a direct child of this Document class.<br><br> 
@@ -502,8 +494,7 @@
   
   
   <br><br>
-  <li><a name="API_ATTRIBUTES"><h4>Working on attributes</h4></a>
-  <hr NOSHADE SIZE=3 WIDTH=100%>
+  <li><a name="API_ATTRIBUTES"><h4>Working on attributes <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
     The methods for operating on child-attributes, are available in parent-element.
     <br>
 
@@ -543,8 +534,7 @@
 
   
   <br><br>
-  <li><a name="API_MG"><h4>Access MGs</h4></a>
-  <hr NOSHADE SIZE=3 WIDTH=100%>
+  <li><a name="API_MG"><h4>Access MGs <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
   
   Methods to access MGs are available in the parent component, which may be an element or a sequence.
   
@@ -581,8 +571,7 @@
 
 
   
-  <li><a name="API_ELEMENTS"><h4>Working on elements</h4></a>
-  <hr NOSHADE SIZE=3 WIDTH=100%>
+  <li><a name="API_ELEMENTS"><h4>Working on elements <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a> 
 
   The child-elements can be operated on, from parent-element or parent-MG:</b>
   <ol>
@@ -700,8 +689,7 @@
 
 
   <br><br>
-  <a name="MAIN_CPP"><h3>The main.cpp file</h3></a>
-  <hr NOSHADE SIZE=7 WIDTH=100%>
+  <a name="MAIN_CPP"><h3>The main.cpp file <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
   The xsd2cpp tool generates a main.cpp in the output directory.
   The main.cpp is a demo application. It serves the purpose of showing: <br> a) how the build of generated source(libraries and headers), are to be consumed<br> b) all uses cases possible, and their HOWTOs
 
@@ -762,8 +750,7 @@
   </div>
 
   <br><br>
-  <a name="SRC_USE_CASE"><h3>Use Cases with generated source</h3></a>
-  <hr NOSHADE SIZE=7 WIDTH=100%>
+  <a name="SRC_USE_CASE"><h3>Use Cases with generated source <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
 
   One should go through XmlPlus examples to understand how an application can consume code generated from xsd2cpp tool.<br>
   Following are some use cases.
@@ -792,8 +779,7 @@
 
     <br> <br> 
     
-    <li><b><a name="ELEM_THRU_PARENT_ELEM">Working on elements through parent element</a></b>
-    <hr NOSHADE SIZE=3 WIDTH=100%>
+    <li><b><a name="ELEM_THRU_PARENT_ELEM">Working on elements through parent element <hr NOSHADE SIZE=3 WIDTH=100%> </a></b>
 
     Snippets taken from examples/simpleTypesDemo. Refer to the example for full details.
     <br><br>
@@ -826,8 +812,7 @@
     <br><br>
     <br><br>
 
-    <li><b><a name="ELEM_THRU_PARENT_MG">Working on elements through parent MG eg. sequence</a></b>
-    <hr NOSHADE SIZE=3 WIDTH=100%>
+    <li><b><a name="ELEM_THRU_PARENT_MG">Working on elements through parent MG eg. sequence <hr NOSHADE SIZE=3 WIDTH=100%> </a></b>
 
     Snippets taken from examples/mails. Refer to the example for full details.
     <br><br>

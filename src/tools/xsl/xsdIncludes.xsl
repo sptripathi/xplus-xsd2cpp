@@ -120,8 +120,10 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
     void Document::set_root_<xsl:value-of select="$cppName"/>() 
     {
     <xsl:variable name="cppNameUseCase"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'declaration'"/></xsl:call-template></xsl:variable>
-      if(!<xsl:value-of select="$cppNameUseCase"/>) {
-        _fsm->processEventThrow(<xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdFsmBase::ELEMENT_START); 
+      if(!<xsl:value-of select="$cppNameUseCase"/>) 
+      {
+        XsdEvent event(<xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>, NULL, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdEvent::ELEMENT_START);
+        _fsm->processEventThrow(event); 
       }
     }
     </xsl:when>
@@ -136,7 +138,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
       <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
       <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
       <xsl:variable name="cppPtrNsUri"><xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/></xsl:variable>
-    <xsl:value-of select="$cppFsmName"/> = new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( NSNamePairOccur(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/>),  XsdFsmBase::ELEMENT_START, new object_noargs_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>&gt;(this, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>));
+    <xsl:value-of select="$cppFsmName"/> = new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/>),  XsdEvent::ELEMENT_START, new object_unary_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(this, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>));
     </xsl:when>
     <xsl:when test="$mode='init_fsm_array_elem'">
         <xsl:variable name="cppFsmName"><xsl:call-template name="T_get_cppFsmName_ElementAttr"/></xsl:variable>

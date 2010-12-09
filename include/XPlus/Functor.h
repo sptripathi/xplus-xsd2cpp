@@ -27,20 +27,15 @@ namespace XPlus
 {
   using namespace std;
 
-  template <class R, class A> struct unary_function_base : public unary_function<A,R>
+  // FIXME: make XPlusObject as base
+  template <class R, class A> struct unary_function_base : public unary_function<A,R>, public XPlus::XPlusObject
   {
     virtual R operator()(A arg)=0;
   };
 
-  template <class R> struct noargs_function_base : public unary_function<void,R>, public XPlus::XPlusObject
-  {
-    virtual R operator()()=0;
-
-  };
-
 
   //template <class R, class T, class A> class object_unary_mem_fun_t : public unary_function<A,R>
-  template <class R, class T, class A> class object_unary_mem_fun_t : public unary_function_base<A,R>
+  template <class R, class T, class A> class object_unary_mem_fun_t : public unary_function_base<R,A>
   {
     private:
       T*    _ptrObj;
@@ -57,13 +52,21 @@ namespace XPlus
       R operator()(A arg)
       {
         if(_ptrObj) {
-          (_ptrObj->*_ptrNoArgFunc)(arg);
+          return (_ptrObj->*_ptrNoArgFunc)(arg);
         }
         else {
           //TODO: throw NullPointerException
         }
       }
   };
+
+
+  template <class R> struct noargs_function_base : public unary_function<void,R>, public XPlus::XPlusObject
+  {
+    virtual R operator()()=0;
+
+  };
+
 
   template <class R, class T> class object_noargs_mem_fun_t : public noargs_function_base<R>
   {
@@ -148,7 +151,7 @@ namespace XPlus
       }
   };
 
-  main()
+  int main()
   {
     //test1
     cout << "\n test1" << endl;
@@ -169,6 +172,7 @@ namespace XPlus
     noargs_function_base<void> *pCallback_B_foo = new object_noargs_mem_fun_t<void, B>(&b, &B::foo);
     (*pCallback_B_foo)();
 
+    return 0;
   }
 #endif
 

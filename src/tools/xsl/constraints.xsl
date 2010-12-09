@@ -495,6 +495,8 @@ In addition to the conditions imposed on <complexType> element information items
 </xsl:template>
 
 
+
+
 <!--
   Schema Representation Constraint: Attribute Declaration Representation OK
   In addition to the conditions imposed on <attribute> element information items by the schema for schema documents, all of the following also apply:
@@ -758,6 +760,80 @@ In addition to the conditions imposed on <complexType> element information items
 
 </xsl:template>
 
+
+
+<xsl:template name="T_checks_on_element_declaration">
+  <xsl:param name="node" select="."/>
+
+  <xsl:call-template name="T_ElementDeclarationRepresentationOK">
+    <xsl:with-param name="node" select="$node"/>
+  </xsl:call-template>
+
+</xsl:template>
+
+
+
+<xsl:template name="T_checks_on_attribute_declaration">
+  <xsl:param name="node" select="."/>
+  
+  <xsl:call-template name="T_AttributeDeclarationRepresentationOK">
+    <xsl:with-param name="node" select="$node"/>
+  </xsl:call-template>
+
+</xsl:template>
+
+
+<xsl:template name="T_checks_on_complexType_definition">
+  <xsl:param name="node" select="."/>
+
+  <xsl:call-template name="T_SchemaComponentConstraint_ComplexTypeDefinition_Properties_Correct">
+    <xsl:with-param name="ctNode" select="$node"/>
+  </xsl:call-template>
+  
+  <xsl:call-template name="T_ComplexTypeDefinition_XMLRepresentation_OK">
+    <xsl:with-param name="ctNode" select="$node"/>
+  </xsl:call-template>
+
+  <xsl:call-template name="T_ComplexTypeDefinition_DerivationValid">
+    <xsl:with-param name="ctNode" select="$node"/>
+  </xsl:call-template>
+
+</xsl:template>
+
+
+<xsl:template name="T_checks_on_simpleType_definition">
+  <xsl:param name="node" select="."/>
+
+  <!-- TODO -->
+</xsl:template>
+
+
+<xsl:template name="T_checks_on_schema_component">
+  <xsl:param name="node" select="."/>
+
+  <xsl:choose>
+    <xsl:when test="local-name($node)='complexType'">
+      <xsl:call-template name="T_checks_on_complexType_definition">
+        <xsl:with-param name="node" select="$node"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:when test="local-name($node)='simpleType'">
+      <xsl:call-template name="T_checks_on_simpleType_definition">
+        <xsl:with-param name="node" select="$node"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:when test="local-name($node)='element'">
+      <xsl:call-template name="T_checks_on_element_declaration">
+        <xsl:with-param name="node" select="$node"/>
+      </xsl:call-template>  
+    </xsl:when>
+    <xsl:when test="local-name($node)='attribute'">
+      <xsl:call-template name="T_checks_on_attribute_declaration">
+        <xsl:with-param name="node" select="$node"/>
+      </xsl:call-template>
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
 
 
 </xsl:stylesheet>

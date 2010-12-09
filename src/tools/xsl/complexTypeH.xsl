@@ -39,6 +39,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 #ifndef  __<xsl:value-of select="$cppTargetNSConcatStr"/>_types_<xsl:value-of select="$cppName"/>_H__
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_types_<xsl:value-of select="$cppName"/>_H__
 #include "XSD/xsdUtils.h"
+#include "XSD/TypeDefinitionFactory.h"
 
 <xsl:call-template name="GEN_INCLUDELIST_OF_COMPLEXTYPE_SIMPLETYPE_INCLUDE_H"/>
 using namespace XPlus;
@@ -58,13 +59,10 @@ namespace Types
         <xsl:with-param name="schemaComponentName" select="$complexTypeName"/>
       </xsl:call-template>
     </xsl:when>
-    <xsl:when test="*[local-name()='complexContent']">
+    <xsl:otherwise>
       <xsl:call-template name="DEFINE_LEVEL1_COMPLEXTYPE_WITH_COMPLEXCONTENT_H">
         <xsl:with-param name="schemaComponentName" select="$complexTypeName"/>
       </xsl:call-template>
-    </xsl:when>
-    <xsl:otherwise>
-  typedef XMLSchema::Types::anyType <xsl:value-of select="$cppName"/>;
     </xsl:otherwise>
   </xsl:choose>
 } // end namespace Types
@@ -91,6 +89,9 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyType
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
   </xsl:call-template>  
+
+  private:
+  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
 }; //end class <xsl:value-of select="$cppName"/>
 </xsl:template>
 
@@ -211,7 +212,7 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyType
               <xsl:call-template name="T_get_cppType_complexType_base"/>
             </xsl:variable>
             <xsl:variable name="cppNSDeref">
-              <xsl:call-template name="T_get_cppNSDeref_of_simpleType_complexType">
+              <xsl:call-template name="T_get_cppNSDeref_for_QName">
                 <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='restriction']/@base"/>
               </xsl:call-template>
             </xsl:variable>
@@ -250,6 +251,9 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$baseCppT
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
   </xsl:call-template>
+
+  private:
+  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
 }; //end class <xsl:value-of select="$cppName"/>
 
 </xsl:template>
@@ -299,7 +303,7 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$baseCppT
     <xsl:call-template name="T_get_cppType_complexType_base"/>
   </xsl:variable>
   <xsl:variable name="cppNSDeref">
-    <xsl:call-template name="T_get_cppNSDeref_of_simpleType_complexType">
+    <xsl:call-template name="T_get_cppNSDeref_for_QName">
       <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='extension']/@base"/>
     </xsl:call-template>
   </xsl:variable>
@@ -318,6 +322,9 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDer
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
   </xsl:call-template>
+  
+  private:
+  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
 
 }; //end class <xsl:value-of select="$cppName"/>
 
@@ -328,13 +335,17 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDer
 <xsl:template name="DEFINE_LEVEL1_COMPLEXTYPE_WITH_COMPLEXCONTENT_H">
   <xsl:param name="schemaComponentName" select="@name"/>
 
+  <xsl:variable name="baseQName">
+    <xsl:call-template name="T_get_complexType_base"/>
+  </xsl:variable>
 
   <xsl:variable name="baseCppType">
     <xsl:call-template name="T_get_cppType_complexType_base"/>
   </xsl:variable>
+
   <xsl:variable name="cppNSDeref">
-    <xsl:call-template name="T_get_cppNSDeref_of_simpleType_complexType">
-      <xsl:with-param name="typeQName" select="*[local-name()='complexContent']/*[local-name()='extension' or local-name()='restriction']/@base"/>
+    <xsl:call-template name="T_get_cppNSDeref_for_QName">
+      <xsl:with-param name="typeQName" select="$baseQName"/>
     </xsl:call-template>
   </xsl:variable>
 
@@ -351,6 +362,9 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDer
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
   </xsl:call-template>  
+
+  private:
+  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
 }; //end class <xsl:value-of select="$cppName"/>
 </xsl:template>
 
@@ -420,29 +434,7 @@ XML Representation Summary: complexType Element Information Item
 <xsl:template name="DEFINE_BODY_COMPLEXTYPE_H">
   <xsl:param name="schemaComponentName" select="''"/>
   
-  <!--
-    CHECKS: putting the constraints checks here as this template is called from all flows of complexType
-  -->
-  <xsl:call-template name="T_SchemaComponentConstraint_ComplexTypeDefinition_Properties_Correct">
-    <xsl:with-param name="ctNode" select="."/>
-  </xsl:call-template>
-  
-  <xsl:call-template name="T_ComplexTypeDefinition_XMLRepresentation_OK">
-    <xsl:with-param name="ctNode" select="."/>
-  </xsl:call-template>
-
-  <xsl:call-template name="T_ComplexTypeDefinition_DerivationValid">
-    <xsl:with-param name="ctNode" select="."/>
-  </xsl:call-template>
-
-  <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
-    <xsl:with-param name="mode" select="'check_element_attribute_repr_ok'"/>
-    <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
-  </xsl:call-template>  
-  <!--
-    CHECKS: END
-  -->
-
+  <xsl:call-template name="T_checks_on_schema_component"/>
 
   <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
     <xsl:with-param name="mode" select="'typedefinition'"/>
@@ -574,8 +566,11 @@ XML Representation Summary: complexType Element Information Item
   </xsl:call-template>  
 
 public:
+
   //types which this class needs, as INNER CLASSES
   <xsl:call-template name="DEFINE_TYPES_LEVEL1COMPLEXTYPE_NEEDS_H"/>
+  //types which this class needs, as INNER CLASSES : END
+
 </xsl:template>
 
 
@@ -967,7 +962,6 @@ public:
 
 
 
-
 <xsl:template name="ON_ELEMENT_OR_ATTRIBUTE_THROUGH_COMPLEXTYPE_FSM">
   <xsl:param name="mode" select="''"/>
   <xsl:param name="schemaComponentName" select="''"/>
@@ -1123,12 +1117,7 @@ public:
     </xsl:when>
     
     <xsl:when test="$mode='check_element_attribute_repr_ok'">
-      <xsl:if test="$localName='attribute'">
-        <xsl:call-template name="T_AttributeDeclarationRepresentationOK"/>
-      </xsl:if>
-      <xsl:if test="$localName='element'">
-        <xsl:call-template name="T_ElementDeclarationRepresentationOK"/>
-      </xsl:if>
+      <xsl:call-template name="T_checks_on_element_attribute_declaration"/>
     </xsl:when>
 
   </xsl:choose>
@@ -1145,7 +1134,7 @@ public:
 <xsl:template name="DECL_PVT_FNS_FOR_MEMBER_ELEMENT_OR_ATTRIBUTE_H">
   <xsl:variable name="cppTypeSmartPtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
   <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
-  MEMBER_FN <xsl:value-of select="$cppTypeSmartPtrShort"/><xsl:text> </xsl:text>create_<xsl:value-of select="$cppNameFunction"/>();
+  MEMBER_FN <xsl:value-of select="$cppTypeSmartPtrShort"/><xsl:text> </xsl:text>create_<xsl:value-of select="$cppNameFunction"/>(FsmCbOptions options);
 </xsl:template>
 
 

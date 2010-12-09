@@ -4,49 +4,57 @@
     <title>Installation</title>
   </head>
 
-  <h2>Installation Instructions</h2>
-  <hr NOSHADE SIZE=10 WIDTH=100%>
+  <h2>Installation Instructions <hr NOSHADE SIZE=10 WIDTH=100%> </h2>
 
   <body>
     <form>
       <ul>
+        <li><a href="#TPUSE">Third party tools/libraries used</a>
         <li><a href="#PREREQ">Install Prerequisites</a>
-        <ul>
-          <li><a href="#PREREQ_UBUNTU">Install prerequisites on Ubuntu</a>
-          <li><a href="#PREREQ_LIKES_OF_REDHAT">Install prerequisites on RedHat, Fedora</a>
-          <li><a href="#PREREQ_MACOSX">Install Prerequisites on Mac OS X</a>
-        </ul>
         <li><a href="#BUILD">Build the source</a>
         <li><a href="#UPDATE_ENV">Update env with the installation path</a>
         <li><a href="#VERIFY_INSTALL">Verify the installation</a>
       </ul>
-
-      <a name="PREREQ"><h3>Install Prerequisites</h3></a>
-      <hr NOSHADE SIZE=7 WIDTH=100%>
-
-      <p>
-      XmlPlus provides <b>"simple to use"</b> C++ data-bindings for XML-Schema.<br>
-      The XmlPlus tool source is built using gnu <b>automake/autoconf/libtool</b> set of tools. 
-      The thirdparty tools used are  <b>xsltproc</b>(xsl transformation tool called) and <b>expat</b>(a xml parser).<br>
-      These tools are typically already present on most Linux distributions. 
-      If they are not available on your system, you would need to get them before proceeding on installations.
-
+      
+      <a name="TPUSE"><h3>Third party tools/libraries used <hr NOSHADE SIZE=7 WIDTH=100%> </h3> </a>
+      The thirdparty tools used are: 
       <ul>
-        <li><a>automake/autoconf/libtool</a>
-        <li><a>expat</a>
-        <li><a>xsltproc</a>
-      </ul>  
+        <li><b>autotools</b> : automake, autoconf, libtool etc.<br>
+          The XmlPlus source is built using gnu <b>automake/autoconf/libtool</b> set of tools.<br><br>
 
-      Please read the OS specific subsections to find how to install the prerequisites.<br><br>
-      <strong>Note:</strong> suggested package names, may sometimes not be correct/exact, please find the exact package name, based on your OS.<br>
-      For example a following search on Fedora, lists various available packages matching this pattern.<br>
+        <li><b>xsltproc</b>  : xsl transformation tool <br><br>
+
+        <li><b>expat</b>     : a xml parser library <br><br>
+
+        <li><b>PoCo</b>      : a minimal customised version of <b>PoCo</b>(Portable C++ components)<br>
+            The custom mini version of Poco is bundled alongwith xmlplus source package, therefore you do not need to download/install this library separately.
+      </ul>
+
+
+
+      <a name="PREREQ"><h3>Install Prerequisites <hr NOSHADE SIZE=7 WIDTH=100%> </h3> </a>
+        <ul>
+          <li><a href="#PREREQ_UBUNTU">Install prerequisites on Ubuntu, Debian and the likes</a>
+          <li><a href="#PREREQ_LIKES_OF_REDHAT">Install prerequisites on RedHat, Fedora etc.</a>
+          <li><a href="#PREREQ_MACOSX">Install Prerequisites on Mac OS X</a>
+        </ul>
+      <p>
+      The thirdparty packages that would need to be installed as prerequisites are: 
+      <ul>
+        <li> autotools
+        <li> xsltproc 
+        <li> expat (library and dev packages) 
+      </ul>
+
+      These tools are typically already present on most Linux distributions. If they are not available on your system, you would need to get them before proceeding on installations. Please read the OS specific subsections to find how to install the prerequisites.<br><br>
+      <strong>Note:</strong> suggested package names, may sometimes not be correct/exact vis-a-vis your platform. Please find the exact package name based on your system's OS.<br>
+      For example to list various available packages names matching this pattern on Fedora, do so:<br> 
       <code>$ yum search expat</code>
       </ol>
       </p>
 
       <br>
-      <a name="PREREQ_UBUNTU"><h4>Install prerequisites on UBuntu</h4></a>
-      <hr NOSHADE SIZE=3 WIDTH=100%>
+      <a name="PREREQ_UBUNTU"><h4>Install prerequisites on Ubuntu, Debian and the likes<hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
 
       <ol>
         <li> If not already installed, install automake, autoconf, libtool <br>
@@ -56,11 +64,10 @@
         <code>$ sudo apt-get install xsltproc</code>
         <br> <br>
         <li>If not already installed, install expat library and devel packages<br> 
-        <code>$ sudo apt-get install xsltproc libexpat libexpat-dev</code><br>
+        <code>$ sudo apt-get install libexpat libexpat-dev</code><br>
       </ol>  
 
-      <a name="PREREQ_LIKES_OF_REDHAT"><h4>Install prerequisites on Redhat, Fedora etc.</h4></a>
-      <hr NOSHADE SIZE=3 WIDTH=100%>
+      <a name="PREREQ_LIKES_OF_REDHAT"><h4>Install prerequisites on Redhat, Fedora etc.  <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
 
       <ol>
         <li> If not already installed, install automake, autoconf, libtool <br>
@@ -73,8 +80,7 @@
         <code>$ sudo yum install  expat expat-devel</code><br>
       </ol>
 
-      <a name="PREREQ_MACOSX"><h4>Install prerequisites on Mac OS X</h4></a>
-      <hr NOSHADE SIZE=3 WIDTH=100%>
+      <a name="PREREQ_MACOSX"><h4>Install prerequisites on Mac OS X <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
 
       <ol>
         <li> If not already installed, install automake, autoconf, libtool
@@ -82,7 +88,7 @@
         <code>$ sudo port install automake autoconf libtool</code><br>
         <br>
         <strong>Note:</strong> on Mac OS X, there is a binary named <b>libtool</b>, which is different from what we need.
-        On Mac OSX, We need <b>glibtool</b>, which is exactly what the port install of libtool would bring.
+        On Mac OS X, we need <b>glibtool</b>, which is exactly what the port install of libtool would bring.
         <br> <br>
         <li>If not already installed, install xsltproc<br>
         <code>$ sudo port install xsltproc</code>
@@ -92,8 +98,7 @@
 
       <br><br>
 
-      <a name="BUILD"><h3>Build the source</h3></a>
-      <hr NOSHADE SIZE=7 WIDTH=100%>
+      <a name="BUILD"><h3>Build the source <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
       Once you are done with installation of prerequisites on your system, go through following steps:
       <ol>
         <li> if you want the build to be installed in /usr/local/ path <br>
@@ -116,8 +121,7 @@
       <br>
 
       <br><br>
-      <a name="UPDATE_ENV"><h3>Update env with the installation path</h3></a>
-      <hr NOSHADE SIZE=7 WIDTH=100%>
+      <a name="UPDATE_ENV"><h3>Update env with the installation path <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
 
       Register the installation path with the system environment.<br>
       <code>
@@ -139,8 +143,7 @@
       </code>
 
       <br><br>
-      <a name="VERIFY_INSTALL"><h3>Verify the installation</h3></a>
-      <hr NOSHADE SIZE=7 WIDTH=100%>
+      <a name="VERIFY_INSTALL"><h3>Verify the installation <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
       <p>
       Once you have installed the <b>XmlPlus</b> tool, the libraries and the binaries must be in LD_LIBRARY_PATH and PATH respectively.
       Assuming that you have installed the build in the path <i>$HOME/xplusbuild/</i>, let us peek into the installation. 

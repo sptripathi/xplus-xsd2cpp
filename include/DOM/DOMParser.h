@@ -31,7 +31,6 @@ class DOMParser : public ExpatParser
 {
   protected:
     Document* _docNode;
-    XmlDecl   _docXmlDecl;
 
   public:
 
@@ -57,9 +56,8 @@ class DOMParser : public ExpatParser
                  const DOMString  *version,
                  const DOMString  *encoding,
                  int             standalone);
-    void onElementStart(void *userData, NodeNSTriplet nsTriplet); 
-    void onAttribute(void *userData, NodeNSTriplet nsTriplet,
-        const DOMString* value);
+    void onElementStart(void *userData, NodeNSTriplet nsTriplet, vector<AttributeInfo> attrVec); 
+    void onAttribute(void *userData, AttributeInfo attrInfo);
     void onElementEnd(void *userData, NodeNSTriplet nsTriplet);
     void onNamespaceStart(void *userData, 
         const DOMString* prefix, 

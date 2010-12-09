@@ -68,12 +68,13 @@ using namespace FSM;
  */  
 
 // Implementation Note:
-// Every XSD-Element is-a(derivation) XmlElement<T> 
-// Every XSD-Attribute is-a(derivation) XmlAttribute<T>
+// Every XMLObject corresponding to an Element, is-a(derivation) XmlElement<T> 
+// Every XMLObject corresponding to an Attribute is-a(derivation) XmlAttribute<T>
 
 
 namespace XMLSchema
 {
+
   //forward declarations
   class TElement;
   class TDocument;
@@ -156,11 +157,10 @@ namespace XMLSchema
       inline void currentElement(ElementP elem);
 
       virtual TextNodeP createTextNode(DOMString* data);
-      virtual ElementP createElementNS(DOMString* nsUri, 
-        DOMString* nsPrefix, 
-        DOMString* localName); 
-      virtual AttributeP createAttributeNS(DOMString* namespaceURI,
-          DOMString* nsPrefix, DOMString* localName, DOMString* value);
+      
+      virtual Element* createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec);
+
+      //virtual AttributeP createAttributeNS(DOMString* namespaceURI, DOMString* nsPrefix, DOMString* localName, DOMString* value);
       void endElementNS(DOMString* nsURI, DOMString* nsPrefix, DOMString* localName);
       void startDocument();
       void endDocument();
@@ -196,7 +196,7 @@ namespace XMLSchema
     {
 #if 0
       // child is likely to override _fsm allocation
-        XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(nsUri, *tagName, 1, 1), XsdFsmBase::ELEMENT_END);
+        XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(Particle(nsUri, *tagName, 1, 1), XsdFsmBase::ELEMENT_END);
         XsdFsmBasePtr ptrFsms[] = { elemEndFsm, NULL };
         _fsm = new XsdFsmOfFSMs(ptrFsms, XsdFsmOfFSMs::SEQUENCE);
 #endif
@@ -207,10 +207,7 @@ namespace XMLSchema
     virtual TDocumentP ownerDocument() =0;
     virtual TElementP ownerElement() =0; 
       
-    virtual TElementP createElementNS(DOMString* nsUri, 
-        DOMString* nsPrefix, 
-        DOMString* localName) =0; 
-
+    virtual Element* createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec)=0;
 
     virtual void endElementNS(DOMString* nsURI, DOMString* nsPrefix, DOMString* localName) =0;
 
@@ -257,12 +254,10 @@ namespace XMLSchema
         return T::ownerElement();
       }
       
-      virtual inline TElementP createElementNS(DOMString* nsURI, 
-          DOMString* nsPrefix, 
-          DOMString* localName) 
+      virtual TElement* createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec)
       {
         try {
-          return T::createElementNS(nsURI, nsPrefix, localName);
+          return T::createElementWithAttributes(nsUri, nsPrefix, localName, attrVec);
         }
         catch(XPlus::Exception& ex) 
         {

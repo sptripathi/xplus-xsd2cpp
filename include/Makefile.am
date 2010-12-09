@@ -31,10 +31,12 @@ nobase_include_HEADERS = \
   XPlus/LList.h \
   XPlus/MonthDay.h \
   XPlus/Month.h \
+  XPlus/Namespaces.h \
   XPlus/StringUtils.h \
   XPlus/Time.h \
   XPlus/TimeZone.h \
   XPlus/Types.h \
+  XPlus/TextEncoding.h \
   XPlus/UString.h \
   XPlus/XPlusObject.h \
   XPlus/Year.h \
@@ -64,6 +66,7 @@ nobase_include_HEADERS = \
   DOM/Stream.h \
   DOM/TextNode.h \
   DOM/XMLParser.h \
+  DOM/XmlDecl.h \
   \
   XSD/Enums.h \
   XSD/Facets.h \
@@ -74,5 +77,6 @@ nobase_include_HEADERS = \
   XSD/XSDException.h \
   XSD/XSDFSM.h \
   XSD/xsdUtils.h \
+  XSD/TypeDefinitionFactory.h \
   XSD/UserOps.h
 

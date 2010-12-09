@@ -2,11 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([xmlplus], [VERSION], [BUG-REPORT-ADDRESS])
+AC_INIT([xmlplus], [0.1], [xmlplus.bugs@gmail.com])
 AC_CONFIG_SRCDIR([src/DOM/Node.cpp])
 AC_CONFIG_HEADERS([config.h])
 
-# satya: do we need following two?
+# do we need following two?
 AM_INIT_AUTOMAKE(xmlplus, 0.1)
 AC_PROG_LIBTOOL
 AC_CONFIG_MACRO_DIR([m4])

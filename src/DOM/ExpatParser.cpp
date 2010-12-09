@@ -24,6 +24,7 @@
 #include "DOM/ExpatParser.h"
 #include "DOM/DOMCommonInc.h"
 #include "DOM/DOMException.h"
+#include "DOM/DOMCommonInc.h"
 
 #define NSSEP XML_Char('|')
 
@@ -95,6 +96,8 @@ namespace ExpatCB
     ExpatParser *parser = parserUserData->parser;
     
     DOM::NodeNSTriplet nsTriplet = getNSTriplet(DOM::DOMString(name));
+
+    /*
     parser->onElementStart(parserUserData->userData, nsTriplet); 
 
     for (int i = 0; atts[i]; i += 2) 
@@ -105,6 +108,21 @@ namespace ExpatCB
                           new DOM::DOMString(atts[i+1])
                           );
     }
+    */
+
+    vector<DOM::AttributeInfo> attrVec;
+    for (int i = 0; atts[i]; i += 2) 
+    {
+      DOM::NodeNSTriplet nsTripletAttr = getNSTriplet(DOM::DOMString(atts[i]));
+      DOM::AttributeInfo attrInfo(  const_cast<DOM::DOMString *>(nsTripletAttr.nsUri()), 
+                                    const_cast<DOM::DOMString *>(nsTripletAttr.nsPrefix()), 
+                                    const_cast<DOM::DOMString *>(nsTripletAttr.localName()), 
+                                    new DOM::DOMString(atts[i+1]));
+      attrVec.push_back(attrInfo);
+    }
+
+    parser->onElementStart(parserUserData->userData, nsTriplet, attrVec); 
+
   }
 
   void onElementEnd(
@@ -133,7 +151,7 @@ namespace ExpatCB
 
     ParserUserData *parserUserData = (ParserUserData *)userData;
     ExpatParser *parser = parserUserData->parser;
-    parser->onNamespaceStart(parserUserData->userData, nsUri, nsPrefix);
+    parser->onNamespaceStart(parserUserData->userData, nsPrefix, nsUri);
   }
 
   void onNamespaceEnd(void *userData, 

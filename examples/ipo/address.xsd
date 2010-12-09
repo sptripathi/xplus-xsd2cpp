@@ -28,7 +28,6 @@
     </complexContent>
   </complexType>
 
-
   <simpleType name="USState">
     <restriction base="string">
       <enumeration value="AK"/>

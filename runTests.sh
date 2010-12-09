@@ -21,6 +21,7 @@ EX_DIRS="
         examples/ipo
         examples/netEnabled
         examples/org
+        examples/xmldsig
         "
 
 W3C_TESTS_DIRS="
@@ -44,6 +45,7 @@ XPLUS_TESTS_DIRS="
                   Tests/xplus_tests/ccRest2
                   Tests/xplus_tests/ccExt
                   Tests/xplus_tests/ctAnyType
+                  Tests/xplus_tests/ctAnyTypeRest
                  " 
 
 XPLUS_NEGTESTS_DIRS="

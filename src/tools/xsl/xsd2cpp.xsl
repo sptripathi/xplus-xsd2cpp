@@ -39,25 +39,6 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 
 <xsl:template match="/">
 
-  <!-- TODO: FSM error handling-->
-  <xsl:for-each select="*">
-    <xsl:choose>
-      <xsl:when test="local-name()='schema'">
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">Expected only schema element as root, got: "<xsl:value-of select="local-name()"/>"</xsl:with-param></xsl:call-template>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:for-each>
-  
-  <!--
-  <xsl:message>
-  ***** exporting  schema: <xsl:value-of select="$input_doc"/>
-  </xsl:message>
-  -->
-  <!--
-  <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="$input_doc"/></xsl:call-template>
-  -->
   <xsl:call-template name="GEN_MAIN_CPP"/>
   <xsl:apply-templates select="*[local-name()='schema']"/>
     
@@ -85,7 +66,6 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
   <xsl:call-template name="T_validate_imports"/>
   <xsl:call-template name="T_process_schema_contents"/>
 </xsl:template>
-
 
 
 <xsl:template match="*[local-name()='schema']" mode="IMPORTED_DOC">
@@ -151,25 +131,9 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
   <xsl:for-each select="*">
     <xsl:choose>
       <xsl:when test="local-name()='import'">
-        <!--
-        <xsl:message>
-        ************ applying imported schema: <xsl:value-of select="@schemaLocation"/>
-        </xsl:message>
-        -->
-        <!--
-        <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="@schemaLocation"/></xsl:call-template>
-        -->
         <xsl:apply-templates select="document(@schemaLocation)" mode="IMPORTED_DOC"/>
       </xsl:when>  
       <xsl:when test="local-name()='include'">
-        <!--
-        <xsl:message>
-        ************ applying included schema: <xsl:value-of select="@schemaLocation"/>
-        </xsl:message>
-        -->
-        <!--
-        <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="@schemaLocation"/></xsl:call-template>
-        -->
         <xsl:apply-templates select="document(@schemaLocation)" mode="INCLUDED_DOC"/>
       </xsl:when>
     </xsl:choose>
@@ -240,6 +204,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 </xsl:template>
 
 
+
 <xsl:template name="DEFINE_DOC">
   <xsl:variable name="cntTLE"><xsl:call-template name="T_count_top_level_elements_doc_and_includes"/></xsl:variable>
   <xsl:if test="$cntTLE >= 1">
@@ -247,6 +212,8 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
     <xsl:call-template name="DEFINE_DOC_CPP"/>
   </xsl:if>  
 </xsl:template>
+
+
 
 
 <xsl:template name="DEFINE_DOC_H">
@@ -262,6 +229,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_DOCUMENT_H__
         
 #include "XSD/xsdUtils.h"
+#include "XSD/TypeDefinitionFactory.h"
 <xsl:call-template name="GEN_DOC_INCLUDE_H"/>
 
 using namespace XPlus;
@@ -287,6 +255,7 @@ class Document : public XMLSchema::TDocument
     <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
   MEMBER_VAR AutoPtr&lt;XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt; &gt;<xsl:text> </xsl:text><xsl:value-of select="$cppFsmName"/>;
   </xsl:for-each>  
+
   <!-- includes -->
   <xsl:call-template name="ITERATE_SCHEMA_INCLUDES">
     <xsl:with-param name="mode" select="'TLE_decl_members_inside_doc_h'"/>
@@ -300,25 +269,27 @@ class Document : public XMLSchema::TDocument
     <xsl:with-param name="mode" select="'TLE_decl_pvt_functions_doc_h'"/>
   </xsl:call-template>  
 
-public:
+  public:
+
   Document(bool buildTree=true);
   virtual ~Document() {}
     
-    <xsl:for-each select="*[local-name()='element' and not(@ref)]">
-      <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
+  <xsl:for-each select="*[local-name()='element' and not(@ref)]">
+    <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
   MEMBER_FN void set_root_<xsl:value-of select="$cppName"/>();
-    </xsl:for-each>        
-    <!-- includes -->
-    <xsl:call-template name="ITERATE_SCHEMA_INCLUDES">
-      <xsl:with-param name="mode" select="'decl_set_root'"/>
-    </xsl:call-template>  
+  </xsl:for-each>        
 
+  <!-- includes -->
+  <xsl:call-template name="ITERATE_SCHEMA_INCLUDES">
+    <xsl:with-param name="mode" select="'decl_set_root'"/>
+  </xsl:call-template>  
 
   <xsl:for-each select="*[local-name()='element' and not(@ref)]">
     <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypePtrShort_ElementAttr"/></xsl:variable>
     <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
   MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/><xsl:text> </xsl:text>element_<xsl:value-of select="$cppNameFunction"/>();
   </xsl:for-each>        
+
   <!-- includes -->
   <xsl:call-template name="ITERATE_SCHEMA_INCLUDES">
     <xsl:with-param name="mode" select="'decl_elem_getter'"/>
@@ -362,7 +333,8 @@ public:
       <xsl:for-each select="*[local-name()='element']">
         <xsl:variable name="cppNameDocElem"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
       DOMStringPtr nsUriPtr = <xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>;   
-      _fsm->processEventThrow(nsUriPtr, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdFsmBase::ELEMENT_START); 
+      XsdEvent event(nsUriPtr, NULL, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdEvent::ELEMENT_START);
+      _fsm->processEventThrow(event); 
       </xsl:for-each>
     }
     </xsl:if>
@@ -376,13 +348,12 @@ public:
     <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
     <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
     <xsl:variable name="cppPtrNsUri"><xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/></xsl:variable>
-    <xsl:value-of select="$cppFsmName"/> = new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( NSNamePairOccur(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/>),  XsdFsmBase::ELEMENT_START, new object_noargs_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>&gt;(this, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>));
+    <xsl:value-of select="$cppFsmName"/> = new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/>),  XsdEvent::ELEMENT_START, new object_unary_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(this, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>));
   </xsl:for-each>  
 
   <xsl:call-template name="ITERATE_SCHEMA_INCLUDES">
     <xsl:with-param name="mode" select="'init_fsm_set_cb'"/>
   </xsl:call-template>  
-
 
   <xsl:if test="$cntTLE > 0">
     XsdFsmBasePtr elemFsms[] = {
@@ -397,10 +368,9 @@ public:
     };
     XsdFsmBasePtr fofElem = new XsdFsmOfFSMs(elemFsms, XsdFsmOfFSMs::CHOICE);
   </xsl:if>  
-  XsdFsmBasePtr docEndFsm = new XsdFSM&lt;void *&gt;(NSNamePairOccur(NULL, "", 1, 1), XsdFsmBase::DOCUMENT_END);
+  XsdFsmBasePtr docEndFsm = new XsdFSM&lt;void *&gt;(Particle(NULL, "", 1, 1), XsdEvent::DOCUMENT_END);
     XsdFsmBasePtr ptrFsms[] = { <xsl:if test="$cntTLE > 0">fofElem, </xsl:if> docEndFsm, NULL };
     _fsm = new XsdFsmOfFSMs(ptrFsms, XsdFsmOfFSMs::SEQUENCE);
-    //_fsm->print();
   }
 
   <xsl:if test="$cntTLE > 1">
@@ -410,7 +380,8 @@ public:
     {
     <xsl:variable name="cppNameUseCase"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'declaration'"/></xsl:call-template></xsl:variable>
       if(!<xsl:value-of select="$cppNameUseCase"/>) {
-        _fsm->processEventThrow(<xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdFsmBase::ELEMENT_START); 
+        XsdEvent event(<xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>, NULL, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdEvent::ELEMENT_START);
+        _fsm->processEventThrow(event); 
       }
     }
     </xsl:for-each>        
@@ -488,6 +459,7 @@ using namespace XPlus;
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_<xsl:value-of select="$cppName"/>_H__
 #include "XSD/UrTypes.h"
 #include "XSD/xsdUtils.h"
+#include "XSD/TypeDefinitionFactory.h"
 
 <xsl:call-template name="GEN_INCLUDELIST_OF_ELEMENT_ATTR_H"/>
 
@@ -544,36 +516,40 @@ XML Representation Summary: element Element Information Item
 
 -->
 <xsl:template name="DEFINE_ELEMENT_H">
-    <xsl:choose>
-      <xsl:when test="*[local-name()='complexType']">
-        <xsl:call-template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_H"/>
-      </xsl:when>  
-      <xsl:when test="*[local-name()='simpleType']">
-        <xsl:call-template name="DEFINE_INLINE_SIMPLETYPE_ELEMENT_ATTR_H"/>
-      </xsl:when>  
-      <xsl:when test="@type or @ref">
-        <xsl:variable name="typeLocalPart"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="@type"/></xsl:call-template></xsl:variable>
-        <xsl:variable name="typeNsUri"><xsl:call-template name="T_get_nsUri_for_QName"><xsl:with-param name="qName" select="@type"/></xsl:call-template></xsl:variable>
+  <xsl:call-template name="T_checks_on_schema_component"/>
 
-        <xsl:variable name="resolvedType">
-          <xsl:call-template name="T_resolve_typeLocalPartNsUri">
-            <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
-            <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
-          </xsl:call-template>
-        </xsl:variable>
-        <xsl:variable name="cppType"><xsl:call-template name="T_get_cppType_ElementAttr"/></xsl:variable>
-        <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
+  <xsl:choose>
+    <xsl:when test="*[local-name()='complexType']">
+      <xsl:call-template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_H"/>
+    </xsl:when>  
+    <xsl:when test="*[local-name()='simpleType']">
+      <xsl:call-template name="DEFINE_INLINE_SIMPLETYPE_ELEMENT_ATTR_H"/>
+    </xsl:when>  
+    <xsl:when test="@type or @ref">
+      <xsl:variable name="typeLocalPart"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="@type"/></xsl:call-template></xsl:variable>
+      <xsl:variable name="typeNsUri"><xsl:call-template name="T_get_nsUri_for_QName"><xsl:with-param name="qName" select="@type"/></xsl:call-template></xsl:variable>
+      <xsl:variable name="resolvedType">
+        <xsl:call-template name="T_resolve_typeLocalPartNsUri">
+          <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
+          <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:variable name="cppType"><xsl:call-template name="T_get_cppType_ElementAttr"/></xsl:variable>
+      <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
   typedef <xsl:value-of select="$cppType"/><xsl:text> </xsl:text><xsl:value-of select="$cppName"/>;
-      </xsl:when>
-      <xsl:otherwise>
-        UnknownElementType
-      </xsl:otherwise>
-    </xsl:choose>
+    </xsl:when>
+    <xsl:otherwise>
+      UnknownElementType
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 
 
 <xsl:template name="DEFINE_ATTRIBUTE_H">
+  
+  <xsl:call-template name="T_checks_on_schema_component"/>
+
   <xsl:choose>
     <xsl:when test="*[local-name()='simpleType']">
       <xsl:call-template name="DEFINE_INLINE_SIMPLETYPE_ELEMENT_ATTR_H"/>
@@ -699,7 +675,7 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
       <xsl:call-template name="T_get_cppType_complexType_base"/>
     </xsl:variable>
     <xsl:variable name="cppNSDeref">
-      <xsl:call-template name="T_get_cppNSDeref_of_simpleType_complexType">
+      <xsl:call-template name="T_get_cppNSDeref_for_QName">
         <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='extension']/@base"/>
       </xsl:call-template>
     </xsl:variable>
@@ -778,7 +754,7 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
                 <xsl:call-template name="T_get_cppType_complexType_base"/>
               </xsl:variable>
               <xsl:variable name="cppNSDeref">
-                <xsl:call-template name="T_get_cppNSDeref_of_simpleType_complexType">
+                <xsl:call-template name="T_get_cppNSDeref_for_QName">
                   <xsl:with-param name="typeQName" select="*[local-name()='simpleContent']/*[local-name()='restriction']/@base"/>
                 </xsl:call-template>
               </xsl:variable>
@@ -946,6 +922,7 @@ using namespace XPlus;
 #define  __<xsl:value-of select="$cppTargetNSConcatStr"/>_COMMON_INCLUDE_H__
 
 #include "XSD/xsdUtils.h"
+#include "XSD/TypeDefinitionFactory.h"
 
 //typedef XMLSchema::TElement* TElementPtr;
 

@@ -57,15 +57,12 @@ void DOMParser::onXmlDecl(void            *userData,
                  const DOMString  *encoding,
                  int             standalone)
 {
-  _docXmlDecl.version = version;
-  _docXmlDecl.encoding = encoding;
-  _docXmlDecl.standalone = (standalone==1);
-
-  //FIXME : this may not be the best place
-  _docNode->setXmlDecl(_docXmlDecl);
+  XmlDecl xmlDecl(version, encoding, standalone);
+  //FIXME : this may not be the right place
+  _docNode->xmlDecl(xmlDecl);
 }
 
-void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet)
+void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet, vector<AttributeInfo> attrVec)
 {
 #ifdef _DOM_DBG
   cout << "onElementStart: element:"
@@ -74,6 +71,7 @@ void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet)
 #endif
 
   createAccumulatedTextNode();
+  /*
   Node* elemNode = _docNode->createElementNS(
       const_cast<DOMString *>(nsTriplet.nsUri()),
       const_cast<DOMString *>(nsTriplet.nsPrefix()),
@@ -84,6 +82,15 @@ void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet)
     err << "failed to create element ["  << *nsTriplet.localName() << "] ";
     throw DOMException(err.str());
   }
+  for(unsigned int i=0; i<attrVec.size(); i++)
+  {
+    onAttribute(userData, attrVec[i]);
+  }
+  */
+  Node* elemNode = _docNode->createElementWithAttributes(const_cast<DOMString *>(nsTriplet.nsUri()),
+      const_cast<DOMString *>(nsTriplet.nsPrefix()),
+      const_cast<DOMString *>(nsTriplet.localName()),
+      attrVec);
 }
 
 void DOMParser::onElementEnd(void *userData, NodeNSTriplet nsTriplet)
@@ -101,23 +108,22 @@ void DOMParser::onElementEnd(void *userData, NodeNSTriplet nsTriplet)
         const_cast<DOMString *>(nsTriplet.localName()) );
 }
 
-void DOMParser::onAttribute(void *userData, NodeNSTriplet nsTriplet,
-    const DOMString* value)
+void DOMParser::onAttribute(void *userData, AttributeInfo attrInfo)
 {
 #ifdef _DOM_DBG
   cout << "onAttribute:"
-    << " attr: " << nsTriplet.toString()
+    << " attr: " << attrInfo.toString()
     << endl;
 #endif
 
-  AttributeP attrNode = _docNode->createAttributeNS(const_cast<DOMString *>(nsTriplet.nsUri()),
-      const_cast<DOMString *>(nsTriplet.nsPrefix()),
-      const_cast<DOMString *>(nsTriplet.localName()),
-      const_cast<DOMString *>(value));
+  AttributeP attrNode = _docNode->createAttributeNS(const_cast<DOMString *>(attrInfo.nsUri()),
+      const_cast<DOMString *>(attrInfo.nsPrefix()),
+      const_cast<DOMString *>(attrInfo.localName()),
+      const_cast<DOMString *>(attrInfo.value()));
 
   if(!attrNode) {
     ostringstream err;
-    err << "failed to create attribute ["  << *nsTriplet.localName() << "] ";
+    err << "failed to create attribute ["  << *attrInfo.localName() << "] ";
     throw DOMException(err.str());
   }
 }
@@ -127,6 +133,10 @@ void DOMParser::onComment(void *userData, const DOMString* dataPtr)
 #ifdef _DOM_DBG
   cout << "onComment data:[" << dataPtr->str() << "]"  << endl;
 #endif
+
+  // FIXME: this is not needed:
+  // <element> text1 cmt1 text2 </element>
+  // in this case we should use concatenation of text1 and text2 to create one text node
   createAccumulatedTextNode();
   
   Comment* cmt = _docNode->createComment(const_cast<DOMString *>(dataPtr));
@@ -167,9 +177,9 @@ void DOMParser::onNamespaceStart(void *userData,
       << " uri=" << (nsUri ? nsUri->str().c_str() : "(null)")
       << endl;
 #endif
+    _docNode->registerNsPrefixNsUri(nsPrefix, nsUri);
     delete nsPrefix;
     delete nsUri;
-    //_docNode->createNamespace(nsUri);
 } 
 
 void DOMParser::onNamespaceEnd(void *userData, 
@@ -235,10 +245,11 @@ void DOMParser::onPI(void *userData,
     << " data=" << (dataPtr ? dataPtr->str().c_str() : "(null)")
     << endl;
 #endif
+  // FIXME: this may not be needed:
+  // <element> text1 PI text2 </element>
+  // in this case should we use concatenation of text1 and text2 to create one text node ???
   createAccumulatedTextNode();
-  PI* pi = _docNode->createProcessingInstruction(
-      const_cast<DOMString *>(targetPtr), 
-      const_cast<DOMString *>(dataPtr));
+  PI* pi = _docNode->createProcessingInstruction(const_cast<DOMString *>(targetPtr), const_cast<DOMString *>(dataPtr));
   if(!pi) {
     throw DOMException("failed to create PI");
   }

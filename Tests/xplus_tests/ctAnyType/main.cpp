@@ -38,7 +38,7 @@ int main (int argc, char** argv)
 void populateDocument(NoNS::Document* xsdDoc)
 {
   // need revisit for API on anyType :
-  //xsdDoc->element_root()->stringValue("abcd");
+  xsdDoc->element_root()->stringValue("abcd");
 }
 
 // write code to operate(update/consume/test etc.) on the Document here...

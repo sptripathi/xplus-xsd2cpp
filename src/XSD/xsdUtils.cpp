@@ -55,7 +55,56 @@ namespace XMLSchema
     }
     return NULL;
   }
+    
+  Element* TDocument::createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec)
+  {
+    if(!localName) {
+      throw XPlus::NullPointerException("createElementWithAttributes: localName is NULL");
+    }
 
+    if(currentElement()) {
+      _currentElement = currentElement()->createElementWithAttributes(nsUri, nsPrefix, localName, attrVec);
+      return _currentElement;
+    }
+
+    // reaching here would mean that this element to be created is a document-element. 
+    // Also should reach here only once for one input document.
+    // So create the element and add attributes to it
+    XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_START);
+    if(_fsm && _fsm->processEventThrow(event))
+    {
+      if(_fsm->fsmCreatedNode()) 
+      {
+        _currentElement = dynamic_cast<Element *>(const_cast<Node*>(_fsm->fsmCreatedNode()));
+        _fsm->fsmCreatedNode(NULL);
+      }
+    }
+    // shouldn't come here as the previous processEventThrow call will either
+    // go through or will throw an exception.
+    // Adding this block just to be safe.
+    else
+    {
+      ostringstream err;
+      err << "Unexpected Element: " << formatNamespaceName(XsdEvent::ELEMENT_START, nsUri, *localName);
+      throw XMLSchema::FSMException(DOMString(err.str()));
+    }
+      
+    // now add attributes to this element  
+    for(unsigned int i=0; i<attrVec.size(); i++)
+    {
+      AttributeInfo& attrInfo = attrVec[i];
+      currentElement()->createAttributeNS(const_cast<DOMString *>(attrInfo.nsUri()),
+                                    const_cast<DOMString *>(attrInfo.nsPrefix()),
+                                    const_cast<DOMString *>(attrInfo.localName()),
+                                    const_cast<DOMString *>(attrInfo.value()) );
+    }
+    
+    //TODO: create attributes
+
+    return _currentElement;
+  }
+
+  /*
   ElementP TDocument::createElementNS(DOMString* nsUri, 
       DOMString* nsPrefix, 
       DOMString* localName) 
@@ -69,7 +118,8 @@ namespace XMLSchema
       return _currentElement;
     }
 
-    if(_fsm && _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ELEMENT_START))
+    XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_START);
+    if(_fsm && _fsm->processEventThrow(event))
     {
       if(_fsm->fsmCreatedNode()) 
       {
@@ -80,7 +130,7 @@ namespace XMLSchema
     }
 
     ostringstream err;
-    err << "Unexpected Element: " << formatNamespaceName(XsdFsmBase::ELEMENT_START, nsUri, *localName);
+    err << "Unexpected Element: " << formatNamespaceName(XsdEvent::ELEMENT_START, nsUri, *localName);
     throw XMLSchema::FSMException(DOMString(err.str()));
   }
 
@@ -95,7 +145,8 @@ namespace XMLSchema
       return currentElement()->createAttributeNS(nsUri, nsPrefix, localName, value);
     }
 
-    if(_fsm && _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ATTRIBUTE))
+    XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ATTRIBUTE);
+    if(_fsm && _fsm->processEventThrow(event))
     {
       if(_fsm->fsmCreatedNode()) 
       {
@@ -109,9 +160,10 @@ namespace XMLSchema
     }
 
     ostringstream err;
-    err << "Unexpected : " << formatNamespaceName(XsdFsmBase::ATTRIBUTE, nsUri, *localName) ;
+    err << "Unexpected : " << formatNamespaceName(XsdEvent::ATTRIBUTE, nsUri, *localName) ;
     throw XMLSchema::FSMException(DOMString(err.str()));
   }
+  */
 
 
   void TDocument::endElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)

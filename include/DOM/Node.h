@@ -52,33 +52,7 @@
 
 namespace DOM
 {
-  struct XmlDecl
-  {
-    const DOMString  *version;
-    const DOMString  *encoding;
-    bool        standalone;
-
-    XmlDecl():
-      version(NULL),
-      encoding(NULL)
-    {
-    }
-
-    void print() const
-    {
-      cout << "XmlDecl: ";
-      if(version) 
-        cout << " version:" << *version; 
-      if(encoding) 
-        cout << " encoding:" << *encoding; 
-        
-      cout << " standalone:" << standalone; 
-
-      cout << endl; 
-    }
-
-  };
-
+ 
   static string  sg_nodeTypeString[] =
   {
     "(UNKNOWN_TYPE)"             ,
@@ -120,9 +94,9 @@ namespace DOM
       }
 
       NodeNSTriplet(
-          DOMStringP nsUri, 
-          DOMStringP nsPrefix,
-          DOMStringP localName 
+          DOMString* nsUri, 
+          DOMString* nsPrefix,
+          DOMString* localName 
           ):
         _nsUri(nsUri),
         _nsPrefix(nsPrefix),
@@ -148,6 +122,26 @@ namespace DOM
             ( this->localName() == nsTriplet.localName())
             );
       }
+  };
+
+  struct AttributeInfo : public NodeNSTriplet
+  {
+
+    AttributeInfo(  DOMString* nsUri, 
+           DOMString* nsPrefix,
+           DOMString* localName,
+           DOMString* value ):
+      NodeNSTriplet(nsUri, nsPrefix, localName),
+      _value(value)
+      {
+      }
+      
+      inline const DOMString* value() const {
+        return _value;
+      }
+    
+    private:
+    DOMStringPtr      _value;
   };
 
 

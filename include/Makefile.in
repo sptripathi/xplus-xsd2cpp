@@ -224,10 +224,12 @@ nobase_include_HEADERS = \
   XPlus/LList.h \
   XPlus/MonthDay.h \
   XPlus/Month.h \
+  XPlus/Namespaces.h \
   XPlus/StringUtils.h \
   XPlus/Time.h \
   XPlus/TimeZone.h \
   XPlus/Types.h \
+  XPlus/TextEncoding.h \
   XPlus/UString.h \
   XPlus/XPlusObject.h \
   XPlus/Year.h \
@@ -257,6 +259,7 @@ nobase_include_HEADERS = \
   DOM/Stream.h \
   DOM/TextNode.h \
   DOM/XMLParser.h \
+  DOM/XmlDecl.h \
   \
   XSD/Enums.h \
   XSD/Facets.h \
@@ -267,6 +270,7 @@ nobase_include_HEADERS = \
   XSD/XSDException.h \
   XSD/XSDFSM.h \
   XSD/xsdUtils.h \
+  XSD/TypeDefinitionFactory.h \
   XSD/UserOps.h
 
 all: all-am
@@ -281,9 +285,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu include/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign include/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu include/Makefile
+	  $(AUTOMAKE) --foreign include/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

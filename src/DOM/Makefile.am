@@ -20,6 +20,7 @@ libdom_la_SOURCES = \
  Node.cpp \
  Stream.cpp \
  TextNode.cpp \
+ XmlDecl.cpp \
   $(top_srcdir)/include/DOM/Attribute.h \
   $(top_srcdir)/include/DOM/CDATASection.h \
   $(top_srcdir)/include/DOM/CharacterData.h \

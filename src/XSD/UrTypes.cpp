@@ -17,9 +17,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "XPlus/Namespaces.h"
 #include "XSD/PrimitiveTypes.h"
 #include "XSD/xsdUtils.h"
 #include "XSD/XSDException.h"
+#include "XSD/TypeDefinitionFactory.h"
 #include "Poco/RegularExpression.h"
 
 extern "C" {
@@ -27,6 +29,9 @@ extern "C" {
 }
 
 using namespace std;
+using XPlus::Namespaces;
+
+XSD::TypeDefinitionFactory::map_type*  XSD::TypeDefinitionFactory::_pQNameToTypeMap = NULL;
 
 namespace XMLSchema
 {
@@ -36,21 +41,7 @@ namespace XMLSchema
 
   namespace Types 
   {
-
-    DOMString     anyType::s_xsiStr                             = "xsi"; 
-    DOMString     anyType::s_xsiUri                             = "http://www.w3.org/2001/XMLSchema-instance";
-    DOMString     anyType::s_xsiTypeStr                         = "type"; 
-    DOMString     anyType::s_xsiNilStr                          = "nil";
-    DOMString     anyType::s_xsiSchemaLocationStr               = "schemaLocation";
-    DOMString     anyType::s_xsiNoNamespaceSchemaLocationStr    = "noNamespaceSchemaLocation";
-
-    DOMStringPtr  anyType::s_xsiStrPtr                          = new DOMString(s_xsiStr); 
-    DOMStringPtr  anyType::s_xsiUriPtr                          = new DOMString(s_xsiUri);
-    DOMStringPtr  anyType::s_xsiTypeStrPtr                      = new DOMString(s_xsiTypeStr); 
-    DOMStringPtr  anyType::s_xsiNilStrPtr                       = new DOMString(s_xsiNilStr);
-    DOMStringPtr  anyType::s_xsiSchemaLocationStrPtr            = new DOMString(s_xsiSchemaLocationStr);
-    DOMStringPtr  anyType::s_xsiNoNamespaceSchemaLocationStrPtr = new DOMString(s_xsiNoNamespaceSchemaLocationStr);
-
+    map<DOMString, anyType*>   anyType::_qNameToTypeMap;
 
     anyType::anyType(
         NodeP ownerNode,
@@ -73,35 +64,74 @@ namespace XMLSchema
         _contentTypeVariety = CONTENT_TYPE_VARIETY_MIXED; // for anyType
       }
 
-      if(_ownerElem)
+      if(ownerElement())
       {
         XsdFsmBasePtr fsmsAttrs[] = { 
-          new XsdFSM<DOM::Attribute *>( NSNamePairOccur(s_xsiUriPtr, *s_xsiTypeStrPtr, 0, 1),
-                                        XsdFsmBase::ATTRIBUTE, 
-                                        new object_noargs_mem_fun_t<DOM::Attribute*, anyType>(this, &anyType::createAttributeXsiType)),
+          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xsiUriPtr, *Namespaces::s_xsiTypeStrPtr, 0, 1),
+                                        XsdEvent::ATTRIBUTE, 
+                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXsiType)),
 
-          new XsdFSM<DOM::Attribute *>( NSNamePairOccur(s_xsiUriPtr, *s_xsiNilStrPtr, 0, 1),
-                                        XsdFsmBase::ATTRIBUTE,
-                                        new object_noargs_mem_fun_t<DOM::Attribute*, anyType>(this, &anyType::createAttributeXsiNil)),
+          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xsiUriPtr, *Namespaces::s_xsiNilStrPtr, 0, 1),
+                                        XsdEvent::ATTRIBUTE,
+                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXsiNil)),
 
-          new XsdFSM<DOM::Attribute *>( NSNamePairOccur(s_xsiUriPtr, *s_xsiSchemaLocationStrPtr, 0, 1),
-                                        XsdFsmBase::ATTRIBUTE, 
-                                        new object_noargs_mem_fun_t<DOM::Attribute*, anyType>(this, &anyType::createAttributeXsiSchemaLocation)),
+          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xsiUriPtr, *Namespaces::s_xsiSchemaLocationStrPtr, 0, 1),
+                                        XsdEvent::ATTRIBUTE, 
+                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXsiSchemaLocation)),
 
-          new XsdFSM<DOM::Attribute *>( NSNamePairOccur(s_xsiUriPtr, *s_xsiNoNamespaceSchemaLocationStrPtr, 0, 1),
-                                        XsdFsmBase::ATTRIBUTE, 
-                                        new object_noargs_mem_fun_t<DOM::Attribute*, anyType>(this, &anyType::createAttributeXsiNoNamespaceSchemaLocation)),
+          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xsiUriPtr, *Namespaces::s_xsiNoNamespaceSchemaLocationStrPtr, 0, 1),
+                                        XsdEvent::ATTRIBUTE, 
+                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXsiNoNamespaceSchemaLocation)),
 
           NULL 
         };
         XsdFsmBasePtr fsmsContent[] = { NULL };
         XsdFsmBase* contentFsm = new XsdSequenceFsmOfFSMs(fsmsContent); 
-        XsdFsmBaseP elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(ownerElement()->getNamespaceURI(), 
-              *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
+        XsdFsmBaseP elemEndFsm = new XsdFSM<void *>(Particle( ownerElement()->getNamespaceURI(), *ownerElement()->getTagName(), 1, 1),
+                                                    XsdEvent::ELEMENT_END);
         
         _fsm = new AnyTypeFSM(fsmsAttrs, contentFsm, elemEndFsm);
       }
+      else
+      {
+        XsdFsmBasePtr fsmsAttrs[] = { NULL };
+        XsdFsmBasePtr fsmsContent[] = { NULL };
+        XsdFsmBase* contentFsm = new XsdSequenceFsmOfFSMs(fsmsContent); 
+        XsdFsmBaseP elemEndFsm = new XsdFSM<void *>(Particle(NULL, "", 1, 1), XsdEvent::ELEMENT_END);
+        _fsm = new AnyTypeFSM(fsmsAttrs, contentFsm, elemEndFsm);
+      }
     }
+
+  /*
+    void anyType::setTypeQName(DOMString name, DOMStringPtr pNsStr)
+    {
+      DOMString key = createKeyForQNameToTypeMap(name, pNsStr);
+      _qNameToTypeMap[key] = this;
+    }
+        
+    anyType* anyType::getTypeForQName(DOMString name, DOMStringPtr pNsStr)
+    {
+      DOMString key = createKeyForQNameToTypeMap(name, pNsStr);
+      std::map<DOMString, anyType*>::iterator it = _qNameToTypeMap.find(key);
+      std::map<DOMString, anyType*>::iterator end = _qNameToTypeMap.end();
+      if(it == end) {
+        return NULL;
+      }
+      return it->second;
+    }
+
+    DOMString anyType::createKeyForQNameToTypeMap(DOMString name, DOMStringPtr pNsStr)
+    {
+      ostringstream oss;
+      oss << "{";
+      if(pNsStr) {
+        oss << *pNsStr;
+      }
+      oss << "}";
+      oss << name;
+      return oss.str();
+    }
+*/
 
     void anyType::setErrorContext(XPlus::Exception& ex)
     {
@@ -160,7 +190,42 @@ namespace XMLSchema
       checkFixed(value);
     }
 
+    TextNode* anyType::addTextNodeValueAtPos(DOMString text, int pos)
+    {
+      DOM::TextNode *txtNode = NULL;
+      if(!this->ownerNode()) {
+        ostringstream err;
+        err << "can not set text in an ComplexType without an owner parent-element";
+        throw LogicalError(err.str());
+      }
 
+      if(pos==-1) 
+      {
+        txtNode = this->ownerNode()->createChildTextNode(new DOMString(text));
+        if(!txtNode) {
+          ostringstream err;
+          err << "anyType: failed to add Text Node";
+          XSDException ex(err.str()); 
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          throw ex;
+        }
+        _textNodes.push_back(txtNode);
+      }
+      else 
+      {
+        txtNode = this->ownerNode()->createChildTextNodeAt(new DOMString(text), pos);
+        if(!txtNode)
+        {
+          ostringstream err;
+          err << "anyType: failed to add Text Node";
+          XSDException ex(err.str()); 
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          throw ex;
+        }
+        indexAddedTextNode(txtNode);
+      }
+      return txtNode;
+    }
 
     // 1. sets the value (in _value)
     // 2. creates the DOM TextNode with this value if the TextNode was not 
@@ -186,7 +251,7 @@ namespace XMLSchema
 
     // here pos is the position of this node among all children 
     // and not just the text nodes
-    void anyType::setTextAmongChildrenAt(DOMString text, unsigned int pos)
+    void anyType::setTextAmongChildrenAt(DOMString text, int pos)
     {
       checksOnSetValue(text);
       this->addTextNodeValueAtPos(text, pos);
@@ -246,46 +311,6 @@ namespace XMLSchema
       return valueNode;
     }
 
-
-    TextNode* anyType::addTextNodeValueAtPos(DOMString text, unsigned int pos)
-    {
-      DOM::TextNode *txtNode = NULL;
-      if(!this->ownerNode()) {
-        ostringstream err;
-        err << "can not set text in an ComplexType without an owner parent-element";
-        throw LogicalError(err.str());
-      }
-
-
-      if(pos==-1) 
-      {
-        txtNode = this->ownerNode()->createChildTextNode(new DOMString(text));
-        if(!txtNode) {
-          ostringstream err;
-          err << "anyType: failed to add Text Node";
-          XSDException ex(err.str()); 
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          throw ex;
-        }
-        _textNodes.push_back(txtNode);
-      }
-      else 
-      {
-        txtNode = this->ownerNode()->createChildTextNodeAt(new DOMString(text), pos);
-        if(!txtNode)
-        {
-          ostringstream err;
-          err << "anyType: failed to add Text Node";
-          XSDException ex(err.str()); 
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          throw ex;
-        }
-        indexAddedTextNode(txtNode);
-      }
-      return txtNode;
-    }
-
-
     void anyType::indexAddedTextNode(TextNode *txtNode)
     {
       unsigned int posText = txtNode->countPreviousSiblingsOfType(DOM::Node::TEXT_NODE);
@@ -302,6 +327,7 @@ namespace XMLSchema
     }
 
 
+    /*
     TElement* anyType::createElementNS(DOMString* nsUri, 
         DOMString* nsPrefix, 
         DOMString* localName) 
@@ -309,7 +335,9 @@ namespace XMLSchema
       if(!localName) {
         throw XPlus::NullPointerException("createElementNS: localName is NULL");
       }
-      if(_fsm && _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ELEMENT_START))
+
+      XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_START);
+      if(_fsm && _fsm->processEventThrow(event))
       {
         if(_fsm->fsmCreatedNode()) 
         {
@@ -319,12 +347,81 @@ namespace XMLSchema
         }
       }
       ostringstream err;
-      err << "Failed to create : " << formatNamespaceName(XsdFsmBase::ELEMENT_START, nsUri, *localName);
+      err << "Failed to create : " << formatNamespaceName(XsdEvent::ELEMENT_START, nsUri, *localName);
       throw XMLSchema::FSMException(DOMString(err.str()));
+    }
+    */
+
+    TElement* anyType::createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec)
+    {
+      TElement* elemNode = NULL;
+      if(!localName) {
+        throw XPlus::NullPointerException("createElementNS: localName is NULL");
+      }
+      
+      // create the element
+      XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_START);
+      FsmCbOptions& cbOptions = event.cbOptions;
+      // set the xsi context to be passed to callbaack functions.
+      for(unsigned int i=0; i<attrVec.size(); i++)
+      {
+        if(!attrVec[i].nsUri() || (*attrVec[i].nsUri() != Namespaces::s_xsiUri) ) {
+          continue;
+        }
+
+        if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiTypeStr) && attrVec[i].value()) 
+        {
+          cbOptions.xsiType = *attrVec[i].value();
+        }
+        else if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiNilStr) && attrVec[i].value()) 
+        {
+          cbOptions.xsiNil = *attrVec[i].value();
+        }
+        else if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiSchemaLocationStr) && attrVec[i].value()) 
+        {
+          cbOptions.xsiSchemaLocation = *attrVec[i].value();
+        }
+        else if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiNoNamespaceSchemaLocationStr) && attrVec[i].value()) 
+        {
+          cbOptions.xsiNoNamespaceSchemaLocation = *attrVec[i].value();
+        }
+      }
+
+
+      if(_fsm && _fsm->processEventThrow(event))
+      {
+        if(_fsm->fsmCreatedNode()) 
+        {
+          elemNode = dynamic_cast<TElement *>(const_cast<Node*>(_fsm->fsmCreatedNode()));
+          _fsm->fsmCreatedNode(NULL);
+        }
+      }
+      // shouldn't come here as the previous processEventThrow call will either
+      // go through or will throw an exception.
+      // Adding this block just to be safe.
+      else
+      {
+        ostringstream err;
+        err << "Unexpected Element: " << formatNamespaceName(XsdEvent::ELEMENT_START, nsUri, *localName);
+        throw XMLSchema::FSMException(DOMString(err.str()));
+      }
+
+      // now add attributes to this element  
+      for(unsigned int i=0; i<attrVec.size(); i++)
+      {
+        AttributeInfo& attrInfo = attrVec[i];
+        elemNode->createAttributeNS(const_cast<DOMString *>(attrInfo.nsUri()),
+                                    const_cast<DOMString *>(attrInfo.nsPrefix()),
+                                    const_cast<DOMString *>(attrInfo.localName()),
+                                    const_cast<DOMString *>(attrInfo.value()) );
+      }
+
+      return elemNode;
     }
 
 
-    AttributeP anyType::createAttributeNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, DOMString* value)
+    Attribute* anyType::createAttributeNS(DOMString* nsUri, DOMString* nsPrefix, 
+                                          DOMString* localName, DOMString* value)
     {
       if(!localName) {
         throw XPlus::NullPointerException("createAttributeNS: localName is NULL");
@@ -333,11 +430,12 @@ namespace XMLSchema
       if(!value || (value->length() == 0) )
       {
         ostringstream err;
-        err << "empty value for : " << formatNamespaceName(XsdFsmBase::ATTRIBUTE, nsUri, *localName);
+        err << "empty value for : " << formatNamespaceName(XsdEvent::ATTRIBUTE, nsUri, *localName);
         throw XMLSchema::ValidationException(DOMString(err.str()));
       }
 
-      if(_fsm && _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ATTRIBUTE))
+      XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ATTRIBUTE);
+      if(_fsm && _fsm->processEventThrow(event))
       {
         if(_fsm->fsmCreatedNode()) 
         {
@@ -352,7 +450,7 @@ namespace XMLSchema
       }
 
       ostringstream err;
-      err << "Failed to create : " << formatNamespaceName(XsdFsmBase::ATTRIBUTE, nsUri, *localName) ;
+      err << "Failed to create : " << formatNamespaceName(XsdEvent::ATTRIBUTE, nsUri, *localName) ;
       throw XMLSchema::FSMException(DOMString(err.str()));
     }
 
@@ -360,9 +458,7 @@ namespace XMLSchema
     {
       if(data) {
         stringValue(*data);
-        TextNode* p = _textNodes.back();
-        return p;
-        //return _textNodes.back();
+        return _textNodes.back();
       }
       return NULL;
     }
@@ -372,8 +468,10 @@ namespace XMLSchema
       if(!localName) {
         throw XPlus::NullPointerException("endElementNS: localName is NULL");
       }
+      
+      XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_END);
       if(_fsm) {
-        _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ELEMENT_END);
+        _fsm->processEventThrow(event);
       }
       else 
       {
@@ -384,8 +482,10 @@ namespace XMLSchema
 
     void anyType::endDocument()
     {
-      if(_fsm) {
-        _fsm->processEventThrow(NULL, "", XsdFsmBase::DOCUMENT_END);  
+      if(_fsm)
+      {
+        XsdEvent event(NULL, NULL, "", XsdEvent::DOCUMENT_END);
+        _fsm->processEventThrow(event);  
       }
     }
 
@@ -399,30 +499,30 @@ namespace XMLSchema
     }
 
     
-    DOM::Attribute* anyType::createAttributeXsiType()
+    DOM::Attribute* anyType::createAttributeXsiType(FsmCbOptions options)
     {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(s_xsiTypeStrPtr, s_xsiUriPtr, s_xsiStrPtr); 
+      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiTypeStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr); 
       _fsm->fsmCreatedNode(attr);
       return attr;
     }
 
-    DOM::Attribute* anyType::createAttributeXsiNil()
+    DOM::Attribute* anyType::createAttributeXsiNil(FsmCbOptions options)
     {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(s_xsiNilStrPtr, s_xsiUriPtr, s_xsiStrPtr);
+      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiNilStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr);
       _fsm->fsmCreatedNode(attr);
       return attr;
     }
 
-    DOM::Attribute* anyType::createAttributeXsiSchemaLocation()
+    DOM::Attribute* anyType::createAttributeXsiSchemaLocation(FsmCbOptions options)
     {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(s_xsiSchemaLocationStrPtr, s_xsiUriPtr, s_xsiStrPtr);
+      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiSchemaLocationStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr);
       _fsm->fsmCreatedNode(attr);
       return attr;
     }
 
-    DOM::Attribute* anyType::createAttributeXsiNoNamespaceSchemaLocation()
+    DOM::Attribute* anyType::createAttributeXsiNoNamespaceSchemaLocation(FsmCbOptions options)
     {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(s_xsiNoNamespaceSchemaLocationStrPtr, s_xsiUriPtr, s_xsiStrPtr);
+      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiNoNamespaceSchemaLocationStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr);
       _fsm->fsmCreatedNode(attr);
       return attr;
     }
@@ -431,7 +531,7 @@ namespace XMLSchema
     const DOMString* anyType::xsiTypeValue()
     {
       if(ownerElement()) {
-        return ownerElement()->getAttributeNS(s_xsiUriPtr, s_xsiTypeStrPtr);
+        return ownerElement()->getAttributeNS(Namespaces::s_xsiUriPtr, Namespaces::s_xsiTypeStrPtr);
       }
       return NULL;
     }
@@ -440,7 +540,7 @@ namespace XMLSchema
     {
       const DOMString* pNilStr = NULL;
       if(ownerElement()) {
-        pNilStr = ownerElement()->getAttributeNS(s_xsiUriPtr, s_xsiNilStrPtr);
+        pNilStr = ownerElement()->getAttributeNS(Namespaces::s_xsiUriPtr, Namespaces::s_xsiNilStrPtr);
       }
       if(!pNilStr || (*pNilStr == "false") ) {
         return false;
@@ -459,7 +559,7 @@ namespace XMLSchema
     const DOMString* anyType::xsiSchemaLocationValue()
     {
       if(ownerElement()) {
-        return ownerElement()->getAttributeNS(s_xsiUriPtr, s_xsiSchemaLocationStrPtr);
+        return ownerElement()->getAttributeNS(Namespaces::s_xsiUriPtr, Namespaces::s_xsiSchemaLocationStrPtr);
       }
       return NULL;
     }
@@ -467,7 +567,7 @@ namespace XMLSchema
     const DOMString* anyType::xsiNoNamespaceSchemaLocationValue()
     {
       if(ownerElement()) {
-        return ownerElement()->getAttributeNS(s_xsiUriPtr, s_xsiNoNamespaceSchemaLocationStrPtr);
+        return ownerElement()->getAttributeNS(Namespaces::s_xsiUriPtr, Namespaces::s_xsiNoNamespaceSchemaLocationStrPtr);
       }
       return NULL;
     }
@@ -533,7 +633,7 @@ namespace XMLSchema
       anyType::endElementNS(nsUri, nsPrefix, localName);
       if( (_textNodes.size()==0) && (_primitiveType != PD_STRING)) {
         ostringstream err;
-        err << "empty value for : " << formatNamespaceName(XsdFsmBase::ELEMENT_START, nsUri, *localName);
+        err << "empty value for : " << formatNamespaceName(XsdEvent::ELEMENT_START, nsUri, *localName);
         throw XMLSchema::ValidationException(DOMString(err.str()));
       }
     }

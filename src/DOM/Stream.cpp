@@ -103,17 +103,21 @@ void outputXmlDecl(XPlusCharOutputStream& s, const Document& doc)
   //"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
   s << "<?xml";
   
-  if(doc.version()) {
-    s << " version=\"" << *doc.version() << "\"";
+  if(doc.version() != XML_VERSION_UNSPECIFIED) {
+    s << " version=\"" << doc.versionString() << "\"";
   }
   else {
     s << " version=\"1.0\"";
   }
 
-  if(doc.encoding()) {
-    s << " encoding=\"" << *doc.encoding() << "\"";
+  if(doc.encoding() != TextEncoding::UNSPECIFIED) {
+    s << " encoding=\"" << doc.encodingString() << "\"";
   }
-  //TODO: standalone
+  
+  if(doc.standalone() != STANDALONE_UNSPECIFIED) {
+    s << " standalone=\"" << doc.standaloneString() << "\"";
+  }
+
   s << "?>";
   s << endl;
 }
@@ -177,7 +181,7 @@ void outputDocElementNamespaces(XPlusCharOutputStream& s, const Element& e)
   list<DOMString>::const_iterator it = unprefixedNamespaces.begin();
   for( ; it != unprefixedNamespaces.end(); it++)
   {
-    s << " xmlns:" << e.getOwnerDocument()->getImplicitNsPrefixForNsUri(*it)
+    s << " xmlns:" << e.getOwnerDocument()->getNsPrefixForNsUriImplicit(*it)
       << "=\"" << *it << "\"";
   }
 }
@@ -196,7 +200,6 @@ void outputNsPrefix(XPlusCharOutputStream& s, const Node& node)
     default:
       return;
   }
-
   // output nsPrefix if available else output implicit nsPrefix
   if( (node.getNamespacePrefix() != (DOMStringP)NULL) && (node.getNamespacePrefix()->length() > 0) ) {
     s << *node.getNamespacePrefix() << DOMString(":");
@@ -205,7 +208,7 @@ void outputNsPrefix(XPlusCharOutputStream& s, const Node& node)
   {
     if( node.getOwnerDocument() )
     {
-      DOMString nsPrefix = node.getOwnerDocument()->getImplicitNsPrefixForNsUri(*node.getNamespaceURI());
+      DOMString nsPrefix = node.getOwnerDocument()->getNsPrefixForNsUriImplicit(*node.getNamespaceURI());
       if(nsPrefix.length() > 0) {
         s << nsPrefix << DOMString(":");
       }
@@ -255,48 +258,40 @@ void outputElement(XPlusCharOutputStream& s, const Element& e)
     outputDocElementNamespaces(s, e);
   }
   
-  // end of elem begin
-  s << DOMString(">"); 
-
-  int cntChildElements=0;
-  //streamout all child nodes
-  const Node *node = e.getFirstChild();
-  while(node)
+  int cntChildren = e.getChildNodes().getLength();
+  int cntChildElements = 0;
+  if(cntChildren > 0)
   {
-    if(node->getNodeType() ==  Node::ELEMENT_NODE) {
-      if(e.prettyPrint()) {
-        s << "\n";
+    // end of elem begin
+    s << DOMString(">"); 
+
+    //streamout all child nodes
+    const Node *node = e.getFirstChild();
+    while(node)
+    {
+      if(node->getNodeType() ==  Node::ELEMENT_NODE) {
+        if(e.prettyPrint()) {
+          s << "\n";
+        }
+        cntChildElements++;
       }
-      cntChildElements++;
+      s << *node;
+      node = node->getNextSibling();
     }
-    s << *node;
-    node = node->getNextSibling();
+    //element end
+    if( e.prettyPrint() && (cntChildElements > 0 ) ) {
+      s << "\n"; 
+      s << padding;
+    }
+    s << DOMString("</") ;
+    outputNsPrefix(s, e);
+    s << *e.getNodeName() << DOMString(">");
   }
-
-
-  /*
-  const NodeList& childNodes = e.getChildNodes();
-  for(unsigned int i=0; i<childNodes.getLength(); i++)
+  else
   {
-    const Node* childNode = childNodes.item(i);
-    if(childNode->getNodeType() ==  Node::ELEMENT_NODE) {
-      if(e.prettyPrint()) {
-        s << "\n";
-      }
-      cntChildElements++;
-    }
-    s << *childNode;
+    // end of elem begin
+    s << DOMString("/>"); 
   }
-  */
-
-  //element end
-  if( e.prettyPrint() && (cntChildElements > 0 ) ) {
-    s << "\n"; 
-    s << padding;
-  }
-  s << DOMString("</") ;
-  outputNsPrefix(s, e);
-  s << *e.getNodeName() << DOMString(">");
 }
 
 void outputAttribute(XPlusCharOutputStream& s, const Attribute& attr)

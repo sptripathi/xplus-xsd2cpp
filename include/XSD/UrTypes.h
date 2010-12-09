@@ -39,6 +39,7 @@ using namespace std;
 using namespace XPlus;
 using namespace FSM;
 
+
 namespace XMLSchema 
 {
   //fwd-declarations
@@ -90,13 +91,11 @@ namespace XMLSchema
           return _ownerDoc;
         }
 
-        virtual TElement* createElementNS(DOMString* nsUri, 
-            DOMString* nsPrefix, 
-            DOMString* localName);
-        virtual void endElementNS(DOMString* nsURI, DOMString* nsPrefix, DOMString* localName);
-        virtual TextNodeP createTextNode(DOMString* data);
+        virtual TElement* createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec);
         virtual AttributeP createAttributeNS(DOMString* namespaceURI,
             DOMString* nsPrefix, DOMString* localName, DOMString* value);
+        virtual void endElementNS(DOMString* nsURI, DOMString* nsPrefix, DOMString* localName);
+        virtual TextNodeP createTextNode(DOMString* data);
         virtual void endDocument();
 
         virtual void stringValue(DOMString value); 
@@ -126,16 +125,16 @@ namespace XMLSchema
         inline unsigned int countText() {
           return _textNodes.size();
         }
-        inline DOMString getTextAt(unsigned int pos) {
+        inline DOMString getTextAt(int pos) {
           return *_textNodes.at(pos)->getData();
         }
         // edit existing-text at a position( position among text
         // inside anyComplexType)
-        void replaceTextAt(DOMString text, unsigned int pos) {
+        void replaceTextAt(DOMString text, int pos) {
           _textNodes.at(pos)->setNodeValue(new DOMString(text));
         }
         // pos: position among all nodes inside anyComplexType
-        void setTextAmongChildrenAt(DOMString text, unsigned int pos);
+        void setTextAmongChildrenAt(DOMString text, int pos);
         void setTextEnd(DOMString text);
         void setTextAfterNode(DOMString text, DOM::Node *refNode);
 
@@ -167,26 +166,12 @@ namespace XMLSchema
         const DOMString* xsiSchemaLocationValue();
         const DOMString* xsiNoNamespaceSchemaLocationValue();
 
-        // the string "xsi" and not this prefix's nsUri in the context
-        static DOMString   s_xsiStr; 
-        // pointer to DOMString : "http://www.w3.org/2001/XMLSchema-instance"
-        static DOMString   s_xsiUri;
-        // the string "type" and not this attribute's value in the context
-        static DOMString   s_xsiTypeStr; 
-        // the string "nil" and not this attribute's value in the context
-        static DOMString   s_xsiNilStr;
-        // the string "schemaLocation" and not this attribute's value in the context
-        static DOMString   s_xsiSchemaLocationStr;
-        // the string "noNamespaceSchemaLocation" and not this attribute's value in the context
-        static DOMString   s_xsiNoNamespaceSchemaLocationStr;
-
-        // respective static pointers to the above xsi strings
-        static DOMStringPtr   s_xsiStrPtr; 
-        static DOMStringPtr   s_xsiUriPtr;
-        static DOMStringPtr   s_xsiTypeStrPtr; 
-        static DOMStringPtr   s_xsiNilStrPtr;
-        static DOMStringPtr   s_xsiSchemaLocationStrPtr;
-        static DOMStringPtr   s_xsiNoNamespaceSchemaLocationStrPtr;
+        inline AnyTypeFSM* fsm() {
+          return _fsm;
+        }
+        inline void replaceFsm(AnyTypeFSM* fsm) {
+          _fsm = fsm;
+        }
 
       protected:
 
@@ -197,40 +182,45 @@ namespace XMLSchema
         void setErrorContext(XPlus::Exception& ex);
         virtual TextNodeP setTextNodeValue(DOMString value); 
         void indexAddedTextNode(TextNode *txtNode);
-        TextNode* addTextNodeValueAtPos(DOMString value, unsigned int pos);
+        TextNode* addTextNodeValueAtPos(DOMString value, int pos);
         void checksOnSetValue(DOMString value);
         void checkFixed(DOMString value);
 
         DOM::Attribute* createDOMAttributeUnderCurrentElement(DOMString *attrName, DOMString *attrNsUri=NULL, DOMString *attrNsPrefix=NULL, DOMString *attrValue=NULL);
-        DOM::Attribute* createAttributeXsiType();
-        DOM::Attribute* createAttributeXsiNil();
-        DOM::Attribute* createAttributeXsiSchemaLocation();
-        DOM::Attribute* createAttributeXsiNoNamespaceSchemaLocation();
-        
+        DOM::Attribute* createAttributeXsiType(FsmCbOptions options);
+        DOM::Attribute* createAttributeXsiNil(FsmCbOptions options);
+        DOM::Attribute* createAttributeXsiSchemaLocation(FsmCbOptions options);
+        DOM::Attribute* createAttributeXsiNoNamespaceSchemaLocation(FsmCbOptions options);
 
+        /*
+        void setTypeQName(DOMString name, DOMStringPtr pNsStr=NULL);
+        static anyType* getTypeForQName(DOMString name, DOMStringPtr pNsStr=NULL);
+        static DOMString createKeyForQNameToTypeMap(DOMString name, DOMStringPtr pNsStr);
+        */
 
         //
         //                 MEMBER VARIABLES 
         //
 
-        eAnyTypeUseCase         _anyTypeUseCase;
-        eContentTypeVariety     _contentTypeVariety;
-        bool                    _fixed;
+        eAnyTypeUseCase                 _anyTypeUseCase;
+        eContentTypeVariety             _contentTypeVariety;
+        bool                            _fixed;
         
         // in case of anyType and derivatives ownerElement() is same
         // Node as ownerNode(). However in case of element ownerElement()
         // is element itself(this pointer)
-        Element*                _ownerElem;
+        Element*                        _ownerElem;
         // Node(Element or Attribute) which holds value of my type
         // eg. <element name="elem1" type="T">
         // T's ownerNode is elem1 Node
-        Node*                   _ownerNode;
-        TDocument*              _ownerDoc;
-        AnyTypeFSMPtr           _fsm;
+        Node*                           _ownerNode;
+        TDocument*                      _ownerDoc;
+        AnyTypeFSMPtr                   _fsm;
 
-        DOMString               _value;
-        List<TextNode* >        _textNodes; 
+        DOMString                       _value;
+        List<TextNode* >                _textNodes; 
 
+        static std::map<DOMString, anyType*>   _qNameToTypeMap;
     };
 
 

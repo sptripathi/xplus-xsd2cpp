@@ -59,7 +59,9 @@ libxsdall_la_SOURCES = \
   XPlus/Duration.cpp \
   XPlus/Exception.cpp \
   XPlus/FPA.cpp \
+  XPlus/Namespaces.cpp \
   XPlus/StringUtils.cpp \
+  XPlus/TextEncoding.cpp \
   XPlus/UString.cpp \
   \
   DOM/Attribute.cpp \
@@ -73,6 +75,7 @@ libxsdall_la_SOURCES = \
   DOM/Node.cpp \
   DOM/Stream.cpp \
   DOM/TextNode.cpp \
+  DOM/XmlDecl.cpp \
    \
   XSD/Enums.cpp \
   XSD/FSM.cpp \
