@@ -57,7 +57,7 @@ XPLUS_NEGTESTS_DIRS="
                   Tests/xplus_neg_tests/ccExt2
                     "
 
-#EX_DIRS=
+EX_DIRS=
 #W3C_TESTS_DIRS=
 #XPLUS_TESTS_DIRS=
 
@@ -67,10 +67,12 @@ print_usage()
   echo "Usage:"
   echo
   echo " $0  -ct"
-  echo "    -c  cleanup all the example directories"
-  echo "    -t  test all the example directories"
+  echo "    -c  cleanup all the test directories"
+  echo "    -t  test all the test directories"
   echo "    -h  print help"
   echo
+  echo " (test directories are: Tests/ examples/) "
+
 }
 
 change_dir_abort()
@@ -425,6 +427,7 @@ do
       test_all
       shift;;
     --)
+      print_usage
       shift; break;;
   esac
 done

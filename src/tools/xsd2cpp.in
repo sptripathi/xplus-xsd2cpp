@@ -23,7 +23,8 @@
 INST_BIN_DIR=@bindir@
 INST_LIB_DIR=@libdir@
 INST_INCL_DIR=@includedir@
-XSD2CPP_XSL_PATH=$INST_BIN_DIR/xsl/xsd2cpp.xsl
+DATA_DIR=@datadir@
+XSD2CPP_XSL_PATH=$DATA_DIR/xsl/xsd2cpp.xsl
 
 MKDIR=`which mkdir`
 XSLTPROC=`which xsltproc`
@@ -39,6 +40,7 @@ RM=`which rm`
 CAT=`which cat`
 GETOPT=`which getopt`
 DIRNAME=`which dirname`
+CHMOD=`which chmod`
 
 OUTDIR=""
 XSD=""
@@ -195,23 +197,24 @@ gen_automake_files()
 {
   echo "=>  Generating automake/autoconf files ..."
 
-  MAKE_TMPL_DIR=$INST_BIN_DIR/makeTmpl
-  CONFIG_AC_FILE=$MAKE_TMPL_DIR/configure.ac
-  MAKE_AM_TOP_SRC_DIR_FILE=$MAKE_TMPL_DIR/Makefile.am.top_srcdir
-  MAKE_AM_SRC_DIR_FILE=$MAKE_TMPL_DIR/Makefile.am.src
-  MAKE_AM_INC_DIR_FILE=$MAKE_TMPL_DIR/Makefile.am.include
+  RESOURCES_DIR=$DATA_DIR/resources
+  CONFIG_AC_FILE=$RESOURCES_DIR/configure.ac
+  MAKE_AM_TOP_SRC_DIR_FILE=$RESOURCES_DIR/Makefile.am.top_srcdir
+  MAKE_AM_SRC_DIR_FILE=$RESOURCES_DIR/Makefile.am.src
+  MAKE_AM_INC_DIR_FILE=$RESOURCES_DIR/Makefile.am.include
 
   $SED -e "s/@xsdname@/$VALID_XSDTOKEN/g" $CONFIG_AC_FILE > $OUTDIR/configure.ac
   $SED -e "s/@xsdname@/$VALID_XSDTOKEN/g" $MAKE_AM_TOP_SRC_DIR_FILE > $OUTDIR/Makefile.am
   $SED -e "s/@xsdname@/$VALID_XSDTOKEN/g" $MAKE_AM_SRC_DIR_FILE > $OUTDIR/src/Makefile.am
   $CP $MAKE_AM_INC_DIR_FILE  $OUTDIR/include/Makefile.am
-  $CP $MAKE_TMPL_DIR/acinclude.m4 $OUTDIR/
-  $CP $MAKE_TMPL_DIR/aminclude.am $OUTDIR/
-  $CP $MAKE_TMPL_DIR/doxygen.cfg $OUTDIR/
+  $CP $RESOURCES_DIR/acinclude.m4 $OUTDIR/
+  $CP $RESOURCES_DIR/aminclude.am $OUTDIR/
+  $CP $RESOURCES_DIR/doxygen.cfg $OUTDIR/
   #$SED -e "s/@genxsdsources@/$GEN_XSD_SOURCES/g" $MAKE_AM_SRC_DIR_FILE > $OUTDIR/src/Makefile.am
   echo "$GEN_XSD_SOURCES" >> $OUTDIR/src/Makefile.am
   echo "$GEN_XSD_INCLUDES" >> $OUTDIR/include/Makefile.am
-  $CP $MAKE_TMPL_DIR/autogen.sh $OUTDIR/autogen.sh
+  $CP $RESOURCES_DIR/autogen.sh $OUTDIR/autogen.sh && $CHMOD +x $OUTDIR/autogen.sh
+  $CP $RESOURCES_DIR/README.build.txt $OUTDIR/
 }
 
 
@@ -222,6 +225,8 @@ run()
   cleanup_meta
   gen_source_files
   gen_automake_files
+  echo 
+  echo " *** now build the source (read README.build.txt for help)" 
   echo
   cleanup_meta
 }
@@ -245,7 +250,7 @@ print_usage()
 
 print_version()
 {
-  $CAT $INST_BIN_DIR/version
+  $CAT $DATA_DIR/version
 }
 
 

@@ -8,43 +8,66 @@ domParser_LDADD = $(top_srcdir)/src/DOM/libdom.la $(top_srcdir)/src/XPlus/libxpl
 
 dist_bin_SCRIPTS=xsd2cpp 
 
-nobase_dist_bin_SCRIPTS=makeTmpl/configure.ac \
-                        makeTmpl/Makefile.am.src \
-                        makeTmpl/Makefile.am.include \
-                        makeTmpl/Makefile.am.top_srcdir \
-                        makeTmpl/autogen.sh \
-                        makeTmpl/acinclude.m4 \
-                        makeTmpl/aminclude.am \
-                        makeTmpl/doxygen.cfg \
-                        \
-                        xsl/xsdUtils.xsl \
-                        xsl/xsd2cpp.xsl \
-                        xsl/xsd2cppST.xsl \
-                        xsl/complexTypeC.xsl \
-                        xsl/complexTypeH.xsl \
-                        xsl/xsdIncludes.xsl \
-                        xsl/xsd2cppBuiltinSimple.xsl \
-                        xsl/constraints.xsl \
-                        xsl/resolution.xsl \
-                        xsl/test.xsl \
-                        xsl/xmlplusDict.xml \
-                        xsl/rules.xml
+#nobase_dist_bin_SCRIPTS=resources/configure.ac \
+#                       resources/Makefile.am.src \
+#                       resources/Makefile.am.include \
+#                       resources/Makefile.am.top_srcdir \
+#                       resources/autogen.sh \
+#                       resources/acinclude.m4 \
+#                       resources/aminclude.am \
+#                       resources/doxygen.cfg \
+#                       \
+#                       xsl/xsdUtils.xsl \
+#                       xsl/xsd2cpp.xsl \
+#                       xsl/xsd2cppST.xsl \
+#                       xsl/complexTypeC.xsl \
+#                       xsl/complexTypeH.xsl \
+#                       xsl/xsdIncludes.xsl \
+#                       xsl/xsd2cppBuiltinSimple.xsl \
+#                       xsl/constraints.xsl \
+#                       xsl/resolution.xsl \
+#                       xsl/test.xsl \
+#                       xsl/xmlplusDict.xml \
+#                       xsl/rules.xml
 
-EXTRA_DIST = xsd2cpp.in Makefile.am.src.in Makefile.am.top_srcdir.in 
+
+nobase_dist_data_DATA = resources/configure.ac \
+                       resources/Makefile.am.src \
+                       resources/Makefile.am.include \
+                       resources/Makefile.am.top_srcdir \
+                       resources/autogen.sh \
+                       resources/acinclude.m4 \
+                       resources/aminclude.am \
+                       resources/doxygen.cfg \
+                       resources/README.build.txt \
+                       \
+                       xsl/xsdUtils.xsl \
+                       xsl/xsd2cpp.xsl \
+                       xsl/xsd2cppST.xsl \
+                       xsl/complexTypeC.xsl \
+                       xsl/complexTypeH.xsl \
+                       xsl/xsdIncludes.xsl \
+                       xsl/xsd2cppBuiltinSimple.xsl \
+                       xsl/constraints.xsl \
+                       xsl/resolution.xsl \
+                       xsl/test.xsl \
+                       xsl/xmlplusDict.xml \
+                       xsl/rules.xml 
 
 do_subst = sed -e 's,[@]bindir[@],$(bindir),g' \
                -e 's,[@]libdir[@],$(libdir),g' \
+               -e 's,[@]datadir[@],$(datadir),g' \
                -e 's,[@]includedir[@],$(includedir),g'
 
 xsd2cpp: xsd2cpp.in Makefile 
 	$(do_subst) < $(srcdir)/xsd2cpp.in > xsd2cpp
 	chmod +x xsd2cpp
 
-makeTmpl/Makefile.am.src: makeTmpl/Makefile.am.src.in Makefile
-	$(do_subst) < $(srcdir)/makeTmpl/Makefile.am.src.in > $(srcdir)/makeTmpl/Makefile.am.src
+resources/Makefile.am.src: resources/Makefile.am.src.in Makefile
+	$(do_subst) < $(srcdir)/resources/Makefile.am.src.in > $(srcdir)/resources/Makefile.am.src
 
-makeTmpl/Makefile.am.top_srcdir: makeTmpl/Makefile.am.top_srcdir.in Makefile
-	$(do_subst) < $(srcdir)/makeTmpl/Makefile.am.top_srcdir.in > $(srcdir)/makeTmpl/Makefile.am.top_srcdir
+resources/Makefile.am.top_srcdir: resources/Makefile.am.top_srcdir.in Makefile
+	$(do_subst) < $(srcdir)/resources/Makefile.am.top_srcdir.in > $(srcdir)/resources/Makefile.am.top_srcdir
 
         
 
