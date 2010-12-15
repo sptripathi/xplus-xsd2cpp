@@ -144,11 +144,11 @@ xmlns:exsl="http://exslt.org/common"
 
   <xsl:variable name="T" select="exsl:node-set($TXml)/*[local-name()='complexTypeDefinition']"/>
   <xsl:variable name="T.contentType.variety" select="normalize-space($T/contentType/variety/text())"/>
+<!--
   <xsl:call-template name="print_xml_variable">
       <xsl:with-param name="xmlVar" select="$T"/>
       <xsl:with-param name="filePath" select="'/tmp/T.xml'"/>
   </xsl:call-template>
-<!--
 -->
   <xsl:variable name="B" select="$T/baseTypeDef/*[local-name()='complexTypeDefinition' or local-name()='simpleTypeDefinition']"/>
 
@@ -242,7 +242,14 @@ xmlns:exsl="http://exslt.org/common"
     <xsl:variable name="pred">
       <xsl:choose>
         <xsl:when test="$pred.1.1='true' and $pred.1.2='true' and $pred.1.3='true' and $pred.1.4='true'">true</xsl:when>
-        <xsl:otherwise><xsl:value-of select="concat($pred.1.1, ',', $pred.1.2, ',', $pred.1.3, ',', $pred.1.4)"/></xsl:otherwise>
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="$pred.1.1!='true'"><xsl:value-of select="$pred.1.1"/></xsl:when>
+            <xsl:when test="$pred.1.2!='true'"><xsl:value-of select="$pred.1.2"/></xsl:when>
+            <xsl:when test="$pred.1.3!='true'"><xsl:value-of select="$pred.1.3"/></xsl:when>
+            <xsl:when test="$pred.1.4!='true'"><xsl:value-of select="$pred.1.4"/></xsl:when>
+          </xsl:choose>
+        </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
             
@@ -252,8 +259,9 @@ xmlns:exsl="http://exslt.org/common"
         Failed Predicate: <xsl:value-of select='$pred'/>
       </xsl:message>
       -->
+      <xsl:variable name="violatedRuleName" select="concat('ComplexTypeDefinition.DerivationValid.extension.', $pred)"/>
       <xsl:call-template name="T_rule_violated">
-        <xsl:with-param name="ruleId" select="'ComplexTypeDefinition.DerivationValid.extension.1'"/>
+        <xsl:with-param name="ruleId" select="$violatedRuleName"/>
       </xsl:call-template>
     </xsl:if>
   </xsl:if>
@@ -292,10 +300,12 @@ xmlns:exsl="http://exslt.org/common"
   </xsl:variable>
 
   <xsl:variable name="T" select="exsl:node-set($TXml)/*[local-name()='complexTypeDefinition']"/>
+  <!--
   <xsl:call-template name="print_xml_variable">
       <xsl:with-param name="xmlVar" select="$T"/>
       <xsl:with-param name="filePath" select="'/tmp/T.xml'"/>
   </xsl:call-template>
+  -->
   <xsl:variable name="B" select="$T/baseTypeDef/*[local-name()='complexTypeDefinition']"/>
   <xsl:variable name="T.contentType.variety" select="normalize-space($T/contentType/variety/text())"/>
   <xsl:variable name="B.contentType.variety" select="normalize-space($B/contentType/variety/text())"/>
@@ -304,10 +314,12 @@ xmlns:exsl="http://exslt.org/common"
   <xsl:variable name="B.contentType.particleEmptiable" select="true"/>
 
   <xsl:variable name="ST" select="exsl:node-set($TXml)/contentType/*[local-name()='simpleTypeDefinition']"/>
+  <!--
   <xsl:call-template name="print_xml_variable">
       <xsl:with-param name="xmlVar" select="$T"/>
       <xsl:with-param name="filePath" select="'/tmp/ST.xml'"/>
   </xsl:call-template>
+  -->
   <xsl:variable name="SB" select="$B/contentType/*[local-name()='simpleTypeDefinition']"/>
 
   <xsl:variable name="B_is_anyType">
@@ -438,18 +450,27 @@ xmlns:exsl="http://exslt.org/common"
   <xsl:variable name="pred">
     <xsl:choose>
       <xsl:when test="$pred.1='true' or $pred.2='true' or $pred.3='true' or $pred.4='true' or $pred.5='true'">true</xsl:when>
-      <xsl:otherwise>false</xsl:otherwise>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="$pred.1!='true'"><xsl:value-of select="$pred.1"/></xsl:when>
+          <xsl:when test="$pred.2!='true'"><xsl:value-of select="$pred.2"/></xsl:when>
+          <xsl:when test="$pred.3!='true'"><xsl:value-of select="$pred.3"/></xsl:when>
+          <xsl:when test="$pred.4!='true'"><xsl:value-of select="$pred.4"/></xsl:when>
+          <xsl:when test="$pred.5!='true'"><xsl:value-of select="$pred.5"/></xsl:when>
+        </xsl:choose>
+      </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
 
   <xsl:if test="normalize-space($pred) != 'true'">
+  <!--
     <xsl:message>
       Failed Predicate: <xsl:value-of select='$pred'/>
     </xsl:message>
-  <!--
     -->
+    <xsl:variable name="violatedRuleName" select="concat('ComplexTypeDefinition.DerivationValid.restriction.', $pred)"/>
     <xsl:call-template name="T_rule_violated">
-      <xsl:with-param name="ruleId" select="'ComplexTypeDefinition.DerivationValid.restriction.all'"/>
+      <xsl:with-param name="ruleId" select="$violatedRuleName"/>
     </xsl:call-template>
   </xsl:if>
 

@@ -181,17 +181,34 @@
   <ruleGroup id="ComplexTypeDefinition.DerivationValid.extension">
     <title> Schema Component Constraint: ComplexTypeDefinition Derivation Valid (Extension)</title>
     
-    <rule id="ComplexTypeDefinition.DerivationValid.extension.1">
+    <rule id="ComplexTypeDefinition.DerivationValid.extension.1.1">
     For every complex type T with {base type definition} B where T.{derivation method} = extension
-    
     1) If B is a complex type definition, then  all of the following are true:
         1.1)  B.{final} does not contain extension.
-        ....
-        .....
-      
-      (refer to complete set of rules at http://www.w3.org/TR/xmlschema11-1/#sec-cos-ct-extends)
     </rule>
-
+    
+    <rule id="ComplexTypeDefinition.DerivationValid.extension.1.2">
+    For every complex type T with {base type definition} B where T.{derivation method} = extension
+    1) If B is a complex type definition, then  all of the following are true:
+        1.2)  B.{attribute uses} is a subset of T.{attribute uses}. That is, for every attribute use U in B.{attribute uses}, there is an attribute use in T.{attribute uses} whose properties, recursively, are identical to those of U. 
+    </rule>
+    
+    <rule id="ComplexTypeDefinition.DerivationValid.extension.1.3">
+    For every complex type T with {base type definition} B where T.{derivation method} = extension
+    1) If B is a complex type definition, then  all of the following are true:
+        1.3)  If B has an {attribute wildcard}, then T  also has one, and B.{attribute wildcard}.{namespace constraint}  is a subset of T.{attribute wildcard}.{namespace constraint}, as defined by Wildcard Subset (§3.10.6.2). 
+    </rule>
+    
+    <rule id="ComplexTypeDefinition.DerivationValid.extension.1.4">
+    For every complex type T with {base type definition} B where T.{derivation method} = extension
+    1) If B is a complex type definition, then  all of the following are true:
+        1.4)  One of the following is true:
+          1.4.1)  B and T both have {content type}.{variety} = simple and both have the same {content type}.{simple type definition}.
+          1.4.2)  B and T both have {content type}.{variety} = empty.
+          1.4.3)  All of the following are true:
+            ...
+            ......
+    </rule>
 
     <rule id="ComplexTypeDefinition.DerivationValid.extension.2">
     For every complex type T with {base type definition} B where T.{derivation method} = extension
@@ -211,13 +228,42 @@
     
     <rule id="ComplexTypeDefinition.DerivationValid.restriction.all">
     For every complex type T with {base type definition} B where T.{derivation method} = restriction, all of the following must be true:
-
     1) B is a complex type definition whose {final} does not contain restriction.
     2) One or more of the following is true:
        ...
        ....
-
       (refer to complete set of rules at http://www.w3.org/TR/xmlschema11-1/#sec-derivation-ok-restriction)
+    </rule>
+
+    <rule id="ComplexTypeDefinition.DerivationValid.restriction.1">
+    For every complex type T with {base type definition} B where T.{derivation method} = restriction, all of the following must be true:
+    1)  B is a complex type definition whose {final} does not contain restriction.
+    </rule>
+
+    <rule id="ComplexTypeDefinition.DerivationValid.restriction.2">
+    For every complex type T with {base type definition} B where T.{derivation method} = restriction, all of the following must be true:
+    2)  One or more of the following is true:
+      2.1)    B is ·xs:anyType·.
+      2.2)    All of the following are true:
+      2.2.1)  T.{content type}.{variety} = simple
+      ...
+      ....
+      (refer to complete set of rules at http://www.w3.org/TR/xmlschema11-1/#sec-derivation-ok-restriction)
+    </rule>
+
+    <rule id="ComplexTypeDefinition.DerivationValid.restriction.3">
+    For every complex type T with {base type definition} B where T.{derivation method} = restriction, all of the following must be true:
+    3)  For every element information item E, if the [attributes] of E satisfy clause 2 and clause 3 of Element Locally Valid (Complex Type) (§3.4.4.2) with respect to T, then they also satisfy the same clauses with respect to B, and for every attribute information item A in E.[attributes], B's ·default binding· for A ·subsumes· that defined by T.
+    </rule>
+
+    <rule id="ComplexTypeDefinition.DerivationValid.restriction.4">
+    For every complex type T with {base type definition} B where T.{derivation method} = restriction, all of the following must be true:
+    4)  For any element or attribute information item, its ·locally declared type·  within T is ·validly substitutable·  for its ·locally declared type· within B, subject to the blocking keywords {extension, list, union}, if the item has a ·locally declared type· both in T and in B. 
+    </rule>
+
+    <rule id="ComplexTypeDefinition.DerivationValid.restriction.5">
+    For every complex type T with {base type definition} B where T.{derivation method} = restriction, all of the following must be true:
+    5) B.{assertions} is a prefix of T.{assertions}.
     </rule>
   </ruleGroup>
 

@@ -102,11 +102,9 @@
         </term>
       </particle>
       <final></final>
-      <block></block>
       <prohibitedSubstitutions></prohibitedSubstitutions>
       <assertions></assertions>
       <abstract>false</abstract>
-      <foundInDoc>XMLSchema.xsd</foundInDoc>
     </contentType>
     <abstract>false</abstract>
   </complexTypeDefinition>
@@ -123,7 +121,6 @@
     <fundamentalFacets></fundamentalFacets>
     <implType>DOM::DOMString</implType>
     <annotations></annotations>
-    <foundInDoc>XMLSchema.xsd</foundInDoc>
   </simpleTypeDefinition>
 </xsl:variable>
 
@@ -139,7 +136,6 @@
     <variety>atomic</variety>
     <annotations></annotations>
     <implType>DOM::DOMString</implType>
-    <foundInDoc>XMLSchema.xsd</foundInDoc>
   </simpleTypeDefinition>
 </xsl:variable>
 
@@ -147,14 +143,13 @@
   <simpleTypeDefinition>
     <name>error</name>
     <targetNamespace>http://www.w3.org/2001/XMLSchema</targetNamespace>
-    <final><extension/><restriction/><list/><union/></final>
+    <final>extension restriction list union</final>
     <baseTypeDef><xsl:copy-of select="$anySimpleTypeDefinition"/></baseTypeDef>
     <facets></facets>
     <fundamentalFacets></fundamentalFacets>
     <variety>union</variety>
     <annotations></annotations>
     <implType>DOM::DOMString</implType>
-    <foundInDoc>XMLSchema.xsd</foundInDoc>
   </simpleTypeDefinition>
 </xsl:variable>
 
@@ -3025,7 +3020,7 @@ namespace <xsl:value-of select="$nsStr"/>{
   <xsl:param name="ruleId"/>
   <xsl:variable name="ruleNode" select="$rulesDoc/root/ruleGroup/rule[@id=$ruleId]"/>
   title: <xsl:value-of select="normalize-space($ruleNode/../title)"/>
-  rule : <xsl:value-of select="normalize-space($ruleNode)"/> 
+  rule : <xsl:value-of select="$ruleNode"/> 
 </xsl:template>
 
 
@@ -3053,6 +3048,146 @@ namespace <xsl:value-of select="$nsStr"/>{
   <xsl:value-of select="normalize-space($nodeContext)"/>
 </xsl:template>
 
+
+<xsl:template name="T_get_simpleType_final">
+ <xsl:param name="node" select="."/>
+
+  <xsl:variable name="FS">
+    <xsl:choose>
+      <xsl:when test="$node/@final"><xsl:value-of select="$node/@final"/></xsl:when>
+      <xsl:when test="$node/ancestor::*[local-name()='schema']/@finalDefault"><xsl:value-of select="$node/ancestor::*[local-name()='schema']/@finalDefault"/></xsl:when>
+      <xsl:otherwise></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="final">
+    <xsl:choose>
+      <xsl:when test="$FS='#all'">
+        restriction extension list union
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="contains($FS,'restriction')">restriction</xsl:if>
+        <xsl:text> </xsl:text>
+        <xsl:if test="contains($FS,'extension')">extension</xsl:if>
+        <xsl:text> </xsl:text>
+        <xsl:if test="contains($FS,'list')">list</xsl:if>
+        <xsl:text> </xsl:text>
+        <xsl:if test="contains($FS,'union')">union</xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($final)"/>
+</xsl:template>
+
+
+<xsl:template name="T_get_complexType_final">
+ <xsl:param name="node" select="."/>
+
+  <xsl:variable name="EFV">
+    <xsl:choose>
+      <xsl:when test="$node/@final"><xsl:value-of select="$node/@final"/></xsl:when>
+      <xsl:when test="$node/ancestor::*[local-name()='schema']/@finalDefault"><xsl:value-of select="$node/ancestor::*[local-name()='schema']/@finalDefault"/></xsl:when>
+      <xsl:otherwise></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="final">
+    <xsl:choose>
+      <xsl:when test="$EFV='#all'">
+        restriction extension
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="contains($EFV,'extension')">extension</xsl:if>
+        <xsl:text> </xsl:text>  
+        <xsl:if test="contains($EFV,'restriction')">restriction</xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($final)"/>
+</xsl:template>
+
+
+<xsl:template name="T_get_complexType_prohibitedSubstitutions">
+ <xsl:param name="node" select="."/>
+
+  <xsl:variable name="EBV">
+    <xsl:choose>
+      <xsl:when test="$node/@block"><xsl:value-of select="$node/@block"/></xsl:when>
+      <xsl:when test="$node/ancestor::*[local-name()='schema']/@blockDefault"><xsl:value-of select="$node/ancestor::*[local-name()='schema']/@blockDefault"/></xsl:when>
+      <xsl:otherwise></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="prohibitedSubstitutions">
+    <xsl:choose>
+      <xsl:when test="$EBV='#all'">
+        restriction extension
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="contains($EBV,'extension')">extension</xsl:if>
+        <xsl:text> </xsl:text>  
+        <xsl:if test="contains($EBV,'restriction')">restriction</xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($prohibitedSubstitutions)"/>
+</xsl:template>
+
+
+<xsl:template name="T_get_element_disallowedSubstitutions">
+ <xsl:param name="node" select="."/>
+
+  <xsl:variable name="EBV">
+    <xsl:choose>
+      <xsl:when test="$node/@block"><xsl:value-of select="$node/@block"/></xsl:when>
+      <xsl:when test="$node/ancestor::*[local-name()='schema']/@blockDefault"><xsl:value-of select="$node/ancestor::*[local-name()='schema']/@blockDefault"/></xsl:when>
+      <xsl:otherwise></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="disallowedSubstitutions">
+    <xsl:choose>
+      <xsl:when test="$EBV='#all'">
+        extension restriction substitution 
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="contains($EBV,'extension')">extension</xsl:if>
+        <xsl:text> </xsl:text>  
+        <xsl:if test="contains($EBV,'restriction')">restriction</xsl:if>
+        <xsl:text> </xsl:text>  
+        <xsl:if test="contains($EBV,'substitution')">substitution</xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($disallowedSubstitutions)"/>
+</xsl:template>
+
+
+<xsl:template name="T_get_element_substGroupExclusions">
+ <xsl:param name="node" select="."/>
+
+  <xsl:variable name="EFV">
+    <xsl:choose>
+      <xsl:when test="$node/@final"><xsl:value-of select="$node/@final"/></xsl:when>
+      <xsl:when test="$node/ancestor::*[local-name()='schema']/@finalDefault"><xsl:value-of select="$node/ancestor::*[local-name()='schema']/@finalDefault"/></xsl:when>
+      <xsl:otherwise></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="substGroupExclusions">
+    <xsl:choose>
+      <xsl:when test="$EFV='#all'">
+        restriction extension
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="contains($EFV,'extension')">extension</xsl:if>
+        <xsl:text> </xsl:text>  
+        <xsl:if test="contains($EFV,'restriction')">restriction</xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($substGroupExclusions)"/>
+</xsl:template>
 
 
 </xsl:stylesheet>

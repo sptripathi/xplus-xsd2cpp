@@ -6,106 +6,33 @@
 #include "XPlus/Exception.h"
 
 using namespace std;
+using namespace XMLSchema::Types;
 
 
 namespace XSD
 {
-  template<typename T> XMLSchema::Types::anyType* createType(DOM::Node* ownerNode, DOM::Element* ownerElem, XMLSchema::TDocument* ownerDoc) 
-  { 
-    T* pT = NULL;
-    try {
-      pT = new T(ownerNode, ownerElem, ownerDoc);
-    }
-    catch(XPlus::Exception& ex) {
-      cerr << "Failed to create type:" << ex.msg() << endl;
-    }
-    XMLSchema::Types::anyType* pAny = dynamic_cast<XMLSchema::Types::anyType *>(pT);
-    return pAny;
-  }
 
-  struct TypeDefinitionFactory 
-  {
-    typedef map<string, XMLSchema::Types::anyType*(*)(DOM::Node* ownerNode, DOM::Element* ownerElem, XMLSchema::TDocument* ownerDoc)> map_type;
-    
-    TypeDefinitionFactory(const string& typeName, const string& typeNsUri):
-      _name(typeName),
-      _nsUri(typeNsUri)
-    {
-    }
 
-    static XMLSchema::Types::anyType* getTypeForQName(const string& typeName, const string& typeNsUri, DOM::Node* ownerNode, DOM::Element* ownerElem, XMLSchema::TDocument* ownerDoc) 
-    {
-      string key = createKeyForQNameToTypeMap(typeName, typeNsUri);
-      map_type::iterator it = getMap()->find(key);
-      if(it == getMap()->end()) {
-        return NULL;
-      }
-      // this calls createType
-      return it->second(ownerNode, ownerElem, ownerDoc);
-    }
 
-    protected:
-
-    // use heap as the construction order is unknown(global order fiasco)
-    static map_type * getMap() 
-    {
-      // FIXME: make thread safe
-      if(!_pQNameToTypeMap) {
-        _pQNameToTypeMap = new map_type; 
-      } 
-      return _pQNameToTypeMap; 
-    }
-
-    static const string createKeyForQNameToTypeMap(const string& typeName, const string& typeNsUri)
-    {
-      ostringstream oss;
-      oss << "{" << typeNsUri << "}" << typeName;
-      return oss.str();
-    }
-
-    inline string name() {
-      return _name;
-    }
-    
-    inline string nsUri() {
-      return _nsUri;
-    }
-
-    string            _name;
-    string            _nsUri;
-
-    private:
-    static map_type*  _pQNameToTypeMap;
-  };
-
-  // create a templatized derivation of TypeDefinitionFactory
-  template<typename T> struct TypeDefinitionFactoryTmpl : public TypeDefinitionFactory 
-  { 
-    TypeDefinitionFactoryTmpl(const string& typeName, const string& typeNsUri):
-      TypeDefinitionFactory(typeName, typeNsUri)
-    { 
-      string key = createKeyForQNameToTypeMap(typeName, typeNsUri);
-      getMap()->insert(make_pair(key, &createType<T>));
-    }
-  };
 
   struct StructCreateAttrThroughFsm
   {
-    DOMString* tagName;
-    DOMString* nsUri;
-    DOMString* nsPrefix;
+    DOMString*    tagName;
+    DOMString*    nsUri;
+    DOMString*    nsPrefix;
     Element*      ownerElem;
-    TDocument* ownerDoc;
+    TDocument*    ownerDoc;
     XsdFsmBase*   fsm;
-    FsmCbOptions options;
+    FsmCbOptions  options;
 
-    StructCreateAttrThroughFsm(DOMString* tagName_,
-                              DOMString* nsUri_,
-                              DOMString* nsPrefix_,
+    StructCreateAttrThroughFsm(
+                              DOMString*    tagName_,
+                              DOMString*    nsUri_,
+                              DOMString*    nsPrefix_,
                               Element*      ownerElem_,
-                              TDocument* ownerDoc_,
+                              TDocument*    ownerDoc_,
                               XsdFsmBase*   fsm_,
-                              FsmCbOptions options_
+                              FsmCbOptions  options_
                               ):
                         tagName(tagName_),
                         nsUri(nsUri_),
@@ -157,6 +84,86 @@ namespace XSD
     }
   };
 
+
+  template<typename T> XMLSchema::Types::anyType* createType(AnyTypeCreateArgs args) 
+  { 
+    T* pT = NULL;
+    try {
+      pT = new T(args);
+    }
+    catch(XPlus::Exception& ex) {
+      cerr << "Failed to create type:" << ex.msg() << endl;
+    }
+    XMLSchema::Types::anyType* pAny = dynamic_cast<XMLSchema::Types::anyType *>(pT);
+    return pAny;
+  }
+
+  struct TypeDefinitionFactory 
+  {
+    typedef map<string, XMLSchema::Types::anyType*(*)(AnyTypeCreateArgs args)> map_type;
+    
+    TypeDefinitionFactory(const string& typeName, const string& typeNsUri):
+      _name(typeName),
+      _nsUri(typeNsUri)
+    {
+    }
+
+    static XMLSchema::Types::anyType* getTypeForQName(const string& typeName, const string& typeNsUri, AnyTypeCreateArgs args) 
+    {
+      string key = createKeyForQNameToTypeMap(typeName, typeNsUri);
+      map_type::iterator it = getMap()->find(key);
+      if(it == getMap()->end()) {
+        return NULL;
+      }
+      // this calls createType
+      return it->second(args);
+    }
+
+    protected:
+
+    // use heap as the construction order is unknown(global order fiasco)
+    static map_type * getMap() 
+    {
+      // FIXME: make thread safe
+      if(!_pQNameToTypeMap) {
+        _pQNameToTypeMap = new map_type; 
+      } 
+      return _pQNameToTypeMap; 
+    }
+
+    static const string createKeyForQNameToTypeMap(const string& typeName, const string& typeNsUri)
+    {
+      ostringstream oss;
+      oss << "{" << typeNsUri << "}" << typeName;
+      return oss.str();
+    }
+
+    inline string name() {
+      return _name;
+    }
+    
+    inline string nsUri() {
+      return _nsUri;
+    }
+
+    string            _name;
+    string            _nsUri;
+
+    private:
+    static map_type*  _pQNameToTypeMap;
+  };
+
+  // create a templatized derivation of TypeDefinitionFactory
+  template<typename T> struct TypeDefinitionFactoryTmpl : public TypeDefinitionFactory 
+  { 
+    TypeDefinitionFactoryTmpl(const string& typeName, const string& typeNsUri):
+      TypeDefinitionFactory(typeName, typeNsUri)
+    { 
+      string key = createKeyForQNameToTypeMap(typeName, typeNsUri);
+      getMap()->insert(make_pair(key, &createType<T>));
+    }
+  };
+
   // E : element class
   // TPtr : pointer to "class of element's type"
   template<typename E, typename TPtr> E* createElementTmpl(StructCreateNodeThroughFsm t)
@@ -174,7 +181,8 @@ namespace XSD
           nextSibl = const_cast<Node *>(t.fsm->nextSiblingNodeRunTime());
         }
       }
-      E* node = new E(t.tagName, t.nsUri, t.nsPrefix, t.ownerDoc, t.parentNode, prevSibl, nextSibl);
+      ElementCreateArgs args(t.tagName, t.nsUri, t.nsPrefix, t.ownerDoc, t.parentNode, prevSibl, nextSibl);
+      E* node = new E(args);
 
       if(t.options.xsiType.length()>0)
       {
@@ -192,9 +200,8 @@ namespace XSD
         XMLSchema::Types::anyType* pOverriddenType = 
                       TypeDefinitionFactory::getTypeForQName( instanceTypeName, 
                                                               instanceTypeNsUri, 
-                                                              node->ownerNode(), 
-                                                              node->ownerElement(), 
-                                                              node->ownerDocument());
+                                                              AnyTypeCreateArgs( node->ownerNode(), node->ownerElement(), node->ownerDocument())
+                                                              );
         
         TPtr myTypeCast = dynamic_cast<TPtr>(pOverriddenType);
 
@@ -226,7 +233,8 @@ namespace XSD
   {
     if(t.ownerDoc->buildTree() || ! t.fsm->fsmCreatedNode())
     {
-      T* node = new T(t.tagName, t.nsUri, NULL, t.ownerElem, t.ownerDoc);
+      AttributeCreateArgs args(t.tagName, t.nsUri, NULL, t.ownerElem, t.ownerDoc);
+      T* node = new T(args);
       t.fsm->fsmCreatedNode(node);
       return node;
     }

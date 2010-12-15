@@ -32,10 +32,12 @@
 #include "XSD/XSDException.h"
 #include "XSD/XSDFSM.h"
 #include "XSD/PrimitiveTypes.h"
+#include "XSD/UrTypes.h"
 
 using namespace std;
 using namespace XPlus;
 using namespace FSM;
+using namespace XMLSchema::Types;
 
 
 /*
@@ -89,18 +91,12 @@ namespace XMLSchema
   {
     public:
 
-      XmlAttribute(DOMString* name, 
-          DOMStringP nsUri=NULL,
-          DOMStringP nsPrefix=NULL,
-          ElementP ownerElem= NULL,
-          TDocumentP ownerDoc= NULL,
-          DOMString* strValue=NULL
-          ):
-        DOM::Attribute(name, strValue, nsUri, nsPrefix, ownerElem, ownerDoc),
-        T(this, ownerElem, ownerDoc)
+      XmlAttribute(AttributeCreateArgs args):
+        DOM::Attribute(args.name, args.strValue, args.nsUri, args.nsPrefix, args.ownerElem, args.ownerDoc),
+        T(AnyTypeCreateArgs(this, args.ownerElem, args.ownerDoc))
       { 
-        if(strValue) {
-          T::stringValue(*strValue);
+        if(args.strValue) {
+          T::stringValue(*args.strValue);
         }
       }
 
@@ -183,16 +179,8 @@ namespace XMLSchema
 
       //NB: 
       // previousSiblingElement : is previousSibling to this TElement
-      TElement(
-          DOMString* tagName,
-          DOMString* nsUri =NULL, 
-          DOMString* nsPrefix=NULL,
-          TDocument*   ownerDoc=NULL,
-          Node*        parentNode=NULL,
-          Node*        previousSiblingElement=NULL,
-          Node*        nextSiblingElement=NULL
-          ):
-        DOM::Element(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement)
+      TElement(ElementCreateArgs args):
+        DOM::Element(args.name, args.nsUri, args.nsPrefix, args.ownerDoc, args.parentNode, args.previousSiblingElement, args.nextSiblingElement)
     {
 #if 0
       // child is likely to override _fsm allocation
@@ -227,17 +215,9 @@ namespace XMLSchema
 
     public:
 
-      XmlElement(
-          DOMString* tagName,
-          DOMString* nsUri =NULL, 
-          DOMString* nsPrefix=NULL,
-          TDocumentP ownerDoc=NULL,
-          NodeP      parentNode=NULL,
-          Node*      previousSibling=NULL,
-          Node*      nextSibling=NULL
-          ):
-        TElement(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSibling, nextSibling),
-        T(this, this, ownerDoc)
+      XmlElement(ElementCreateArgs args):
+          TElement(args),
+          T(AnyTypeCreateArgs(this, this, args.ownerDoc, args.abstract, args.nillable, args.fixed))
     { 
     }
 

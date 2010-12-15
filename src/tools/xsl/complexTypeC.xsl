@@ -796,23 +796,23 @@ namespace Types
       <xsl:with-param name="resolution" select="$resolution"/>
     </xsl:call-template>  
   </xsl:variable>
+  <xsl:variable name="abstract">
+    <xsl:call-template name="T_get_abstract_from_resolution_complexTypeElement">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>  
+  </xsl:variable>
+
 
   //constructor
   <xsl:choose>
     <xsl:when test="local-name(..)='element'">
-  MEMBER_FN <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOMString* tagName,
-      DOMString* nsUri,
-      DOMString* nsPrefix,
-      XMLSchema::TDocument* ownerDoc,
-      Node* parentNode,
-      Node* previousSiblingElement,
-      Node* nextSiblingElement
-      ):
-      XMLSchema::XmlElement&lt;anyType&gt;(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement),
+  MEMBER_FN <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(ElementCreateArgs args):
+      XMLSchema::XmlElement&lt;anyType&gt;(args),
     </xsl:when>
     <xsl:when test="local-name()='complexType'">
-  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOM::Node* ownerNode, DOM::ElementP ownerElem, XMLSchema::TDocument* ownerDoc, bool childBuildsTree):
-  XMLSchema::Types::anyType(ownerNode, ownerElem, ownerDoc),
+  //<xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOM::Node* ownerNode, DOM::ElementP ownerElem, XMLSchema::TDocument* ownerDoc, bool childBuildsTree):
+  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(AnyTypeCreateArgs args):
+  XMLSchema::Types::anyType(args),
     </xsl:when>
     <xsl:otherwise></xsl:otherwise>
   </xsl:choose>
@@ -824,13 +824,14 @@ namespace Types
   </xsl:for-each>
   {
     this->contentTypeVariety(<xsl:value-of select="$contentTypeVarietyEnum"/>);
+    this->abstract(<xsl:value-of select="$abstract"/>);
     initFSM();
     <xsl:choose>
       <xsl:when test="local-name(..)!='element'">
-    if(ownerDoc &amp;&amp; ownerDoc->buildTree() &amp;&amp; !childBuildsTree)
+    if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree() &amp;&amp; !args.childBuildsTree)
       </xsl:when>
       <xsl:otherwise>
-    if(ownerDoc &amp;&amp; ownerDoc->buildTree())
+    if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree())
       </xsl:otherwise>
     </xsl:choose>
     {
@@ -934,19 +935,12 @@ namespace Types
   //constructor
   <xsl:choose>
     <xsl:when test="local-name(..)='element'">
-  MEMBER_FN <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOMString* tagName,
-      DOMString* nsUri,
-      DOMString* nsPrefix,
-      XMLSchema::TDocument* ownerDoc,
-      Node* parentNode,
-      Node* previousSiblingElement,
-      Node* nextSiblingElement
-      ):
-      XMLSchema::XmlElement&lt;<xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement),
+  MEMBER_FN <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(ElementCreateArgs args):
+      XMLSchema::XmlElement&lt;<xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;(args),
     </xsl:when>
     <xsl:when test="local-name()='complexType'">
-  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOM::Node* ownerNode, DOM::ElementP ownerElem, XMLSchema::TDocument* ownerDoc, bool childBuildsTree):
-     <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(ownerNode, ownerElem, ownerDoc),
+  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(AnyTypeCreateArgs args):
+     <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(args),
     </xsl:when>
     <xsl:otherwise></xsl:otherwise>
   </xsl:choose>
@@ -972,10 +966,10 @@ namespace Types
 
     <xsl:choose>
       <xsl:when test="local-name(..)!='element'">
-    if(ownerDoc &amp;&amp; ownerDoc->buildTree() &amp;&amp; !childBuildsTree)
+    if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree() &amp;&amp; !args.childBuildsTree)
       </xsl:when>
       <xsl:otherwise>
-    if(ownerDoc &amp;&amp; ownerDoc->buildTree())
+    if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree())
       </xsl:otherwise>
     </xsl:choose>
     {
@@ -1080,28 +1074,26 @@ namespace Types
       <xsl:with-param name="resolution" select="$resolution"/>
     </xsl:call-template>  
   </xsl:variable>
+  <xsl:variable name="abstract">
+    <xsl:call-template name="T_get_abstract_from_resolution_complexTypeElement">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>  
+  </xsl:variable>
 
   //constructor
   <xsl:choose>
     <xsl:when test="local-name(..)='element'">
-  MEMBER_FN <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOMString* tagName,
-      DOMString* nsUri,
-      DOMString* nsPrefix,
-      XMLSchema::TDocument* ownerDoc,
-      Node* parentNode,
-      Node* previousSiblingElement,
-      Node* nextSiblingElement
-      ):
-      XMLSchema::XmlElement&lt;<xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement),
+  MEMBER_FN <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(ElementCreateArgs args):
+      XMLSchema::XmlElement&lt;<xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;(args),
     </xsl:when>
     <xsl:when test="local-name()='complexType'">
-  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOM::Node* ownerNode, DOM::ElementP ownerElem, XMLSchema::TDocument* ownerDoc, bool childBuildsTree):
+  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(AnyTypeCreateArgs args):
       <xsl:choose>
         <xsl:when test="$isBaseAnyType='true'">
-      <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(ownerNode, ownerElem, ownerDoc),
+      <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(args),
         </xsl:when>
         <xsl:otherwise>
-      <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(ownerNode, ownerElem, ownerDoc, true),
+      <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(AnyTypeCreateArgs(args.ownerNode, args.ownerElem, args.ownerDoc, true)),
         </xsl:otherwise>
       </xsl:choose>
     </xsl:when>
@@ -1115,11 +1107,12 @@ namespace Types
   </xsl:for-each>
   {
     this->contentTypeVariety(<xsl:value-of select="$contentTypeVarietyEnum"/>);
+    this->abstract(<xsl:value-of select="$abstract"/>);
     initFSM();
 
     <xsl:choose>
       <xsl:when test="local-name(..)!='element'">
-    if(ownerDoc &amp;&amp; ownerDoc->buildTree() &amp;&amp; !childBuildsTree)
+    if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree() &amp;&amp; !args.childBuildsTree)
       </xsl:when>
       <xsl:otherwise>
     if(ownerDoc &amp;&amp; ownerDoc->buildTree())

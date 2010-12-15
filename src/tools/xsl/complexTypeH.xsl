@@ -84,7 +84,7 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyType
 {
   public:
   //constructor
-  <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL, bool childBuildsTree=false);
+  <xsl:value-of select="$cppName"/>(AnyTypeCreateArgs args);
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
@@ -246,7 +246,7 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$baseCppT
 {
   public:
   //constructor
-  <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL, bool childBuildsTree=false);
+  <xsl:value-of select="$cppName"/>(AnyTypeCreateArgs args);
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
@@ -317,7 +317,7 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDer
 
   public:
   //constructor
-  <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL, bool childBuildsTree=false);
+  <xsl:value-of select="$cppName"/>(AnyTypeCreateArgs args);
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
@@ -357,7 +357,7 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDer
 {
   public:
   //constructor
-  <xsl:value-of select="$cppName"/>(DOM::Node* ownerNode=NULL, DOM::ElementP ownerElem=NULL, XMLSchema::TDocument* ownerDoc=NULL, bool childBuildsTree=false);
+  <xsl:value-of select="$cppName"/>(AnyTypeCreateArgs args);
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>

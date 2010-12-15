@@ -101,6 +101,23 @@ namespace DOM
     }
   }
 
+/*
+  
+    //debug:
+  void Node::print()
+  {
+    cout << " nodeName:" << _nodeName
+        << " nodeValue:" << _nodeValue
+        << " parentNode: " << _parentNode
+        << " nsUri:" << _nsUri
+        << " nsPrefix:" << _nsPrefix
+        << " localName:" << _localName
+        << endl;
+    cout << "children:" << endl;
+      _childNodes.print();
+  }
+  */
+
   void Node::setParentNode(Node* parentNode)
   {
     _parentNode = parentNode;
@@ -218,6 +235,13 @@ namespace DOM
         << ( !getNodeName() ? "(NULL)" : getNodeName()->str() ) << " | "
         //<< ( !getNodeValue() ? "(NULL)" : getNodeValue()->str() ) << " | "
         << endl;
+      os << " childNodes: {";
+      _childNodes.print();
+      os << "  }"<< endl;
+      
+      os << " attributes: {";
+      _attributes.print();
+      os << "  }"<< endl;
       
     }
     if(0)

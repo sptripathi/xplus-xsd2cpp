@@ -345,6 +345,7 @@ public:
   void registerNsPrefixNsUri();
 
   bool isDocumentElement() const;
+
 };
 
 }

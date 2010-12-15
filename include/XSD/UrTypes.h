@@ -53,6 +53,159 @@ namespace XMLSchema
   namespace Types 
   {
 
+    enum eContentTypeVariety {
+      CONTENT_TYPE_VARIETY_EMPTY,
+      CONTENT_TYPE_VARIETY_SIMPLE,
+      CONTENT_TYPE_VARIETY_ELEMENT_ONLY,
+      CONTENT_TYPE_VARIETY_MIXED
+    };
+
+    enum eAnyTypeUseCase {
+      ANY_TYPE,
+      ANY_SIMPLE_TYPE
+    };
+
+    enum eBlockOrFinalBits {
+      BOF_NONE          = 0,
+      BOF_EXTENSION     = 1,
+      BOF_RESTRICTION   = 2,
+      BOF_SUBSTITUTION  = 4,
+      BOF_LIST          = 8,
+      BOF_UNION         = 16
+    };
+
+
+  
+    struct AnyTypeCreateArgs
+    {
+      Node* ownerNode;
+      Element* ownerElem;
+      TDocument* ownerDoc;
+      bool abstract;
+      bool nillable;
+      bool fixed;
+      eBlockOrFinalBits blockMask;
+      eBlockOrFinalBits finalMask;
+      eContentTypeVariety contentTypeVariety;
+      eAnyTypeUseCase anyTypeUseCase;
+      bool childBuildsTree; //FIXME
+
+      AnyTypeCreateArgs(Node* ownerNode_= NULL, 
+          Element* ownerElem_= NULL, 
+          TDocument* ownerDoc_= NULL, 
+          bool childBuildsTree_=false,
+          bool abstract_=false,
+          bool nillable_=false,
+          bool fixed_=false,
+          eBlockOrFinalBits blockMask_= BOF_NONE,
+          eBlockOrFinalBits finalMask_= BOF_NONE,
+          eContentTypeVariety contentTypeVariety_ = CONTENT_TYPE_VARIETY_MIXED,
+          eAnyTypeUseCase anyTypeUseCase_ = ANY_TYPE
+          ):
+        ownerNode(ownerNode_),
+        ownerElem(ownerElem_),
+        ownerDoc(ownerDoc_),
+        childBuildsTree(childBuildsTree_),
+        abstract(abstract_),    
+        nillable(nillable_),    
+        fixed(fixed_),    
+        blockMask(blockMask_),
+        finalMask(finalMask_),
+        contentTypeVariety(contentTypeVariety_),
+        anyTypeUseCase(anyTypeUseCase_)
+      {
+      }
+    };
+
+/*
+    struct SimpleTypeCreateArgs : public AnyTypeCreateArgs
+    {
+      SimpleTypeCreateArgs( 
+          Node* ownerNode_      = NULL, 
+          Element* ownerElem_   = NULL, 
+          TDocument* ownerDoc_  = NULL
+          ):
+        AnyTypeCreateArgs(ownerNode_, ownerElem_, ownerDoc_)
+      {
+      }
+
+      AnyTypeCreateArgs toAnyTypeCreateArgs() {
+        return AnyTypeCreateArgs(ownerNode, ownerElem, ownerDoc);
+      }
+
+    };
+*/
+
+    struct AttributeCreateArgs
+    {
+      DOMString*    name;
+      DOMString*    nsUri;
+      DOMString*    nsPrefix;
+      Element*      ownerElem;
+      TDocument*    ownerDoc;
+      DOMString*    strValue;
+
+      AttributeCreateArgs(
+          DOMString*  name_       = NULL,
+          DOMString*  nsUri_      = NULL,
+          DOMString*  nsPrefix_   = NULL,
+          Element*    ownerElem_  = NULL,
+          TDocument*  ownerDoc_   = NULL,
+          DOMString*  strValue_   = NULL
+          ):
+        name(name_),
+        nsUri(nsUri_),
+        nsPrefix(nsPrefix_),
+        ownerElem(ownerElem_),
+        ownerDoc(ownerDoc_),
+        strValue(strValue_)
+      {
+      }
+    };
+
+
+    struct ElementCreateArgs
+    {
+      DOMString*   name;
+      DOMString*   nsUri;
+      DOMString*   nsPrefix;
+      TDocument*   ownerDoc;
+      Node*        parentNode;
+      Node*        previousSiblingElement;
+      Node*        nextSiblingElement;
+
+      bool abstract;
+      bool nillable;
+      bool fixed;
+
+      ElementCreateArgs(
+          DOMString*   name_,
+          DOMString*   nsUri_ =NULL, 
+          DOMString*   nsPrefix_=NULL,
+          TDocument*   ownerDoc_=NULL,
+          Node*        parentNode_=NULL,
+          Node*        previousSiblingElement_=NULL,
+          Node*        nextSiblingElement_=NULL,
+          bool abstract_=false,
+          bool nillable_=false,
+          bool fixed_ = false
+          ):
+        name(name_),
+        nsUri(nsUri_),
+        nsPrefix(nsPrefix_),
+        ownerDoc(ownerDoc_),
+        parentNode(parentNode_),
+        previousSiblingElement(previousSiblingElement_),
+        nextSiblingElement(nextSiblingElement_),
+        abstract(abstract_),
+        nillable(nillable_),
+        fixed(fixed_)
+      {
+      }
+    };
+
+
+
     //                                                          //
     //                     anyType                              //
     //                                                          //
@@ -61,24 +214,8 @@ namespace XMLSchema
     {
       public:
 
-        enum eContentTypeVariety {
-          CONTENT_TYPE_VARIETY_EMPTY,
-          CONTENT_TYPE_VARIETY_SIMPLE,
-          CONTENT_TYPE_VARIETY_ELEMENT_ONLY,
-          CONTENT_TYPE_VARIETY_MIXED
-        };
-
-        enum eAnyTypeUseCase {
-          ANY_TYPE,
-          ANY_SIMPLE_TYPE
-        };
-
-        anyType(
-            NodeP ownerNode= NULL,
-            ElementP ownerElem= NULL,
-            TDocumentP ownerDoc= NULL,
-            eAnyTypeUseCase anyTypeUseCase = ANY_TYPE
-            );
+ 
+        anyType(AnyTypeCreateArgs args, eAnyTypeUseCase anyTypeUseCase_ = ANY_TYPE);
 
         virtual ~anyType() {}
 
@@ -109,6 +246,20 @@ namespace XMLSchema
         virtual void fixed(bool b) {
           // TODO: verify that fixed can not be set for non-simpletype
           _fixed = b;
+        }
+
+        bool nillable() {
+          return _nillable;
+        }
+        void nillable(bool b) {
+          _nillable = b;
+        }
+        
+        bool abstract() {
+          return _abstract;
+        }
+        void abstract(bool b) {
+          _abstract = b;
         }
 
         inline void contentTypeVariety(eContentTypeVariety variety) {
@@ -192,19 +343,17 @@ namespace XMLSchema
         DOM::Attribute* createAttributeXsiSchemaLocation(FsmCbOptions options);
         DOM::Attribute* createAttributeXsiNoNamespaceSchemaLocation(FsmCbOptions options);
 
-        /*
-        void setTypeQName(DOMString name, DOMStringPtr pNsStr=NULL);
-        static anyType* getTypeForQName(DOMString name, DOMStringPtr pNsStr=NULL);
-        static DOMString createKeyForQNameToTypeMap(DOMString name, DOMStringPtr pNsStr);
-        */
-
         //
         //                 MEMBER VARIABLES 
         //
 
         eAnyTypeUseCase                 _anyTypeUseCase;
         eContentTypeVariety             _contentTypeVariety;
+        bool                            _abstract;
         bool                            _fixed;
+        bool                            _nillable;
+        int                             _blockMask;
+        int                             _finalMask;
         
         // in case of anyType and derivatives ownerElement() is same
         // Node as ownerNode(). However in case of element ownerElement()
@@ -235,12 +384,7 @@ namespace XMLSchema
     class anySimpleType : public anyType
     {
       public:
-        anySimpleType(
-            ePrimitiveDataType primType, 
-            NodeP ownerNode= NULL,
-            ElementP ownerElem= NULL,
-            TDocumentP ownerDoc= NULL
-            );
+        anySimpleType(AnyTypeCreateArgs args, ePrimitiveDataType primType);
 
         virtual ~anySimpleType() {}
         

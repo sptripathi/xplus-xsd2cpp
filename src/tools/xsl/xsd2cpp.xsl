@@ -597,14 +597,7 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
   public:
 
     /// constructor for the element node
-    MEMBER_FN <xsl:value-of select="$elemName"/>(DOMString* tagName,
-        DOMString* nsUri=NULL,
-        DOMString* nsPrefix=NULL,
-        XMLSchema::TDocument* ownerDoc=NULL,
-        Node* parentNode=NULL,
-        Node* previousSiblingElement=NULL,
-        Node* nextSiblingElement=NULL
-        );
+    MEMBER_FN <xsl:value-of select="$elemName"/>(ElementCreateArgs args);
 
   <xsl:for-each select="*[local-name()='complexType']">
     <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
@@ -689,14 +682,7 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
   public:
 
   /// constructor for the element node
-  MEMBER_FN <xsl:value-of select="$elemName"/>(DOMString* tagName,
-      DOMString* nsUri=NULL,
-      DOMString* nsPrefix=NULL,
-      XMLSchema::TDocument* ownerDoc=NULL,
-      Node* parentNode=NULL,
-      Node* previousSiblingElement=NULL,
-      Node* nextSiblingElement=NULL
-      );
+  MEMBER_FN <xsl:value-of select="$elemName"/>(ElementCreateArgs args);
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$elemName"/>
@@ -791,14 +777,7 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
   public:
   
   /// constructor for the element node
-  MEMBER_FN <xsl:value-of select="$elemName"/>(DOMString* tagName,
-      DOMString* nsUri=NULL,
-      DOMString* nsPrefix=NULL,
-      XMLSchema::TDocument* ownerDoc=NULL,
-      Node* parentNode=NULL,
-      Node* previousSiblingElement=NULL,
-      Node* nextSiblingElement=NULL
-      );
+  MEMBER_FN <xsl:value-of select="$elemName"/>(ElementCreateArgs args);
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$elemName"/>

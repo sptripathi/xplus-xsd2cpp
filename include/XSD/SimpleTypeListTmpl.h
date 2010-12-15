@@ -57,12 +57,8 @@ namespace XMLSchema
       {
         public:
 
-          SimpleTypeListTmpl(
-              NodeP ownerNode = NULL,
-              ElementP ownerElem = NULL,
-              TDocumentP ownerDoc = NULL
-              ):
-            anySimpleType(PD_STRING, ownerNode, ownerElem, ownerDoc)
+          SimpleTypeListTmpl(AnyTypeCreateArgs args):
+            anySimpleType(args, PD_STRING)
           {
           }
 
@@ -74,7 +70,8 @@ namespace XMLSchema
             val.tokenize(' ', tokens);
             for(unsigned int i=0; i<tokens.size(); i++)
             {
-              T t;
+              AnyTypeCreateArgs args;
+              T t(args);
               t.stringValue(tokens[i]);
               _listValues.push_back(t);
             }

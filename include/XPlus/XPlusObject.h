@@ -21,6 +21,7 @@
 #define __XMLPLUSOBJECT_H__
 
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 //#define _SHAREDPTR_OBJ_DBG 1
@@ -30,6 +31,12 @@ namespace XPlus
 
 struct XPlusObject {
   int _refCnt;
+  bool _dontFree;
+
+
+  inline void dontFree(bool b) {
+    _dontFree = b;
+  }
 
   inline void printRefCnt() {
     cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : printRefCnt" << endl;
@@ -49,17 +56,23 @@ struct XPlusObject {
     if(_refCnt==0) cout << ":     ***           DELETE ";
     cout << endl;
 #endif
-    if(_refCnt==0) {
+    if( (_refCnt==0) && !_dontFree) {
       delete this;
     }
   }
 
   XPlusObject():
-    _refCnt(0)
+    _refCnt(0),
+    _dontFree(false)
   {
 #ifdef _SHAREDPTR_OBJ_DBG
     cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : XPlusObject::constr" << endl;
 #endif
+    ostringstream oss;
+    oss << this;
+    if(oss.str() == "0x804b18") {
+      cout << "satya" << endl;
+    }
   }
 
   virtual ~XPlusObject() {};

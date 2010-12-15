@@ -31,7 +31,7 @@
 using namespace std;
 
 // TODO NB:
-// 1. findNode disabled: find way to veridy that the supplied "node"
+// 1. findNode disabled: find way to verify that the supplied "node"
 //    arg claimed to be part of list is actually part of the list
 // 2. removeNode : decide about retaining this functionality
 //
@@ -57,6 +57,29 @@ namespace XPlus
         _size(0)
     {
     }
+
+    ~LList()
+    {
+      /*
+      cout << "destructing LList" << this
+       << " head:" << _head
+       << " tail:" <<  _tail << endl;
+      this->print();
+      _nodesMap.clear();
+      cout << "destructing LList: END" << endl;
+      */
+    }
+
+    void print()
+    {
+      typename map<TPtr, bool>::iterator it = _nodesMap.begin();
+      for( ; it != _nodesMap.end(); ++it )
+      {
+        cout << " nodeMap TPtr:" << it->first 
+          << " name:" << *it->first->getNodeName() << endl;
+      }
+    }
+
 
       T* item(unsigned long index) const
       {

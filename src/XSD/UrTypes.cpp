@@ -43,20 +43,33 @@ namespace XMLSchema
   {
     map<DOMString, anyType*>   anyType::_qNameToTypeMap;
 
-    anyType::anyType(
-        NodeP ownerNode,
-        ElementP ownerElem,
-        TDocumentP ownerDoc,
-        eAnyTypeUseCase typeUseCase
-        ):
-      _anyTypeUseCase(typeUseCase),  
-      _ownerNode(ownerNode),
-      _ownerElem(ownerElem),
-      _ownerDoc(ownerDoc),
-      _value(""),
+    anyType::anyType(AnyTypeCreateArgs args, eAnyTypeUseCase anyTypeUseCase_):
+      _anyTypeUseCase(anyTypeUseCase_),  
+      _ownerNode(args.ownerNode),
+      _ownerElem(args.ownerElem),
+      _ownerDoc(args.ownerDoc),
       _fsm(NULL),
-      _fixed(false)
+      _value(""),
+      _abstract(args.abstract),
+      _fixed(args.fixed),
+      _nillable(args.nillable),
+      _blockMask(args.blockMask),
+      _finalMask(args.finalMask)
     {
+      if(_abstract == true)
+      {
+        // would this mean a memleak? Revisit...
+        this->dontFree(true);
+        ostringstream err;
+        err << "An element with its element declaration or its type-definition declared abstract in the schema document, can not be used in instance documents";
+        ValidationException ex(err.str()); 
+        if(this->ownerElement()) {
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+        }
+        throw ex;
+      }
+
+
       if(anyTypeUseCase() == ANY_SIMPLE_TYPE) {
         _contentTypeVariety = CONTENT_TYPE_VARIETY_SIMPLE;
       }
@@ -101,37 +114,6 @@ namespace XMLSchema
         _fsm = new AnyTypeFSM(fsmsAttrs, contentFsm, elemEndFsm);
       }
     }
-
-  /*
-    void anyType::setTypeQName(DOMString name, DOMStringPtr pNsStr)
-    {
-      DOMString key = createKeyForQNameToTypeMap(name, pNsStr);
-      _qNameToTypeMap[key] = this;
-    }
-        
-    anyType* anyType::getTypeForQName(DOMString name, DOMStringPtr pNsStr)
-    {
-      DOMString key = createKeyForQNameToTypeMap(name, pNsStr);
-      std::map<DOMString, anyType*>::iterator it = _qNameToTypeMap.find(key);
-      std::map<DOMString, anyType*>::iterator end = _qNameToTypeMap.end();
-      if(it == end) {
-        return NULL;
-      }
-      return it->second;
-    }
-
-    DOMString anyType::createKeyForQNameToTypeMap(DOMString name, DOMStringPtr pNsStr)
-    {
-      ostringstream oss;
-      oss << "{";
-      if(pNsStr) {
-        oss << *pNsStr;
-      }
-      oss << "}";
-      oss << name;
-      return oss.str();
-    }
-*/
 
     void anyType::setErrorContext(XPlus::Exception& ex)
     {
@@ -577,13 +559,8 @@ namespace XMLSchema
     //                     anySimpleType               //
     //                                                 //
 
-    anySimpleType::anySimpleType(
-        ePrimitiveDataType primType, 
-        NodeP ownerNode,
-        ElementP ownerElem,
-        TDocumentP ownerDoc
-        ):
-      anyType(ownerNode, ownerElem, ownerDoc, anyType::ANY_SIMPLE_TYPE),
+    anySimpleType::anySimpleType(AnyTypeCreateArgs args, ePrimitiveDataType primType):
+      anyType(args, ANY_SIMPLE_TYPE),
       _primitiveType(primType),
       _lengthCFacet(0),
       _minLengthCFacet(XP_UINT32_MIN),
