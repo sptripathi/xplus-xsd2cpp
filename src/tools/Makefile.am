@@ -8,29 +8,6 @@ domParser_LDADD = $(top_srcdir)/src/DOM/libdom.la $(top_srcdir)/src/XPlus/libxpl
 
 dist_bin_SCRIPTS=xsd2cpp 
 
-#nobase_dist_bin_SCRIPTS=resources/configure.ac \
-#                       resources/Makefile.am.src \
-#                       resources/Makefile.am.include \
-#                       resources/Makefile.am.top_srcdir \
-#                       resources/autogen.sh \
-#                       resources/acinclude.m4 \
-#                       resources/aminclude.am \
-#                       resources/doxygen.cfg \
-#                       \
-#                       xsl/xsdUtils.xsl \
-#                       xsl/xsd2cpp.xsl \
-#                       xsl/xsd2cppST.xsl \
-#                       xsl/complexTypeC.xsl \
-#                       xsl/complexTypeH.xsl \
-#                       xsl/xsdIncludes.xsl \
-#                       xsl/xsd2cppBuiltinSimple.xsl \
-#                       xsl/constraints.xsl \
-#                       xsl/resolution.xsl \
-#                       xsl/test.xsl \
-#                       xsl/xmlplusDict.xml \
-#                       xsl/rules.xml
-
-
 nobase_dist_data_DATA = resources/configure.ac \
                        resources/Makefile.am.src \
                        resources/Makefile.am.include \
@@ -40,6 +17,7 @@ nobase_dist_data_DATA = resources/configure.ac \
                        resources/aminclude.am \
                        resources/doxygen.cfg \
                        resources/README.build.txt \
+                       resources/version \
                        \
                        xsl/xsdUtils.xsl \
                        xsl/xsd2cpp.xsl \

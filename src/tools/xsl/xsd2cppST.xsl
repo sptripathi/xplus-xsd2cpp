@@ -273,6 +273,8 @@ namespace Types
 
 <xsl:template name="ON_SIMPLETYPE">
   <xsl:param name="simpleTypeName"/>
+  
+  <xsl:call-template name="T_checks_on_schema_component"/>
 
   <xsl:variable name="cntAnnotation" select="count(*[local-name()='annotation'])"/>
   <xsl:variable name="cntList" select="count(*[local-name()='list'])"/>

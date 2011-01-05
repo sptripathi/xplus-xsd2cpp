@@ -150,11 +150,13 @@ bool Particle::operator==(const Particle& pairNSName) const
 //------------------------- XsdFsmOfFSMs ------------------------   //
 
 XsdFsmOfFSMs::XsdFsmOfFSMs():
+  XPlusObject("XsdFsmOfFSMs"),
   _currentFSMIdx(-1)
 {
 }
 
 XsdFsmOfFSMs::XsdFsmOfFSMs(XsdFsmBasePtr *fsms, FSMType fsmType):
+  XPlusObject("XsdFsmOfFSMs"),
   _currentFSMIdx(-1),
   _fsmType(fsmType)
 {
@@ -253,6 +255,7 @@ void XsdFsmOfFSMs::replaceFsmAt(XsdFsmBase* fsm, unsigned int idx)
 }
 
 XsdFsmOfFSMs::XsdFsmOfFSMs(const XsdFsmOfFSMs& fof):
+  XPlusObject("XsdFsmOfFSMs"),
   _currentFSMIdx(fof.currentFSMIdx()),
   _fsmType(fof.fsmType()),
   _indicesDirtyFsms(fof.indicesDirtyFsms())
@@ -335,7 +338,7 @@ bool XsdFsmOfFSMs::isFsmDirty(int fsmIndex) const
 
 // if already in an active FSM, send event to that FSM
 // else try all FSMs
-bool XsdFsmOfFSMs::processEventChoice(XsdEvent event)
+bool XsdFsmOfFSMs::processEventChoice(XsdEvent& event)
 {
   bool validEvent = false;
   if(_currentFSMIdx>=0) {
@@ -363,7 +366,7 @@ bool XsdFsmOfFSMs::processEventChoice(XsdEvent event)
 }
 
 
-bool XsdFsmOfFSMs::processEventSequence(XsdEvent event)
+bool XsdFsmOfFSMs::processEventSequence(XsdEvent& event)
 {
   bool validEvent = false;
   // initially when no FSM consumed any event, _currentFSMIds <0
@@ -391,7 +394,7 @@ bool XsdFsmOfFSMs::processEventSequence(XsdEvent event)
 //  ELSE
 //      try posting event to all FSMs except those which are dirty, 
 //      until one FSM consumes it
-bool XsdFsmOfFSMs::processEventAll(XsdEvent event)
+bool XsdFsmOfFSMs::processEventAll(XsdEvent& event)
 {
   // if currFSM exists post the event to it
   XsdFsmBasePtr currFSM = ((_currentFSMIdx>=0)? _allFSMs[_currentFSMIdx] : NULL);
@@ -430,7 +433,7 @@ bool XsdFsmOfFSMs::processEventAll(XsdEvent event)
 }
 
 
-bool XsdFsmOfFSMs::processEvent(XsdEvent event)
+bool XsdFsmOfFSMs::processEvent(XsdEvent& event)
 {
   if((_fsmType == ALL) || (_fsmType==SEQUENCE))
   {
@@ -463,7 +466,7 @@ bool XsdFsmOfFSMs::processEvent(XsdEvent event)
 }
   
 // throws exception, with the error message describing next-allowed events
-bool XsdFsmOfFSMs::processEventThrow(XsdEvent event)
+bool XsdFsmOfFSMs::processEventThrow(XsdEvent& event)
 {
   if(!processEvent(event))
   {
@@ -535,6 +538,10 @@ bool XsdFsmOfFSMs::isInitFinalState() const
 
 bool XsdFsmOfFSMs::isInFinalState() const
 {
+  if(nilled()) {
+    return true;
+  }
+
   switch(_fsmType)
   {
     case  ALL:
@@ -711,7 +718,8 @@ Node* XsdSequenceFsmOfFSMs::nextSiblingElementInSchemaOrder(XsdFsmBase *callerFs
 }
 
 
-AnyTypeFSM::AnyTypeFSM(XsdFsmBasePtr* attrFsms, XsdFsmBasePtr contentFsm, XsdFsmBasePtr elemEndFsm)
+AnyTypeFSM::AnyTypeFSM(XsdFsmBasePtr* attrFsms, XsdFsmBasePtr contentFsm, XsdFsmBasePtr elemEndFsm):
+  XPlusObject("AnyTypeFSM")
 {
   XsdFsmBasePtr oneFsmOfAttrs = new XsdAllFsmOfFSMs(attrFsms);
 
@@ -766,7 +774,7 @@ void FsmTreeNode::print() const
   cout << " } // end FsmTreeNode" << endl;
 }
 
-bool FsmTreeNode::processEvent(XsdEvent event)
+bool FsmTreeNode::processEvent(XsdEvent& event)
 {
   bool processedBySelf=false;
   bool processedByChild = false;
@@ -939,6 +947,7 @@ void BinaryFsmTree::removePrunedSubtrees()
 // ======================= XsdFsmArray ===========================
 
 XsdFsmArray::XsdFsmArray():
+  XPlusObject("XsdFsmArray"),
   _fsmTree(),
   _unitFsm(NULL),
   _minOccurence(0),
@@ -951,6 +960,7 @@ XsdFsmArray::XsdFsmArray():
 }
 
 XsdFsmArray::XsdFsmArray(XsdFsmBase* fsm, unsigned int minOccurence, unsigned int maxOccurence):
+  XPlusObject("XsdFsmArray"),
   _unitFsm(fsm),
   _minOccurence(minOccurence),
   _maxOccurence(maxOccurence)
@@ -979,6 +989,7 @@ void XsdFsmArray::init(XsdFsmBase* fsm, unsigned int minOccurence, unsigned int 
 }
 
 XsdFsmArray::XsdFsmArray(const XsdFsmArray& ref):
+  XPlusObject("XsdFsmArray"),
   _fsmTree(ref.fsmTree())
 {
   this->parentFsm(ref.parentFsm());
@@ -1151,7 +1162,7 @@ void XsdFsmArray::print() const
 }
 
 
-bool XsdFsmArray::processEvent(XsdEvent event)
+bool XsdFsmArray::processEvent(XsdEvent& event)
 {
   //lazy delete of pruned subtree
   _fsmTree.removePrunedSubtrees();
@@ -1184,7 +1195,7 @@ bool XsdFsmArray::processEvent(XsdEvent event)
 
 
 
-bool XsdFsmArray::processEventThrow(XsdEvent event)
+bool XsdFsmArray::processEventThrow(XsdEvent& event)
 {
   if(!processEvent(event))
   {
@@ -1201,6 +1212,9 @@ bool XsdFsmArray::processEventThrow(XsdEvent event)
 
 bool XsdFsmArray::isInFinalState() const
 {
+  if(nilled()) {
+    return true;
+  }
   if(_fsmTree._minDepth==0) {
     return true;
   }

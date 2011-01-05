@@ -221,6 +221,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
   <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
   <xsl:variable name="cppTargetNSConcatStr"><xsl:call-template name="T_get_cppTargetNSConcatStr"/></xsl:variable>
   <xsl:variable name="cppTargetNSDirChain"><xsl:call-template name="T_get_cppTargetNSDirChain"/></xsl:variable>
+  <xsl:variable name="cntTLE"><xsl:call-template name="T_count_top_level_elements_doc_and_includes"/></xsl:variable>
 
   <xsl:variable name="filename" select="concat('include/', $cppTargetNSDirChain, '/Document.h')" />
   <xsl:document method="text" href="{$filename}">
@@ -274,10 +275,12 @@ class Document : public XMLSchema::TDocument
   Document(bool buildTree=true);
   virtual ~Document() {}
     
-  <xsl:for-each select="*[local-name()='element' and not(@ref)]">
-    <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
+  <xsl:if test="$cntTLE>1">  
+    <xsl:for-each select="*[local-name()='element' and not(@ref)]">
+      <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
   MEMBER_FN void set_root_<xsl:value-of select="$cppName"/>();
-  </xsl:for-each>        
+    </xsl:for-each>        
+  </xsl:if>  
 
   <!-- includes -->
   <xsl:call-template name="ITERATE_SCHEMA_INCLUDES">
@@ -348,7 +351,7 @@ class Document : public XMLSchema::TDocument
     <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
     <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
     <xsl:variable name="cppPtrNsUri"><xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/></xsl:variable>
-    <xsl:value-of select="$cppFsmName"/> = new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/>),  XsdEvent::ELEMENT_START, new object_unary_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(this, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>));
+    XMARKER <xsl:value-of select="$cppFsmName"/> = new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/>),  XsdEvent::ELEMENT_START, new object_unary_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(this, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>));
   </xsl:for-each>  
 
   <xsl:call-template name="ITERATE_SCHEMA_INCLUDES">
@@ -368,7 +371,7 @@ class Document : public XMLSchema::TDocument
     };
     XsdFsmBasePtr fofElem = new XsdFsmOfFSMs(elemFsms, XsdFsmOfFSMs::CHOICE);
   </xsl:if>  
-  XsdFsmBasePtr docEndFsm = new XsdFSM&lt;void *&gt;(Particle(NULL, "", 1, 1), XsdEvent::DOCUMENT_END);
+    XsdFsmBasePtr docEndFsm = new XsdFSM&lt;void *&gt;(Particle(NULL, "", 1, 1), XsdEvent::DOCUMENT_END);
     XsdFsmBasePtr ptrFsms[] = { <xsl:if test="$cntTLE > 0">fofElem, </xsl:if> docEndFsm, NULL };
     _fsm = new XsdFsmOfFSMs(ptrFsms, XsdFsmOfFSMs::SEQUENCE);
   }
@@ -410,6 +413,8 @@ class Document : public XMLSchema::TDocument
 
 
 <xsl:template name="DEFINE_DOC_ATTRIBUTE_H">
+  <xsl:call-template name="T_checks_on_schema_component"/>
+
   <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
   <xsl:variable name="cppTargetNSConcatStr"><xsl:call-template name="T_get_cppTargetNSConcatStr"/></xsl:variable>
@@ -446,6 +451,8 @@ using namespace XPlus;
 
 
 <xsl:template name="DEFINE_DOC_ELEMENT_H">
+  <xsl:call-template name="T_checks_on_schema_component"/>
+
   <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
   <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>

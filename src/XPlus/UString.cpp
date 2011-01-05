@@ -50,7 +50,8 @@ namespace XPlus
 
 #if defined(XPLUS_UNICODE_WCHAR_T)
   UString::UString(std::string str):
-    _refCnt(0)
+    XPlusObject("UString")
+    //_refCnt(0)
   {
     this->reserve(str.size());
     for (std::string::const_iterator it = str.begin(); it != str.end();)
@@ -63,13 +64,15 @@ namespace XPlus
   }
 
   UString::UString(const wstring wstr):
-    wstring(wstr),
-    _refCnt(0)
+    XPlusObject("UString"),
+    wstring(wstr)
+    //_refCnt(0)
   {
   }
 
   UString::UString(const char *buffer):
-    _refCnt(0)
+    XPlusObject("UString")
+    //_refCnt(0)
   {
     if(!buffer) {
       throw NullPointerException("UString constructed with NULL buffer");
@@ -84,7 +87,8 @@ namespace XPlus
   }
 
   UString::UString(const char *buffer, unsigned int len)
-    _refCnt(0)
+    XPlusObject("UString")
+    //_refCnt(0)
   {
     if(!buffer) {
       throw NullPointerException("UString constructed with NULL buffer");
@@ -115,20 +119,23 @@ namespace XPlus
 #else
 
   UString::UString(const string str):
-    string(str),
-    _refCnt(0)
+    XPlusObject("UString"),
+    string(str)
+    //_refCnt(0)
   {
   }
 
   UString::UString(const char *buffer):
-    string(buffer),
-    _refCnt(0)
+    XPlusObject("UString"),
+    string(buffer)
+    //_refCnt(0)
   {
   }
 
   UString::UString(const char *buffer, unsigned int len):
-    string(buffer, len),
-    _refCnt(0)
+    XPlusObject("UString"),
+    string(buffer, len)
+    //_refCnt(0)
   {
   }
   

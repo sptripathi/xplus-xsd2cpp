@@ -32,6 +32,7 @@ namespace DOM
       Node* prevSibling,
       Node* nextSibling
       ):
+    XPlusObject("Element"),  
     Node(tagName, Node::ELEMENT_NODE, nsURI, nsPrefix, ownerDocument, NULL, parentNode, prevSibling, nextSibling),
     _tagName(tagName),
     _textBufferOnDocBuild("")

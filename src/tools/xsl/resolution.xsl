@@ -200,7 +200,14 @@ Schema Component: Element Declaration, a kind of Term
               <!-- A character string. Required.  -->
               <lexicalForm></lexicalForm>
             </valueConstraint>
-            <nillable><xsl:value-of select="@nillable"/></nillable>
+            <nillable>
+              <xsl:choose>
+                <xsl:when test="$node/@nillable">
+                  <xsl:value-of select="$node/@nillable"/>
+                </xsl:when>
+                <xsl:otherwise>false</xsl:otherwise>
+              </xsl:choose>
+            </nillable>
             <identityConstraintDefinitions>TODO</identityConstraintDefinitions>
             <substGroupAffiliations><xsl:value-of select="@substitutionGroup"/></substGroupAffiliations>
             <substGroupExclusions>
@@ -1500,7 +1507,7 @@ Schema Component: Complex Type Definition, a kind of Type Definition
       </abstract>
       <defaultAttributesApply>
         <xsl:choose>  
-          <xsl:when test="$ctNode/@adefaultAttributesApply">
+          <xsl:when test="$ctNode/@defaultAttributesApply">
             <xsl:value-of select="$ctNode/@defaultAttributesApply"/>
           </xsl:when>
           <xsl:otherwise>true</xsl:otherwise>
@@ -1874,7 +1881,7 @@ Schema Component: Simple Type Definition, a kind of Type Definition
 </xsl:template>
 
 
-<xsl:template name="T_get_abstract_from_resolution_complexTypeElement">
+<xsl:template name="T_get_abstract_from_resolution_element">
   <xsl:param name="resolution"/>
   <xsl:variable name="resolutionNode" select="exsl:node-set($resolution)"/>
   <xsl:variable name="abstract">
@@ -1882,6 +1889,18 @@ Schema Component: Simple Type Definition, a kind of Type Definition
       <xsl:when test="$resolutionNode/element/abstract">
         <xsl:value-of select="$resolutionNode/element/abstract/text()"/>
       </xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($abstract)"/>
+</xsl:template>
+
+
+<xsl:template name="T_get_abstract_from_resolution_complexType">
+  <xsl:param name="resolution"/>
+  <xsl:variable name="resolutionNode" select="exsl:node-set($resolution)"/>
+  <xsl:variable name="abstract">
+    <xsl:choose>
       <xsl:when test="$resolutionNode/complexTypeDefinition/abstract">
         <xsl:value-of select="$resolutionNode/complexTypeDefinition/abstract/text()"/>
       </xsl:when>
@@ -1890,6 +1909,7 @@ Schema Component: Simple Type Definition, a kind of Type Definition
   </xsl:variable>
   <xsl:value-of select="normalize-space($abstract)"/>
 </xsl:template>
+
 
 <xsl:template name="T_get_nillable_from_resolution_element">
   <xsl:param name="resolution"/>
@@ -1902,7 +1922,7 @@ Schema Component: Simple Type Definition, a kind of Type Definition
       <xsl:otherwise>false</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
-  <xsl:value-of select="normalize-space($abstract)"/>
+  <xsl:value-of select="normalize-space($nillable)"/>
 </xsl:template>
 
 

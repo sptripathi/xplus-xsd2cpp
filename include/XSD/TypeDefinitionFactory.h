@@ -11,10 +11,6 @@ using namespace XMLSchema::Types;
 
 namespace XSD
 {
-
-
-
-
   struct StructCreateAttrThroughFsm
   {
     DOMString*    tagName;
@@ -47,13 +43,17 @@ namespace XSD
 
 
 
-  struct StructCreateNodeThroughFsm
+  struct StructCreateElementThroughFsm
   {
     DOMString* tagName;
     DOMString* nsUri;
     DOMString* nsPrefix;
     Node*      parentNode;
     TDocument* ownerDoc;
+    
+    bool         abstract;
+    bool         nillable;
+    bool         fixed;
 
     XsdFsmBase*   fsm;
     FsmCbOptions options;
@@ -63,13 +63,18 @@ namespace XSD
     DOMString actualTypeNsUri;
     DOMString actualTypeName;
 
-    StructCreateNodeThroughFsm(DOMString* tagName_,
+
+
+    StructCreateElementThroughFsm(DOMString* tagName_,
                               DOMString* nsUri_,
                               DOMString* nsPrefix_,
                               Node*      parentNode_,
                               TDocument* ownerDoc_,
                               XsdFsmBase*   fsm_,
                               FsmCbOptions options_,
+                              bool abstract_=false,
+                              bool nillable_=false,
+                              bool fixed_ = false,
                               DOMString actualTypeNsUri_="",
                               DOMString actualTypeName_="<unknown>"
                               ):
@@ -78,14 +83,17 @@ namespace XSD
                         nsPrefix(nsPrefix_),
                         parentNode(parentNode_),
                         ownerDoc(ownerDoc_),
+                        abstract(abstract_),
+                        nillable(nillable_),
+                        fixed(fixed_),
                         fsm(fsm_),
                         options(options_)
-    {
-    }
+      {
+      }
   };
 
 
-  template<typename T> XMLSchema::Types::anyType* createType(AnyTypeCreateArgs args) 
+  template<typename T> XMLSchema::Types::anyType* createType(ElementCreateArgs args) 
   { 
     T* pT = NULL;
     try {
@@ -95,12 +103,13 @@ namespace XSD
       cerr << "Failed to create type:" << ex.msg() << endl;
     }
     XMLSchema::Types::anyType* pAny = dynamic_cast<XMLSchema::Types::anyType *>(pT);
+    //return pT;
     return pAny;
   }
 
   struct TypeDefinitionFactory 
   {
-    typedef map<string, XMLSchema::Types::anyType*(*)(AnyTypeCreateArgs args)> map_type;
+    typedef map<string, XMLSchema::Types::anyType*(*)(ElementCreateArgs args)> map_type;
     
     TypeDefinitionFactory(const string& typeName, const string& typeNsUri):
       _name(typeName),
@@ -108,7 +117,7 @@ namespace XSD
     {
     }
 
-    static XMLSchema::Types::anyType* getTypeForQName(const string& typeName, const string& typeNsUri, AnyTypeCreateArgs args) 
+    static XMLSchema::Types::anyType* getTypeForQName(const string& typeName, const string& typeNsUri, ElementCreateArgs args) 
     {
       string key = createKeyForQNameToTypeMap(typeName, typeNsUri);
       map_type::iterator it = getMap()->find(key);
@@ -166,7 +175,7 @@ namespace XSD
 
   // E : element class
   // TPtr : pointer to "class of element's type"
-  template<typename E, typename TPtr> E* createElementTmpl(StructCreateNodeThroughFsm t)
+  template<typename E, typename TPtr> E* createElementTmpl(StructCreateElementThroughFsm& t)
   {
     if(t.ownerDoc->buildTree() || !t.fsm->fsmCreatedNode())
     {
@@ -181,31 +190,28 @@ namespace XSD
           nextSibl = const_cast<Node *>(t.fsm->nextSiblingNodeRunTime());
         }
       }
-      ElementCreateArgs args(t.tagName, t.nsUri, t.nsPrefix, t.ownerDoc, t.parentNode, prevSibl, nextSibl);
-      E* node = new E(args);
+      
+      ElementCreateArgs args(t.tagName, t.nsUri, t.nsPrefix, t.ownerDoc, t.parentNode, prevSibl, nextSibl, t.abstract, t.nillable, t.fixed);
+      E* node = NULL;
 
+      // if element's type is specified in instance document using xsi:type
       if(t.options.xsiType.length()>0)
       {
         DOMString instanceTypeNsUri="", instanceTypeName="";
         vector<XPlus::UString> tokens;
         t.options.xsiType.tokenize(':', tokens);
         poco_assert(tokens.size()<=2);
-        if(tokens.size()==2) {
+        if(tokens.size() == 2) 
+        {
           instanceTypeNsUri = t.ownerDoc->getNsUriForNsPrefixExplicit(tokens[0]);
           instanceTypeName = tokens[1];
         }
         else {
           instanceTypeName = tokens[0];
         }
-        XMLSchema::Types::anyType* pOverriddenType = 
-                      TypeDefinitionFactory::getTypeForQName( instanceTypeName, 
-                                                              instanceTypeNsUri, 
-                                                              AnyTypeCreateArgs( node->ownerNode(), node->ownerElement(), node->ownerDocument())
-                                                              );
-        
+        XMLSchema::Types::anyType* pOverriddenType = TypeDefinitionFactory::getTypeForQName(instanceTypeName, instanceTypeNsUri, args);
         TPtr myTypeCast = dynamic_cast<TPtr>(pOverriddenType);
-
-        if(!myTypeCast) 
+        if(!myTypeCast || pOverriddenType->typeAbstract()) 
         {
           ostringstream oss;
           oss << "  The value of the attribute {"
@@ -217,8 +223,35 @@ namespace XSD
               << t.actualTypeName;
           throw XPlus::RuntimeException(oss.str());
         }
+
+        args.suppressTypeAbstract = true;
+        node = new E(args);
         node->replaceFsm(pOverriddenType->fsm());
       }
+      else
+      {
+        node = new E(args);
+      }
+      
+      if(t.options.xsiNil == "true")
+      {
+        if(t.nillable) {
+          node->fsm()->contentFsm()->nilled(true);
+        }
+        else 
+        {
+          ostringstream ossElemNS;
+          if(t.nsUri) ossElemNS << "{" << *t.nsUri << "} "; 
+          ossElemNS << *t.tagName;
+
+          ostringstream oss;
+          oss << " The element can not be nilled because it is not declared nillable in the schema";  
+          XPlus::RuntimeException ex(oss.str());
+          ex.setContext("element", ossElemNS.str());  
+          throw ex;        
+        }
+      }
+      
       t.fsm->fsmCreatedNode(node);
       return node;
     }

@@ -30,6 +30,7 @@ namespace XPlus
 {
 
 struct XPlusObject {
+  string _objName;
   int _refCnt;
   bool _dontFree;
 
@@ -37,42 +38,44 @@ struct XPlusObject {
   inline void dontFree(bool b) {
     _dontFree = b;
   }
+  inline bool dontFree() const {
+    return _dontFree;
+  }
 
   inline void printRefCnt() {
-    cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : printRefCnt" << endl;
+    cout << "@@@@@@@@@@ ptr= " << this  << " name:" <<  _objName << " cnt=" << _refCnt << " : printRefCnt" << endl;
   }
 
   inline virtual void duplicate() {
     ++_refCnt;
 #ifdef _SHAREDPTR_OBJ_DBG
-    cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : duplicate" << endl;
+    cout << "@@@@@@@@@@ ptr= " << this  << " name:" <<  _objName << " cnt=" << _refCnt << " : duplicate" << endl;
 #endif
   }
 
   inline virtual void release() {
     --_refCnt;
 #ifdef _SHAREDPTR_OBJ_DBG
-    cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : release ";
+    cout << "   @@@@@@@@@@ ptr= " << this << " name:" <<  _objName << " cnt=" << _refCnt << " : release ";
     if(_refCnt==0) cout << ":     ***           DELETE ";
     cout << endl;
 #endif
     if( (_refCnt==0) && !_dontFree) {
+      //cout << "       @@@@ delete called..." << endl;
       delete this;
     }
   }
 
-  XPlusObject():
+  XPlusObject(string name=""):
+    _objName(name),
     _refCnt(0),
     _dontFree(false)
   {
 #ifdef _SHAREDPTR_OBJ_DBG
-    cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : XPlusObject::constr" << endl;
+    cout << "@@@@@@@@@@ ptr= " << this  << " name:" <<  _objName << " cnt=" << _refCnt << " : XPlusObject::constr" << endl;
 #endif
     ostringstream oss;
     oss << this;
-    if(oss.str() == "0x804b18") {
-      cout << "satya" << endl;
-    }
   }
 
   virtual ~XPlusObject() {};

@@ -31,6 +31,10 @@ namespace DOM
   {
 
     public:
+      XMLParser():
+      XPlusObject("XMLParser")
+      {
+      }
       virtual ~XMLParser() {}
       virtual void setUserData(void *userData) =0;
       virtual bool parseXmlFile(string filePath)=0;

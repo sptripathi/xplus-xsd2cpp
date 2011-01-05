@@ -30,7 +30,12 @@ namespace XPlus
   // FIXME: make XPlusObject as base
   template <class R, class A> struct unary_function_base : public unary_function<A,R>, public XPlus::XPlusObject
   {
-    virtual R operator()(A arg)=0;
+    unary_function_base():
+      XPlusObject("unary_function_base")
+      {
+      }
+
+    virtual R operator()(A& arg)=0;
   };
 
 
@@ -39,17 +44,17 @@ namespace XPlus
   {
     private:
       T*    _ptrObj;
-      R (T::*_ptrNoArgFunc)(A arg);
+      R (T::*_ptrNoArgFunc)(A& arg);
 
     public:
 
-      explicit object_unary_mem_fun_t(T *ptrObj, R (T::*ptrNoArgFunc)(A arg)):
+      explicit object_unary_mem_fun_t(T *ptrObj, R (T::*ptrNoArgFunc)(A& arg)):
         _ptrObj(ptrObj),
         _ptrNoArgFunc(ptrNoArgFunc)
     {
     }
 
-      R operator()(A arg)
+      R operator()(A& arg)
       {
         if(_ptrObj) {
           return (_ptrObj->*_ptrNoArgFunc)(arg);
@@ -63,6 +68,10 @@ namespace XPlus
 
   template <class R> struct noargs_function_base : public unary_function<void,R>, public XPlus::XPlusObject
   {
+    noargs_function_base():
+      XPlusObject("noargs_function_base")
+      {
+      }
     virtual R operator()()=0;
 
   };

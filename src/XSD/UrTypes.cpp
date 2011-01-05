@@ -44,6 +44,7 @@ namespace XMLSchema
     map<DOMString, anyType*>   anyType::_qNameToTypeMap;
 
     anyType::anyType(AnyTypeCreateArgs args, eAnyTypeUseCase anyTypeUseCase_):
+      XPlusObject("anyType"),
       _anyTypeUseCase(anyTypeUseCase_),  
       _ownerNode(args.ownerNode),
       _ownerElem(args.ownerElem),
@@ -51,24 +52,21 @@ namespace XMLSchema
       _fsm(NULL),
       _value(""),
       _abstract(args.abstract),
-      _fixed(args.fixed),
-      _nillable(args.nillable),
       _blockMask(args.blockMask),
       _finalMask(args.finalMask)
     {
       if(_abstract == true)
       {
-        // would this mean a memleak? Revisit...
-        this->dontFree(true);
-        ostringstream err;
-        err << "An element with its element declaration or its type-definition declared abstract in the schema document, can not be used in instance documents";
-        ValidationException ex(err.str()); 
-        if(this->ownerElement()) {
-          ex.setContext("element", *this->ownerElement()->getNodeName());
+        ValidationException ex("Since the element's type-definition is declared abstract in the schema document, all instances of this element must use 'xsi:type' in the instance document, to indicate a derived type that is not abstract");
+        if(_ownerElem)
+        {
+          ex.setContext("element", *_ownerElem->getNodeName());
+          if(_ownerElem->getParentNode()) {
+            _ownerElem->getParentNode()->removeChild(_ownerElem);  
+          }
         }
         throw ex;
       }
-
 
       if(anyTypeUseCase() == ANY_SIMPLE_TYPE) {
         _contentTypeVariety = CONTENT_TYPE_VARIETY_SIMPLE;
@@ -104,6 +102,7 @@ namespace XMLSchema
                                                     XsdEvent::ELEMENT_END);
         
         _fsm = new AnyTypeFSM(fsmsAttrs, contentFsm, elemEndFsm);
+        
       }
       else
       {
@@ -132,45 +131,6 @@ namespace XMLSchema
       return ownerElement();
     }
 
-    void anyType::checkFixed(DOMString value) 
-    {
-      if(fixed() & (value != _value)) 
-      {
-        ValidationException ex("Fixed value of the node can not be changed");
-        ex.setContext("fixed-value", _value);
-        ex.setContext("supplied-value", value);
-        throw ex;
-      }
-    }
-
-    void anyType::checksOnSetValue(DOMString value)
-    {
-      if( (contentTypeVariety() == CONTENT_TYPE_VARIETY_ELEMENT_ONLY) &&
-          !value.matchCharSet(UTF8FNS::isSpaceChar)
-        )
-      {
-        ostringstream err;
-        err << "Character content other than whitespace is not allowed"
-          " because the content type is 'element-only'";
-        ValidationException ex(err.str()); 
-        ex.setContext("element", *this->ownerElement()->getNodeName());
-        throw ex;
-      }
-
-      if( (contentTypeVariety() == CONTENT_TYPE_VARIETY_EMPTY) &&
-          !value.matchCharSet(UTF8FNS::isSpaceChar) // FIXME: is space allowed for empty content????
-        )
-      {
-        ostringstream err;
-        err << "Character content other than whitespace is not allowed"
-          " because the content type is 'empty'";
-        ValidationException ex(err.str()); 
-        ex.setContext("element", *this->ownerElement()->getNodeName());
-        throw ex;
-      }
-
-      checkFixed(value);
-    }
 
     TextNode* anyType::addTextNodeValueAtPos(DOMString text, int pos)
     {
@@ -209,6 +169,53 @@ namespace XMLSchema
       return txtNode;
     }
 
+
+        void anyType::checkFixed(DOMString value) 
+    {
+      if(ownerElement() && ownerElement()->fixed() && (value != _value)) 
+      {
+        ValidationException ex("Fixed value of the node can not be changed");
+        ex.setContext("fixed-value", _value);
+        ex.setContext("supplied-value", value);
+        throw ex;
+      }
+    }
+
+    void anyType::checkContentType(DOMString value)
+    {
+      if( (contentTypeVariety() == CONTENT_TYPE_VARIETY_ELEMENT_ONLY) &&
+          !value.matchCharSet(UTF8FNS::isSpaceChar)
+        )
+      {
+        ostringstream err;
+        err << "Character content other than whitespace is not allowed"
+          " because the content type is 'element-only'";
+        ValidationException ex(err.str()); 
+        ex.setContext("element", *this->ownerElement()->getNodeName());
+        throw ex;
+      }
+
+      if( (contentTypeVariety() == CONTENT_TYPE_VARIETY_EMPTY) &&
+          !value.matchCharSet(UTF8FNS::isSpaceChar) // FIXME: is space allowed for empty content????
+        )
+      {
+        ostringstream err;
+        err << "Character content other than whitespace is not allowed"
+          " because the content type is 'empty'";
+        ValidationException ex(err.str()); 
+        ex.setContext("element", *this->ownerElement()->getNodeName());
+        throw ex;
+      }
+    }
+
+    void anyType::checksOnSetValue(DOMString value)
+    {
+      checkContentType(value);
+      checkFixed(value);
+    }
+
+
+
     // 1. sets the value (in _value)
     // 2. creates the DOM TextNode with this value if the TextNode was not 
     //    there, else sets the value in the TextNode
@@ -217,7 +224,7 @@ namespace XMLSchema
       try
       {
         checksOnSetValue(value);
-        // FIXME: what should be the value in case of compplexType, anyType
+        // FIXME: what should be the value in case of complexType, anyType
         if(anyTypeUseCase() == ANY_SIMPLE_TYPE)
         {
           _value = value;
@@ -230,6 +237,25 @@ namespace XMLSchema
         throw ex;
       }
     }
+
+    void anyType::fixedValue(DOMString value) 
+    {
+      try
+      {
+        checkContentType(value);
+        if(anyTypeUseCase() == ANY_SIMPLE_TYPE) {
+          _value = value;
+        }
+        setTextNodeValue(value);
+      }
+      catch(XPlus::Exception& ex)
+      {
+        ex.setContext("element", *this->ownerElement()->getNodeName());
+        throw ex;
+      }
+    }
+
+
 
     // here pos is the position of this node among all children 
     // and not just the text nodes
@@ -340,11 +366,11 @@ namespace XMLSchema
       if(!localName) {
         throw XPlus::NullPointerException("createElementNS: localName is NULL");
       }
-      
+
       // create the element
       XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_START);
       FsmCbOptions& cbOptions = event.cbOptions;
-      // set the xsi context to be passed to callbaack functions.
+      // set the xsi context to be passed to callback functions.
       for(unsigned int i=0; i<attrVec.size(); i++)
       {
         if(!attrVec[i].nsUri() || (*attrVec[i].nsUri() != Namespaces::s_xsiUri) ) {
@@ -388,6 +414,7 @@ namespace XMLSchema
         throw XMLSchema::FSMException(DOMString(err.str()));
       }
 
+  
       // now add attributes to this element  
       for(unsigned int i=0; i<attrVec.size(); i++)
       {
@@ -481,28 +508,28 @@ namespace XMLSchema
     }
 
     
-    DOM::Attribute* anyType::createAttributeXsiType(FsmCbOptions options)
+    DOM::Attribute* anyType::createAttributeXsiType(FsmCbOptions& options)
     {
       Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiTypeStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr); 
       _fsm->fsmCreatedNode(attr);
       return attr;
     }
 
-    DOM::Attribute* anyType::createAttributeXsiNil(FsmCbOptions options)
+    DOM::Attribute* anyType::createAttributeXsiNil(FsmCbOptions& options)
     {
       Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiNilStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr);
       _fsm->fsmCreatedNode(attr);
       return attr;
     }
 
-    DOM::Attribute* anyType::createAttributeXsiSchemaLocation(FsmCbOptions options)
+    DOM::Attribute* anyType::createAttributeXsiSchemaLocation(FsmCbOptions& options)
     {
       Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiSchemaLocationStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr);
       _fsm->fsmCreatedNode(attr);
       return attr;
     }
 
-    DOM::Attribute* anyType::createAttributeXsiNoNamespaceSchemaLocation(FsmCbOptions options)
+    DOM::Attribute* anyType::createAttributeXsiNoNamespaceSchemaLocation(FsmCbOptions& options)
     {
       Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiNoNamespaceSchemaLocationStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr);
       _fsm->fsmCreatedNode(attr);

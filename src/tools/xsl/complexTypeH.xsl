@@ -91,7 +91,7 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyType
   </xsl:call-template>  
 
   private:
-  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
+  static XSD::TypeDefinitionFactoryTmpl&lt;XmlElement&lt;<xsl:value-of select="$cppName"/>&gt; &gt;   s_typeRegistry;
 }; //end class <xsl:value-of select="$cppName"/>
 </xsl:template>
 
@@ -253,7 +253,7 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$baseCppT
   </xsl:call-template>
 
   private:
-  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
+  static XSD::TypeDefinitionFactoryTmpl&lt;XmlElement&lt;<xsl:value-of select="$cppName"/>&gt; &gt;   s_typeRegistry;
 }; //end class <xsl:value-of select="$cppName"/>
 
 </xsl:template>
@@ -324,7 +324,7 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDer
   </xsl:call-template>
   
   private:
-  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
+  static XSD::TypeDefinitionFactoryTmpl&lt;XmlElement&lt;<xsl:value-of select="$cppName"/>&gt; &gt;   s_typeRegistry;
 
 }; //end class <xsl:value-of select="$cppName"/>
 
@@ -364,7 +364,7 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDer
   </xsl:call-template>  
 
   private:
-  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
+  static XSD::TypeDefinitionFactoryTmpl&lt;XmlElement&lt;<xsl:value-of select="$cppName"/>&gt; &gt;   s_typeRegistry;
 }; //end class <xsl:value-of select="$cppName"/>
 </xsl:template>
 
@@ -437,11 +437,16 @@ XML Representation Summary: complexType Element Information Item
   <xsl:call-template name="T_checks_on_schema_component"/>
 
   <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
+    <xsl:with-param name="mode" select="'checks_on_schema_component'"/>
+    <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+  </xsl:call-template>  
+  <xsl:call-template name="RUN_FSM_COMPLEXTYPE_CONTENT">
     <xsl:with-param name="mode" select="'typedefinition'"/>
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
   </xsl:call-template>
 
   <!-- MG/MGD definitions -->
+
   <xsl:call-template name="ITERATE_CHILDREN_MG_H">
     <xsl:with-param name="mode" select="'define_mg_list'"/>
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
@@ -1116,8 +1121,8 @@ public:
       </xsl:if>
     </xsl:when>
     
-    <xsl:when test="$mode='check_element_attribute_repr_ok'">
-      <xsl:call-template name="T_checks_on_element_attribute_declaration"/>
+    <xsl:when test="$mode='checks_on_schema_component'">
+      <xsl:call-template name="T_checks_on_schema_component"/>
     </xsl:when>
 
   </xsl:choose>
@@ -1134,7 +1139,7 @@ public:
 <xsl:template name="DECL_PVT_FNS_FOR_MEMBER_ELEMENT_OR_ATTRIBUTE_H">
   <xsl:variable name="cppTypeSmartPtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
   <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
-  MEMBER_FN <xsl:value-of select="$cppTypeSmartPtrShort"/><xsl:text> </xsl:text>create_<xsl:value-of select="$cppNameFunction"/>(FsmCbOptions options);
+  MEMBER_FN <xsl:value-of select="$cppTypeSmartPtrShort"/><xsl:text> </xsl:text>create_<xsl:value-of select="$cppNameFunction"/>(FsmCbOptions&amp; options);
 </xsl:template>
 
 
@@ -1320,8 +1325,8 @@ public:
   <xsl:variable name="isOptionalScalar"><xsl:call-template name="T_isOptinalScalar_ElementAttr"/></xsl:variable>
   <xsl:if test="$isOptionalScalar='true'">
 
-  ///  For the optional scalar element with QName "<xsl:value-of select="$expandedQName"/>" :
-  ///  Marks the element as present 
+  ///  For the optional scalar <xsl:value-of select="$localName"/> with QName "<xsl:value-of select="$expandedQName"/>" :
+  ///  Marks the <xsl:value-of select="$localName"/> as present 
   MEMBER_FN void mark_present_<xsl:value-of select="$cppNameFunction"/>();
 
   </xsl:if>

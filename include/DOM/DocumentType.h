@@ -30,14 +30,18 @@ namespace DOM
   protected:
 
     const DOMStringPtr         _name;
-    const NamedNodeMap&     _entities;
-    const NamedNodeMap&     _notations;
+    const NamedNodeMap     _entities;
+    const NamedNodeMap     _notations;
         // Introduced in DOM Level 2:
     const DOMStringPtr         _publicId;
     const DOMStringPtr         _systemId;
     const DOMStringPtr         _internalSubset;
 
   public:
+    DocumentType():
+      XPlusObject("DocumentType")
+      {
+      }
     virtual ~DocumentType(){}
 
     virtual const DOMString* getName();

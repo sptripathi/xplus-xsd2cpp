@@ -88,7 +88,7 @@ struct FsmCbOptions
   DOMString xsiNil;
   DOMString xsiSchemaLocation;
   DOMString xsiNoNamespaceSchemaLocation;
-
+  
   FsmCbOptions(DOMString xsiType="", DOMString xsiNil="", DOMString xsiSchemaLocation="", DOMString xsiNoNamespaceSchemaLocation=""):
     xsiType(""),
     xsiNil(""),
@@ -145,10 +145,12 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
   public:
 
     XsdFsmBase():
+      XPlusObject("XsdFsmBase"),
       _parentFsm(NULL),
       _prevSiblNodeRunTime(NULL),
       _nextSiblNodeRunTime(NULL),
-      _fsmCreatedNode(NULL)
+      _fsmCreatedNode(NULL),
+      _nilled(false)
     {
     };
 
@@ -200,8 +202,15 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
       return _nsName;
     }
 
-    virtual bool processEvent(XsdEvent event)=0; 
-    virtual bool processEventThrow(XsdEvent event)=0; 
+    inline void nilled(bool b) {
+      _nilled = b;
+    }
+    inline bool nilled() const {
+      return _nilled;
+    }
+
+    virtual bool processEvent(XsdEvent& event)=0; 
+    virtual bool processEventThrow(XsdEvent& event)=0; 
     virtual Node* rightmostElement() const =0;
     virtual Node* leftmostElement() const =0;
     virtual Node* previousSiblingElementInSchemaOrder(XsdFsmBase* callerFsm) =0;
@@ -226,6 +235,8 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
     
     // applicable only to XsdFsm(UnitFsm)
     Particle          _nsName;
+    
+    bool              _nilled; 
 };
 
 
@@ -420,7 +431,7 @@ class XsdFSM : public XsdFsmBase
       }
     }
 
-    virtual bool processEventOnce(XsdEvent event)
+    virtual bool processEventOnce(XsdEvent& event)
     {
       // if not building the Document from input-stream
       // then set the scratchpad context
@@ -448,10 +459,18 @@ class XsdFSM : public XsdFsmBase
           _nodeList.push_back(t);
         }
       }
+      
+      /*  
+      if(event.cbOptions.error.length() > 0) {
+        XMLSchema::ValidationException ex(event.cbOptions.error);
+        ex.setContext("element", event.localName);
+        throw ex;  
+      }
+      */
       return validEvent;
     }
 
-    virtual bool processEvent(XsdEvent event)
+    virtual bool processEvent(XsdEvent& event)
     {
 
       if( (_nsName.localName == event.localName) &&
@@ -475,9 +494,10 @@ class XsdFSM : public XsdFsmBase
 
 
     // throws exception, with the error message describing next-allowed events
-    virtual bool processEventThrow(XsdEvent event)
+    virtual bool processEventThrow(XsdEvent& event)
     {
-      if(!processEvent(event))
+      bool consumed =  processEvent(event);
+      if(!consumed)
       {
         XMLSchema::FSMException ex("");
         list<DOMString> allowedEvents = this->suggestNextEvents();
@@ -494,7 +514,10 @@ class XsdFSM : public XsdFsmBase
     }
 
     virtual bool isInFinalState() const {
-      if(_fsm) {
+      if(nilled()) {
+        return true;
+      }
+      else if(_fsm) {
         return _fsm->isInFinalState();
       }
       return false;
@@ -588,9 +611,9 @@ class XsdFsmOfFSMs : public XsdFsmBase
 
   virtual XsdFsmBase* clone() const;
 
-  virtual bool processEventThrow(XsdEvent event); 
+  virtual bool processEventThrow(XsdEvent& event); 
   // throws exception, with the error message describing next-allowed events
-  virtual bool processEvent(XsdEvent event); 
+  virtual bool processEvent(XsdEvent& event); 
   
   virtual bool isInFinalState() const;
   virtual list<DOMString> suggestNextEvents() const; 
@@ -658,9 +681,9 @@ class XsdFsmOfFSMs : public XsdFsmBase
   //    but may not be in final state
   map<int,bool>           _indicesDirtyFsms;
 
-  bool processEventChoice(XsdEvent event);
-  bool processEventSequence(XsdEvent event);
-  bool processEventAll(XsdEvent event);
+  bool processEventChoice(XsdEvent& event);
+  bool processEventSequence(XsdEvent& event);
+  bool processEventAll(XsdEvent& event);
 
   bool areAllFsmsInFinalState() const;
   bool isAnyFsmInFinalState() const;
@@ -680,9 +703,12 @@ typedef AutoPtr<XsdFsmOfFSMs> XsdFsmOfFSMsPtr;
 
 struct XsdSequenceFsmOfFSMs : public XsdFsmOfFSMs
 {
-  XsdSequenceFsmOfFSMs() { }
+  XsdSequenceFsmOfFSMs():
+    XPlusObject("XsdSequenceFsmOfFSMs")
+  { }
 
   XsdSequenceFsmOfFSMs(XsdFsmBasePtr *fsms):
+    XPlusObject("XsdSequenceFsmOfFSMs"),
     XsdFsmOfFSMs(fsms, XsdFsmOfFSMs::SEQUENCE)
   {
   }
@@ -701,9 +727,12 @@ typedef AutoPtr<XsdSequenceFsmOfFSMs> XsdSequenceFsmOfFSMsPtr;
 
 struct XsdChoiceFsmOfFSMs : public XsdFsmOfFSMs
 {
-  XsdChoiceFsmOfFSMs() { }
+  XsdChoiceFsmOfFSMs():
+    XPlusObject("XsdChoiceFsmOfFSMs")
+  { }
 
   XsdChoiceFsmOfFSMs(XsdFsmBasePtr *fsms):
+    XPlusObject("XsdChoiceFsmOfFSMs"),
     XsdFsmOfFSMs(fsms, XsdFsmOfFSMs::CHOICE)
   {
   }
@@ -718,9 +747,12 @@ typedef AutoPtr<XsdChoiceFsmOfFSMs> XsdChoiceFsmOfFSMsPtr;
 
 struct XsdAllFsmOfFSMs : public XsdFsmOfFSMs
 {
-  XsdAllFsmOfFSMs() { }
+  XsdAllFsmOfFSMs():
+    XPlusObject("XsdAllFsmOfFSMs")
+  { }
 
   XsdAllFsmOfFSMs(XsdFsmBasePtr *fsms):
+    XPlusObject("XsdAllFsmOfFSMs"),
     XsdFsmOfFSMs(fsms, XsdFsmOfFSMs::ALL)
   {
   }
@@ -735,9 +767,12 @@ typedef AutoPtr<XsdAllFsmOfFSMs> XsdAllFsmOfFSMsPtr;
 
 struct XsdGroupFsmOfFSMs : public XsdFsmOfFSMs
 {
-  XsdGroupFsmOfFSMs() { }
+  XsdGroupFsmOfFSMs():
+    XPlusObject("XsdGroupFsmOfFSMs")
+  { }
 
   XsdGroupFsmOfFSMs(XsdFsmBasePtr *fsms):
+    XPlusObject("XsdGroupFsmOfFSMs"),
     XsdFsmOfFSMs(fsms, XsdFsmOfFSMs::GROUP)
   {
   }
@@ -752,7 +787,9 @@ typedef AutoPtr<XsdGroupFsmOfFSMs> XsdGroupFsmOfFSMsPtr;
 
 struct AnyTypeFSM : public XsdSequenceFsmOfFSMs
 {
-  AnyTypeFSM() { }
+  AnyTypeFSM():
+    XPlusObject("AnyTypeFSM")
+  { }
 
   AnyTypeFSM(XsdFsmBasePtr* attrFsms, XsdFsmBasePtr contentFsm, XsdFsmBasePtr elemEndFsm);
 
@@ -817,7 +854,7 @@ struct FsmTreeNode : public XPlus::TreeNode<XsdFsmBasePtr>
 
   void print() const;
 
-  bool processEvent(XsdEvent event);
+  bool processEvent(XsdEvent& event);
 };
 typedef AutoPtr<FsmTreeNode> FsmTreeNodePtr;
 
@@ -912,8 +949,8 @@ class XsdFsmArray : public XsdFsmBase
     
     virtual void init(XsdFsmBase* fsm, unsigned int minOccurence, unsigned int maxOccurence);
     virtual XsdFsmBase* clone() const;    
-    virtual bool processEvent(XsdEvent event); 
-    virtual bool processEventThrow(XsdEvent event); 
+    virtual bool processEvent(XsdEvent& event); 
+    virtual bool processEventThrow(XsdEvent& event); 
     virtual bool isInFinalState() const;
     virtual bool isInitFinalState() const;
     virtual list<DOMString> suggestNextEvents() const; 

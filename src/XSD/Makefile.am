@@ -7,7 +7,6 @@ libxsd_la_SOURCES = \
   XSDFSM.cpp \
   UrTypes.cpp \
   xsdUtils.cpp \
-  UserOps.cpp \
   $(top_srcdir)/include/XSD/Enums.h \
   $(top_srcdir)/include/XSD/Facets.h \
   $(top_srcdir)/include/XSD/FSM.h \

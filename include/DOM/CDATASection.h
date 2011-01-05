@@ -27,6 +27,11 @@ namespace DOM
   class CDATASection : public XPlus::XPlusObject
   {
     public:
+    CDATASection():
+    XPlusObject("CDATASection")
+    {
+    }
+
     virtual ~CDATASection() {}
   };
 }

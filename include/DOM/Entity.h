@@ -32,6 +32,10 @@ namespace DOM
     const DOMStringPtr _notationName;
 
   public:
+    Entity():
+      XPlusObject("Entity")
+    {
+    }
     virtual ~Entity() {}
 
     virtual const DOMString* getPublicId() const;

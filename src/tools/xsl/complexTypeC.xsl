@@ -709,7 +709,7 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
 <xsl:call-template name="T_emit_cppNSBegin_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
 namespace Types
 {
-  XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt; <xsl:value-of select="$cppName"/>::s_typeRegistry("<xsl:value-of select="$complexTypeName"/>", "<xsl:value-of select="$targetNsUri"/>");
+  XSD::TypeDefinitionFactoryTmpl&lt;XmlElement&lt;<xsl:value-of select="$cppName"/>&gt; &gt; <xsl:value-of select="$cppName"/>::s_typeRegistry("<xsl:value-of select="$complexTypeName"/>", "<xsl:value-of select="$targetNsUri"/>");
 
   <xsl:call-template name="DEFINE_FNS_COMPLEXTYPE_CPP"/>
 } //  end namespace Types 
@@ -796,12 +796,22 @@ namespace Types
       <xsl:with-param name="resolution" select="$resolution"/>
     </xsl:call-template>  
   </xsl:variable>
-  <xsl:variable name="abstract">
-    <xsl:call-template name="T_get_abstract_from_resolution_complexTypeElement">
+  <xsl:variable name="isComplexTypeAbstract">
+    <xsl:call-template name="T_get_abstract_from_resolution_complexType">
       <xsl:with-param name="resolution" select="$resolution"/>
     </xsl:call-template>  
   </xsl:variable>
-
+  <xsl:variable name="nillable">
+    <xsl:call-template name="T_get_nillable_from_resolution_element">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>  
+  </xsl:variable>
+  <xsl:variable name="fixed">
+    <xsl:choose>
+      <xsl:when test="../*[local-name()='element' and @fixed]"><xsl:value-of select="../*[local-name()='element']/@fixed"/></xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
 
   //constructor
   <xsl:choose>
@@ -810,11 +820,20 @@ namespace Types
       XMLSchema::XmlElement&lt;anyType&gt;(args),
     </xsl:when>
     <xsl:when test="local-name()='complexType'">
-  //<xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(DOM::Node* ownerNode, DOM::ElementP ownerElem, XMLSchema::TDocument* ownerDoc, bool childBuildsTree):
-  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(AnyTypeCreateArgs args):
-  XMLSchema::Types::anyType(args),
+  MEMBER_FN <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(AnyTypeCreateArgs args):
+  XMLSchema::Types::anyType(AnyTypeCreateArgs(false, 
+                                              args.ownerNode, 
+                                              args.ownerElem, 
+                                              args.ownerDoc, 
+                                              args.childBuildsTree, 
+                                              (args.createFromElementAttr? <xsl:value-of select="$isComplexTypeAbstract"/> : args.abstract),
+                                              args.blockMask,
+                                              args.finalMask,
+                                              args.contentTypeVariety,
+                                              args.anyTypeUseCase,
+                                              args.suppressTypeAbstract
+                                             )),
     </xsl:when>
-    <xsl:otherwise></xsl:otherwise>
   </xsl:choose>
     _fsmElems(NULL),
     _fsmAttrs(NULL)
@@ -824,7 +843,6 @@ namespace Types
   </xsl:for-each>
   {
     this->contentTypeVariety(<xsl:value-of select="$contentTypeVarietyEnum"/>);
-    this->abstract(<xsl:value-of select="$abstract"/>);
     initFSM();
     <xsl:choose>
       <xsl:when test="local-name(..)!='element'">
@@ -838,7 +856,7 @@ namespace Types
       _fsm->fireRequiredEvents();
     }
   }
-
+    
   void <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/>initFSM()
   {
     XsdFsmBasePtr fsmsAttrs[] = {
@@ -946,13 +964,6 @@ namespace Types
   </xsl:choose>
     _fsmElems(NULL),
     _fsmAttrs(NULL)
-    <!-- FIXME: following for loop is unnecessary for simpleContent case -->
-    <!--
-  <xsl:for-each select="*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
-    <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
-    , _<xsl:value-of select="$mgName"/>(new <xsl:value-of select="$mgName"/>(this) )
-  </xsl:for-each>
-    -->
   {
     <!-- specific to restriction case -->  
     <xsl:if test="*[local-name()='simpleContent']/*[local-name()='restriction']">
@@ -1074,10 +1085,21 @@ namespace Types
       <xsl:with-param name="resolution" select="$resolution"/>
     </xsl:call-template>  
   </xsl:variable>
-  <xsl:variable name="abstract">
-    <xsl:call-template name="T_get_abstract_from_resolution_complexTypeElement">
+  <xsl:variable name="isComplexTypeAbstract">
+    <xsl:call-template name="T_get_abstract_from_resolution_complexType">
       <xsl:with-param name="resolution" select="$resolution"/>
     </xsl:call-template>  
+  </xsl:variable>
+  <xsl:variable name="nillable">
+    <xsl:call-template name="T_get_nillable_from_resolution_element">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>  
+  </xsl:variable>
+  <xsl:variable name="fixed">
+    <xsl:choose>
+      <xsl:when test="../*[local-name()='element' and @fixed]"><xsl:value-of select="../*[local-name()='element']/@fixed"/></xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
   </xsl:variable>
 
   //constructor
@@ -1090,10 +1112,32 @@ namespace Types
   <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(AnyTypeCreateArgs args):
       <xsl:choose>
         <xsl:when test="$isBaseAnyType='true'">
-      <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(args),
+      XMLSchema::Types::anyType(AnyTypeCreateArgs(false, 
+                                              args.ownerNode, 
+                                              args.ownerElem, 
+                                              args.ownerDoc, 
+                                              false,
+                                              (args.createFromElementAttr? <xsl:value-of select="$isComplexTypeAbstract"/> : args.abstract),
+                                              args.blockMask,
+                                              args.finalMask,
+                                              args.contentTypeVariety,
+                                              args.anyTypeUseCase,
+                                              args.suppressTypeAbstract
+                                             )),
         </xsl:when>
         <xsl:otherwise>
-      <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(AnyTypeCreateArgs(args.ownerNode, args.ownerElem, args.ownerDoc, true)),
+      <xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>(AnyTypeCreateArgs(false, 
+                                              args.ownerNode, 
+                                              args.ownerElem, 
+                                              args.ownerDoc, 
+                                              true,
+                                              (args.createFromElementAttr ? <xsl:value-of select="$isComplexTypeAbstract"/> : args.abstract),
+                                              args.blockMask,
+                                              args.finalMask,
+                                              args.contentTypeVariety,
+                                              args.anyTypeUseCase,
+                                              args.suppressTypeAbstract
+                                             )),
         </xsl:otherwise>
       </xsl:choose>
     </xsl:when>
@@ -1107,7 +1151,6 @@ namespace Types
   </xsl:for-each>
   {
     this->contentTypeVariety(<xsl:value-of select="$contentTypeVarietyEnum"/>);
-    this->abstract(<xsl:value-of select="$abstract"/>);
     initFSM();
 
     <xsl:choose>
@@ -1549,11 +1592,6 @@ namespace Types
           </xsl:if>
         </xsl:if>
 
-
-
-
-
-
       </xsl:if>
     
       <xsl:if test="$maxOccurence=1 and $minOccurence=0">
@@ -1659,16 +1697,30 @@ namespace Types
       <xsl:with-param name="resolution" select="$resolution"/>
     </xsl:call-template>
   </xsl:variable>
+  <xsl:variable name="fixedBool">
+    <xsl:choose>
+      <xsl:when test="@fixed">true</xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
 
-  MEMBER_FN <xsl:value-of select="$cppTypeSmartPtrShort_nsLevel1"/><xsl:text> </xsl:text><xsl:value-of select="$cppNSDerefLevel1Onwards"/>create_<xsl:value-of select="$cppNameFunction"/>(FsmCbOptions options)
+  MEMBER_FN <xsl:value-of select="$cppTypeSmartPtrShort_nsLevel1"/><xsl:text> </xsl:text><xsl:value-of select="$cppNSDerefLevel1Onwards"/>create_<xsl:value-of select="$cppNameFunction"/>(FsmCbOptions&amp; options)
   {
     static DOMStringPtr myName = new DOMString("<xsl:value-of select="$elemAttrName"/>");
     static DOMStringPtr myNsUri = <xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>;
     <xsl:choose>
-      
       <xsl:when test="local-name()='element'">
+        <xsl:variable name="abstract">
+          <xsl:call-template name="T_get_abstract_from_resolution_element">
+            <xsl:with-param name="resolution" select="$resolution"/>
+          </xsl:call-template>  
+        </xsl:variable>
+        <xsl:variable name="nillable">
+          <xsl:call-template name="T_get_nillable_from_resolution_element">
+            <xsl:with-param name="resolution" select="$resolution"/>
+          </xsl:call-template>  
+        </xsl:variable>
         <xsl:choose> 
-          
           <xsl:when test="@type">
             <xsl:variable name="actualTypeLocalPart"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="@type"/></xsl:call-template></xsl:variable>
             <xsl:variable name="actualTypeNsUri"><xsl:call-template name="T_get_type_nsUri_ElementAttr"/></xsl:variable>
@@ -1678,17 +1730,15 @@ namespace Types
                 <xsl:with-param name="typeQName" select="@type"/>
               </xsl:call-template>  
             </xsl:variable>
-    XSD::StructCreateNodeThroughFsm t( myName, myNsUri, NULL, <xsl:value-of select="$refParentNode"/>, <xsl:value-of select="$refDocument"/>, _fsm, options, "<xsl:value-of select="$actualTypeNsUri"/>", "<xsl:value-of select="$actualTypeLocalPart"/>");
+    XSD::StructCreateElementThroughFsm t( myName, myNsUri, NULL, <xsl:value-of select="$refParentNode"/>, <xsl:value-of select="$refDocument"/>, _fsm, options, <xsl:value-of select="$abstract"/>, <xsl:value-of select="$nillable"/>, <xsl:value-of select="$fixedBool"/>, "<xsl:value-of select="$actualTypeNsUri"/>", "<xsl:value-of select="$actualTypeLocalPart"/>");
     <xsl:value-of select="$cppTypePtrShort_nsLevel1"/> node = XSD::createElementTmpl&lt;<xsl:value-of select="$cppNameFunction"/>, <xsl:value-of select="$actualTypeNsUriCPP"/>::<xsl:value-of select="$actualTypeLocalPartCPP"/>*&gt;(t);
           </xsl:when>
-
           <xsl:otherwise>
-    XSD::StructCreateNodeThroughFsm t( myName, myNsUri, NULL, <xsl:value-of select="$refParentNode"/>, <xsl:value-of select="$refDocument"/>, _fsm, options);
+    XSD::StructCreateElementThroughFsm t( myName, myNsUri, NULL, <xsl:value-of select="$refParentNode"/>, <xsl:value-of select="$refDocument"/>, _fsm, options, <xsl:value-of select="$abstract"/>, <xsl:value-of select="$nillable"/>, <xsl:value-of select="$fixedBool"/>);
     XMARKER <xsl:value-of select="$cppTypePtrShort_nsLevel1"/> node = XSD::createElementTmpl&lt;<xsl:value-of select="$cppNameFunction"/>, void*&gt;(t);
           </xsl:otherwise>
         </xsl:choose> 
       </xsl:when>
-      
       <xsl:when test="local-name()='attribute'">
     XSD::StructCreateAttrThroughFsm t( myName, myNsUri, NULL, this->ownerElement(), <xsl:value-of select="$refDocument"/>, _fsm, options);
     XMARKER <xsl:value-of select="$cppTypePtrShort_nsLevel1"/> node = XSD::createAttributeTmpl&lt;<xsl:value-of select="$cppNameFunction"/>&gt;(t);
@@ -1700,11 +1750,9 @@ namespace Types
     node->stringValue("<xsl:value-of select="@default"/>");    
       </xsl:when>
       <xsl:when test="@fixed">
-    node->stringValue("<xsl:value-of select="@fixed"/>");    
-    node->fixed(true);
+    node->fixedValue("<xsl:value-of select="@fixed"/>");    
       </xsl:when>
     </xsl:choose>
-
     <xsl:choose>
       <xsl:when test="$maxOccurGT1Node='true' or $isUnderSingularMgNesting='false'">
     XMARKER <xsl:value-of select="$cppNameDeclPlural"/>.push_back(node);
@@ -1714,91 +1762,6 @@ namespace Types
       </xsl:when>
     </xsl:choose>
     return node;
-<!--    
-    if(<xsl:value-of select="$refDocument"/>->buildTree() || !_fsm->fsmCreatedNode())
-    {
-      DOM::Node* prevSibl = NULL;
-      DOM::Node* nextSibl = NULL;
-      if( !<xsl:value-of select="$refDocument"/>->buildingFromInputStream()) 
-      {
-        if(_fsm->prevSiblingNodeRunTime() ) {
-          prevSibl = const_cast&lt;Node *&gt;(_fsm->prevSiblingNodeRunTime());
-        }
-        if(_fsm->nextSiblingNodeRunTime() ) {
-          nextSibl = const_cast&lt;Node *&gt;(_fsm->nextSiblingNodeRunTime());
-        }
-      }
-      <xsl:if test="local-name()='element'">
-      <xsl:value-of select="$cppTypePtrShort_nsLevel1"/> node = new <xsl:value-of select="$cppTypeShort"/>(myName, myNsUri, NULL, <xsl:value-of select="$refDocument"/>, <xsl:value-of select="$refParentNode"/>, prevSibl, nextSibl);
-        <xsl:if test="@type">
-          <xsl:variable name="cppNS">
-            <xsl:call-template name="T_get_cppNSDeref_for_QName">
-              <xsl:with-param name="typeQName" select="@type"/>
-            </xsl:call-template>  
-          </xsl:variable>
-          <xsl:variable name="cppType">
-            <xsl:call-template name="T_gen_cppType_localPart_ElementAttr"/>
-          </xsl:variable>
-          <xsl:variable name="typeLocalPart"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="@type"/></xsl:call-template></xsl:variable>
-          <xsl:variable name="typeNsUri"><xsl:call-template name="T_get_type_nsUri_ElementAttr"/></xsl:variable>
-      if(options.xsiType.length()>0)
-      {
-        DOMString typeNsUri="", typeName="";
-        vector&lt;XPlus::UString&gt; tokens;
-        options.xsiType.tokenize(':', tokens);
-        poco_assert(tokens.size()&lt;=2);
-        if(tokens.size()==2) {
-          typeNsUri = <xsl:value-of select="$refDocument"/>->getNsUriForNsPrefixExplicit(tokens[0]);
-          typeName = tokens[1];
-        }
-        else {
-          typeName = tokens[0];
-        }
-        XMLSchema::Types::anyType* pOverriddenType = XSD::TypeDefinitionFactory::getTypeForQName(typeName, typeNsUri,
-                                                      node->ownerNode(),
-                                                      node->ownerElement(),
-                                                      node->ownerDocument());
-        <xsl:value-of select="$cppNS"/>::<xsl:value-of select="$cppType"/>* myTypeCast = dynamic_cast&lt;<xsl:value-of select="$cppNS"/>::<xsl:value-of select="$cppType"/>*&gt;(pOverriddenType);
-        if(!myTypeCast) {
-          ostringstream oss;
-          oss &lt;&lt; "  The value of the attribute {" &lt;&lt; XPlus::Namespaces::s_xsiUri &lt;&lt; "}type inside an element, in the instance document should resolve to a valid derivation of it's declared type in Schema document." &lt;&lt; endl 
-            &lt;&lt; "  Type {" &lt;&lt; typeNsUri  &lt;&lt; "}" &lt;&lt; typeName &lt;&lt; " is not a derivation of Type {<xsl:value-of select="$typeNsUri"/>}<xsl:value-of select="$typeLocalPart"/>";
-          throw XPlus::RuntimeException(oss.str());
-        }
-        node->replaceFsm(pOverriddenType->fsm());
-      }
-        </xsl:if>
-      </xsl:if>
-
-      <xsl:if test="local-name()='attribute'">
-      <xsl:value-of select="$cppTypePtrShort_nsLevel1"/> node = new <xsl:value-of select="$cppTypeShort"/>(myName, myNsUri, NULL, ownerElement(), ownerDocument());
-      </xsl:if>
-
-      <xsl:choose>
-        <xsl:when test="@default">
-      node->stringValue("<xsl:value-of select="@default"/>");    
-        </xsl:when>
-        <xsl:when test="@fixed">
-      node->stringValue("<xsl:value-of select="@fixed"/>");    
-      node->fixed(true);
-        </xsl:when>
-      </xsl:choose>
-
-      <xsl:choose>
-        <xsl:when test="$maxOccurGT1Node='true' or $isUnderSingularMgNesting='false'">
-      <xsl:value-of select="$cppNameDeclPlural"/>.push_back(node);
-        </xsl:when>
-        <xsl:when test="$maxOccurGT1Node='false' and $isUnderSingularMgNesting='true'">
-      <xsl:value-of select="$cppNameUseCase"/> = node;
-        </xsl:when>
-      </xsl:choose>
-      _fsm->fsmCreatedNode(node);
-      return node;
-    }
-    else {
-      return dynamic_cast&lt;<xsl:call-template name="T_get_cppTypePtrShort_cppNSLevel1Onwards_ElementAttr"/>&gt;(const_cast&lt;Node*&gt;(_fsm->fsmCreatedNode()));
-    }
--->    
   }
 
   <!-- following not applicable to Document:: -->

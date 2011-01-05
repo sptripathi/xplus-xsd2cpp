@@ -96,7 +96,7 @@ am_libxsdall_la_OBJECTS = Poco/ASCIIEncoding.lo Poco/AtomicCounter.lo \
 	DOM/DOMParser.lo DOM/Element.lo DOM/ExpatParser.lo \
 	DOM/NamedNodeMap.lo DOM/Node.lo DOM/Stream.lo DOM/TextNode.lo \
 	DOM/XmlDecl.lo XSD/Enums.lo XSD/FSM.lo XSD/UrTypes.lo \
-	XSD/UserOps.lo XSD/XSDFSM.lo XSD/xsdUtils.lo
+	XSD/XSDFSM.lo XSD/xsdUtils.lo
 libxsdall_la_OBJECTS = $(am_libxsdall_la_OBJECTS)
 libxsdall_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -361,7 +361,6 @@ libxsdall_la_SOURCES = \
   XSD/Enums.cpp \
   XSD/FSM.cpp \
   XSD/UrTypes.cpp \
-  XSD/UserOps.cpp \
   XSD/XSDFSM.cpp \
   XSD/xsdUtils.cpp
 
@@ -379,9 +378,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/Makefile
+	  $(AUTOMAKE) --gnu src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -554,7 +553,6 @@ XSD/$(DEPDIR)/$(am__dirstamp):
 XSD/Enums.lo: XSD/$(am__dirstamp) XSD/$(DEPDIR)/$(am__dirstamp)
 XSD/FSM.lo: XSD/$(am__dirstamp) XSD/$(DEPDIR)/$(am__dirstamp)
 XSD/UrTypes.lo: XSD/$(am__dirstamp) XSD/$(DEPDIR)/$(am__dirstamp)
-XSD/UserOps.lo: XSD/$(am__dirstamp) XSD/$(DEPDIR)/$(am__dirstamp)
 XSD/XSDFSM.lo: XSD/$(am__dirstamp) XSD/$(DEPDIR)/$(am__dirstamp)
 XSD/xsdUtils.lo: XSD/$(am__dirstamp) XSD/$(DEPDIR)/$(am__dirstamp)
 libxsdall.la: $(libxsdall_la_OBJECTS) $(libxsdall_la_DEPENDENCIES) 
@@ -737,8 +735,6 @@ mostlyclean-compile:
 	-rm -f XSD/FsmTest.$(OBJEXT)
 	-rm -f XSD/UrTypes.$(OBJEXT)
 	-rm -f XSD/UrTypes.lo
-	-rm -f XSD/UserOps.$(OBJEXT)
-	-rm -f XSD/UserOps.lo
 	-rm -f XSD/XSDFSM.$(OBJEXT)
 	-rm -f XSD/XSDFSM.lo
 	-rm -f XSD/xsdUtils.$(OBJEXT)
@@ -811,7 +807,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/FSM.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/FsmTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/UrTypes.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/UserOps.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/XSDFSM.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/xsdUtils.Plo@am__quote@
 

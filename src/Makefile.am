@@ -80,7 +80,6 @@ libxsdall_la_SOURCES = \
   XSD/Enums.cpp \
   XSD/FSM.cpp \
   XSD/UrTypes.cpp \
-  XSD/UserOps.cpp \
   XSD/XSDFSM.cpp \
   XSD/xsdUtils.cpp
 

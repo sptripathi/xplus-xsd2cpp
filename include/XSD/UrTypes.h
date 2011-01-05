@@ -78,63 +78,49 @@ namespace XMLSchema
   
     struct AnyTypeCreateArgs
     {
+      bool createFromElementAttr;
       Node* ownerNode;
       Element* ownerElem;
       TDocument* ownerDoc;
+      bool childBuildsTree; 
       bool abstract;
-      bool nillable;
-      bool fixed;
       eBlockOrFinalBits blockMask;
       eBlockOrFinalBits finalMask;
       eContentTypeVariety contentTypeVariety;
       eAnyTypeUseCase anyTypeUseCase;
-      bool childBuildsTree; //FIXME
+      bool         suppressTypeAbstract;
 
-      AnyTypeCreateArgs(Node* ownerNode_= NULL, 
+      AnyTypeCreateArgs(
+          bool createFromElementAttr_ = false,
+          Node* ownerNode_= NULL, 
           Element* ownerElem_= NULL, 
           TDocument* ownerDoc_= NULL, 
           bool childBuildsTree_=false,
           bool abstract_=false,
-          bool nillable_=false,
-          bool fixed_=false,
           eBlockOrFinalBits blockMask_= BOF_NONE,
           eBlockOrFinalBits finalMask_= BOF_NONE,
           eContentTypeVariety contentTypeVariety_ = CONTENT_TYPE_VARIETY_MIXED,
-          eAnyTypeUseCase anyTypeUseCase_ = ANY_TYPE
+          eAnyTypeUseCase anyTypeUseCase_ = ANY_TYPE,
+          bool suppressTypeAbstract_=false
           ):
+        createFromElementAttr(createFromElementAttr_),  
         ownerNode(ownerNode_),
         ownerElem(ownerElem_),
         ownerDoc(ownerDoc_),
         childBuildsTree(childBuildsTree_),
         abstract(abstract_),    
-        nillable(nillable_),    
-        fixed(fixed_),    
         blockMask(blockMask_),
         finalMask(finalMask_),
         contentTypeVariety(contentTypeVariety_),
-        anyTypeUseCase(anyTypeUseCase_)
+        anyTypeUseCase(anyTypeUseCase_),
+        suppressTypeAbstract(suppressTypeAbstract_)
       {
+        if(suppressTypeAbstract) {
+          abstract = false;
+        }
       }
     };
 
-/*
-    struct SimpleTypeCreateArgs : public AnyTypeCreateArgs
-    {
-      SimpleTypeCreateArgs( 
-          Node* ownerNode_      = NULL, 
-          Element* ownerElem_   = NULL, 
-          TDocument* ownerDoc_  = NULL
-          ):
-        AnyTypeCreateArgs(ownerNode_, ownerElem_, ownerDoc_)
-      {
-      }
-
-      AnyTypeCreateArgs toAnyTypeCreateArgs() {
-        return AnyTypeCreateArgs(ownerNode, ownerElem, ownerDoc);
-      }
-
-    };
-*/
 
     struct AttributeCreateArgs
     {
@@ -174,9 +160,10 @@ namespace XMLSchema
       Node*        previousSiblingElement;
       Node*        nextSiblingElement;
 
-      bool abstract;
-      bool nillable;
-      bool fixed;
+      bool         abstract;
+      bool         nillable;
+      bool         fixed;
+      bool         suppressTypeAbstract;
 
       ElementCreateArgs(
           DOMString*   name_,
@@ -199,7 +186,8 @@ namespace XMLSchema
         nextSiblingElement(nextSiblingElement_),
         abstract(abstract_),
         nillable(nillable_),
-        fixed(fixed_)
+        fixed(fixed_),
+        suppressTypeAbstract(false)
       {
       }
     };
@@ -236,30 +224,13 @@ namespace XMLSchema
         virtual void endDocument();
 
         virtual void stringValue(DOMString value); 
+        void fixedValue(DOMString value);
         virtual inline DOMString stringValue() {
           return _value;
         }
-
-        virtual bool fixed() {
-          return _fixed;
-        }
-        virtual void fixed(bool b) {
-          // TODO: verify that fixed can not be set for non-simpletype
-          _fixed = b;
-        }
-
-        bool nillable() {
-          return _nillable;
-        }
-        void nillable(bool b) {
-          _nillable = b;
-        }
         
-        bool abstract() {
+        virtual bool typeAbstract() {
           return _abstract;
-        }
-        void abstract(bool b) {
-          _abstract = b;
         }
 
         inline void contentTypeVariety(eContentTypeVariety variety) {
@@ -284,6 +255,7 @@ namespace XMLSchema
         void replaceTextAt(DOMString text, int pos) {
           _textNodes.at(pos)->setNodeValue(new DOMString(text));
         }
+
         // pos: position among all nodes inside anyComplexType
         void setTextAmongChildrenAt(DOMString text, int pos);
         void setTextEnd(DOMString text);
@@ -321,6 +293,7 @@ namespace XMLSchema
           return _fsm;
         }
         inline void replaceFsm(AnyTypeFSM* fsm) {
+          //_fsm = NULL;
           _fsm = fsm;
         }
 
@@ -336,12 +309,13 @@ namespace XMLSchema
         TextNode* addTextNodeValueAtPos(DOMString value, int pos);
         void checksOnSetValue(DOMString value);
         void checkFixed(DOMString value);
+        void checkContentType(DOMString value);
 
         DOM::Attribute* createDOMAttributeUnderCurrentElement(DOMString *attrName, DOMString *attrNsUri=NULL, DOMString *attrNsPrefix=NULL, DOMString *attrValue=NULL);
-        DOM::Attribute* createAttributeXsiType(FsmCbOptions options);
-        DOM::Attribute* createAttributeXsiNil(FsmCbOptions options);
-        DOM::Attribute* createAttributeXsiSchemaLocation(FsmCbOptions options);
-        DOM::Attribute* createAttributeXsiNoNamespaceSchemaLocation(FsmCbOptions options);
+        DOM::Attribute* createAttributeXsiType(FsmCbOptions& options);
+        DOM::Attribute* createAttributeXsiNil(FsmCbOptions& options);
+        DOM::Attribute* createAttributeXsiSchemaLocation(FsmCbOptions& options);
+        DOM::Attribute* createAttributeXsiNoNamespaceSchemaLocation(FsmCbOptions& options);
 
         //
         //                 MEMBER VARIABLES 
@@ -350,8 +324,6 @@ namespace XMLSchema
         eAnyTypeUseCase                 _anyTypeUseCase;
         eContentTypeVariety             _contentTypeVariety;
         bool                            _abstract;
-        bool                            _fixed;
-        bool                            _nillable;
         int                             _blockMask;
         int                             _finalMask;
         
@@ -549,75 +521,6 @@ namespace XMLSchema
         unsigned int         _appliedCFacets; 
 
     };
-
-
-#if 0
-    //                                                      //
-    //                     anyComplexType                   // 
-    //                                                      //
-    class anyComplexType : public anyType
-    {
-      public:
-        anyComplexType(
-            NodeP ownerNode= NULL,
-            ElementP ownerElem= NULL,
-            TDocumentP ownerDoc= NULL,
-            bool mixedContent = false
-            );
-
-        virtual ~anyComplexType() {}
-
-        inline bool mixedContent() {
-          return _mixedContent; 
-        }
-        inline void mixedContent(bool b) {
-          _mixedContent = b; 
-        }
-
-        inline unsigned int countText() {
-          return _textNodes.size();
-        }
-
-        inline DOMString getTextAt(unsigned int pos) {
-          return *_textNodes.at(pos)->getData();
-        }
-
-        // edit existing-text at a position( position among text
-        // inside anyComplexType)
-        void replaceTextAt(DOMString text, unsigned int pos) {
-          _textNodes.at(pos)->setNodeValue(new DOMString(text));
-        }
-        
-        // pos: position among all nodes inside anyComplexType
-        void setTextAmongChildrenAt(DOMString text, unsigned int pos);
-
-        void setTextEnd(DOMString text);
-        void setTextAfterNode(DOMString text, DOM::Node *refNode);
-
-        //debug
-        void printTextNodes() 
-        {
-          List<TextNode *>::iterator it = _textNodes.begin();
-          unsigned int i=0;
-          for(; it != _textNodes.end(); ++it, ++i) {
-            cout << "text[" << i << "] = [" << *((*it)->getData()) << "]" << endl;
-          }
-        }
-
-      protected:
-        // anyType interface functions
-        virtual TextNode* createTextNode(DOMString* data);
-        virtual TextNode* setTextNodeValue(DOMString value); 
-    
-      private:  
-        void indexAddedTextNode(TextNode *txtNode);
-        TextNode* addTextNodeValueAtPos(DOMString value, unsigned int pos);
-
-        List<TextNode* >    _textNodes; 
-
-        bool                _mixedContent;
-    };
-#endif
 
   } // end namespace Types 
 } // end namespace XMLSchema

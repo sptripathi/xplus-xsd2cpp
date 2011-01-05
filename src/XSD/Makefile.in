@@ -72,7 +72,7 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libxsd_la_LIBADD =
 am_libxsd_la_OBJECTS = Enums.lo FSM.lo XSDFSM.lo UrTypes.lo \
-	xsdUtils.lo UserOps.lo
+	xsdUtils.lo
 nodist_libxsd_la_OBJECTS =
 libxsd_la_OBJECTS = $(am_libxsd_la_OBJECTS) \
 	$(nodist_libxsd_la_OBJECTS)
@@ -226,7 +226,6 @@ libxsd_la_SOURCES = \
   XSDFSM.cpp \
   UrTypes.cpp \
   xsdUtils.cpp \
-  UserOps.cpp \
   $(top_srcdir)/include/XSD/Enums.h \
   $(top_srcdir)/include/XSD/Facets.h \
   $(top_srcdir)/include/XSD/FSM.h \
@@ -254,9 +253,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/XSD/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/XSD/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/XSD/Makefile
+	  $(AUTOMAKE) --gnu src/XSD/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -318,7 +317,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Enums.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FSM.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UrTypes.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UserOps.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XSDFSM.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xsdUtils.Plo@am__quote@
 

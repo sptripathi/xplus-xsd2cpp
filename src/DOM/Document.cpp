@@ -30,6 +30,7 @@ namespace DOM
   Document::Document( DocumentType*       doctype,
                       DOMImplementation*  implementation
                     ):
+    XPlusObject("Document"),                
     Node(new DOMString("#document"), Node::DOCUMENT_NODE, NULL, NULL, NULL, NULL, NULL),
     _doctype(doctype),
     _implementation(implementation),

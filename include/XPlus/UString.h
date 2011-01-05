@@ -59,16 +59,17 @@ namespace XPlus
 #if defined(XPLUS_UNICODE_WCHAR_T)
   class UString: public std::wstring 
 #else
-  class UString: public std::string 
+  class UString: public std::string, public XPlusObject 
 #endif
   {
 
     private:
-      int _refCnt;
+    //  int _refCnt;
 
     public:
       UString():
-        _refCnt(0)
+      XPlusObject("UString")
+      //  _refCnt(0)
     {
     }
       
@@ -81,6 +82,7 @@ namespace XPlus
       UString(const char *buffer, unsigned int len);
       UString(const string buffer);
 
+#if 0
       // AutoPtr requires:
       inline void printRefCnt() {
         cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : printRefCnt" << endl;
@@ -104,7 +106,7 @@ namespace XPlus
           delete this;
         }
       }
-
+#endif
       string str() const;
       void tokenize(UChar delim, vector<XPlus::UString>& tokens);
       unsigned int countCodePoints();

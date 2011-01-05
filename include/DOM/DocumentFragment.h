@@ -27,6 +27,10 @@ namespace DOM
   class DocumentFragment : public XPlus::XPlusObject
   {
     public:
+      DocumentFragment():
+        XPlusObject("DocumentFragment")
+      {
+      }
       virtual ~DocumentFragment() {}
 
   };

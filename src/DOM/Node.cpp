@@ -39,6 +39,7 @@ namespace DOM
       Node* prevSibling,
       Node* nextSibling
       ):
+    XPlusObject("Node"),  
     _nodeName(nodeName),
     _nodeValue(nodeValue),
     _nodeType(nodeType),
@@ -48,8 +49,10 @@ namespace DOM
     _ownerDocument(ownerDocument),
     _nsUri(nsURI),
     _nsPrefix(nsPrefix),
-    _depth(0)
+    _depth(0),
+    _removedFromParentList(false)
   { 
+    //cout << "constructing Node: nodeName:" << *_nodeName << " ptr=" << this << endl;
     if( 
         (_nodeType == ELEMENT_NODE) ||
         (_nodeType == ATTRIBUTE_NODE)
@@ -136,7 +139,15 @@ namespace DOM
     }
   }
 
-  Node::~Node() {}
+  Node::~Node()
+  {
+    //cout << "destructing Node: nodeName:" << *_nodeName << " ptr=" << this << endl;
+    //cout << "    ";  this->printRefCnt();
+    if(this->getParentNode() && !_removedFromParentList) {
+      //this->dontFree(true);
+      this->getParentNode()->removeChild(this);  
+    }
+  }
 
   Document* Node::getOwnerDocument() {
     return _ownerDocument;
@@ -174,8 +185,8 @@ namespace DOM
     return _childNodes.replaceNode(newChild, oldChild);
   }
 
-  Node* Node::removeChild(Node* oldChild) {
-    return _childNodes.removeNode(oldChild);
+  void Node::removeChild(Node* oldChild) {
+    _childNodes.removeNode(oldChild);
   }
 
   Node* Node::appendChild(Node* newChild) {

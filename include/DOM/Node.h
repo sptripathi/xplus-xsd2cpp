@@ -179,7 +179,7 @@ protected:
   DOMStringPtr              _nodeValue;
   const NodeType            _nodeType;
 
-  NodeP                   _parentNode;
+  Node*                   _parentNode;
   NodeList                _childNodes;
   //NodePtr                   _firstChild;
   //NodePtr                   _lastChild;
@@ -197,6 +197,7 @@ protected:
 
   //impl needs
   int                       _depth;
+  bool                      _removedFromParentList;
   
 public:
 
@@ -231,7 +232,7 @@ public:
     return _nodeType;
   }
 
-  virtual inline NodeP getParentNode() const {
+  virtual inline Node* getParentNode() const {
     return _parentNode;
   }
 
@@ -306,7 +307,7 @@ public:
   virtual Node* insertBefore(Node* newChild, Node* refChild);
   virtual Node* insertBetween(Node* newChild, Node *prevChild, Node *nextChild);
   virtual Node* replaceChild(Node* newChild, Node* oldChild);
-  virtual Node* removeChild(Node* oldChild);
+  virtual void removeChild(Node* oldChild);
   virtual Node* appendChild(Node* newChild);
   unsigned int countPreviousSiblingsOfType(Node::NodeType nodeType);
 
@@ -339,7 +340,10 @@ public:
     return _depth;
   }
   inline void setDepth(int depth) {
-    _depth=depth;
+    _depth = depth;
+  }
+  inline void removedFromParentList(bool b) {
+    _removedFromParentList = b;
   }
 
   void registerNsPrefixNsUri();

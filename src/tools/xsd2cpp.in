@@ -150,17 +150,16 @@ gen_source_files()
     XSLTPROC_OPTIONS="--profile $XSLTPROC_OPTIONS"
   fi
   
-  #$XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD > $XPLUS_META_DIR/log 2>&1
-  #ret=$?
-  #$CAT $XPLUS_META_DIR/log | $GREP -v xplusmeta | $GREP -v xplus.schemaInfo
-  $XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD 2>&1 | $GREP -v "xplus.schemaInfo"
-  
-  #ret=$?
-  #if [ $ret -ne 0 ]; then
-  #  echo "failed to generate source... $ret"
-  #  cleanup_meta
-  #  exit $ret
-  #fi
+  #$XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD 2>&1 | $GREP -v "xplus.schemaInfo"
+  $XSLTPROC $XSLTPROC_OPTIONS $XSD2CPP_XSL_PATH $ABSXSD > $XPLUS_META_DIR/log 2>&1
+  ret=$?
+  $CAT $XPLUS_META_DIR/log | $GREP -v xplus.schemaInfo
+  if [ $ret -ne 0 ]; then
+    echo
+    echo "  *** failed to generate source... $ret"
+    cleanup_meta
+    exit $ret
+  fi
 
   #beautify
   for file in `$FIND include/ -name "*.h"`
@@ -250,7 +249,7 @@ print_usage()
 
 print_version()
 {
-  $CAT $DATA_DIR/version
+  $CAT $DATA_DIR/resources/version
 }
 
 

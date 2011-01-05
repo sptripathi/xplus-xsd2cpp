@@ -26,6 +26,7 @@ namespace DOM
       DOMString* nodeValue,
       Document* ownerDocument,
       Node* parentNode):
+    XPlusObject("Comment"),  
     CharacterData( new DOMString("#comment"), Node::COMMENT_NODE, nodeValue, ownerDocument, parentNode)
   {
   }

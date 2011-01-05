@@ -93,7 +93,7 @@ namespace XMLSchema
 
       XmlAttribute(AttributeCreateArgs args):
         DOM::Attribute(args.name, args.strValue, args.nsUri, args.nsPrefix, args.ownerElem, args.ownerDoc),
-        T(AnyTypeCreateArgs(this, args.ownerElem, args.ownerDoc))
+        T(AnyTypeCreateArgs(true, this, args.ownerElem, args.ownerDoc))
       { 
         if(args.strValue) {
           T::stringValue(*args.strValue);
@@ -175,19 +175,29 @@ namespace XMLSchema
   {
     protected:
 
+      bool   _abstract;
+      bool   _nillable;
+      bool   _fixed;
+
     public:
 
-      //NB: 
+      // constructor 
+      // NB: 
       // previousSiblingElement : is previousSibling to this TElement
-      TElement(ElementCreateArgs args):
-        DOM::Element(args.name, args.nsUri, args.nsPrefix, args.ownerDoc, args.parentNode, args.previousSiblingElement, args.nextSiblingElement)
+    TElement(ElementCreateArgs args):
+        DOM::Element(args.name, args.nsUri, args.nsPrefix, args.ownerDoc, args.parentNode, args.previousSiblingElement, args.nextSiblingElement),
+        _abstract(args.abstract),
+        _nillable(args.nillable),
+        _fixed(args.fixed)
     {
-#if 0
-      // child is likely to override _fsm allocation
-        XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(Particle(nsUri, *tagName, 1, 1), XsdFsmBase::ELEMENT_END);
-        XsdFsmBasePtr ptrFsms[] = { elemEndFsm, NULL };
-        _fsm = new XsdFsmOfFSMs(ptrFsms, XsdFsmOfFSMs::SEQUENCE);
-#endif
+      if(abstract())
+      {
+        ValidationException ex("The element can not be used in the instance document because it is declared abstract in the schema document. A member of this element's substitution group must appear in the instance document");
+        if(this->getParentNode()) {
+          this->getParentNode()->removeChild(this);  
+        }
+        throw ex;
+      }
     }
 
     virtual ~TElement() {}  
@@ -205,11 +215,20 @@ namespace XMLSchema
     virtual void endDocument() =0;
       
     virtual TextNodeP createTextNode(DOMString* data) =0;
+
+    inline bool abstract() {
+      return _abstract;
+    }
+    inline bool nillable() {
+      return _nillable;
+    }
+    inline bool fixed() {
+      return _fixed;
+    }
   };
   
 
-  template <class T>
-    class XmlElement :  public TElement, public T
+  template <class T> class XmlElement :  public TElement, public T
   {
     protected:
 
@@ -217,7 +236,10 @@ namespace XMLSchema
 
       XmlElement(ElementCreateArgs args):
           TElement(args),
-          T(AnyTypeCreateArgs(this, this, args.ownerDoc, args.abstract, args.nillable, args.fixed))
+          T(AnyTypeCreateArgs(true, this, this, args.ownerDoc, false, false, 
+                              Types::BOF_NONE, Types::BOF_NONE, Types::CONTENT_TYPE_VARIETY_MIXED, 
+                              Types::ANY_TYPE, args.suppressTypeAbstract)
+           )
     { 
     }
 

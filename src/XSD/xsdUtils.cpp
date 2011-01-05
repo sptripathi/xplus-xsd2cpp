@@ -71,6 +71,31 @@ namespace XMLSchema
     // Also should reach here only once for one input document.
     // So create the element and add attributes to it
     XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_START);
+    FsmCbOptions& cbOptions = event.cbOptions;
+    // set the xsi context to be passed to callback functions.
+    for(unsigned int i=0; i<attrVec.size(); i++)
+    {
+      if(!attrVec[i].nsUri() || (*attrVec[i].nsUri() != Namespaces::s_xsiUri) ) {
+        continue;
+      }
+      if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiTypeStr) && attrVec[i].value()) 
+      {
+        cbOptions.xsiType = *attrVec[i].value();
+      }
+      else if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiNilStr) && attrVec[i].value()) 
+      {
+        cbOptions.xsiNil = *attrVec[i].value();
+      }
+      else if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiSchemaLocationStr) && attrVec[i].value()) 
+      {
+        cbOptions.xsiSchemaLocation = *attrVec[i].value();
+      }
+      else if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiNoNamespaceSchemaLocationStr) && attrVec[i].value()) 
+      {
+        cbOptions.xsiNoNamespaceSchemaLocation = *attrVec[i].value();
+      }
+    }
+
     if(_fsm && _fsm->processEventThrow(event))
     {
       if(_fsm->fsmCreatedNode()) 
@@ -99,8 +124,6 @@ namespace XMLSchema
                                     const_cast<DOMString *>(attrInfo.value()) );
     }
     
-    //TODO: create attributes
-
     return _currentElement;
   }
 
