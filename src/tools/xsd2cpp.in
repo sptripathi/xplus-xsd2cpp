@@ -170,7 +170,7 @@ gen_source_files()
          $file > $tmpFile
     $MV $tmpFile $file
   done
-  for file in `$FIND $OUTDIR/src/ -name "*.cpp"`
+  for file in `$FIND src/ -name "*.cpp"`
   do
     tmpFile=/tmp/`$BASENAME $file`.tmp
     $SED -e 's/MEMBER_VAR //g' -e 's/MEMBER_FN //g' \

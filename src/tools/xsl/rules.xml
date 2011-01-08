@@ -163,15 +163,15 @@
     </rule>
     
     <rule id="ElementDeclarationRepresentationOK.unmapped.3">
-    The allowed values for abstract attribute on Element Declaration, are {restriction, extension}
+    The allowed values for final attribute on Element Declaration, are {restriction, extension, #all}
     </rule>
     
     <rule id="ElementDeclarationRepresentationOK.unmapped.4">
-    The allowed values for abstract attribute on Element Declaration, are {restriction, extension}
+    The allowed values for block attribute on Element Declaration, are {restriction, extension, substitution, #all}
     </rule>
     
     <rule id="ElementDeclarationRepresentationOK.unmapped.5">
-    The allowed values for abstract attribute on Element Declaration, are {qualified, unqualified}
+    The allowed values for form attribute on Element Declaration, are {qualified, unqualified}
     </rule>
 
   </ruleGroup>

@@ -19,6 +19,7 @@
 
 
 #include "XPlus/TextEncoding.h"
+#include <strings.h>
 
 namespace XPlus
 {

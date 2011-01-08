@@ -94,9 +94,6 @@ xmlns:exsl="http://exslt.org/common"
     </xsl:variable>
 
     <xsl:if test="$isSimpleTypeBase='true' and $derivationMethod != 'extension'">
-      <xsl:message>
-      <xsl:value-of select="$derivationMethod"/>
-      </xsl:message>
       <xsl:call-template name="T_rule_violated">
         <xsl:with-param name="ruleId" select="'ComplexTypeDefinition.PropertiesCorrect.2'"/>
       </xsl:call-template>
@@ -223,7 +220,7 @@ xmlns:exsl="http://exslt.org/common"
     <xsl:variable name="pred.1.4">
       <xsl:choose>
         <xsl:when test="$pred.1.4.1='true' or $pred.1.4.2='true' or $pred.1.4.3='true'">true</xsl:when>
-        <xsl:otherwise><xsl:value-of select="concat('1.4=(', $pred.1.4.1, ',', $pred.1.4.2, ',', $pred.1.4.3, ')' )"/></xsl:otherwise>
+        <xsl:otherwise>1.4</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
     
@@ -761,13 +758,13 @@ In addition to the conditions imposed on <complexType> element information items
     </xsl:call-template>
   </xsl:if>
 
-  <xsl:if test="$node/@final and not($node/@final='extension' or $node/@final='restriction')">
+  <xsl:if test="$node/@final and not($node/@final='extension' or $node/@final='restriction' or $node/@final='#all')">
     <xsl:call-template name="T_rule_violated">
       <xsl:with-param name="ruleId" select="'ElementDeclarationRepresentationOK.unmapped.3'"/>
     </xsl:call-template>
   </xsl:if>
 
-  <xsl:if test="$node/@block and not($node/@block='extension' or $node/@block='restriction')">
+  <xsl:if test="$node/@block and not($node/@block='extension' or $node/@block='restriction' or $node/@block='substitution' or $node/@block='#all')">
     <xsl:call-template name="T_rule_violated">
       <xsl:with-param name="ruleId" select="'ElementDeclarationRepresentationOK.unmapped.4'"/>
     </xsl:call-template>

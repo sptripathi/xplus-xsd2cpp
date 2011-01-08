@@ -83,5 +83,5 @@ libxsdall_la_SOURCES = \
   XSD/XSDFSM.cpp \
   XSD/xsdUtils.cpp
 
-libxsdall_la_LDFLAGS = -fvisibility=default -lpthread
+libxsdall_la_LDFLAGS = -lpthread -lexpat
 
