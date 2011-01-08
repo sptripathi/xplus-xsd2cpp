@@ -1,0 +1,16 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+
+  <xsd:complexType name="ComplexTypeSCRestn">
+    <xsd:simpleContent>
+      <xsd:restriction base="xsd:int">
+        <xsd:minInclusive value="1"/>
+        <xsd:maxInclusive value="99"/>
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+      </xsd:restriction>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:element name="root" type="ComplexTypeSCRestn"/> 
+
+</xsd:schema>

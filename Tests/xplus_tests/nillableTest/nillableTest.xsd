@@ -1,0 +1,22 @@
+<xsd:schema 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  elementFormDefault="qualified"
+  >
+
+  <xsd:complexType name="SomeType">
+    <xsd:sequence>
+      <xsd:element name="item" type="xsd:string" minOccurs="3" maxOccurs="3"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:string" default="102"/>
+  </xsd:complexType>  
+
+  <xsd:element name="root">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="items" type="SomeType" nillable="true"/>
+      </xsd:sequence>
+    </xsd:complexType>  
+  </xsd:element>
+
+</xsd:schema>
+

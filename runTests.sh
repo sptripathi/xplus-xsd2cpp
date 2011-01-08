@@ -46,6 +46,10 @@ XPLUS_TESTS_DIRS="
                   Tests/xplus_tests/ccExt
                   Tests/xplus_tests/ctAnyType
                   Tests/xplus_tests/ctAnyTypeRest
+                  Tests/xplus_tests/xsiTest
+                  Tests/xplus_tests/xsiTest2
+                  Tests/xplus_tests/xsiTest3
+                  Tests/xplus_tests/nillableTest
                  " 
 
 XPLUS_NEGTESTS_DIRS="
@@ -57,7 +61,7 @@ XPLUS_NEGTESTS_DIRS="
                   Tests/xplus_neg_tests/ccExt2
                     "
 
-EX_DIRS=
+#EX_DIRS=
 #W3C_TESTS_DIRS=
 #XPLUS_TESTS_DIRS=
 
@@ -134,7 +138,7 @@ cleanup_dir()
 {
   log_clean_dir
   change_dir_abort
-  find . | grep -v svn | grep -v README | grep -v xsd | grep -v xml | grep -v "main.cpp"  | xargs rm -rf 2>/dev/null 
+  find . | grep -v svn | grep -v README | grep -v xsd | grep -v xml | grep -v testme | grep -v "main.cpp"  | xargs rm -rf 2>/dev/null 
   rm -f *.template *.bak t.xml* sample.xml *.save  
   cd - > /dev/null 2>&1
   echo "   [ CLEANED ]"  
@@ -193,20 +197,24 @@ test_valid()
     return
   fi
 
+  validXmlFiles=`ls valid*.xml` 2>/dev/null
   # check valid.xml exists
-  if [ ! -f valid.xml ]; then
-    echo "  valid.xml doesn't exist"
+  if [ -z "$validXmlFiles" ]; then
+    echo "  No valid xml file(s) available to validate against"
     fail_test
     return
   fi
 
   # validate valid.xml
-  ./build/bin/$run -v valid.xml >> tests.log 2>&1
-  if [ $? -ne 0 ]; then
-    echo "   failed to validate valid.xml"
-    fail_test
-    return
-  fi
+  for xmlValid in $validXmlFiles
+  do
+    ./build/bin/$run -v $xmlValid >> tests.log 2>&1
+    if [ $? -ne 0 ]; then
+      echo "   failed to validate valid xml file: $xmlValid"
+      fail_test
+      return
+    fi
+  done
 
   if [ ! -z  "$XMLLINT" ]; then
     $XMLLINT --noout --schema $INPUT_XSD valid.xml > /dev/null 2>&1 
@@ -307,29 +315,44 @@ test_roundtrip()
 
 neg_test_dir()
 {
-  echo "no implementation of negative tests..."
+  echo
+  cd $dir 
+  log_tests_dir
+
+  xsd2cpp $INPUT_XSD . >> tests.log 2>&1 
+  if [ $? -eq 0 ]; then
+    echo "   failed because xsd2cpp succeeded"
+    fail_test
+    return
+  fi
 }
 
 # several testcases(8) are run in each test directory
 # this functions does all the tests to be done, inside a particular test directory
 test_dir()
 {
-  TEST_FAILED=false
-
   echo
   cd $dir 
   log_tests_dir
-  
   > tests.log
-  get_INPUT_XSD
-  echo "   input: $INPUT_XSD"
-  run=`basename $INPUT_XSD | cut -d'.' -f1`run
 
-  test_build
-  test_valid
-  test_sample
-  test_write
-  test_roundtrip
+  if [ -f testme ]; then
+    echo "     ->running custom tests"
+    ./testme >> tests.log 2>&1
+    if [ $? -ne 0 ]; then
+      fail_test  
+    fi
+  else  
+    get_INPUT_XSD
+    echo "   input: $INPUT_XSD"
+    run=`basename $INPUT_XSD | cut -d'.' -f1`run
+    TEST_FAILED=false
+    test_build
+    test_valid
+    test_sample
+    test_write
+    test_roundtrip
+  fi
 
   pass_test
   cd - >/dev/null 2>&1
@@ -417,15 +440,15 @@ do
   case "$i" in
     -h)
       print_usage
-      shift;;
+      shift;break;;
     -c)
       cleanup
-      shift;;
+      shift;break;;
     -t)
       cleanup
       echo;echo
       test_all
-      shift;;
+      shift;break;;
     --)
       print_usage
       shift; break;;

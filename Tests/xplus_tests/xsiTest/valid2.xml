@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+  <items id="102" xsi:type="SomeType2">
+    <item>item 1</item>
+    <item>item 2</item>
+    <item>item 3</item>
+    <item2>123</item2>
+  </items>
+</root>
+

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# BUILD
+xsd2cpp xsiTest2.xsd . && ./autogen.sh &&  make install
+if [ $? -ne 0 ]; then
+  echo "   failed to build in dir: `pwd`"
+  exit 1
+fi
+
+# TEST
+run=./build/bin/xsiTest2run
+$run -v valid2.xml
+if [ $? -ne 0 ]; then
+  echo "   tests failed in dir: `pwd`"
+  exit 2  
+fi
+
