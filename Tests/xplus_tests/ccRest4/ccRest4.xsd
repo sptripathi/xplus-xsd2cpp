@@ -1,0 +1,22 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+
+  <xs:element name="depth">
+    <xs:complexType>
+     <xs:complexContent>
+      <xs:restriction base="xs:anyType">
+       <xs:sequence>
+        <xs:element name="size" type="xs:nonNegativeInteger"/>
+        <xs:element name="unit" type="xs:NMTOKEN"/>
+       </xs:sequence>
+      </xs:restriction>
+     </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+    <depth>
+     <size>25</size><unit>cm</unit>
+    </depth>
+  -->
+
+</xs:schema>
