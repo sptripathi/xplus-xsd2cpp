@@ -575,7 +575,7 @@ In addition to the conditions imposed on <complexType> element information items
     </xsl:call-template>
   </xsl:if>
 
-  <xsl:if test="$node/@fixed and $node/@use and $node/@use!='prohibited'">
+  <xsl:if test="$node/@fixed and $node/@use and $node/@use='prohibited'">
     <xsl:call-template name="T_rule_violated">
       <xsl:with-param name="ruleId" select="'AttributeDeclarationRepresentationOK.5'"/>
     </xsl:call-template>

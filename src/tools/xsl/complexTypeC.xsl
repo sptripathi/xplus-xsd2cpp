@@ -844,14 +844,8 @@ namespace Types
   {
     this->contentTypeVariety(<xsl:value-of select="$contentTypeVarietyEnum"/>);
     initFSM();
-    <xsl:choose>
-      <xsl:when test="local-name(..)!='element'">
-    if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree() &amp;&amp; !args.childBuildsTree)
-      </xsl:when>
-      <xsl:otherwise>
-    if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree())
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:choose><xsl:when test="local-name(..)!='element'">if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree() &amp;&amp; !args.childBuildsTree)</xsl:when>
+      <xsl:otherwise>if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree())</xsl:otherwise></xsl:choose>
     {
       _fsm->fireRequiredEvents();
     }
@@ -1037,15 +1031,6 @@ namespace Types
       </xsl:call-template>
     </xsl:variable>
     <xsl:variable name="isBaseAnyType"><xsl:call-template name="T_is_schema_anyType"><xsl:with-param name="typeStr" select="$baseQName"/></xsl:call-template></xsl:variable>
-    <!--
-    <xsl:variable name="baseTypeLocalPart">
-      <xsl:call-template name="T_get_localPart_of_QName">
-        <xsl:with-param name="qName" select="$baseQName"/>
-      </xsl:call-template>
-    </xsl:variable>
-
-    <xsl:variable name="baseComplexTypeNode" select="document($baseResolutionFoundInDoc)/*[local-name()='schema']/*[local-name()='complexType' and @name=$baseTypeLocalPart]"/>
-      -->
 
   <xsl:variable name="baseCppType">
     <xsl:call-template name="T_get_cppType_complexType_base"/>
@@ -1106,10 +1091,46 @@ namespace Types
   <xsl:choose>
     <xsl:when test="local-name(..)='element'">
   MEMBER_FN <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(ElementCreateArgs args):
-      XMLSchema::XmlElement&lt;<xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;(args),
+      <xsl:choose>
+        <xsl:when test="$isBaseAnyType='true'">
+      XMLSchema::XmlElement&lt;<xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;(
+                                              ElementCreateArgs 
+                                              ( args.name, 
+                                                args.nsUri, 
+                                                args.nsPrefix, 
+                                                args.ownerDoc,
+                                                args.parentNode,
+                                                args.previousSiblingElement,
+                                                args.nextSiblingElement,
+                                                args.abstract,
+                                                args.nillable,
+                                                args.fixed,
+                                                false
+                                              )                    
+                                            ),
+        </xsl:when>
+        <xsl:otherwise>
+      XMLSchema::XmlElement&lt;<xsl:value-of select="$baseCppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;(
+                                              ElementCreateArgs 
+                                              ( args.name, 
+                                                args.nsUri, 
+                                                args.nsPrefix, 
+                                                args.ownerDoc,
+                                                args.parentNode,
+                                                args.previousSiblingElement,
+                                                args.nextSiblingElement,
+                                                args.abstract,
+                                                args.nillable,
+                                                args.fixed,
+                                                true
+                                              )       
+                                            ),
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:when>
+      
     <xsl:when test="local-name()='complexType'">
-  <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(AnyTypeCreateArgs args):
+  MEMBER_FN <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/><xsl:value-of select="$schemaComponentName"/>(AnyTypeCreateArgs args):
       <xsl:choose>
         <xsl:when test="$isBaseAnyType='true'">
       XMLSchema::Types::anyType(AnyTypeCreateArgs(false, 
@@ -1153,13 +1174,8 @@ namespace Types
     this->contentTypeVariety(<xsl:value-of select="$contentTypeVarietyEnum"/>);
     initFSM();
 
-    <xsl:choose>
-      <xsl:when test="local-name(..)!='element'">
-    if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree() &amp;&amp; !args.childBuildsTree)
-      </xsl:when>
-      <xsl:otherwise>
-    if(ownerDoc &amp;&amp; ownerDoc->buildTree())
-      </xsl:otherwise>
+    <xsl:choose><xsl:when test="local-name(..)!='element'">if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree() &amp;&amp; !args.childBuildsTree)</xsl:when>
+      <xsl:otherwise>if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree())</xsl:otherwise>
     </xsl:choose>
     {
       _fsm->fireRequiredEvents();

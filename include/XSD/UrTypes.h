@@ -164,6 +164,7 @@ namespace XMLSchema
       bool         nillable;
       bool         fixed;
       bool         suppressTypeAbstract;
+      bool         childBuildsTree; 
 
       ElementCreateArgs(
           DOMString*   name_,
@@ -175,7 +176,8 @@ namespace XMLSchema
           Node*        nextSiblingElement_=NULL,
           bool abstract_=false,
           bool nillable_=false,
-          bool fixed_ = false
+          bool fixed_ = false,
+          bool childBuildsTree_=false
           ):
         name(name_),
         nsUri(nsUri_),
@@ -187,7 +189,8 @@ namespace XMLSchema
         abstract(abstract_),
         nillable(nillable_),
         fixed(fixed_),
-        suppressTypeAbstract(false)
+        suppressTypeAbstract(false),
+        childBuildsTree(childBuildsTree_)
       {
       }
     };

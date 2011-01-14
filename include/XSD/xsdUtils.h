@@ -236,7 +236,7 @@ namespace XMLSchema
 
       XmlElement(ElementCreateArgs args):
           TElement(args),
-          T(AnyTypeCreateArgs(true, this, this, args.ownerDoc, false, false, 
+          T(AnyTypeCreateArgs(true, this, this, args.ownerDoc, args.childBuildsTree, false, 
                               Types::BOF_NONE, Types::BOF_NONE, Types::CONTENT_TYPE_VARIETY_MIXED, 
                               Types::ANY_TYPE, args.suppressTypeAbstract)
            )

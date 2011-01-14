@@ -475,7 +475,6 @@ using namespace XPlus;
 
 <xsl:call-template name="DEFINE_ELEMENT_H"/>
 
-
   //
   // Following types(mostly typedefs) are the ones, based on above C++ class definition
   // for the top-level element <xsl:value-of select="$expandedQName"/>
@@ -585,6 +584,7 @@ XML Representation Summary: element Element Information Item
       <xsl:call-template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_SIMPLECONTENT_H"/>
     </xsl:when>
     <xsl:when test="*[local-name()='complexType']/*[local-name()='complexContent']">
+      <xsl:call-template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_COMPLEXCONTENT_H"/>
     </xsl:when>
   </xsl:choose>
 </xsl:template>
@@ -614,6 +614,120 @@ class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSc
 
 }; //end class <xsl:value-of select="@name"/>
 </xsl:template>
+
+
+<xsl:template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_COMPLEXCONTENT_H">
+
+  <xsl:choose>
+    <xsl:when test="*[local-name()='complexType']/*[local-name()='complexContent']/*[local-name()='restriction']">
+      <xsl:call-template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_COMPLEXCONTENT_RESTRICTION_H"/>
+    </xsl:when>
+    <xsl:when test="*[local-name()='complexType']/*[local-name()='complexContent']/*[local-name()='extension']">
+      <xsl:call-template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_COMPLEXCONTENT_EXTENSION_H"/>
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
+
+
+
+<xsl:template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_COMPLEXCONTENT_RESTRICTION_H">
+  <xsl:variable name="elemName" select="@name"/>
+  <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
+
+  <xsl:variable name="baseResolution">
+    <xsl:call-template name="T_resolve_typeQName">
+      <xsl:with-param name="typeQName" select="*[local-name()='complexType']/*[local-name()='complexContent']/*[local-name()='restriction']/@base"/>
+    </xsl:call-template>
+  </xsl:variable>
+   
+  <xsl:variable name="xmlBaseTypeDefinition">
+    <xsl:call-template name="T_get_resolution_typeDefinition_contents">
+      <xsl:with-param name="resolution" select="$baseResolution"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
+
+  <xsl:for-each select="*[local-name()='complexType']">
+
+    <xsl:variable name="baseCppType">
+      <xsl:call-template name="T_get_cppType_complexType_base"/>
+    </xsl:variable>
+    <xsl:variable name="cppNSDeref">
+      <xsl:call-template name="T_get_cppNSDeref_for_QName">
+        <xsl:with-param name="typeQName" select="*[local-name()='complexContent']/*[local-name()='restriction']/@base"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+/// The class for element <xsl:value-of select="$elemName"/> with following structure: 
+/// \n complexType->complexContent->restriction
+/// \n Refer to documentation on structures/methods inside ...
+class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;
+{
+  public:
+
+  /// constructor for the element node
+  MEMBER_FN <xsl:value-of select="$elemName"/>(ElementCreateArgs args);
+
+  <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
+    <xsl:with-param name="schemaComponentName" select="$elemName"/>
+  </xsl:call-template>   
+
+}; //end class <xsl:value-of select="$cppName"/>
+  </xsl:for-each>
+
+</xsl:template>
+
+
+
+<xsl:template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_COMPLEXCONTENT_EXTENSION_H">
+  <xsl:variable name="elemName" select="@name"/>
+  <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
+
+  <xsl:variable name="baseResolution">
+    <xsl:call-template name="T_resolve_typeQName">
+      <xsl:with-param name="typeQName" select="*[local-name()='complexType']/*[local-name()='complexContent']/*[local-name()='extension']/@base"/>
+    </xsl:call-template>
+  </xsl:variable>
+   
+  <xsl:variable name="xmlBaseTypeDefinition">
+    <xsl:call-template name="T_get_resolution_typeDefinition_contents">
+      <xsl:with-param name="resolution" select="$baseResolution"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
+
+  <xsl:for-each select="*[local-name()='complexType']">
+
+    <xsl:variable name="baseCppType">
+      <xsl:call-template name="T_get_cppType_complexType_base"/>
+    </xsl:variable>
+    <xsl:variable name="cppNSDeref">
+      <xsl:call-template name="T_get_cppNSDeref_for_QName">
+        <xsl:with-param name="typeQName" select="*[local-name()='complexContent']/*[local-name()='extension']/@base"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+/// The class for element <xsl:value-of select="$elemName"/> with following structure: 
+/// \n complexType->complexContent->extension
+/// \n Refer to documentation on structures/methods inside ...
+class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;
+{
+  public:
+
+  /// constructor for the element node
+  MEMBER_FN <xsl:value-of select="$elemName"/>(ElementCreateArgs args);
+
+  <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
+    <xsl:with-param name="schemaComponentName" select="$elemName"/>
+  </xsl:call-template>   
+
+}; //end class <xsl:value-of select="$cppName"/>
+  </xsl:for-each>
+
+</xsl:template>
+
 
 
 
