@@ -1,0 +1,31 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+
+  <xs:complexType name="personName">
+    <xs:sequence>
+      <xs:element name="title" type="xs:string" minOccurs="0"/>
+      <xs:element name="forename" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="surname" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="simpleName">
+    <xs:complexContent>
+      <xs:restriction base="personName">
+        <xs:sequence>
+          <xs:element name="forename" type="xs:string" minOccurs="1" maxOccurs="1"/>
+          <xs:element name="surname" type="xs:string"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="who" type="simpleName"/>
+
+<!--
+   <who>
+    <forename>Bill</forename>
+    <surname>Clinton</surname>
+   </who>
+-->
+
+</xs:schema>
