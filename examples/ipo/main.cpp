@@ -27,9 +27,6 @@ int main (int argc, char**argv)
 
   XSD::UserOps<IPO::Document> opHandle(cbStruct);
   opHandle.run(argc, argv);
-
-  //XMLSchema::Types::anyType* pT = XSD::TypeDefinitionFactory::getTypeForQName("USAddress", "http://www.example.com/IPO");
-  //printf("pT=%p\n", pT);  
 }
 
 //

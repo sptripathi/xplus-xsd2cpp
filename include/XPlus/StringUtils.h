@@ -45,11 +45,15 @@ namespace XPlus
   {
     T result;
     istringstream iss (s);
+    iss >> result;
+    return result;
+
+    /*
     if (iss >> result)
       return result;
-      
-      
+
     throw StringException(string("fromString failed. string:[") + s + "]");
+    */
   }
 
 }
