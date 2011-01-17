@@ -1,7 +1,10 @@
 XmlPlus Source Package:
 =======================
 
-This is a XmlPlus source package. This package contains a xsd2cpp tool that provides C++ Data Binding for W3C XML Schema. The XmlPlus library also provides validating DOM-Parser and DOM-writer. 
+This is a XmlPlus source package. The source is built into libraries and tools. 
+These XmlPlus set of libraries/tools provide:  
+  •	 C++ Data Binding for W3C XML Schema. 
+  •	 validating DOM-Parser and DOM-writer. 
 
 To learn how to build this source package and the rest, please read the documentation. 
 
