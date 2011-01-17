@@ -821,8 +821,121 @@ In addition to the conditions imposed on <complexType> element information items
 
 <xsl:template name="T_checks_on_simpleType_definition">
   <xsl:param name="node" select="."/>
+  
+  <xsl:call-template name="T_SimpleTypeDefinition_XMLRepresentation_OK">
+    <xsl:with-param name="node" select="$node"/>
+  </xsl:call-template>
+  
+  <xsl:call-template name="T_SimpleTypeDefinition_Properties_Correct">
+    <xsl:with-param name="ctNode" select="$node"/>
+  </xsl:call-template>
 
-  <!-- TODO -->
+  <xsl:call-template name="T_SimpleTypeDefinition_DerivationValid">
+    <xsl:with-param name="node" select="$node"/>
+  </xsl:call-template>
+</xsl:template>
+
+
+<!--
+Schema Representation Constraint: Simple Type Definition Representation OK
+
+In addition to the conditions imposed on <simpleType> element information items by the schema for schema documents, all of the following must be true:
+1 With the exception of <enumeration>, <pattern>, and <assert>, the [children] of <restriction> do not contain more than one element information item with the same name.
+2 If the <restriction> alternative is chosen, it has either a base [attribute] or a <simpleType> among its [children], but not both.
+3 If the <list> alternative is chosen, it has either an itemType [attribute] or a <simpleType> among its [children], but not both.
+4 If the <union> alternative is chosen, either it has a non-empty memberTypes [attribute] or it has at least one simpleType [child].
+
+-->
+<xsl:template name="T_SimpleTypeDefinition_XMLRepresentation_OK">
+  <xsl:param name="node" select="."/>
+
+  <xsl:if test="$node/*[local-name()='restriction']">
+
+    <!-- 1 -->
+    <xsl:for-each select="$node/*[local-name()='restriction']/*[local-name()!='enumeration' and local-name()!='pattern' and local-name()!='assert']">
+      <xsl:variable name="myLocalName" select="local-name()"/>
+      <xsl:if test="preceding-sibling::*[local-name()=$myLocalName]">
+        <xsl:call-template name="T_rule_violated">
+          <xsl:with-param name="ruleId" select="'SimpleTypeDefinition.XMLRepresentationOK.1'"/>
+        </xsl:call-template>
+      </xsl:if>
+    </xsl:for-each>
+
+    <!-- 2 -->
+    <xsl:if test="$node/*[local-name()='restriction']/@base and $node/*[local-name()='restriction']/*[local-name()='simpleType']">
+      <xsl:call-template name="T_rule_violated">
+        <xsl:with-param name="ruleId" select="'SimpleTypeDefinition.XMLRepresentationOK.2'"/>
+      </xsl:call-template>
+    </xsl:if>
+
+  </xsl:if>
+
+  <!-- 3 -->
+  <xsl:if test="$node/*[local-name()='list']/@itemType and $node/*[local-name()='list']/*[local-name()='simpleType']">
+    <xsl:call-template name="T_rule_violated">
+      <xsl:with-param name="ruleId" select="'SimpleTypeDefinition.XMLRepresentationOK.3'"/>
+    </xsl:call-template>
+  </xsl:if>
+
+  <!-- 4 -->
+  <xsl:if test="$node/*[local-name()='union'] and normalize-space($node/*[local-name()='union']/@memberTypes)='' and not($node/*[local-name()='union']/*[local-name()='simpleType'])">
+    <xsl:call-template name="T_rule_violated">
+      <xsl:with-param name="ruleId" select="'SimpleTypeDefinition.XMLRepresentationOK.4'"/>
+    </xsl:call-template>
+  </xsl:if>
+</xsl:template>
+
+
+<!--
+All of the following must be true:
+1 The values of the properties of a simple type definition are as described in the property tableau in The Simple Type Definition Schema Component, modulo the impact of Missing Sub-components (§5.3).
+2 All simple type definitions are, or are ·derived· ultimately from, ·xs:anySimpleType· (so circular definitions are disallowed). That is, it is possible to reach a primitive datatype or ·xs:anySimpleType· by following the {base type definition} zero or more times.
+3 The {final} of the {base type definition} does not contain restriction.
+4 There is not more than one member of {facets} of the same kind.
+5 Each member of {facets} is supported by the processor.
+-->
+<xsl:template name="T_SimpleTypeDefinition_Properties_Correct">
+  <xsl:param name="node" select="."/>
+
+  <xsl:variable name="TXml">
+    <xsl:call-template name="T_get_simpleType_definition">
+      <xsl:with-param name="stNode" select="$node"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="T" select="exsl:node-set($TXml)/*[local-name()='simpleTypeDefinition']"/>
+<!--
+  <xsl:call-template name="print_xml_variable">
+      <xsl:with-param name="xmlVar" select="$T"/>
+      <xsl:with-param name="filePath" select="'/tmp/T.xml'"/>
+  </xsl:call-template>
+-->
+  <xsl:variable name="B" select="$T/baseTypeDef/*[local-name()='simpleTypeDefinition']"/>
+
+  <!-- TODO: 1 -->
+
+  <!-- 
+      2: should be taken care of while resolving typedefinition:
+      TODO: in resolve_* templates keep track of depth of recursion and abort after certain depth
+      Else, we end up with infinite recursion.
+  -->
+
+  <!-- 3 -->
+  <xsl:if test="contains($B/final/text(), 'restriction')">
+    <xsl:call-template name="T_rule_violated">
+      <xsl:with-param name="ruleId" select="'SimpleTypeDefinition.PropertiesCorrect.3'"/>
+    </xsl:call-template>
+  </xsl:if>
+
+  <!-- 4: looks like this one is taken care of in, XMLRepresentationOK -->
+
+  <!-- 5. TODO: abort with error on seeing unsupported -->
+</xsl:template>
+
+
+<xsl:template name="T_SimpleTypeDefinition_DerivationValid">
+  <xsl:param name="node" select="."/>
+
 </xsl:template>
 
 

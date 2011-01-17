@@ -18,7 +18,7 @@ extension-element-prefixes="exsl"
     </xsl:when>
     <xsl:when test="local-name($node)='complexType'">
       <xsl:call-template name="T_get_complexType_definition">
-        <xsl:with-param name="node" select="$node"/>
+        <xsl:with-param name="ctNode" select="$node"/>
       </xsl:call-template>  
     </xsl:when>
     <xsl:when test="local-name($node)='element' or local-name($node)='attribute'">
@@ -475,6 +475,19 @@ Schema Component: Element Declaration, a kind of Term
               </xsl:call-template>
             </xsl:variable>
 
+            <xsl:variable name="primResolution">
+              <xsl:choose>
+                <xsl:when test="$typeLocalPart != $primTypeLocalPart">
+                  <xsl:call-template name="T_resolve_typeLocalPartNsUri">
+                    <xsl:with-param name="typeLocalPart" select="$primTypeLocalPart"/>
+                    <xsl:with-param name="typeNsUri" select="$xmlSchemaNSUri"/>
+                  </xsl:call-template>
+                </xsl:when>
+                <xsl:otherwise><self/></xsl:otherwise>
+              </xsl:choose>
+            </xsl:variable>
+            <xsl:variable name="nodePrimTypeDefinition" select="exsl:node-set($primResolution)"/>
+
             <xsl:choose>
               <xsl:when test="$typeLocalPart='anyType'">
                   <xsl:copy-of select="$anyTypeDefinition"/>
@@ -485,13 +498,18 @@ Schema Component: Element Declaration, a kind of Term
               </xsl:when>
 
               <xsl:otherwise>
+
                   <simpleTypeDefinition>
                     <name><xsl:value-of select="$typeLocalPart"/></name>
                     <targetNamespace><xsl:value-of select="$xmlSchemaNSUri"/></targetNamespace>
-                    <final>TODO</final>
-                    <variety></variety>
-                    <baseTypeDef><xsl:value-of select="$typeLocalPart"/></baseTypeDef>
-                    <primType><xsl:value-of select="$primTypeLocalPart"/></primType>
+                    <final></final>
+                    <variety>atomic</variety>
+                    <!-- 
+                      since builtin derived types are at one level below builtin-primitive types,
+                      it is safe to say that baseTypeDef is same as primTypeDef
+                    -->
+                    <baseTypeDef><xsl:copy-of select="$nodePrimTypeDefinition"/></baseTypeDef>
+                    <primTypeDef><xsl:copy-of select="$nodePrimTypeDefinition"/></primTypeDef>
                     <facets>TODO</facets>
                     <fundamentalFacets>TODO</fundamentalFacets>
                     <implType><xsl:value-of select="$implType"/></implType>
@@ -1456,7 +1474,6 @@ Schema Component: Complex Type Definition, a kind of Type Definition
 <xsl:template name="T_get_complexType_definition">
   <xsl:param name="ctNode"/>
 
-
 <!--
   3.4.2.3.2 Mapping Rules for Complex Types with Implicit Complex Content
   Taken care of, in the respective evaluation of derivationMethod, baseTypeDef as follows: 
@@ -1484,7 +1501,7 @@ Schema Component: Complex Type Definition, a kind of Type Definition
       </xsl:when>
 
       <!--  Implicit Complex Content -->
-      <xsl:otherwise><xsl:copy-of select="anyTypeDefinition"/></xsl:otherwise>
+      <xsl:otherwise><xsl:copy-of select="$anyTypeDefinition"/></xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
 
@@ -1594,20 +1611,29 @@ Schema Component: Simple Type Definition, a kind of Type Definition
       <xsl:when test="$stNode//*[local-name()='list' or local-name()='union']">
       -->
       <xsl:when test="$stNode/*[local-name()='list']">
+        <xsl:variable name="itemTypeResolution">
+          <xsl:choose>
+            <xsl:when test="$stNode/*[local-name()='list']/@itemType">
+              <xsl:call-template name="T_resolve_typeQName">
+                <xsl:with-param name="typeQName" select="$stNode/*[local-name()='list']/@itemType"/>
+              </xsl:call-template>
+            </xsl:when>
+            <xsl:when test="$stNode/*[local-name()='list']/*[local-name()='simpleType']">
+              <xsl:call-template name="T_get_simpleType_definition">
+                <xsl:with-param name="stNode" select="$stNode/*[local-name()='list']/*[local-name()='simpleType']"/>
+              </xsl:call-template>
+            </xsl:when>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:variable name="nodeItemTypeDefinition" select="exsl:node-set($itemTypeResolution)"/>
         <simpleTypeDefinition>
           <xsl:if test="$stNode/@name">
           <name><xsl:value-of select="$stNode/@name"/></name>
           </xsl:if>
           <targetNamespace><xsl:call-template name="T_get_targetNsUri"/></targetNamespace>                  
           <variety>list</variety>
-          <itemType>
-            <xsl:choose>
-              <xsl:when test="$stNode/*[local-name()='list']/@itemType">
-                <xsl:value-of select="$stNode/*[local-name()='list']/@itemType"/>
-              </xsl:when>
-              <xsl:when test="$stNode/*[local-name()='list']/simpleType">__inline_anonymous_simpleTypeDef__</xsl:when>
-            </xsl:choose>
-          </itemType>
+          <baseTypeDef><xsl:copy-of select="$anySimpleTypeDefinition"/></baseTypeDef>
+          <itemTypeDef><xsl:copy-of select="$nodeItemTypeDefinition"/></itemTypeDef>
           <final>
             <xsl:call-template name="T_get_simpleType_final">
               <xsl:with-param name="node" select="$stNode"/>
@@ -1624,15 +1650,23 @@ Schema Component: Simple Type Definition, a kind of Type Definition
           </xsl:if>
           <targetNamespace><xsl:call-template name="T_get_targetNsUri"/></targetNamespace>                  
           <variety>union</variety>
-          <baseTypeDef><xsl:copy-of select="anySimpleTypeDefinition"/></baseTypeDef>
-          <memberTypes>
-            <xsl:choose>
-              <xsl:when test="$stNode/*[local-name()='union']/@memberTypes">
-                <xsl:value-of select="$stNode/*[local-name()='union']/@memberTypes"/>
-              </xsl:when>
-              <xsl:when test="$stNode/*[local-name()='union']/simpleType">__inline_anonymous_simpleTypeDef__</xsl:when>
-            </xsl:choose>          
-          </memberTypes>
+          <baseTypeDef><xsl:copy-of select="$anySimpleTypeDefinition"/></baseTypeDef>
+          <memberTypeDefinitions>
+            <xsl:if test="$stNode/*[local-name()='union']/@memberTypes">
+              <xsl:call-template name="ITERATE_SIMPLETYPE_UNION_MEMBERTYPES">
+                <xsl:with-param name="memberTypes" select="$stNode/*[local-name()='union']/@memberTypes"/>
+                <xsl:with-param name="mode" select="'get_simpletype_def'"/>
+              </xsl:call-template>
+            </xsl:if>
+            <xsl:for-each select="$stNode/*[local-name()='union']/*[local-name()='simpleType']">
+              <xsl:variable name="nodeInlineSimpleTypeDef">
+                <xsl:call-template name="T_get_simpleType_definition">
+                  <xsl:with-param name="stNode" select="$stNode/*[local-name()='union']/*[local-name()='simpleType']"/>
+                </xsl:call-template>
+              </xsl:variable>
+              <xsl:copy-of select="$nodeInlineSimpleTypeDef"/>
+            </xsl:for-each>
+          </memberTypeDefinitions>
           <final>
             <xsl:call-template name="T_get_simpleType_final">
               <xsl:with-param name="node" select="$stNode"/>
@@ -1647,22 +1681,36 @@ Schema Component: Simple Type Definition, a kind of Type Definition
         <xsl:choose>
 
           <xsl:when test="$stNode/*[local-name()='restriction']/@base">
-            <xsl:variable name="baseQname" select="$stNode/*[local-name()='restriction']/@base"/>
-            <xsl:variable name="isBuiltinType"><xsl:call-template name="T_is_builtin_type"><xsl:with-param name="typeStr" select="$baseQname"/></xsl:call-template></xsl:variable>
+            <xsl:variable name="baseQName" select="$stNode/*[local-name()='restriction']/@base"/>
+            <xsl:variable name="baseResolution">
+              <xsl:call-template name="T_resolve_typeQName">
+                <xsl:with-param name="typeQName" select="$baseQName"/>
+              </xsl:call-template>
+            </xsl:variable>
+            <xsl:variable name="nodeBaseTypeDefinition" select="exsl:node-set($baseResolution)"/>
+
+            <xsl:variable name="isBuiltinType"><xsl:call-template name="T_is_builtin_type"><xsl:with-param name="typeStr" select="$baseQName"/></xsl:call-template></xsl:variable>
 
             <xsl:choose>
 
               <xsl:when test="$isBuiltinType='true'">
                 <xsl:variable name="implType">
                   <xsl:call-template name="T_get_implType_for_builtin_type">
-                    <xsl:with-param name="typeStr" select="$baseQname"/>
+                    <xsl:with-param name="typeStr" select="$baseQName"/>
                   </xsl:call-template>
                 </xsl:variable>
                 <xsl:variable name="primTypeLocalPart">
                   <xsl:call-template name="T_get_primTypeLocalPart_for_builtin_type">
-                    <xsl:with-param name="typeStr" select="$baseQname"/>
+                    <xsl:with-param name="typeStr" select="$baseQName"/>
                   </xsl:call-template>
                 </xsl:variable>
+                <xsl:variable name="primResolution">
+                  <xsl:call-template name="T_resolve_typeLocalPartNsUri">
+                    <xsl:with-param name="typeLocalPart" select="$primTypeLocalPart"/>
+                    <xsl:with-param name="typeNsUri" select="$xmlSchemaNSUri"/>
+                  </xsl:call-template>
+                </xsl:variable>
+                <xsl:variable name="nodePrimTypeDefinition" select="exsl:node-set($primResolution)"/>
 
                 <simpleTypeDefinition>
                   <xsl:if test="$stNode/@name">
@@ -1675,25 +1723,23 @@ Schema Component: Simple Type Definition, a kind of Type Definition
                       <xsl:with-param name="node" select="$stNode"/>
                     </xsl:call-template>
                   </final>
-                   <!-- Note : resolution of baseQname is not further resolved once
-                        it reaches  to a qName which is a builtin type..
-                        So is the case here...
-                   -->
-                  <baseTypeDef><xsl:value-of select="$baseQname"/></baseTypeDef>
-                  <primType><xsl:value-of select="$primTypeLocalPart"/></primType>
+                  <baseTypeDef><xsl:copy-of select="exsl:node-set($baseResolution)/*"/></baseTypeDef>
+                  <primTypeDef><xsl:copy-of select="$nodePrimTypeDefinition"/></primTypeDef>
                   <implType><xsl:value-of select="$implType"/></implType>
                 </simpleTypeDefinition>
               </xsl:when>
 
               <xsl:otherwise>
+
+              <!--
                 <xsl:variable name="baseLocalPart">
                   <xsl:call-template name="T_get_localPart_of_QName">
-                    <xsl:with-param name="qName" select="$baseQname"/>
+                    <xsl:with-param name="qName" select="$baseQName"/>
                   </xsl:call-template>
                 </xsl:variable>
                 <xsl:variable name="baseNsPrefix">
                   <xsl:call-template name="T_get_nsPrefix_from_QName">
-                    <xsl:with-param name="qName" select="$baseQname"/>
+                    <xsl:with-param name="qName" select="$baseQName"/>
                   </xsl:call-template>
                 </xsl:variable>
                 <xsl:variable name="baseNsUri">
@@ -1708,7 +1754,7 @@ Schema Component: Simple Type Definition, a kind of Type Definition
                     <xsl:with-param name="typeNsUri" select="$baseNsUri"/>
                   </xsl:call-template>
                 </xsl:variable>
-                
+                -->
                 <!--
                 baseTypeDef:
                   If the <restriction> alternative is chosen, then the type definition ·resolved· to
@@ -1716,7 +1762,6 @@ Schema Component: Simple Type Definition, a kind of Type Definition
                   otherwise the type definition corresponding to the <simpleType> among the [children]
                   of <restriction>.
                 -->
-                <xsl:variable name="nodeBaseTypeDefinition" select="exsl:node-set($baseResolution)"/>
 
                 <simpleTypeDefinition>
                   <xsl:if test="$stNode/@name">
@@ -1724,13 +1769,19 @@ Schema Component: Simple Type Definition, a kind of Type Definition
                   </xsl:if>
                   <targetNamespace><xsl:call-template name="T_get_targetNsUri"/></targetNamespace>                  
                   <variety><xsl:value-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/variety"/></variety>
+                  <xsl:if test="normalize-space($nodeBaseTypeDefinition/simpleTypeDefinition/variety)='list'">
+                  <itemTypeDef><xsl:copy-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/itemTypeDef/*"/></itemTypeDef>
+                  </xsl:if>
+                  <xsl:if test="normalize-space($nodeBaseTypeDefinition/simpleTypeDefinition/variety)='union'">
+                  <memberTypeDefinitions><xsl:copy-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/memberTypeDefinitions/*"/></memberTypeDefinitions>
+                  </xsl:if>
                   <final>
                     <xsl:call-template name="T_get_simpleType_final">
                       <xsl:with-param name="node" select="$stNode"/>
                     </xsl:call-template>
                   </final>
                   <baseTypeDef><xsl:copy-of select="$nodeBaseTypeDefinition"/></baseTypeDef>
-                  <primType><xsl:value-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/primType"/></primType>
+                  <primTypeDef><xsl:copy-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/primTypeDef/*"/></primTypeDef>
                   <facets>TODO</facets>
                   <fundamentalFacets>TODO</fundamentalFacets>
                   <implType><xsl:value-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/implType"/></implType>
@@ -1740,32 +1791,39 @@ Schema Component: Simple Type Definition, a kind of Type Definition
             </xsl:choose>
           </xsl:when>
 
-          <xsl:when test="$stNode/*[local-name()='restriction']/simpleType">
+          <xsl:when test="$stNode/*[local-name()='restriction']/*[local-name()='simpleType']">
           
             <xsl:variable name="inlineSimpleTypeDef">
               <xsl:call-template name="T_get_simpleType_definition">
-                <xsl:with-param name="stNode" select="$stNode/*[local-name()='restriction']/simpleType"/>
+                <xsl:with-param name="stNode" select="$stNode/*[local-name()='restriction']/*[local-name()='simpleType']"/>
               </xsl:call-template>
             </xsl:variable>  
               
             <xsl:variable name="baseTypeDef" select="$inlineSimpleTypeDef"/>
+            <xsl:variable name="nodeBaseTypeDefinition" select="exsl:node-set($baseTypeDef)"/>
 
                 <simpleTypeDefinition>
                   <xsl:if test="$stNode/@name">
                   <name><xsl:value-of select="$stNode/@name"/></name>
                   </xsl:if>
                   <targetNamespace><xsl:call-template name="T_get_targetNsUri"/></targetNamespace>                  
-                  <variety><xsl:value-of select="exsl:node-set($baseTypeDef/simpleTypeDefinition/variety)"/></variety>
+                  <variety><xsl:value-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/variety"/></variety>
+                  <xsl:if test="normalize-space($nodeBaseTypeDefinition/simpleTypeDefinition/variety)='list'">
+                  <itemTypeDef><xsl:copy-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/itemTypeDef/*"/></itemTypeDef>
+                  </xsl:if>
+                  <xsl:if test="normalize-space($nodeBaseTypeDefinition/simpleTypeDefinition/variety)='union'">
+                  <memberTypeDefinitions><xsl:copy-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/memberTypeDefinitions/*"/></memberTypeDefinitions>
+                  </xsl:if>
                   <final>
                     <xsl:call-template name="T_get_simpleType_final">
                       <xsl:with-param name="node" select="$stNode"/>
                     </xsl:call-template>
                   </final>
                   <baseTypeDef><xsl:copy-of select="$inlineSimpleTypeDef"/></baseTypeDef>
-                  <primType><xsl:value-of select="exsl:node-set($inlineSimpleTypeDef/simpleTypeDefinition/primType)"/></primType>
+                  <primTypeDef><xsl:copy-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/primTypeDef/*"/></primTypeDef>
                   <facets>TODO</facets>
                   <fundamentalFacets>TODO</fundamentalFacets>
-                  <implType><xsl:value-of select="exsl:node-set($inlineSimpleTypeDef/simpleTypeDefinition/implType)"/></implType>
+                  <implType><xsl:value-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/implType"/></implType>
                 </simpleTypeDefinition>
 
           </xsl:when>

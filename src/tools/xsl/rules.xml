@@ -74,6 +74,37 @@
 
 
 
+  <ruleGroup id="SimpleTypeDefinition.XMLRepresentationOK">
+
+    <title> Schema Representation Constraint: Simple Type Definition Representation OK </title>
+    
+    <rule id="SimpleTypeDefinition.XMLRepresentationOK.1">
+    With the exception of &lt;enumeration&gt;, &lt;pattern&gt;, and &lt;assert&gt;, the [children] of &lt;restriction&gt; do not contain more than one element information item with the same name.
+    </rule>
+
+    <rule id="SimpleTypeDefinition.XMLRepresentationOK.2">
+    If the &lt;restriction&gt; alternative is chosen, it has either a base [attribute] or a &lt;simpleType&gt; among its [children], but not both.
+    </rule>
+    
+    <rule id="SimpleTypeDefinition.XMLRepresentationOK.3">
+    If the &lt;list&gt; alternative is chosen, it has either an itemType [attribute] or a &lt;simpleType&gt; among its [children], but not both.
+    </rule>
+    
+    <rule id="SimpleTypeDefinition.XMLRepresentationOK.4">
+    If the &lt;union&gt; alternative is chosen, either it has a non-empty memberTypes [attribute] or it has at least one simpleType [child].
+    </rule>
+
+  </ruleGroup>
+
+
+
+  <ruleGroup id="SimpleTypeDefinition.PropertiesCorrect">
+
+    <rule id="SimpleTypeDefinition.PropertiesCorrect.3">
+    The {final} of the {base type definition} does not contain restriction.
+    </rule>
+  </ruleGroup>
+
 
   <ruleGroup id="AttributeDeclarationRepresentationOK">
 

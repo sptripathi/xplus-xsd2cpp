@@ -545,6 +545,14 @@ namespace Types
         <xsl:with-param name="token" select="$memberType"/>
       </xsl:call-template>
     </xsl:when>
+    <xsl:when test="$mode='get_simpletype_def'">
+      <xsl:variable name="nodeSimpleTypeDef">
+        <xsl:call-template name="T_resolve_typeQName">
+          <xsl:with-param name="typeQName" select="$memberType"/>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:copy-of select="$nodeSimpleTypeDef"/>
+    </xsl:when>
   </xsl:choose>
 
 </xsl:template>
