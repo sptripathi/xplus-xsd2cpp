@@ -12,8 +12,9 @@ Steps to build the generated source:
 Once you have the configure script generated, next time onwards you should run configure instead of autogen.sh.)
 
 It is likely that, while experimenting the tool with XML-Schema, you edit the files like XML-Schema iteratively, and would want to see the build in action for each such edit.
-After every edit, you should run following commands in that order: $ xsd2cpp XML-Schema outdir
+After every edit, you should run following commands in that order: 
 ---------------------------------------------------------- 
+  $  xsd2cpp XML-Schema outdir
   $  cd outdir
   $  run configure ( with your choice of options)
   $  make

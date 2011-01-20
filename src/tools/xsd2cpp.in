@@ -225,7 +225,7 @@ run()
   gen_source_files
   gen_automake_files
   echo 
-  echo " *** now build the source (read README.build.txt for help)" 
+  echo "  Note: the generated source needs to be built now, please read README.build.txt for help on how to build" 
   echo
   cleanup_meta
 }

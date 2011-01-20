@@ -252,7 +252,7 @@
     </type>
 
     <!-- used only on attributes -->
-    <type name="IDREFS" primType="string">
+    <type name="IDREFS" baseType="anySimpleType">
       <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
@@ -264,7 +264,7 @@
     </type>
 
     <!-- used only on attributes -->
-    <type name="ENTITIES" primType="string">
+    <type name="ENTITIES" baseType="anySimpleType">
       <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>

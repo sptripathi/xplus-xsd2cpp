@@ -28,15 +28,24 @@ xmlns:exsl="http://exslt.org/common"
 >
 
 <xsl:template name="T_rule_violated">
+  <!-- pass either ruleId or ruleStr -->
   <xsl:param name="ruleId"/>
+  <xsl:param name="ruleStr" select="''"/>
   <xsl:param name="node" select="."/>
 
   <xsl:variable name="nodeLocalName" select="local-name($node)"/>
 
-  <xsl:variable name="ruleStr">
-    <xsl:call-template name="T_get_rule_for_id">
-      <xsl:with-param name="ruleId" select="$ruleId"/>
-    </xsl:call-template>  
+  <xsl:variable name="ruleStr2">
+    <xsl:choose>
+      <xsl:when test="$ruleStr!=''">
+        <xsl:value-of select="$ruleStr"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="T_get_rule_for_id">
+          <xsl:with-param name="ruleId" select="$ruleId"/>
+        </xsl:call-template>  
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:variable>
 
   <xsl:variable name="nodeContext">
@@ -47,7 +56,7 @@ xmlns:exsl="http://exslt.org/common"
 
   <xsl:variable name="msg">
   Input XML Schema is invalid.
-    <xsl:value-of select="$ruleStr"/>
+    <xsl:value-of select="$ruleStr2"/>
   Violated in following context: <xsl:value-of select="$nodeContext"/>
   </xsl:variable>
 
@@ -933,10 +942,208 @@ All of the following must be true:
 </xsl:template>
 
 
+
+
 <xsl:template name="T_SimpleTypeDefinition_DerivationValid">
   <xsl:param name="node" select="."/>
 
+  <xsl:variable name="DXml">
+    <xsl:call-template name="T_get_simpleType_definition">
+      <xsl:with-param name="stNode" select="$node"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="D" select="exsl:node-set($DXml)/*[local-name()='simpleTypeDefinition']"/>
+  <xsl:call-template name="print_xml_variable">
+      <xsl:with-param name="xmlVar" select="$D"/>
+      <xsl:with-param name="filePath" select="'/tmp/D.xml'"/>
+  </xsl:call-template>
+<!--
+-->
+
+  <xsl:if test="not($D/baseTypeDef/*[local-name()='simpleTypeDefinition'])">
+    <xsl:call-template name="T_rule_violated">
+      <xsl:with-param name="ruleStr">The base-type-definition of a simple-type-definition should be a simple-type-definition</xsl:with-param>
+    </xsl:call-template>
+  </xsl:if>
+
+  <xsl:variable name="B" select="$D/baseTypeDef/*[local-name()='simpleTypeDefinition']"/>
+  <xsl:variable name="B.name" select="normalize-space($B/name/text())"/>
+  <xsl:variable name="B.variety" select="normalize-space($B/variety/text())"/>
+  <xsl:variable name="B.final" select="normalize-space($B/final/text())"/>
+
+  <xsl:variable name="D.variety" select="normalize-space($D/variety/text())"/>
+  <xsl:variable name="D.name" select="normalize-space($D/name/text())"/>
+  <xsl:variable name="D.itemTypeDef.variety" select="normalize-space($D/itemTypeDef/simpleTypeDefinition/variety/text())"/>
+  <xsl:variable name="D.itemTypeDef.final" select="normalize-space($D/itemTypeDef/simpleTypeDefinition/final/text())"/>
+
+  <!-- predicate 1-->
+  <xsl:if test="$D.variety = 'atomic'">
+    <xsl:variable name="pred.1.1">
+      <xsl:choose>
+        <xsl:when test="$D.name='anyAtomicType' or $B.variety='atomic'">true</xsl:when>
+        <xsl:otherwise>1.1</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="pred.1.2">
+      <xsl:choose>
+        <xsl:when test="contains($B.final,'restriction')">1.2</xsl:when>
+        <xsl:otherwise>true</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <!-- check on facets not needed as it's taken care of elsewhere -->
+    <xsl:variable name="pred.1.3" select="'true'"/>
+
+    <xsl:variable name="pred">
+      <xsl:choose>
+        <xsl:when test="$pred.1.1='true' and $pred.1.2='true' and $pred.1.3='true'">true</xsl:when>
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="$pred.1.1!='true'"><xsl:value-of select="$pred.1.1"/></xsl:when>
+            <xsl:when test="$pred.1.2!='true'"><xsl:value-of select="$pred.1.2"/></xsl:when>
+            <xsl:when test="$pred.1.3!='true'"><xsl:value-of select="$pred.1.3"/></xsl:when>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:if test="$pred!='true'">
+      <xsl:variable name="violatedRuleName" select="concat('SimpleTypeDefinition.DerivationValid.', $pred)"/>
+      <xsl:call-template name="T_rule_violated">
+        <xsl:with-param name="ruleId" select="$violatedRuleName"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:if>
+
+  <!-- predicate 2-->
+  <xsl:if test="$D.variety = 'list'">
+
+    <!-- predicate 2.1 -->
+    <xsl:variable name="unionTest">
+      <xsl:choose>
+        <xsl:when test="$D.itemTypeDef.variety='union'">
+          <xsl:variable name="transitiveTest" select="'true'"/> <!-- TODO -->
+          <xsl:choose>
+            <xsl:when test="$transitiveTest='true'">true</xsl:when>
+            <xsl:otherwise>2.1</xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:otherwise>true</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="pred.2.1">
+      <xsl:choose>
+        <xsl:when test="$D.itemTypeDef.variety='atomic' or $unionTest='true'">true</xsl:when>
+        <xsl:otherwise>2.1</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <!-- predicate 2.2 -->
+    <xsl:variable name="whiteSpaceFacetNode" select="$node/*[local-name()='restriction']/*[local-name()='whiteSpace']"/>
+    <xsl:variable name="pred.2.2">
+      <xsl:choose>
+        <xsl:when test="$B.name='anySimpleType'">
+          <xsl:choose>
+            <xsl:when test="contains($D.itemTypeDef.final, 'list')">2.2.1.1</xsl:when>
+            <xsl:when test="$node/*[local-name()='restriction']/*[local-name()='minExclusive' or local-name()='minInclusive' or local-name()='maxExclusive' or local-name()='maxInclusive' or local-name()='totalDigits' or local-name()='fractionDigits' or local-name()='maxScale' or local-name()='minScale' or local-name()='length' or local-name()='minLength' or local-name()='maxLength' or local-name()='enumeration' or local-name()='pattern' or local-name()='assertion' or local-name()='explicitTimezone']">2.2.1.2</xsl:when>
+           <xsl:when test="$whiteSpaceFacetNode/@value and $whiteSpaceFacetNode/@value != 'collpase'">2.2.1.2</xsl:when>
+           <xsl:when test="$whiteSpaceFacetNode/@fixed and $whiteSpaceFacetNode/@fixed != 'true'">2.2.1.2</xsl:when>
+           <xsl:otherwise>true</xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:variable name="typeDerivationOK_B.itemTypeDef_D.itemTypeDef">
+            <xsl:call-template name="T_SimpleTypeDefinition_TypeDerivationOK">
+              <xsl:with-param name="nodeSimpleTypeDefinitionBase" select="$B/itemTypeDef"/>
+              <xsl:with-param name="nodeSimpleTypeDefinitionDerived" select="$D/itemTypeDef"/>
+            </xsl:call-template>  
+          </xsl:variable>
+          <xsl:choose>
+            <xsl:when test="$B.variety != 'list'">2.2.2.1</xsl:when>
+            <xsl:when test="contains($B.final, 'restriction')">2.2.2.2</xsl:when>
+            <xsl:when test="normalize-space($typeDerivationOK_B.itemTypeDef_D.itemTypeDef) != 'true'">2.2.2.3</xsl:when>
+            <!-- TODO: 2.2.2.4 and 2.2.2.5-->
+            <xsl:otherwise>true</xsl:otherwise>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <xsl:variable name="pred">
+      <xsl:choose>
+        <xsl:when test="$pred.2.1='true' and $pred.2.2='true'">true</xsl:when>
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="$pred.2.1!='true'"><xsl:value-of select="$pred.2.1"/></xsl:when>
+            <xsl:when test="$pred.2.2!='true'"><xsl:value-of select="$pred.2.2"/></xsl:when>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:if test="$pred!='true'">
+      <xsl:variable name="violatedRuleName" select="concat('SimpleTypeDefinition.DerivationValid.', $pred)"/>
+      <xsl:call-template name="T_rule_violated">
+        <xsl:with-param name="ruleId" select="$violatedRuleName"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:if>
+
+  <!-- predicate 3-->
+  <xsl:if test="$D.variety = 'union'">
+    <xsl:variable name="pred.3.1">
+      <xsl:choose>
+        <xsl:when test="$B.name='anySimpleType'">
+          <xsl:message>here</xsl:message>
+          <xsl:choose>
+            <xsl:when test="normalize-space($D/memberTypeDefinitions/simpleTypeDefinition/final/text())='union'">3.1.1.1</xsl:when>
+            <xsl:when test="$node/*[local-name()='restriction']/*[local-name()='minExclusive' or local-name()='minInclusive' or local-name()='maxExclusive' or local-name()='maxInclusive' or local-name()='totalDigits' or local-name()='fractionDigits' or local-name()='maxScale' or local-name()='minScale' or local-name()='whiteSpace' or local-name()='length' or local-name()='minLength' or local-name()='maxLength' or local-name()='enumeration' or local-name()='pattern' or local-name()='assertion' or local-name()='explicitTimezone']">3.1.1.2</xsl:when>
+            <xsl:otherwise>true</xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>  
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="$B.variety != 'union'">3.1.2.1</xsl:when>
+            <xsl:when test="contains($B.final, 'restriction')">3.1.2.2</xsl:when>
+            <!-- TODO 3.1.2.3 3.1.2.4, 3.1.2.5 -->
+            <xsl:otherwise>true</xsl:otherwise>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>  
+    </xsl:variable>      
+
+    <xsl:variable name="pred.3.2" select="'true'"/>
+
+    <xsl:variable name="pred">
+      <xsl:choose>
+        <xsl:when test="$pred.3.1='true' and $pred.3.2='true'">true</xsl:when>
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="$pred.3.1!='true'"><xsl:value-of select="$pred.3.1"/></xsl:when>
+            <xsl:when test="$pred.3.2!='true'"><xsl:value-of select="$pred.3.2"/></xsl:when>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:if test="$pred!='true'">
+      <xsl:variable name="violatedRuleName" select="concat('SimpleTypeDefinition.DerivationValid.', $pred)"/>
+      <xsl:call-template name="T_rule_violated">
+        <xsl:with-param name="ruleId" select="$violatedRuleName"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:if>
+
 </xsl:template>
+
+
+<!--
+  returns: true or false
+-->
+<xsl:template name="T_SimpleTypeDefinition_TypeDerivationOK">
+  <xsl:param name="nodeSimpleTypeDefinitionBase" />
+  <xsl:param name="nodeSimpleTypeDefinitionDerived" />
+<!-- TODO -->
+  true
+</xsl:template>
+
 
 
 <xsl:template name="T_checks_on_schema_component">

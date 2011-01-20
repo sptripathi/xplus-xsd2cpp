@@ -2931,6 +2931,43 @@ namespace <xsl:value-of select="$nsStr"/>{
 </xsl:template>
 
 
+<xsl:template name="T_get_baseTypeLocalPart_for_builtin_typeLocalPartNsUri">
+  <xsl:param name="typeLocalPart"/>
+  <xsl:param name="typeNsUri"/>
+  
+  <xsl:variable name="isBuiltinPrimType">
+    <xsl:call-template name="T_is_builtin_primitive_typeLocalPartNsUri">
+      <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
+      <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="isBuiltinDerivedType">
+    <xsl:call-template name="T_is_builtin_derived_typeLocalPartNsUri">
+      <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
+      <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="baseType">
+    <xsl:choose>
+      <xsl:when test="$isBuiltinPrimType='true'">
+        <xsl:value-of select="'anyAtomicSimpleType'"/>
+      </xsl:when>
+      <xsl:when test="$isBuiltinDerivedType='true'">
+          <xsl:choose>
+            <xsl:when test="$xplusDictDoc/xmlplusDict/derivedTypes/type[@name=$typeLocalPart]/@primType">
+              <xsl:value-of select="$xplusDictDoc/xmlplusDict/derivedTypes/type[@name=$typeLocalPart]/@primType"/>
+            </xsl:when>
+            <xsl:when test="$xplusDictDoc/xmlplusDict/derivedTypes/type[@name=$typeLocalPart]/@baseType">
+              <xsl:value-of select="$xplusDictDoc/xmlplusDict/derivedTypes/type[@name=$typeLocalPart]/@baseType"/>
+            </xsl:when>
+          </xsl:choose>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($baseType)"/>
+</xsl:template>
+
+
   <!--
                   Mapping Rules for Complex Types with Explicit Complex Content
                   =============================================================
