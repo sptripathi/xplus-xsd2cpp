@@ -9,15 +9,15 @@
   <body>
     <form>
       <ul>
-        <li><a href="#TPUSE">Third party tools/libraries used</a>
-        <li><a href="#PREREQ">Install Prerequisites</a>
-        <li><a href="#BUILD">Build the source</a>
-        <li><a href="#UPDATE_ENV">Update env with the installation path</a>
-        <li><a href="#VERIFY_INSTALL">Verify the installation</a>
+        <li><a href="#TPUSE">Note on third party tools/libraries used</a>
+        <li><a href="#PREREQ">Installing the prerequisites</a>
+        <li><a href="#BUILD">Building the source</a>
+        <li><a href="#UPDATE_ENV">Updating the environment with the installation path</a>
+        <li><a href="#VERIFY_INSTALL">Verifying the installation</a>
       </ul>
       
-      <a name="TPUSE"><h3>Third party tools/libraries used <hr NOSHADE SIZE=7 WIDTH=100%> </h3> </a>
-      The thirdparty tools used are: 
+      <a name="TPUSE"><h3>Note on third party tools/libraries used <hr NOSHADE SIZE=7 WIDTH=100%> </h3> </a>
+      The thirdparty tools/libraries used are: 
       <ul>
         <li><b>autotools</b> : automake, autoconf, libtool etc.<br>
           The XmlPlus source is built using gnu <b>automake/autoconf/libtool</b> set of tools.<br><br>
@@ -32,11 +32,11 @@
 
 
 
-      <a name="PREREQ"><h3>Install Prerequisites <hr NOSHADE SIZE=7 WIDTH=100%> </h3> </a>
+      <a name="PREREQ"><h3>Installing the prerequisites <hr NOSHADE SIZE=7 WIDTH=100%> </h3> </a>
         <ul>
-          <li><a href="#PREREQ_UBUNTU">Install prerequisites on Ubuntu, Debian and the likes</a>
-          <li><a href="#PREREQ_LIKES_OF_REDHAT">Install prerequisites on RedHat, Fedora etc.</a>
-          <li><a href="#PREREQ_MACOSX">Install Prerequisites on Mac OS X</a>
+          <li><a href="#PREREQ_UBUNTU">Installing the prerequisites on Ubuntu, Debian and the likes</a>
+          <li><a href="#PREREQ_LIKES_OF_REDHAT">Installing the prerequisites on RedHat, Fedora etc.</a>
+          <li><a href="#PREREQ_MACOSX">Installing the prerequisites on Mac OS X</a>
         </ul>
       <p>
       The thirdparty packages that would need to be installed as prerequisites are: 
@@ -54,7 +54,7 @@
       </p>
 
       <br>
-      <a name="PREREQ_UBUNTU"><h4>Install prerequisites on Ubuntu, Debian and the likes<hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
+      <a name="PREREQ_UBUNTU"><h4>Installing the prerequisites on Ubuntu, Debian and the likes<hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
 
       <ol>
         <li> If not already installed, install automake, autoconf, libtool <br>
@@ -67,7 +67,7 @@
         <code>$ sudo apt-get install libexpat libexpat-dev</code><br>
       </ol>  
 
-      <a name="PREREQ_LIKES_OF_REDHAT"><h4>Install prerequisites on Redhat, Fedora etc.  <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
+      <a name="PREREQ_LIKES_OF_REDHAT"><h4>Installing the prerequisites on Redhat, Fedora etc.  <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
 
       <ol>
         <li> If not already installed, install automake, autoconf, libtool <br>
@@ -80,7 +80,7 @@
         <code>$ sudo yum install  expat expat-devel</code><br>
       </ol>
 
-      <a name="PREREQ_MACOSX"><h4>Install prerequisites on Mac OS X <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
+      <a name="PREREQ_MACOSX"><h4>Installing the prerequisites on Mac OS X <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
 
       <ol>
         <li> If not already installed, install automake, autoconf, libtool
@@ -95,10 +95,11 @@
         <br> <br>
         <li>If not already installed, install expat library and devel packages<br>
         <code>$ sudo port install expat expat-devel</code><br>
+      </ol>
 
       <br><br>
 
-      <a name="BUILD"><h3>Build the source <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+    <a name="BUILD"><h3>Building the source <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
       Once you are done with installation of prerequisites on your system, go through following steps:
       <ol>
         <li> if you want the build to be installed in /usr/local/ path <br>
@@ -121,7 +122,7 @@
       <br>
 
       <br><br>
-      <a name="UPDATE_ENV"><h3>Update env with the installation path <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+      <a name="UPDATE_ENV"><h3>Updating the environment with the installation path <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
 
       Register the installation path with the system environment.<br>
       <code>
@@ -143,7 +144,7 @@
       </code>
 
       <br><br>
-      <a name="VERIFY_INSTALL"><h3>Verify the installation <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+      <a name="VERIFY_INSTALL"><h3>Verifying the installation <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
       <p>
       Once you have installed the <b>XmlPlus</b> tool, the libraries and the binaries must be in LD_LIBRARY_PATH and PATH respectively.
       Assuming that you have installed the build in the path <i>$HOME/xplusbuild/</i>, let us peek into the installation. 
@@ -199,12 +200,21 @@
       </code>
 
       <br><br>
-      Now, try accessing the xsd2cpp tool:
-      <br>
-      <code>
-        $ xsd2cpp <br> 
-        Usage: xsd2cpp    xsd-file    [outdir] <br>
-      </code>
+      Now, try accessing the xsd2cpp tool: <br>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left><pre>
+  $ xsd2cpp 
+  Usage:
+
+  1.  xsd2cpp xsd-file [outdir]
+        outdir: directory to output the generated source to
+        (if unspecified, defaults to xsd-file-name)
+
+  2.  xsd2cpp -v
+        prints verion
+
+  3.  xsd2cpp -h
+        prints help</pre>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
 
       <br>
       If you reached here fine, then you have finished the installation part.

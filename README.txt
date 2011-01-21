@@ -50,5 +50,5 @@ For checking out a release specific branch, eg. xmlplus-0.2:
 Reach Us:
 =========
 
-email: xmlplus.custodians@gmail.com.
+email: xmlplus.custodians@gmail.com
 

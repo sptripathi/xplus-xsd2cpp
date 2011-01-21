@@ -45,22 +45,20 @@
       (see <a href="install.html#UPDATE_ENV">Update env with the installation path</a>)<br>
       <br>
       Try accessing the xsd2cpp tool:
-      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
-      <code>
-        $ xsd2cpp <br> 
-        Usage:<br>
-        1.  xsd2cpp xsd-file [outdir]<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;outdir: directory to output the generated source, like foo, . , .. etc.<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;(if unspecified, defaults to xsd-file-name)<br>
-        <br>
-        2.  xsd2cpp -v<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;prints verion<br>
-        <br>
-        3.  xsd2cpp -h<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;prints help<br>
-      </code>
-      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
-      <br>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left><pre>
+  $ xsd2cpp 
+  Usage:
+
+  1.  xsd2cpp xsd-file [outdir]
+        outdir: directory to output the generated source to
+        (if unspecified, defaults to xsd-file-name)
+
+  2.  xsd2cpp -v
+        prints verion
+
+  3.  xsd2cpp -h
+        prints help</pre>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left> <br>
 
       The xsd2cpp when run on a XML-Schema file, generates the C++ source/header files along with the make related files.<br>
       An example follows: 
@@ -213,7 +211,7 @@
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       
       <br>
-      On fixing the error in st.xml, when the validation is done again, it would look like so: 
+      On fixing the error in st.xml, when the validation is done again, it should look like this: 
         <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       <code>
       $ ./build/bin/simpleTypesDemorun -v st.xml<br>

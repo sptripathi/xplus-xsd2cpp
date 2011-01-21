@@ -4,7 +4,7 @@
     <title>Release History</title>
   </head>
 
-  <h2>Release History <hr NOSHADE SIZE=10 WIDTH=100%> </h2>
+  <h2>Release History<hr NOSHADE SIZE=10 WIDTH=100%> </h2>
 
   <body>
     <form>
@@ -19,7 +19,7 @@
      <tr>
        <td>XSD 1.0</td>
        <td><code>redefine, notation, complexContent and simpleContent inside complexType</code></td>
-       <td></td>
+       <td>--</td>
      </tr>
      <tr>
        <td>XSD 1.0</td>
@@ -33,22 +33,33 @@
      </tr>
      <tr>
        <td>XSD 1.0</td>
-       <td><code>any, anyAttribute, xsi-attributes in instance documents</code></td>
-       <td> wildcards and xsi-attributes in instance documents</td>
+       <td><code>any, anyAttribute</code></td>
+       <td> wildcards </td> 
      </tr>
      <tr>
        <td>XSD 1.0</td>
        <td>
-          <code> finalDefault, final, blockDefault, block, nillable, abstract, substitutionGroup </code> 
+          <pre>
+  <code>&lt;substitutionGroup&gt;,</code>
+  <code>xsi:* attributes(esp. xsi:type)</code> on type-definitions
+
+  <code>block, blockDefault</code> (applicable to &lt;element&gt; and &lt;complexType&gt;),
+
+  <code>final, finalDefault</code> (applicable to &lt;element&gt;, &lt;simpleType&gt; and &lt;complexType&gt;)
+          </pre>
         </td>
-       <td>attributes on applicable schema components</td>
-     </tr>
+       <td>
+        element/type-definition substutability(&lt;substitutionGroup&gt; and xsi:type attribute on type-definitions) <br><br>
+        and related schema attributes on &lt;element&gt;, &lt;simpleType&gt;, &lt;complexType&gt; and &lt;schema&gt;
+       </td>
+     </tr>     
     </table>
 
     <br><br>
 
     <table border=1>
      <caption><b>Unsupported components in XmlPlus Release 0.2</b></caption>
+
      <tr>
        <th><b>Spec Version</b></th>
        <th><b>component</b></th>
@@ -56,33 +67,40 @@
      </tr>
      <tr>
        <td>XSD 1.0</td>
-       <td><code>redefine, notation</code></td>
-       <td></td>
+       <td><code>&lt;redefine&gt;, &lt;notation&gt;</code></td>
+       <td>--</td>
      </tr>
      <tr>
        <td>XSD 1.0</td>
-       <td><code>attributeGroup, group</code></td>
+       <td><code>&lt;attributeGroup&gt;, &lt;group&gt;</code></td>
        <td>Group Definitions</td>
      </tr>
      <tr>
        <td>XSD 1.0</td>
-       <td><code>key, keyref, unique, selector, field </code></td>
+       <td><code>&lt;key&gt;, &lt;keyref&gt;, &lt;unique&gt;, &lt;selector&gt;, &lt;field&gt; </code></td>
        <td>Identity-constraints</td>
      </tr>
      <tr>
        <td>XSD 1.0</td>
-       <td><code>any, anyAttribute, xsi-attributes in instance documents</code></td>
-       <td> wildcards and xsi-attributes in instance documents</td>
+       <td><code>&lt;any&gt;, &lt;anyAttribute&gt;</code></td>
+       <td> wildcards</td>
      </tr>
      <tr>
        <td>XSD 1.0</td>
        <td>
-          <code> finalDefault, final, blockDefault, block, nillable, abstract, substitutionGroup </code> 
+          <pre>
+  <code>&lt;substitutionGroup&gt;,</code>
+
+  <code>block, blockDefault</code> (applicable to &lt;element&gt; and &lt;complexType&gt;),
+
+  <code>final, finalDefault</code> (applicable to &lt;element&gt;)
+          </pre>
         </td>
-       <td>attributes on applicable schema components</td>
+       <td> <br> element substutability(&lt;substitutionGroup&gt;) and related schema attributes on &lt;element&gt;, &lt;complexType&gt; and &lt;schema&gt;<br><br>
+           <b>Note:</b> <code>final/finalDefault</code> attributes applicable to type-definitions(simpleType/complexType) are supported in this release
+       </td>
      </tr>
     </table>
-
 
 
     </form>
