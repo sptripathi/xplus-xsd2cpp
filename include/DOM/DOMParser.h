@@ -30,7 +30,10 @@ using namespace DOM;
 class DOMParser : public ExpatParser
 {
   protected:
-    Document* _docNode;
+    Document*                 _docNode;
+
+    DOMString                 _cdataBufferOnDocBuild;
+    bool                      _cdataInProgress;
 
   public:
 
@@ -80,5 +83,26 @@ class DOMParser : public ExpatParser
     void onDocumentStart(void *userData);
     void onDocumentEnd(void *userData);
     void createAccumulatedTextNode();
+
+    inline bool beginOfCDATASection() {
+      _cdataInProgress = true;
+    }
+    inline bool endOfCDATASection() {
+      _cdataInProgress = false;
+      resetCDATABufferOnDocBuild();
+    }
+    inline bool isCDATAInProgress() {
+      return _cdataInProgress;
+    }
+
+    inline void resetCDATABufferOnDocBuild() {
+      _cdataBufferOnDocBuild = "";
+    }
+    inline void addCDATABufferOnDocBuild(DOMString str) {
+      _cdataBufferOnDocBuild += str;
+    }
+    inline DOMString getCDATABufferOnDocBuild() {
+      return _cdataBufferOnDocBuild;
+    }
 };
 #endif

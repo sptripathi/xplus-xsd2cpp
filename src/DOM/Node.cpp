@@ -69,6 +69,7 @@ namespace DOM
       case TEXT_NODE:
       case COMMENT_NODE:
       case CDATA_SECTION_NODE:
+      case DOCUMENT_TYPE_NODE:
       case PROCESSING_INSTRUCTION_NODE:
         if(_parentNode) 
         {

@@ -33,6 +33,8 @@ namespace DOM
     // buffer used at DOM statful building, eg. reading xml file, to accumalate
     // fragments of text
     DOMString                 _textBufferOnDocBuild;
+    bool                      _isCDATA;
+
   public:
 
     Element(
@@ -59,6 +61,16 @@ namespace DOM
     }
     inline DOMString getTextBufferOnDocBuild() {
       return _textBufferOnDocBuild;
+    }
+
+    inline bool markTextBufferAsCDATA() {
+      _isCDATA = true;
+    }
+    inline bool unmarkTextBufferAsCDATA() {
+      _isCDATA = false;
+    }
+    inline bool isTextBufferCDATA() {
+      return _isCDATA;
     }
 
     virtual const DOMString* getAttribute(DOMString* name);

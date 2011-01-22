@@ -193,6 +193,32 @@ namespace DOM
     return txt;
     //return new TextNode(data, this, parentNode);
   }
+
+  CDATASection* Document::createCDATASection(DOMString* data)
+  {
+    Node* parentNode = NULL;
+    if(_stateful) { 
+      if(_currentElement) {
+        parentNode = _currentElement;
+      }
+      else {
+        parentNode = this;
+      }
+    }
+    return new CDATASection(data, this, parentNode);
+  }
+
+  DocumentType* Document::createDocumentType(
+        const DOMString*      name,
+        NamedNodeMap          entities,
+        NamedNodeMap          notations,
+        const DOMString*      publicId,
+        const DOMString*      systemId,
+        const DOMString*      internalSubset)
+  {
+    _doctype = new DocumentType(name, entities, notations, publicId, systemId, internalSubset, this);
+    return _doctype;
+  }
   
   Comment* Document::createComment(DOMString* data)
   {
@@ -208,11 +234,6 @@ namespace DOM
     return new Comment(data, this, parentNode);
   }
   
-  CDATASection* Document::createCDATASection(DOMString* data)
-  {
-    return NULL; //TODO:
-  }
-
   PI* Document::createProcessingInstruction(DOMString* target,
       DOMString* data)
   {

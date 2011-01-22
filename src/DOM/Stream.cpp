@@ -60,6 +60,10 @@ XPlusCharOutputStream& operator<<(XPlusCharOutputStream& s, const Node& node)
       }
       break;
     case Node::CDATA_SECTION_NODE:
+      {
+        const CDATASection& cdataNode = dynamic_cast<const CDATASection &>(node);
+        outputCDATASection(s, cdataNode);
+      }
       break;
     case Node::ENTITY_REFERENCE_NODE:
       break;
@@ -84,6 +88,10 @@ XPlusCharOutputStream& operator<<(XPlusCharOutputStream& s, const Node& node)
       }
       break;
     case Node::DOCUMENT_TYPE_NODE:
+      {
+        const DocumentType& docType = dynamic_cast<const DocumentType &>(node);
+        outputDocumentType(s, docType);
+      }
       break;
     case Node::DOCUMENT_FRAGMENT_NODE:
       break;
@@ -122,6 +130,28 @@ void outputXmlDecl(XPlusCharOutputStream& s, const Document& doc)
   s << endl;
 }
 
+/*
+<!DOCTYPE chapter SYSTEM "../dtds/chapter.dtd">
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML//EN" "../dtds/chapter.dtd">
+*/
+void outputDocumentType(XPlusCharOutputStream& s, const DocumentType& docType)
+{
+  s << "<!DOCTYPE";
+  if(docType.getName()) {
+    s << " " << *docType.getName();
+  }
+
+  if(docType.getPublicId()) {
+    s << " PUBLIC \"" << *docType.getPublicId() << "\"";
+  }
+  
+  if(docType.getSystemId()) {
+    s << " SYSTEM \"" << *docType.getSystemId() << "\"";
+  }
+
+  s << ">\n";
+}
+
 void outputDocument(XPlusCharOutputStream& s, const Document& doc)
 {
 #ifdef XPLUS_UNICODE_WCHAR_T
@@ -130,7 +160,7 @@ void outputDocument(XPlusCharOutputStream& s, const Document& doc)
   s.write( (const char*)&BOM_UTF16, sizeof(short));
 #endif
   outputXmlDecl(s,doc);
-
+  
   const NodeList& childNodes = doc.getChildNodes();
   for(unsigned int i=0; i<childNodes.getLength(); i++)
   {
@@ -312,6 +342,13 @@ void outputAttribute(XPlusCharOutputStream& s, const Attribute& attr)
   }
   s << DOMString("\"");
 }
+        
+void outputCDATASection(XPlusCharOutputStream& s, const CDATASection& cdataNode)
+{
+  s << "<![CDATA[";
+  outputTextNode(s, cdataNode);
+  s << "]]>";
+}
 
 void outputTextNode(XPlusCharOutputStream& s, const TextNode& tn)
 {
@@ -347,7 +384,7 @@ void outputComment(XPlusCharOutputStream& s, const Comment& cmt)
   DOMString padding;
   if( cmt.prettyPrint() )
   {
-    s << endl;
+    //s << endl;
     padding = prettyPrintPadding(cmt.getDepth());
     s << padding;
   }
@@ -356,7 +393,8 @@ void outputComment(XPlusCharOutputStream& s, const Comment& cmt)
 
   // only top level comments need to be follwed by a newline because
   // all non-top level nodes like element/Text output newline before themselves
-  if( cmt.prettyPrint() && (cmt.getParentNode() == cmt.getOwnerDocument()) ) 
+  if( cmt.getParentNode() == cmt.getOwnerDocument() ) 
+  //if( cmt.prettyPrint() && (cmt.getParentNode() == cmt.getOwnerDocument()) ) 
   //if( cmt.prettyPrint() && (cmt.getPreviousSibling() || cmt.getNextSibling() ))
   {
     s << "\n";

@@ -77,7 +77,27 @@ namespace XMLSchema
 
       if(ownerElement())
       {
-        XsdFsmBasePtr fsmsAttrs[] = { 
+        XsdFsmBasePtr fsmsAttrs[] =
+        { 
+                                            // ---- xml  --- //
+          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xmlUriPtr, *Namespaces::s_xmlLangStrPtr, 0, 1),
+                                        XsdEvent::ATTRIBUTE, 
+                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXmlLang)),
+
+          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xmlUriPtr, *Namespaces::s_xmlSpaceStrPtr, 0, 1),
+                                        XsdEvent::ATTRIBUTE,
+                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXmlSpace)),
+
+          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xmlUriPtr, *Namespaces::s_xmlBaseStrPtr, 0, 1),
+                                        XsdEvent::ATTRIBUTE, 
+                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXmlBase)),
+
+          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xmlUriPtr, *Namespaces::s_xmlIdStrPtr, 0, 1),
+                                        XsdEvent::ATTRIBUTE, 
+                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXmlId)),
+
+                                            // ---- xsi  --- //
+
           new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xsiUriPtr, *Namespaces::s_xsiTypeStrPtr, 0, 1),
                                         XsdEvent::ATTRIBUTE, 
                                         new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXsiType)),
@@ -102,7 +122,6 @@ namespace XMLSchema
                                                     XsdEvent::ELEMENT_END);
         
         _fsm = new AnyTypeFSM(fsmsAttrs, contentFsm, elemEndFsm);
-        
       }
       else
       {
@@ -507,6 +526,33 @@ namespace XMLSchema
       return new DOM::Attribute( attrName, attrValue, attrNsUri, attrNsPrefix, ownerElement(), ownerDocument());
     }
 
+    DOM::Attribute* anyType::createAttributeXmlLang(FsmCbOptions& options)
+    {
+      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xmlLangStrPtr, Namespaces::s_xmlUriPtr, Namespaces::s_xmlStrPtr); 
+      _fsm->fsmCreatedNode(attr);
+      return attr;
+    }
+
+    DOM::Attribute* anyType::createAttributeXmlSpace(FsmCbOptions& options)
+    {
+      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xmlSpaceStrPtr, Namespaces::s_xmlUriPtr, Namespaces::s_xmlStrPtr); 
+      _fsm->fsmCreatedNode(attr);
+      return attr;
+    }
+
+    DOM::Attribute* anyType::createAttributeXmlBase(FsmCbOptions& options)
+    {
+      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xmlBaseStrPtr, Namespaces::s_xmlUriPtr, Namespaces::s_xmlStrPtr); 
+      _fsm->fsmCreatedNode(attr);
+      return attr;
+    }
+
+    DOM::Attribute* anyType::createAttributeXmlId(FsmCbOptions& options)
+    {
+      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xmlIdStrPtr, Namespaces::s_xmlUriPtr, Namespaces::s_xmlStrPtr); 
+      _fsm->fsmCreatedNode(attr);
+      return attr;
+    }
     
     DOM::Attribute* anyType::createAttributeXsiType(FsmCbOptions& options)
     {

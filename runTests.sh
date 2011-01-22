@@ -23,7 +23,8 @@ EX_DIRS="
         examples/netEnabled
         examples/org
         examples/xmldsig
-        examples/rss
+        examples/chineseDoc_utf8
+        examples/japaneseDoc_utf8
         "
 
 W3C_TESTS_DIRS="
@@ -64,7 +65,10 @@ XPLUS_NEGTESTS_DIRS="
                   Tests/xplus_neg_tests/scRest4
                   Tests/xplus_neg_tests/ccExtAny
                   Tests/xplus_neg_tests/ccExt2
-                    "
+                  Tests/xplus_neg_tests/stInvalidDerivation1
+                  Tests/xplus_neg_tests/stInvalidDerivation2
+                  Tests/xplus_neg_tests/stInvalidDerivation3
+                  "
 
 #EX_DIRS=
 #W3C_TESTS_DIRS=
@@ -153,21 +157,22 @@ cleanup_dir()
 cleanup()
 {
   echo
-  echo "=========================  WARNING ==============================="
+  echo "  =========================  WARNING ============================"
   echo "  Requested execution will cleanup many files recursively inside"
   echo "  certain directories, so that any of user added files and edits"
   echo "  may get lost. If you think you have added/edited important "
   echo "  changes inside these directories, please back them up, before"
-  echo "  running this command."
+  echo "  proceeding."
   echo
-  echo " Following directories would get cleaned up recursively:"
-  echo " * Tests/ "
-  echo " * examples/"
+  echo "  Following directories would get cleaned up recursively:"
+  echo "  * Tests/ "
+  echo "  * examples/"
   echo 
-  echo -n "Do you want to continue? Y/n: "
+  echo -n "Do you want to continue [y/N]? "
   read ans
-  if [ $ans != 'Y' ]; then
+  if [ "$ans" != 'y' ]; then
     echo  "  => aborting the execution..."
+    echo
     exit 2
   fi
 

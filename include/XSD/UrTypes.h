@@ -315,6 +315,14 @@ namespace XMLSchema
         void checkContentType(DOMString value);
 
         DOM::Attribute* createDOMAttributeUnderCurrentElement(DOMString *attrName, DOMString *attrNsUri=NULL, DOMString *attrNsPrefix=NULL, DOMString *attrValue=NULL);
+
+                        // --- xml --- //
+        DOM::Attribute* createAttributeXmlLang(FsmCbOptions& options);
+        DOM::Attribute* createAttributeXmlSpace(FsmCbOptions& options);
+        DOM::Attribute* createAttributeXmlBase(FsmCbOptions& options);
+        DOM::Attribute* createAttributeXmlId(FsmCbOptions& options);
+
+                        // --- xsi --- //
         DOM::Attribute* createAttributeXsiType(FsmCbOptions& options);
         DOM::Attribute* createAttributeXsiNil(FsmCbOptions& options);
         DOM::Attribute* createAttributeXsiSchemaLocation(FsmCbOptions& options);

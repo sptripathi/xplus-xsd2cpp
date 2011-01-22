@@ -21,36 +21,43 @@
 #define __DOCUMENTTYPE_H__
 
 #include "DOM/DOMCommonInc.h"
+#include "DOM/Node.h"
+#include "DOM/NamedNodeMap.h"
 #include "XPlus/XPlusObject.h"
 
 namespace DOM
 {
-  class DocumentType : public XPlus::XPlusObject 
+  class DocumentType : public DOM::Node 
   {
   protected:
 
-    const DOMStringPtr         _name;
-    NamedNodeMap     _entities;
-    NamedNodeMap     _notations;
+    DOMStringPtr         _name;
+    NamedNodeMap         _entities;
+    NamedNodeMap         _notations;
         // Introduced in DOM Level 2:
-    const DOMStringPtr         _publicId;
-    const DOMStringPtr         _systemId;
-    const DOMStringPtr         _internalSubset;
+    DOMStringPtr         _publicId;
+    DOMStringPtr         _systemId;
+    DOMStringPtr         _internalSubset;
 
   public:
-    DocumentType():
-      XPlusObject("DocumentType")
-      {
-      }
-    virtual ~DocumentType(){}
+    DocumentType(
+        const DOMString* name,
+        NamedNodeMap          entities,
+        NamedNodeMap          notations,
+        const DOMString*      publicId,
+        const DOMString*      systemId,
+        const DOMString*      internalSubset,
+        const Document*       ownerDocument);
 
-    virtual const DOMString* getName();
-    virtual const NamedNodeMap& getEntities();
-    virtual const NamedNodeMap& getNotations();
+    virtual ~DocumentType();
 
-    virtual const DOMString* getPublicId();
-    virtual const DOMString* getSystemId();
-    virtual const DOMString* getInternalSubset();
+    virtual const DOMString* getName() const;
+    virtual const DOMString* getPublicId() const;
+    virtual const DOMString* getSystemId() const;
+    virtual const DOMString* getInternalSubset() const;
+    
+    virtual const NamedNodeMap& getEntities() const;
+    virtual const NamedNodeMap& getNotations() const;
   };
 }
 

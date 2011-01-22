@@ -72,9 +72,10 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libdom_la_LIBADD =
 am_libdom_la_OBJECTS = xmlparse.lo xmlrole.lo xmltok.lo xmltok_impl.lo \
-	xmltok_ns.lo Attribute.lo CharacterData.lo Comment.lo \
-	Document.lo DOMParser.lo Element.lo ExpatParser.lo \
-	NamedNodeMap.lo Node.lo Stream.lo TextNode.lo XmlDecl.lo
+	xmltok_ns.lo Attribute.lo CDATASection.lo CharacterData.lo \
+	Comment.lo Document.lo DocumentType.lo DOMParser.lo Element.lo \
+	ExpatParser.lo NamedNodeMap.lo Node.lo Stream.lo TextNode.lo \
+	XmlDecl.lo
 libdom_la_OBJECTS = $(am_libdom_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -203,6 +204,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -229,9 +231,11 @@ libdom_la_SOURCES = \
  expat/xmltok_ns.c \
  \
  Attribute.cpp \
+ CDATASection.cpp \
  CharacterData.cpp \
  Comment.cpp \
  Document.cpp \
+ DocumentType.cpp \
  DOMParser.cpp \
  Element.cpp \
  ExpatParser.cpp \
@@ -342,10 +346,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Attribute.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CDATASection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CharacterData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Comment.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Document.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Element.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExpatParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NamedNodeMap.Plo@am__quote@

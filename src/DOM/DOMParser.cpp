@@ -71,7 +71,14 @@ void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet, vector<A
 #endif
 
   createAccumulatedTextNode();
-  /*
+
+  // the strategy is to construct element along with attribute info, so that if 
+  // needed the elemnt can take advantage of the attributes while constructing.
+  // The advantage  of such an approach, becomes more obvious in DOM derivations
+  // in XSD model where attributes such xsi:type dictate the way the element has
+  // to be constructed
+
+#if 0
   Node* elemNode = _docNode->createElementNS(
       const_cast<DOMString *>(nsTriplet.nsUri()),
       const_cast<DOMString *>(nsTriplet.nsPrefix()),
@@ -86,7 +93,7 @@ void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet, vector<A
   {
     onAttribute(userData, attrVec[i]);
   }
-  */
+#endif
   Node* elemNode = _docNode->createElementWithAttributes(const_cast<DOMString *>(nsTriplet.nsUri()),
       const_cast<DOMString *>(nsTriplet.nsPrefix()),
       const_cast<DOMString *>(nsTriplet.localName()),
@@ -158,6 +165,10 @@ void DOMParser::onCharacterData(void *userData,
   if(_docNode->stateful()) {
     _docNode->getCurrentElement()->addTextBufferOnDocBuild(*charDataPtr);
   }
+  else if(this->isCDATAInProgress())
+  {
+    this->addCDATABufferOnDocBuild(*charDataPtr);
+  }
   else
   {
     TextNodeP textNode = _docNode->createTextNode(const_cast<DOMString *>(charDataPtr));
@@ -193,6 +204,17 @@ void DOMParser::onNamespaceEnd(void *userData,
   delete nsPrefix;
 } 
 
+
+// Here is an example of DocumentType:
+//  =========================================
+// <!DOCTYPE ex SYSTEM "ex.dtd" [
+//  <!ENTITY foo "foo">
+//  <!ENTITY bar "bar">
+//  <!ENTITY bar "bar2">
+//  <!ENTITY % baz "baz">
+//  ]>
+//  =========================================
+//
 void DOMParser::onDocTypeStart(void  *userData,
     const DOMString* doctypeNamePtr,
     const DOMString* sysidPtr,
@@ -211,6 +233,19 @@ void DOMParser::onDocTypeStart(void  *userData,
     << endl;
 #endif
 
+  // FIXME:
+  // The parse callback currently not implemented for entity/notation objects.
+  // For now let's just construct the DocumentType assuming there are no
+  // entities/notations inside it. When the parsing info is available for
+  // entities/notations, then this creation should be shifted to onNamespaceEnd
+  // so that entities/notations can also be used in the constructor.
+  DocumentType* docType = _docNode->createDocumentType( doctypeNamePtr, 
+                                                        NamedNodeMap(), //FIXME
+                                                        NamedNodeMap(), //FIXME
+                                                        pubidPtr,
+                                                        sysidPtr,
+                                                        NULL            // FIXME
+                                                      );
 }
 
 void DOMParser::onDocTypeEnd(void *userData)
@@ -225,6 +260,17 @@ void DOMParser::onCDATAStart(void *userData)
 #ifdef _DOM_DBG
   cout << "onCDATAStart: " << endl;
 #endif
+
+  this->beginOfCDATASection();
+  
+  createAccumulatedTextNode();
+
+  if(_docNode->stateful()) {
+    _docNode->getCurrentElement()->markTextBufferAsCDATA();
+  }
+  else {
+  }
+
 }
 
 void DOMParser::onCDATAEnd(void *userData)
@@ -232,6 +278,17 @@ void DOMParser::onCDATAEnd(void *userData)
 #ifdef _DOM_DBG
   cout << "onCDATAEnd: " << endl;
 #endif
+  
+  if(_docNode->stateful()) {
+    createAccumulatedTextNode();
+    _docNode->getCurrentElement()->unmarkTextBufferAsCDATA();
+  }
+  else 
+  {
+    DOMStringPtr textPtr = new DOMString(this->getCDATABufferOnDocBuild());
+    CDATASection* cdataNode = _docNode->createCDATASection(textPtr);
+  }
+  this->endOfCDATASection();
 }
 
 void DOMParser::onPI(void *userData,
@@ -263,11 +320,23 @@ void DOMParser::createAccumulatedTextNode()
     //cout << "onElementStart: text:|" << text << "|" << endl;
     if(text.length() > 0)
     {
-      DOMStringPtr textPtr = new DOMString(text);
-      TextNodeP textNode = _docNode->createTextNode(textPtr);
-      _docNode->getCurrentElement()->resetTextBufferOnDocBuild();
-      if(!textNode) {
-        throw DOMException("failed to create Text");
+      if(_docNode->getCurrentElement()->isTextBufferCDATA())
+      {
+        DOMStringPtr textPtr = new DOMString(text);
+        CDATASection* cdataNode = _docNode->createCDATASection(textPtr);
+        _docNode->getCurrentElement()->resetTextBufferOnDocBuild();
+        if(!cdataNode) {
+          throw DOMException("failed to create CDATASection");
+        }
+      }
+      else // it is a TextNode
+      {
+        DOMStringPtr textPtr = new DOMString(text);
+        TextNode* textNode = _docNode->createTextNode(textPtr);
+        _docNode->getCurrentElement()->resetTextBufferOnDocBuild();
+        if(!textNode) {
+          throw DOMException("failed to create Text");
+        }
       }
     }
   }

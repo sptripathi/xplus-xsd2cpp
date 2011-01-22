@@ -26,6 +26,7 @@
 #include "DOM/DOMCommonInc.h"
 #include "DOM/Node.h"
 #include "DOM/XmlDecl.h"
+#include "DOM/CDATASection.h"
 #include "DOM/DocumentType.h"
 #include "DOM/DOMImplementation.h"
 #include "DOM/Element.h"
@@ -36,8 +37,8 @@ namespace DOM
   {
     protected:  
       // DOM spec
-      const DocumentTypePtr       _doctype;
-      const DOMImplementationPtr  _implementation;
+      DocumentTypePtr       _doctype;
+      DOMImplementationPtr  _implementation;
 
       // impl need
       std::map<DOMString, DOMString>  _prefixedNamespaces;
@@ -69,12 +70,19 @@ namespace DOM
         return _implementation;
       }
 
+     virtual DocumentType* createDocumentType(
+        const DOMString* name,
+        NamedNodeMap    entities,
+        NamedNodeMap    notations,
+        const DOMString*      publicId,
+        const DOMString*      systemId,
+        const DOMString*      internalSubset);
 
       virtual ElementP createElement(DOMString* tagName); // throws();
       virtual DocumentFragment* createDocumentFragment();
-      virtual TextNodeP createTextNode(DOMString* data);
+      virtual TextNode* createTextNode(DOMString* data);
+      virtual CDATASection* createCDATASection(DOMString* data);
       virtual Comment* createComment(DOMString* data);
-      virtual CDATASection* createCDATASection(DOMString* data); //  throws();
       virtual PI* createProcessingInstruction(DOMString* target,
           DOMString* data); // throws();
       virtual AttributeP createAttribute(DOMString* name); //  throws();

@@ -17,24 +17,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __CDATA_SECTION_H__
-#define __CDATA_SECTION_H__
-
-#include "DOM/DOMCommonInc.h"
-#include "DOM/TextNode.h"
+#include "DOM/CDATASection.h"
 
 namespace DOM
 {
-  class CDATASection : public DOM::TextNode
+  CDATASection::CDATASection(DOMString* nodeValue,
+      Document* ownerDocument,
+      Node* parentNode,
+      Node* prevSibling):
+    XPlusObject("CDATASection"),
+    TextNode(nodeValue, ownerDocument, parentNode, prevSibling)
   {
-    public:
-    CDATASection(DOMString* nodeValue,
-          Document* ownerDocument=NULL,
-          Node* parentNode=NULL,
-          Node* prevSibling=NULL);
+    setNodeType(Node::CDATA_SECTION_NODE);
+  }
 
-    virtual ~CDATASection();
-  };
+  CDATASection::~CDATASection() {}
+
 }
-
-#endif

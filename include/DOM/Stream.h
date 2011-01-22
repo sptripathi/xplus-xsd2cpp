@@ -54,12 +54,14 @@ typedef std::ofstream XPlusFileOutputStream;
 
 
 void outputXmlDecl(XPlusCharOutputStream& s, const Document& doc);
+void outputDocumentType(XPlusCharOutputStream& s, const DocumentType& docType);
 XPlusCharOutputStream& operator<<(XPlusCharOutputStream& s, const DOM::Node& node);
 void outputDocument(XPlusCharOutputStream& s, const DOM::Document& doc);
 void outputPI(XPlusCharOutputStream& s, const PI& pi);
 void outputElement(XPlusCharOutputStream& s, const DOM::Element& e);
 void outputAttribute(XPlusCharOutputStream& s, const DOM::Attribute& attr);
 void outputTextNode(XPlusCharOutputStream& s, const DOM::TextNode& tn);
+void outputCDATASection(XPlusCharOutputStream& s, const CDATASection& cdataNode);
 void outputComment(XPlusCharOutputStream& s, const DOM::Comment& cmt);
 void outputDocElementNamespaces(XPlusCharOutputStream& s, const Element& e);
 XPlusCharOutputStream& operator<<(XPlusCharOutputStream& s, const DOM::DOMString& domStr);

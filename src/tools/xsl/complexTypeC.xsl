@@ -1804,9 +1804,11 @@ namespace Types
 
     DOMString <xsl:value-of select="$cppNSDerefLevel1Onwards"/>get_<xsl:value-of select="$cppNameFunction"/>_string()
     {
+       <!-- 
         <xsl:if test="$isOptionalScalar='true'">
       mark_present_<xsl:value-of select="$cppNameFunction"/>();
         </xsl:if>
+        -->
       return <xsl:value-of select="$localName"/>_<xsl:value-of select="$cppNameFunction"/>()->stringValue();
     }
 

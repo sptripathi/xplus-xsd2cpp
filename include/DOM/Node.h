@@ -177,7 +177,7 @@ protected:
 
   DOMStringPtr              _nodeName;
   DOMStringPtr              _nodeValue;
-  const NodeType            _nodeType;
+  NodeType                  _nodeType;
 
   Node*                   _parentNode;
   NodeList                _childNodes;
@@ -230,6 +230,9 @@ public:
 
   virtual inline const NodeType getNodeType() const {
     return _nodeType;
+  }
+  virtual inline void setNodeType(NodeType nodeType) {
+    _nodeType = nodeType;
   }
 
   virtual inline Node* getParentNode() const {

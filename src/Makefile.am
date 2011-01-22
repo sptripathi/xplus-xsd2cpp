@@ -65,9 +65,11 @@ libxsdall_la_SOURCES = \
   XPlus/UString.cpp \
   \
   DOM/Attribute.cpp \
+  DOM/CDATASection.cpp \
   DOM/CharacterData.cpp \
   DOM/Comment.cpp \
   DOM/Document.cpp \
+  DOM/DocumentType.cpp \
   DOM/DOMParser.cpp \
   DOM/Element.cpp \
   DOM/ExpatParser.cpp \

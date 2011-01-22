@@ -92,11 +92,12 @@ am_libxsdall_la_OBJECTS = Poco/ASCIIEncoding.lo Poco/AtomicCounter.lo \
 	XPlus/DateTimeUtils.lo XPlus/Duration.lo XPlus/Exception.lo \
 	XPlus/FPA.lo XPlus/Namespaces.lo XPlus/StringUtils.lo \
 	XPlus/TextEncoding.lo XPlus/UString.lo DOM/Attribute.lo \
-	DOM/CharacterData.lo DOM/Comment.lo DOM/Document.lo \
-	DOM/DOMParser.lo DOM/Element.lo DOM/ExpatParser.lo \
-	DOM/NamedNodeMap.lo DOM/Node.lo DOM/Stream.lo DOM/TextNode.lo \
-	DOM/XmlDecl.lo XSD/Enums.lo XSD/FSM.lo XSD/UrTypes.lo \
-	XSD/XSDFSM.lo XSD/xsdUtils.lo
+	DOM/CDATASection.lo DOM/CharacterData.lo DOM/Comment.lo \
+	DOM/Document.lo DOM/DocumentType.lo DOM/DOMParser.lo \
+	DOM/Element.lo DOM/ExpatParser.lo DOM/NamedNodeMap.lo \
+	DOM/Node.lo DOM/Stream.lo DOM/TextNode.lo DOM/XmlDecl.lo \
+	XSD/Enums.lo XSD/FSM.lo XSD/UrTypes.lo XSD/XSDFSM.lo \
+	XSD/xsdUtils.lo
 libxsdall_la_OBJECTS = $(am_libxsdall_la_OBJECTS)
 libxsdall_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -270,6 +271,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -346,9 +348,11 @@ libxsdall_la_SOURCES = \
   XPlus/UString.cpp \
   \
   DOM/Attribute.cpp \
+  DOM/CDATASection.cpp \
   DOM/CharacterData.cpp \
   DOM/Comment.cpp \
   DOM/Document.cpp \
+  DOM/DocumentType.cpp \
   DOM/DOMParser.cpp \
   DOM/Element.cpp \
   DOM/ExpatParser.cpp \
@@ -532,10 +536,12 @@ DOM/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) DOM/$(DEPDIR)
 	@: > DOM/$(DEPDIR)/$(am__dirstamp)
 DOM/Attribute.lo: DOM/$(am__dirstamp) DOM/$(DEPDIR)/$(am__dirstamp)
+DOM/CDATASection.lo: DOM/$(am__dirstamp) DOM/$(DEPDIR)/$(am__dirstamp)
 DOM/CharacterData.lo: DOM/$(am__dirstamp) \
 	DOM/$(DEPDIR)/$(am__dirstamp)
 DOM/Comment.lo: DOM/$(am__dirstamp) DOM/$(DEPDIR)/$(am__dirstamp)
 DOM/Document.lo: DOM/$(am__dirstamp) DOM/$(DEPDIR)/$(am__dirstamp)
+DOM/DocumentType.lo: DOM/$(am__dirstamp) DOM/$(DEPDIR)/$(am__dirstamp)
 DOM/DOMParser.lo: DOM/$(am__dirstamp) DOM/$(DEPDIR)/$(am__dirstamp)
 DOM/Element.lo: DOM/$(am__dirstamp) DOM/$(DEPDIR)/$(am__dirstamp)
 DOM/ExpatParser.lo: DOM/$(am__dirstamp) DOM/$(DEPDIR)/$(am__dirstamp)
@@ -610,6 +616,8 @@ mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f DOM/Attribute.$(OBJEXT)
 	-rm -f DOM/Attribute.lo
+	-rm -f DOM/CDATASection.$(OBJEXT)
+	-rm -f DOM/CDATASection.lo
 	-rm -f DOM/CharacterData.$(OBJEXT)
 	-rm -f DOM/CharacterData.lo
 	-rm -f DOM/Comment.$(OBJEXT)
@@ -618,6 +626,8 @@ mostlyclean-compile:
 	-rm -f DOM/DOMParser.lo
 	-rm -f DOM/Document.$(OBJEXT)
 	-rm -f DOM/Document.lo
+	-rm -f DOM/DocumentType.$(OBJEXT)
+	-rm -f DOM/DocumentType.lo
 	-rm -f DOM/Element.$(OBJEXT)
 	-rm -f DOM/Element.lo
 	-rm -f DOM/ExpatParser.$(OBJEXT)
@@ -744,10 +754,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@DOM/$(DEPDIR)/Attribute.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@DOM/$(DEPDIR)/CDATASection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DOM/$(DEPDIR)/CharacterData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DOM/$(DEPDIR)/Comment.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DOM/$(DEPDIR)/DOMParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DOM/$(DEPDIR)/Document.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@DOM/$(DEPDIR)/DocumentType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DOM/$(DEPDIR)/Element.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DOM/$(DEPDIR)/ExpatParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DOM/$(DEPDIR)/NamedNodeMap.Plo@am__quote@
