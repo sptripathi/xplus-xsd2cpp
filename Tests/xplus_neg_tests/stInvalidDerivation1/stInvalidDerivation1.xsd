@@ -1,0 +1,22 @@
+<xsd:schema
+elementFormDefault="qualified"
+attributeFormDefault="qualified"
+targetNamespace="http://www.example.com/STDemo"
+xmlns:tns="http://www.example.com/STDemo"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+>
+
+  <xsd:simpleType name='IntMax5k' final="list">
+    <xsd:restriction base='xsd:int'>
+      <xsd:maxExclusive value='5000'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='ListOfIntMax5k'>
+    <xsd:list itemType='tns:IntMax5k'/>
+  </xsd:simpleType>
+
+  <xsd:element name="elem" type="tns:ListOfIntMax5k"/>
+  
+</xsd:schema>
+
