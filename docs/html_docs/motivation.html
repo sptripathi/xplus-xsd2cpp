@@ -16,12 +16,11 @@
      </ul>
 
     <a name="WHY_XMLSCHEMA"><h3>Why W3C XML-Schema?  <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-    How do I constrain a well-formed XML document to a schema?
+    <i>How do I constrain a well-formed XML document to a schema?</i>
     <br><br>
 
-    <b>Answer:</b><br>
-    The XML file can have a schema specification for it.<br>
-    There are at least two standard ways of providing schema for XML documents:
+    <br>
+    The XML file can have a schema specification for it. There are at least two standard ways of providing schema for XML documents:
     <ul>
       <li> DTD -  Document Type Definition<br>
       <li> <b>W3C XML-Schema</b><br>
@@ -55,29 +54,37 @@
     <br><br>
     
     <a name="WHY_DB"><h3>Why Data-Binding?  <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-
-    Given that we have a XML-Schema for my XML file, how do we write and read only the valid XML files ?  <br>
-    If we use DOM API to write the XML files then it may take many iterations before we write the valid XML file. Where is the solution?
+    <i>
+    My application needs to do XML I/O. Now that I have XML-Schemas for the XML files that my application needs to do I/O on, do I have to write custom handwritten parser for each such XML-Schema ? Couldn't the life be any easier ? </i>   
       <br><br>
     
-    <b>Answer:</b><br> The solution is to use data-bindings for the XML-Schema.<br>
-    The data-binding implementations typically provide following utilities:
+    <br> The data-binding comes for rescue here. The data-binding implementations typically provide following utilities:
     <ul>
-      <li> The data-binding structures for XML-Schema eg. C++ classes for XML-Schema components 
-      <li> Parser to read valid XML documents into data-binding structures
-      <li> Writer to write the data-bindings to a xml file
+      <li> <b>X/O mapping</b>:<br> 
+      The data-binding tool automatically generates structures( eg. classes in OO languages) mapped for XML-Schema components. The in-memory objects holding xml data are also known as <i>XML-Object</i>s. The applications interact with xml data directly through in-memory objects, rather than using DOM/SAX APIs.<br><br>
+      <li> <b>Parsing ie. Deserailization/Unmarshalling:</b><br> 
+      Parser to read valid XML documents into in-memory <i>XML-Object</i>s<br><br>
+      <li> <b>Marshalling/Serialization:</b><br> 
+      Writer to write the <i>XML-Object</i>s to xml files
     </ul>
-    There are many data-binding solutions available across several platforms/programming-languages.<br>  
+
+    In essence, the application has to interact only with readymade in-memory object-interface. These objects hide(and save) all the complexities of XML I/O from(for) the application. Thus, one is saved from writing XML I/O implementations(ie. Classes to hold xml data, alongwith Serialization/Deserialization code) for xml data.<br><br>
+    
+    There are several data-binding solutions available across platforms/programming-languages.<br>  
 
     
     <br><br>
     <a name="WHY_XSD2CPP"><h3>Why <i>XmlPlus-xsd2cpp</i>?  <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-    Why should I use XmlPlus?
+    <i>Why should I use XmlPlus data-binding? </i>
     <br><br>
     
-    <b>Answer:</b><br>
-    XmlPlus provides <b>"simple to use"</b> C++ data-bindings for XML-Schema.<br>
-    It is <b>free</b>. Read <a href="license.html">License</a> for terms of use.<br>
+    Here are a few reasons:<br>
+    <ul>
+      <li> XmlPlus is <i>open-source</i> and <i>free</i>
+      <li> XmlPlus provides <i>"simple to use"</i> C++ data-binding
+      <li> XmlPlus <i>Serialization</i> has <i>in-built</i> validation
+      <li> XmlPlus <i>Serialization/Deserialization</i> retains not just elements and attributes but also processing-instructions and comments, across roundtrips.
+    </ul>
     Please read other sections on XmlPlus documentation, to learn more about it.
 
     <br><br>

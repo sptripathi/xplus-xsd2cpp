@@ -200,7 +200,7 @@
   <br><br>
   <a name="XML_NS"><h4>Namespaces of the elements and attributes in the XML instance document<hr NOSHADE SIZE=5 WIDTH=100%></h4></a>
 
-  XML-Namespace of an element/attribute in a valid instance XML document, is based on the XML-Schema specification. An implementation like XmlPlus has nothing to do here.<br>
+  XML-Namespace of an element/attribute in a valid instance XML document, is based on the XML-Schema specification. An implementation like XmlPlus has no semantics to add here.<br>
 
   If the XML-Schema, and the imported Documents, have no targetNamespace specified, then none of elements/attributes in the instance XML document would have a namespace URI. Otherwise, some elements/attributes in the instance XML document would have a namespace URI. Even in the later case, not all elements/attributes in the instance XML document would have a namespace URI.<br> 
   If a non-ref element/attribute does have a XML-Namespace, the namespace URI would be the targetNamespace URI of the XML-Schema document in which the element/attribute appears.<br>
@@ -717,36 +717,36 @@
   A relevant sample code-snippet of main.cpp follows:<br>
 
   <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
-    <code>
-    // Following functions are templates.<br>
-    // You need to put code in the context
-    <br><br>
-    void chooseDocumentElement(STDemo::Document* xsdDoc)<br>
-    {<br>
-      &nbsp;&nbsp;// uncomment one of folowing to choose root<br>
-      &nbsp;&nbsp;xsdDoc-&gt;set_root_myComplexTypeElem();<br>
-      &nbsp;&nbsp;//xsdDoc-&gt;set_root_intValue2();<br>
-    }
-    <br><br>
-    void populateDocument(DOM::Document* pDoc)<br>
-    {<br>
-      &nbsp;&nbsp;STDemo::Document* docNode = dynamic_cast&lt;STDemo::Document *&gt;(pDoc);
-      <br><br>
-      &nbsp;&nbsp;// write code to populate the Document here<br>
-      &nbsp;&nbsp;...<br>
-      &nbsp;&nbsp;....<br>
-      &nbsp;&nbsp;rootElem-&gt;set_aFont("medium");<br>
-      &nbsp;&nbsp;rootElem-&gt;set_anotherFont("72");<br>
-      &nbsp;&nbsp;....<br>
-      &nbsp;&nbsp;...<br>
-    }
-    <br><br>
-    void updateOrConsumeDocument(DOM::Document* pDoc)<br>
-    {<br>
-      &nbsp;&nbsp;STDemo::Document* xsdDoc = dynamic_cast&lt;STDemo::Document *&gt;(pDoc);<br>
-      &nbsp;&nbsp;// write code to update the populated-Document here<br>
-    }
-    </code>
+ <pre>
+ // Following functions are use case templates.
+ // You need to put "code" in the respective contexts.
+ //
+
+ void chooseDocumentElement(STDemo::Document* xsdDoc)
+ {
+     // uncomment one of folowing to choose root
+     xsdDoc-&gt;set_root_myComplexTypeElem();
+     //xsdDoc-&gt;set_root_intValue2();
+ }
+
+ void populateDocument(DOM::Document* pDoc)
+ {
+     STDemo::Document* docNode = dynamic_cast&lt;STDemo::Document *&gt;(pDoc);
+     // write code to populate the Document here
+     ...
+     ....
+     rootElem-&gt;set_aFont("medium");
+     rootElem-&gt;set_anotherFont("72");
+     ....
+     ...
+ }
+
+ void updateOrConsumeDocument(DOM::Document* pDoc)
+ {
+     STDemo::Document* xsdDoc = dynamic_cast&lt;STDemo::Document *&gt;(pDoc);
+     // write code to update the populated-Document here
+ }
+    </pre>
   </div>
 
   <br><br>
@@ -760,18 +760,18 @@
     <li><b>Creating a Document from an input-stream and writing back to an output-stream</b><br>
     <hr NOSHADE SIZE=3 WIDTH=100%>
     
-    Snippets taken from examples/simplest. Refer to the example for full details.
+    Snippet taken from examples/simplest. Refer to the example for full details.
     <br><br>
 
     <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
-    //read the file into the Document<br>
+    <b>//read the file into the Document</b><br>
     ifstream is(inFilePath.c_str());<br>
     simplest::Document xsdDoc(false);<br>
     is &gt;&gt; xsdDoc;<br>
     <br>
     // do something, eg. update the Document<br>
     <br>
-    //write the Document back to a file<br>
+    <b>//write the Document back to a file</b><br>
     xsdDoc.prettyPrint(true);<br>
     ofstream ofs(outFile.c_str());<br>
     ofs &lt;&lt; xsdDoc;<br>
@@ -781,7 +781,7 @@
     
     <li><b><a name="ELEM_THRU_PARENT_ELEM">Working on elements through parent element <hr NOSHADE SIZE=3 WIDTH=100%> </a></b>
 
-    Snippets taken from examples/simpleTypesDemo. Refer to the example for full details.
+    Snippet taken from examples/simpleTypesDemo. Refer to the example for full details.
     <br><br>
 
     The XML-Schema snippet:
@@ -814,7 +814,7 @@
 
     <li><b><a name="ELEM_THRU_PARENT_MG">Working on elements through parent MG eg. sequence <hr NOSHADE SIZE=3 WIDTH=100%> </a></b>
 
-    Snippets taken from examples/mails. Refer to the example for full details.
+    Snippet taken from examples/mails. Refer to the example for full details.
     <br><br>
 
     The XML-Schema snippet:

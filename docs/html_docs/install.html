@@ -24,10 +24,10 @@
 
         <li><b>xsltproc</b>  : xsl transformation tool <br><br>
 
-        <li><b>expat</b>     : a xml parser library <br><br>
+        <li><b><a href="http://expat.sourceforge.net/" target="_blank">expat</a></b>     : a xml parser library by <i>James Clark</i> <br><br>
 
-        <li><b>PoCo</b>      : a minimal customised version of <b>PoCo</b>(Portable C++ components)<br>
-            The custom mini version of Poco is bundled alongwith xmlplus source package, therefore you do not need to download/install this library separately.
+        <li><b><a href="http://pocoproject.org/" target="_blank">POCO C++ Libraries</a></b>      : a minimal customised version of <i>POCO</i><br>
+            The custom mini version of <i>POCO</i> is bundled alongwith <i>XmlPlus</i> source package, therefore you do not need to download/install this library separately.
       </ul>
 
 
@@ -47,8 +47,7 @@
       </ul>
 
       These tools are typically already present on most Linux distributions. If they are not available on your system, you would need to get them before proceeding on installations. Please read the OS specific subsections to find how to install the prerequisites.<br><br>
-      <strong>Note:</strong> suggested package names, may sometimes not be correct/exact vis-a-vis your platform. Please find the exact package name based on your system's OS.<br>
-      For example to list various available packages names matching this pattern on Fedora, do so:<br> 
+      <strong>Note:</strong> suggested package names, may sometimes not be correct/exact with respect to your OS release. Please find the exact package name based on your system's OS. For example, to list various available packages names matching a pattern(eg. expat) on Fedora, try following command:<br> 
       <code>$ yum search expat</code>
       </ol>
       </p>
@@ -117,8 +116,7 @@
         This will build and install the build in the sepecified installation path.
       </ol>
 
-      If the configure script didn't work or is missing, run autogen.sh, followed by "make &amp;&amp; make install".<br>
-      Later, in general, you don't have to run configure again. (unless for example, you want to change the installation path).
+      If the <code>configure</code> script didn't work for some reason(typically because of version mismatch of <code>autotools</code>), run <code>autogen.sh</code>, followed by <code>"make &amp;&amp; make install"</code>. Later, in general, you don't have to run <code>configure</code> again. (unless for example, you want to change the installation path).
       <br>
 
       <br><br>
