@@ -1,0 +1,30 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+  <xsd:element name="test" type="TestType"/>
+
+  <xsd:complexType name="TestType">
+    <xsd:sequence>
+      <xsd:element name="name" type="NameType"/>
+      <xsd:element name="data" type="DataType" maxOccurs="15"/>
+    </xsd:sequence>
+    <xsd:attribute name="type" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="NameType">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="DataType">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="char" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+</xsd:schema>
+
