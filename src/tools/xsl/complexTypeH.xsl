@@ -42,7 +42,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 #include "XSD/TypeDefinitionFactory.h"
 
 <xsl:call-template name="GEN_INCLUDELIST_OF_COMPLEXTYPE_SIMPLETYPE_INCLUDE_H"/>
-using namespace XPlus;
+using namespace XPlus; 
 
 
 <xsl:call-template name="T_emit_cppNSBegin_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>

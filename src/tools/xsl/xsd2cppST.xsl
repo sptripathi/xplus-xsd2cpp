@@ -369,7 +369,10 @@ namespace Types
         </xsl:when>
         <xsl:when test="$localName='simpleType'">
           <xsl:variable name="cppItemTypeInferred">
-            <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="."/></xsl:call-template>
+            <xsl:call-template name="T_get_cppType_anonymousSimpleType">
+              <xsl:with-param name="stNode" select="."/>
+              <xsl:with-param name="pos" select="$pos"/>
+            </xsl:call-template>
           </xsl:variable>
           <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="$cppItemTypeInferred"/></xsl:call-template>
   typedef XMLSchema::Types::SimpleTypeListTmpl&lt;<xsl:value-of select="$cppItemTypeInferred"/>&gt; <xsl:value-of select="$simpleTypeName"/>;
@@ -412,7 +415,10 @@ namespace Types
           </xsl:when>
           <xsl:when test="$localName='simpleType'">
             <xsl:variable name="cppItemTypeInferred">
-              <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="."/></xsl:call-template>
+              <xsl:call-template name="T_get_cppType_anonymousSimpleType">
+                <xsl:with-param name="stNode" select="."/>
+                <xsl:with-param name="pos" select="$pos"/>
+              </xsl:call-template>
             </xsl:variable>
             <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="$cppItemTypeInferred"/></xsl:call-template>
           </xsl:when>
@@ -423,8 +429,12 @@ namespace Types
     <xsl:value-of select="$myCppType"/>(AnyTypeCreateArgs args):
       XMLSchema::Types::anySimpleType(args, XMLSchema::PD_STRING)
     <xsl:for-each select="*[local-name()='simpleType']">
+      <xsl:variable name="pos" select="position()"/>
       <xsl:variable name="cppItemTypeInferred">
-        <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="."/></xsl:call-template>
+        <xsl:call-template name="T_get_cppType_anonymousSimpleType">
+          <xsl:with-param name="stNode" select="."/>
+          <xsl:with-param name="pos" select="$pos"/>
+        </xsl:call-template>
       </xsl:variable>
         ,_<xsl:value-of select="$cppItemTypeInferred"/>_val(AnyTypeCreateArgs())
     </xsl:for-each>
@@ -457,7 +467,10 @@ namespace Types
 
     <xsl:for-each select="*[local-name()='simpleType']">
       <xsl:variable name="cppItemTypeInferred">
-        <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="."/></xsl:call-template>
+        <xsl:call-template name="T_get_cppType_anonymousSimpleType">
+          <xsl:with-param name="stNode" select="."/>
+          <xsl:with-param name="pos" select="position()"/>
+        </xsl:call-template>
       </xsl:variable>
       if(!set) {  
         set = _<xsl:value-of select="$cppItemTypeInferred"/>_val.checkValue(val);
@@ -484,7 +497,10 @@ namespace Types
     </xsl:if>
     <xsl:for-each select="*[local-name()='simpleType']">
       <xsl:variable name="cppItemTypeInferred">
-        <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="."/></xsl:call-template>
+        <xsl:call-template name="T_get_cppType_anonymousSimpleType">
+          <xsl:with-param name="stNode" select="."/>
+          <xsl:with-param name="pos" select="position()"/>
+        </xsl:call-template>
       </xsl:variable>
     MEMBER_VAR <xsl:value-of select="$cppItemTypeInferred"/> _<xsl:value-of select="$cppItemTypeInferred"/>_val;
     </xsl:for-each>

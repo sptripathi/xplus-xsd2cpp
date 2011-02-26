@@ -528,7 +528,11 @@ class XsdFSM : public XsdFsmBase
       list<DOMString> possibleNSNameEvents;
 
       // xsi namespace attributes do not have to be suggested
-      if(nsName().nsUri && (*nsName().nsUri == Namespaces::s_xsiUri) ) {
+      if( nsName().nsUri && 
+          ( (*nsName().nsUri == Namespaces::s_xsiUri)  ||
+            (*nsName().nsUri == Namespaces::s_xmlUri) )
+        )
+      {
         return possibleNSNameEvents;
       }
 

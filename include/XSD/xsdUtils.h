@@ -115,6 +115,19 @@ namespace XMLSchema
         }
       }
 
+      virtual inline CDATASection* createCDATASection(DOMString* data) 
+      {
+        try {
+          return T::createCDATASection(data);
+        }
+        catch(XPlus::Exception& ex) 
+        {
+          ex.setContext("attribute", *this->ownerNode()->getNodeName());
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          throw ex;
+        }
+      }
+
       inline void print() {
         cout << "XmlAttribute:"
           << " name=" << getLocalName()
@@ -305,6 +318,19 @@ namespace XMLSchema
           throw ex;
         }
       }
+
+      virtual inline CDATASection* createCDATASection(DOMString* data) 
+      {
+        try {
+          return T::createCDATASection(data);
+        }
+        catch(XPlus::Exception& ex) 
+        {
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          throw ex;
+        }
+      }
+
 
       inline void print() {
         cout << "XmlElement:"

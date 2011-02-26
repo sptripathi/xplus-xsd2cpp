@@ -337,8 +337,12 @@ public:
   TextNode* createChildTextNodeAt(DOMString *value, unsigned int pos);
   virtual TextNode* createChildTextNode(DOMString* value);
   virtual TextNode* createChildTextNodeAfterNode(DOMString *value, Node *prevNode);
-  bool prettyPrint() const ;
   
+  virtual CDATASection* createCDATASection(DOMString* data);
+  CDATASection* createChildCDATASection(DOMString* data);
+  
+  bool prettyPrint() const ;
+
   inline int getDepth() const{
     return _depth;
   }

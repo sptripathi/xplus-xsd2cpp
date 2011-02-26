@@ -32,6 +32,8 @@ using namespace std;
 
 namespace XSD
 {
+        
+  int nopretty = 0;
 
   template <class T> class UserOps
   {
@@ -75,7 +77,7 @@ namespace XSD
         string outFile = "sample.xml";
 
         AutoPtr<T> xsdDoc = createXsdDocument(true);
-        xsdDoc->prettyPrint(true);
+        xsdDoc->prettyPrint(nopretty!=1);
         doc2xml(xsdDoc, outFile);
       }
 
@@ -87,7 +89,7 @@ namespace XSD
         try 
         {
           AutoPtr<T> xsdDoc = createXsdDocument(true);
-          xsdDoc->prettyPrint(true);
+          xsdDoc->prettyPrint(nopretty!=1);
           if(_cbStruct.cbPopulateDocument) {
             _cbStruct.cbPopulateDocument(xsdDoc);
           }
@@ -114,7 +116,7 @@ namespace XSD
         try 
         {
           AutoPtr<T> xsdDoc = createXsdDocumentFromFile(inFilePath);
-          xsdDoc->prettyPrint(true);
+          xsdDoc->prettyPrint(nopretty!=1);
           if(_cbStruct.cbUpdateOrConsumeDocument) {
             _cbStruct.cbUpdateOrConsumeDocument(xsdDoc);
           }
@@ -135,7 +137,6 @@ namespace XSD
         int c;
 
         /* Flag set by ‘--verbose’. */
-        int verbose_flag=0;
         string inFile;
 
         while (1)
@@ -143,7 +144,7 @@ namespace XSD
           static struct option long_options[] =
           {
             /* These options set a flag. */
-            {"verbose", no_argument,       &verbose_flag, 1},
+            {"nopretty", no_argument,       &nopretty, 1},
             /* These options don't set a flag.
                We distinguish them by their indices. */
             {"help",       no_argument,       0, 'h'},
@@ -157,8 +158,7 @@ namespace XSD
           /* getopt_long stores the option index here. */
           int option_index = 0;
 
-          c = getopt_long (argc, argv, "hr:su:v:w",
-              long_options, &option_index);
+          c = getopt_long (argc, argv, "hr:su:v:w", long_options, &option_index);
 
           /* Detect the end of the options. */
           if (c == -1)
@@ -212,8 +212,8 @@ namespace XSD
           }
         }
 
-        if (verbose_flag) {
-          //cout << "verbose flag is set" << endl;;
+        if (nopretty) {
+          cout << "nopretty flag is set" << endl;;
         }
 
         if (optind < argc)

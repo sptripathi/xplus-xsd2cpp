@@ -53,7 +53,8 @@ namespace XMLSchema
       _value(""),
       _abstract(args.abstract),
       _blockMask(args.blockMask),
-      _finalMask(args.finalMask)
+      _finalMask(args.finalMask),
+      _defaultValue("")
     {
       if(_abstract == true)
       {
@@ -151,50 +152,12 @@ namespace XMLSchema
     }
 
 
-    TextNode* anyType::addTextNodeValueAtPos(DOMString text, int pos)
+    void anyType::checkFixed(DOMString value) 
     {
-      DOM::TextNode *txtNode = NULL;
-      if(!this->ownerNode()) {
-        ostringstream err;
-        err << "can not set text in an ComplexType without an owner parent-element";
-        throw LogicalError(err.str());
-      }
-
-      if(pos==-1) 
-      {
-        txtNode = this->ownerNode()->createChildTextNode(new DOMString(text));
-        if(!txtNode) {
-          ostringstream err;
-          err << "anyType: failed to add Text Node";
-          XSDException ex(err.str()); 
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          throw ex;
-        }
-        _textNodes.push_back(txtNode);
-      }
-      else 
-      {
-        txtNode = this->ownerNode()->createChildTextNodeAt(new DOMString(text), pos);
-        if(!txtNode)
-        {
-          ostringstream err;
-          err << "anyType: failed to add Text Node";
-          XSDException ex(err.str()); 
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          throw ex;
-        }
-        indexAddedTextNode(txtNode);
-      }
-      return txtNode;
-    }
-
-
-        void anyType::checkFixed(DOMString value) 
-    {
-      if(ownerElement() && ownerElement()->fixed() && (value != _value)) 
+      if(ownerElement() && ownerElement()->fixed() && (value != _defaultValue)) 
       {
         ValidationException ex("Fixed value of the node can not be changed");
-        ex.setContext("fixed-value", _value);
+        ex.setContext("fixed-value", _defaultValue);
         ex.setContext("supplied-value", value);
         throw ex;
       }
@@ -233,7 +196,13 @@ namespace XMLSchema
       checkFixed(value);
     }
 
+    void anyType::normalizeValue(DOMString& value) 
+    {
+    }
 
+    void anyType::postSetValue() 
+    {
+    }
 
     // 1. sets the value (in _value)
     // 2. creates the DOM TextNode with this value if the TextNode was not 
@@ -242,13 +211,12 @@ namespace XMLSchema
     {
       try
       {
+        normalizeValue(value);
         checksOnSetValue(value);
-        // FIXME: what should be the value in case of complexType, anyType
-        if(anyTypeUseCase() == ANY_SIMPLE_TYPE)
-        {
-          _value = value;
-        }
-        setTextNodeValue(value);
+        _value = value;
+        postSetValue();
+
+        createTextNodeOnSetValue(value);
       }
       catch(XPlus::Exception& ex)
       {
@@ -257,15 +225,14 @@ namespace XMLSchema
       }
     }
 
+    /*
     void anyType::fixedValue(DOMString value) 
     {
       try
       {
         checkContentType(value);
-        if(anyTypeUseCase() == ANY_SIMPLE_TYPE) {
-          _value = value;
-        }
-        setTextNodeValue(value);
+        _value = value;
+        createTextNodeOnSetValue(value);
       }
       catch(XPlus::Exception& ex)
       {
@@ -273,26 +240,66 @@ namespace XMLSchema
         throw ex;
       }
     }
+    */
 
+    void anyType::defaultValue(DOMString value) 
+    {
+      _defaultValue = value;
+    }
 
+    TextNode* anyType::addTextNodeValueAtPos(DOMString text, int pos)
+    {
+      DOM::TextNode *txtNode = NULL;
+      if(!this->ownerNode()) {
+        ostringstream err;
+        err << "can not set text in an ComplexType without an owner parent-element";
+        throw LogicalError(err.str());
+      }
+
+      if(pos == -1) 
+      {
+        txtNode = this->ownerNode()->createChildTextNode(new DOMString(text));
+        if(!txtNode) {
+          ostringstream err;
+          err << "anyType: failed to add Text Node";
+          XSDException ex(err.str()); 
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          throw ex;
+        }
+        _textNodes.push_back(txtNode);
+      }
+      else 
+      {
+        txtNode = this->ownerNode()->createChildTextNodeAt(new DOMString(text), pos);
+        if(!txtNode)
+        {
+          ostringstream err;
+          err << "anyType: failed to add Text Node";
+          XSDException ex(err.str()); 
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          throw ex;
+        }
+        indexAddedTextNode(txtNode);
+      }
+      return txtNode;
+    }
 
     // here pos is the position of this node among all children 
     // and not just the text nodes
     void anyType::setTextAmongChildrenAt(DOMString text, int pos)
     {
-      checksOnSetValue(text);
       this->addTextNodeValueAtPos(text, pos);
+      setValueFromCreatedTextNodes();
     }
 
     void anyType::setTextEnd(DOMString text)
     {
-      checksOnSetValue(text);
       this->setTextAmongChildrenAt(text, -1);
+      setValueFromCreatedTextNodes();
     }
 
     void anyType::setTextAfterNode(DOMString text, DOM::Node *refNode)
     {
-      checksOnSetValue(text);
       if(!this->ownerNode()) {
         ostringstream err;
         err << "can not set text in an ComplexType without an owner parent-node";
@@ -305,9 +312,42 @@ namespace XMLSchema
         throw XSDException(err.str());
       }
       indexAddedTextNode(txtNode);
+      setValueFromCreatedTextNodes();
     }
 
-    TextNode* anyType::setTextNodeValue(DOMString value)
+    void anyType::setValueFromCreatedTextNodes()
+    {
+      //FIXME: in case or fixed/default should the text node be created or just 
+      // the values be populated in-memory. Looks like the latter one holds true...
+      if( (_textNodes.size() == 0) && (_defaultValue.length() > 0) )
+      {
+        TextNode* valueNode = this->ownerNode()->createChildTextNode(new DOMString(_defaultValue));
+        _textNodes.push_back(valueNode);
+      }
+
+      // value created by appending text from TextNodes
+      DOMString value = "";
+      for(unsigned int i=0; i<_textNodes.size(); i++) {
+        value += *_textNodes.at(i)->getNodeValue();
+      }
+
+      try
+      {
+        normalizeValue(value);
+        checksOnSetValue(value);
+        _value = value;
+        postSetValue();
+      }
+      catch(XPlus::Exception& ex)
+      {
+        if(ownerElement()) { 
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+        }
+        throw ex;
+      }
+    }
+
+    TextNode* anyType::createTextNodeOnSetValue(DOMString value)
     {
       // NB: note that sometimes this anyType wouldnt have an owner Node, but it will be
       // set a value with using stringValue(xyz), which in turn will call this function.
@@ -319,25 +359,46 @@ namespace XMLSchema
       }
 
       TextNode* valueNode = NULL;
-      if(anyTypeUseCase() == ANY_SIMPLE_TYPE)
+      if(_textNodes.size() == 0) 
       {
-        if(_textNodes.size() == 0) {
-          valueNode = this->ownerNode()->createChildTextNode(new DOMString(value));
-          _textNodes.push_back(valueNode);
-        }
-        else 
-        {
-          valueNode = _textNodes.at(0);
-          valueNode->setNodeValue(new DOMString(value));
-        }
+        valueNode = this->ownerNode()->createChildTextNode(new DOMString(value));
+        _textNodes.push_back(valueNode);
       }
-      else
+      else if(_textNodes.size() == 1) 
       {
-        valueNode = this->addTextNodeValueAtPos(value, -1);
+        valueNode = _textNodes.at(0);
+        valueNode->setNodeValue(new DOMString(value));
       }
+      else // _textNodes.size() > 1
+      {
+        // TODO: should this new node be added to end of DOM children ??
+        // delete the textNodes beyond 1st from node's children(DOM), and set 
+        // the value in the 1st node
+        for(unsigned int i=1; i<_textNodes.size(); i++) {
+          this->ownerNode()->removeChild(_textNodes.at(i));
+        }
+        List<DOM::TextNode *>::iterator it = _textNodes.begin();
+        _textNodes.erase(++it, _textNodes.end());
+
+        valueNode = _textNodes.at(0);
+        valueNode->setNodeValue(new DOMString(value));
+      }
+
       return valueNode;
     }
 
+    //  let's take an example:
+    //  <elem>
+    //    TextNode1
+    //    <foo>...</foo>
+    //    TextNode2
+    //  </elem>
+    //  
+    // For an input-TextNode find the input-TextNode's position among node's
+    // children(DOM), and insert the input-TextNode in anyType::_textNodes
+    // at the same position.
+    // eg. if in the above example TextNode2 was to be input-TextNode then
+    // it should be inserted at position=1 in anyType::_textNodes
     void anyType::indexAddedTextNode(TextNode *txtNode)
     {
       unsigned int posText = txtNode->countPreviousSiblingsOfType(DOM::Node::TEXT_NODE);
@@ -352,32 +413,6 @@ namespace XMLSchema
       }
       _textNodes.insert(it, txtNode);
     }
-
-
-    /*
-    TElement* anyType::createElementNS(DOMString* nsUri, 
-        DOMString* nsPrefix, 
-        DOMString* localName) 
-    {
-      if(!localName) {
-        throw XPlus::NullPointerException("createElementNS: localName is NULL");
-      }
-
-      XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_START);
-      if(_fsm && _fsm->processEventThrow(event))
-      {
-        if(_fsm->fsmCreatedNode()) 
-        {
-          TElement* elem = dynamic_cast<TElement *>(const_cast<Node*>(_fsm->fsmCreatedNode()));
-          _fsm->fsmCreatedNode(NULL);
-          return elem;
-        }
-      }
-      ostringstream err;
-      err << "Failed to create : " << formatNamespaceName(XsdEvent::ELEMENT_START, nsUri, *localName);
-      throw XMLSchema::FSMException(DOMString(err.str()));
-    }
-    */
 
     TElement* anyType::createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec)
     {
@@ -484,11 +519,16 @@ namespace XMLSchema
 
     TextNode* anyType::createTextNode(DOMString* data)
     {
-      if(data) {
-        stringValue(*data);
-        return _textNodes.back();
-      }
-      return NULL;
+      TextNode* valueNode = this->ownerNode()->createChildTextNode(data);
+      _textNodes.push_back(valueNode);
+      return valueNode;
+    }
+        
+    CDATASection* anyType::createCDATASection(DOMString* data)
+    {
+      CDATASection* valueNode = this->ownerNode()->createChildCDATASection(data);
+      _textNodes.push_back(valueNode);
+      return valueNode;
     }
 
     void anyType::endElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)
@@ -496,7 +536,9 @@ namespace XMLSchema
       if(!localName) {
         throw XPlus::NullPointerException("endElementNS: localName is NULL");
       }
-      
+
+      setValueFromCreatedTextNodes();
+
       XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_END);
       if(_fsm) {
         _fsm->processEventThrow(event);
@@ -719,17 +761,29 @@ namespace XMLSchema
       return true;
     }
 
+    void anySimpleType::normalizeValue(DOMString& value) 
+    {
+      applyWhiteSpaceCFacet(value);
+    }
+
+    void anySimpleType::postSetValue() 
+    {
+      // eg.  store integer value ie string-to-int
+      setTypedValue();
+      validateCFacets();
+      applyCFacets();
+    }
+
     void anySimpleType::stringValue(DOMString val) 
     {
       try
       {
-        checkFixed(val);
+        normalizeValue(val);
+        checksOnSetValue(val);
         _value = val;
-        // eg.  store integer value ie string-to-int
-        setTypedValue();
-        validateCFacets();
-        applyCFacets();
-        setTextNodeValue(_value);
+        postSetValue();
+
+        createTextNodeOnSetValue(_value);
       }
       catch(XPlus::Exception& ex)
       {
@@ -1185,7 +1239,7 @@ namespace XMLSchema
 
       //first apply whitespace facet
       if(isWhiteSpaceCFacetSet()) {
-        applyWhiteSpaceCFacet();
+        applyWhiteSpaceCFacet(_value);
       }
       if(isLengthCFacetSet()) {
         applyLengthCFacet();
@@ -1305,7 +1359,7 @@ namespace XMLSchema
     //    however, the normalization behavior of ·union· types is controlled by the
     //    value of whiteSpace on that one of the ·memberTypes· against which the
     //    ·union· is successfully validated.
-    void anySimpleType::applyWhiteSpaceCFacet()
+    void anySimpleType::applyWhiteSpaceCFacet(DOMString& value)
     {
       if( (_primitiveType != PD_STRING) && (_whiteSpaceCFacet.value() != "collapse") ) {
         throwFacetViolation(CF_WHITESPACE);
@@ -1316,17 +1370,17 @@ namespace XMLSchema
       }
       if(_whiteSpaceCFacet.value() == "replace") {
         //replace TAB,LF,CR with space
-        _value.replaceCharsWithChar(UTF8FNS::is_TAB_LF_CR, 0x20);  
+        value.replaceCharsWithChar(UTF8FNS::is_TAB_LF_CR, 0x20);  
       }
       if(_whiteSpaceCFacet.value() == "collapse") {
         //replace TAB,LF,CR with space
-        _value.replaceCharsWithChar(UTF8FNS::is_TAB_LF_CR, 0x20);  
+        value.replaceCharsWithChar(UTF8FNS::is_TAB_LF_CR, 0x20);  
         
         //remove contiguous spaces
-        _value.removeContiguousChars(UTF8FNS::isWhiteSpaceChar);
+        value.removeContiguousChars(UTF8FNS::isWhiteSpaceChar);
         
         // trim leading and trailing spaces 
-        _value.trim(UTF8FNS::isWhiteSpaceChar);
+        value.trim(UTF8FNS::isWhiteSpaceChar);
       }
     }
     

@@ -34,9 +34,7 @@ namespace DOM
       ):
     XPlusObject("Element"),  
     Node(tagName, Node::ELEMENT_NODE, nsURI, nsPrefix, ownerDocument, NULL, parentNode, prevSibling, nextSibling),
-    _tagName(tagName),
-    _textBufferOnDocBuild(""),
-    _isCDATA(false)
+    _tagName(tagName)
   {
 
   }

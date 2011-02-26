@@ -224,10 +224,11 @@ namespace XMLSchema
             DOMString* nsPrefix, DOMString* localName, DOMString* value);
         virtual void endElementNS(DOMString* nsURI, DOMString* nsPrefix, DOMString* localName);
         virtual TextNodeP createTextNode(DOMString* data);
+        virtual CDATASection* createCDATASection(DOMString* data);
         virtual void endDocument();
 
         virtual void stringValue(DOMString value); 
-        void fixedValue(DOMString value);
+        void defaultValue(DOMString value);
         virtual inline DOMString stringValue() {
           return _value;
         }
@@ -276,10 +277,9 @@ namespace XMLSchema
         
 
         //FIXME
-        //NB: returns lenth as used in CFacets:
-        // eg in string it's number of code-points
-        // For derived types, this function should be
-        // overriden if needed a different behaviour
+        //NB: returns length as used in CFacets:
+        // eg in string it's number of code-points For derived types, this
+        // function should be overriden if a different behaviour is needed
         inline virtual unsigned int lengthFacet() {
           return _value.countCodePoints(); 
         }
@@ -306,8 +306,11 @@ namespace XMLSchema
         //
         //                 MEMBER FUNCTIONS 
         //
+        virtual void normalizeValue(DOMString& value);
+        virtual void postSetValue();
         void setErrorContext(XPlus::Exception& ex);
-        virtual TextNodeP setTextNodeValue(DOMString value); 
+        virtual TextNodeP createTextNodeOnSetValue(DOMString value); 
+        void setValueFromCreatedTextNodes();
         void indexAddedTextNode(TextNode *txtNode);
         TextNode* addTextNodeValueAtPos(DOMString value, int pos);
         void checksOnSetValue(DOMString value);
@@ -337,6 +340,7 @@ namespace XMLSchema
         bool                            _abstract;
         int                             _blockMask;
         int                             _finalMask;
+        DOMString                       _defaultValue;
         
         // in case of anyType and derivatives ownerElement() is same
         // Node as ownerNode(). However in case of element ownerElement()
@@ -390,7 +394,7 @@ namespace XMLSchema
         virtual void applyMaxLengthCFacet();
         virtual void applyPatternCFacet();
         virtual void applyEnumerationCFacet();
-        virtual void applyWhiteSpaceCFacet();
+        virtual void applyWhiteSpaceCFacet(DOMString& value);
         virtual void applyMaxInclusiveCFacet();
         virtual void applyMaxExclusiveCFacet();
         virtual void applyMinInclusiveCFacet();
@@ -468,6 +472,8 @@ namespace XMLSchema
 
       protected:
         
+        virtual void normalizeValue(DOMString& value);
+        virtual void postSetValue();
         virtual void endElementNS(DOMString* nsURI, DOMString* nsPrefix, DOMString* localName);
 
         void validateCFacets();

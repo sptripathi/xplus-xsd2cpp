@@ -1259,7 +1259,6 @@ namespace Types
   <xsl:for-each select="*/*[local-name()='element' and (*[local-name()='complexType'] or *[local-name()='simpleType']) ]">
 
     <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
-
     <xsl:for-each select="*[local-name()='complexType']">
       <xsl:call-template name="DEFINE_FNS_COMPLEXTYPE_CPP">
         <xsl:with-param name="schemaComponentName" select="$cppName"/>
@@ -1763,10 +1762,10 @@ namespace Types
 
     <xsl:choose>
       <xsl:when test="@default">
-    node->stringValue("<xsl:value-of select="@default"/>");    
+    node->defaultValue("<xsl:value-of select="@default"/>");    
       </xsl:when>
       <xsl:when test="@fixed">
-    node->fixedValue("<xsl:value-of select="@fixed"/>");    
+    node->defaultValue("<xsl:value-of select="@fixed"/>");    
       </xsl:when>
     </xsl:choose>
     <xsl:choose>

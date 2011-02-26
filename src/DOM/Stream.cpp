@@ -24,6 +24,16 @@
 using namespace DOM;
 
 namespace DOM {
+
+DOMString prettyPrintPadding(int depth)
+{
+  ostringstream padding;
+  for(int i=0; i<depth-1; i++) {
+    padding << "  ";
+  }
+  return DOMString(padding.str());
+}
+
 bool matchNamespace(const DOMString* nsUri1, const  DOMString* nsUri2)
 {
   if( 
@@ -130,27 +140,6 @@ void outputXmlDecl(XPlusCharOutputStream& s, const Document& doc)
   s << endl;
 }
 
-/*
-<!DOCTYPE chapter SYSTEM "../dtds/chapter.dtd">
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML//EN" "../dtds/chapter.dtd">
-*/
-void outputDocumentType(XPlusCharOutputStream& s, const DocumentType& docType)
-{
-  s << "<!DOCTYPE";
-  if(docType.getName()) {
-    s << " " << *docType.getName();
-  }
-
-  if(docType.getPublicId()) {
-    s << " PUBLIC \"" << *docType.getPublicId() << "\"";
-  }
-  
-  if(docType.getSystemId()) {
-    s << " SYSTEM \"" << *docType.getSystemId() << "\"";
-  }
-
-  s << ">\n";
-}
 
 void outputDocument(XPlusCharOutputStream& s, const Document& doc)
 {
@@ -169,28 +158,6 @@ void outputDocument(XPlusCharOutputStream& s, const Document& doc)
   }
 }
 
-void outputPI(XPlusCharOutputStream& s, const PI& pi)
-{
-  if(pi.getTarget()) 
-  {
-    s << "<?";
-    s << *pi.getTarget() << " ";
-    if(pi.getData()) {
-      s << *pi.getData();
-    }
-    s << "?>";
-    s << endl;
-  }
-}
-
-DOMString prettyPrintPadding(int depth)
-{
-  ostringstream padding;
-  for(int i=0; i<depth-1; i++) {
-    padding << "  ";
-  }
-  return DOMString(padding.str());
-}
 
 void outputDocElementNamespaces(XPlusCharOutputStream& s, const Element& e)
 {
@@ -251,6 +218,13 @@ void outputNsPrefix(XPlusCharOutputStream& s, const Node& node)
 
 void outputElement(XPlusCharOutputStream& s, const Element& e)
 {
+  if(e.isDocumentElement() && e.getPreviousSibling()) {
+    s << endl;
+  }
+  else if(!e.isDocumentElement()) {
+    s << endl; 
+  }
+
   DOMString padding;
   if(e.prettyPrint()) {
     padding = prettyPrintPadding(e.getDepth());
@@ -299,18 +273,49 @@ void outputElement(XPlusCharOutputStream& s, const Element& e)
     const Node *node = e.getFirstChild();
     while(node)
     {
-      if(node->getNodeType() ==  Node::ELEMENT_NODE) {
-        if(e.prettyPrint()) {
-          s << "\n";
+      if(node->getNodeType() == Node::TEXT_NODE)
+      {
+        ostringstream streamText;
+        bool prevSiblPresent = (node->getPreviousSibling() ? true: false);
+        int textDepth = node->getDepth();
+        while(node && 
+              ((node->getNodeType() ==  Node::TEXT_NODE) || (node->getNodeType() ==  Node::CDATA_SECTION_NODE) ) 
+             )
+        {
+          streamText << *node;
+          node = node->getNextSibling();
         }
-        cntChildElements++;
+        DOMString strText = streamText.str();
+        if( e.prettyPrint() ) 
+        {
+          strText.trim(UTF8FNS::isSpaceChar);  
+          if(strText.length()>0)
+          {
+            if(prevSiblPresent) {
+              DOMString padding = prettyPrintPadding(textDepth);
+              s << endl;
+              s << padding;
+            }
+            s << strText;
+          }
+        }
+        else {
+          s << strText;
+        }
       }
-      s << *node;
-      node = node->getNextSibling();
+      else
+      {
+        if(node->getNodeType() ==  Node::ELEMENT_NODE) {
+          cntChildElements++;
+        }
+        s << *node;
+        node = node->getNextSibling();
+      }
     }
     //element end
-    if( e.prettyPrint() && (cntChildElements > 0 ) ) {
-      s << "\n"; 
+    if( e.prettyPrint() && (cntChildElements > 0) )
+    {
+      s << endl;
       s << padding;
     }
     s << DOMString("</") ;
@@ -345,60 +350,113 @@ void outputAttribute(XPlusCharOutputStream& s, const Attribute& attr)
         
 void outputCDATASection(XPlusCharOutputStream& s, const CDATASection& cdataNode)
 {
-  s << "<![CDATA[";
-  outputTextNode(s, cdataNode);
-  s << "]]>";
+  if( !cdataNode.getData() || (cdataNode.getData()->length() == 0) ) {
+    return;
+  }
+
+  DOMString dataStr = *cdataNode.getData();
+  // stream-out the text data
+  s << "<![CDATA[" << dataStr << "]]>";
 }
 
 void outputTextNode(XPlusCharOutputStream& s, const TextNode& tn)
 {
-  DOMString dataStr = *tn.getData();
-  // In case of prettyPrint, TAB+SPACE should be normalized
-  // In their place, appropriate padding spaces would be streamed out
-  if( tn.prettyPrint()) {
-    //dataStr.trim(UTF8FNS::is_TAB_SPACE);  
-    dataStr.trim(UTF8FNS::isSpaceChar);  
-  }
-  if(dataStr.length()==0) {
+  if( !tn.getData() || (tn.getData()->length() == 0) ) {
     return;
   }
-
-  DOMString padding;
-  if( tn.prettyPrint() && 
-      (tn.getPreviousSibling() || tn.getNextSibling() )
-    )
+  
+  // stream-out the text data
+  DOMString dataStr = *tn.getData();
+  DOMString::const_iterator cit = dataStr.begin();
+  // TBD: it seems the text data should have its characters replaced with
+  // their respective character-entities symbols. Starting with [><] set 
+  // for now
+  for( ; cit != dataStr.end(); ++cit)
   {
+    if(*cit == '<') {
+      s << "&lt;";
+    }
+    else if(*cit == '>') {
+      s << "&gt;";
+    }
+    else {
+      s << *cit ;
+    }
+  }
+}
+
+/*
+<!DOCTYPE chapter SYSTEM "../dtds/chapter.dtd">
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML//EN" "../dtds/chapter.dtd">
+*/
+void outputDocumentType(XPlusCharOutputStream& s, const DocumentType& docType)
+{
+  if( docType.getPreviousSibling() ) {
     s << endl;
-    padding = prettyPrintPadding(tn.getDepth());
-    s << padding;
   }
 
-  // stream-out the text data
-  if(tn.getData()) {
-    s << dataStr;
+  s << "<!DOCTYPE";
+  if(docType.getName()) {
+    s << " " << *docType.getName();
+  }
+
+  if(docType.getPublicId()) {
+    s << " PUBLIC \"" << *docType.getPublicId() << "\"";
+  }
+  
+  if(docType.getSystemId()) {
+    s << " SYSTEM \"" << *docType.getSystemId() << "\"";
+  }
+
+  s << ">";
+}
+
+void outputPI(XPlusCharOutputStream& s, const PI& pi)
+{
+  if(pi.getPreviousSibling() ) {
+    s << endl;
+  }
+
+  if(pi.getTarget()) 
+  {
+    s << "<?";
+    s << *pi.getTarget() << " ";
+    if(pi.getData()) {
+      s << *pi.getData();
+    }
+    s << "?>";
   }
 }
 
 void outputComment(XPlusCharOutputStream& s, const Comment& cmt)
 {
-  DOMString padding;
-  if( cmt.prettyPrint() )
+  // The strategy is to output all top-level comments newline separated, 
+  // regardless of whether prettyPrint is on or not.
+  // expat doesnt report TextNodes as a child of Document, it only does so
+  // as a child of element/attribute.
+  // So we can safely follow this trick: 
+  if( (cmt.getParentNode() == cmt.getOwnerDocument()) && cmt.getPreviousSibling() ) 
   {
-    //s << endl;
-    padding = prettyPrintPadding(cmt.getDepth());
+    s << endl;
+    DOMString padding = prettyPrintPadding(cmt.getDepth());
     s << padding;
   }
-
+  if( cmt.prettyPrint() )
+  {
+  }
+  
   s << DOMString("<!--") << *cmt.getData() << DOMString("-->");
-
+    
   // only top level comments need to be follwed by a newline because
   // all non-top level nodes like element/Text output newline before themselves
-  if( cmt.getParentNode() == cmt.getOwnerDocument() ) 
   //if( cmt.prettyPrint() && (cmt.getParentNode() == cmt.getOwnerDocument()) ) 
   //if( cmt.prettyPrint() && (cmt.getPreviousSibling() || cmt.getNextSibling() ))
+  /*
+  if( cmt.getParentNode() == cmt.getOwnerDocument() ) 
   {
     s << "\n";
   }
+  */
 }
 
 XPlusCharOutputStream& operator<<(XPlusCharOutputStream& s, const DOMString& domStr)

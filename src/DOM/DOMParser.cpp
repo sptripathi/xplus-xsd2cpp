@@ -70,8 +70,6 @@ void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet, vector<A
     << endl;
 #endif
 
-  createAccumulatedTextNode();
-
   // the strategy is to construct element along with attribute info, so that if 
   // needed the elemnt can take advantage of the attributes while constructing.
   // The advantage  of such an approach, becomes more obvious in DOM derivations
@@ -108,7 +106,6 @@ void DOMParser::onElementEnd(void *userData, NodeNSTriplet nsTriplet)
     << endl;
 #endif
   
-  createAccumulatedTextNode();
   _docNode->endElementNS(
         const_cast<DOMString *>(nsTriplet.nsUri()),
         const_cast<DOMString *>(nsTriplet.nsPrefix()),
@@ -141,11 +138,6 @@ void DOMParser::onComment(void *userData, const DOMString* dataPtr)
   cout << "onComment data:[" << dataPtr->str() << "]"  << endl;
 #endif
 
-  // FIXME: this is not needed:
-  // <element> text1 cmt1 text2 </element>
-  // in this case we should use concatenation of text1 and text2 to create one text node
-  createAccumulatedTextNode();
-  
   Comment* cmt = _docNode->createComment(const_cast<DOMString *>(dataPtr));
   if(!cmt) {
     throw DOMException("failed to create Comment");
@@ -162,12 +154,18 @@ void DOMParser::onCharacterData(void *userData,
     return;
   }
 
-  if(_docNode->stateful()) {
-    _docNode->getCurrentElement()->addTextBufferOnDocBuild(*charDataPtr);
-  }
-  else if(this->isCDATAInProgress())
+  if(_docNode->stateful()) 
   {
-    this->addCDATABufferOnDocBuild(*charDataPtr);
+    if(this->isCDATAInProgress()) {
+      this->addCDATABuffer(*charDataPtr);
+    }
+    else
+    { // it is a non-CDATA TextNode
+      TextNodeP textNode = _docNode->getCurrentElement()->createTextNode(const_cast<DOMString *>(charDataPtr));
+      if(!textNode) {
+        throw DOMException("failed to create Text");
+      }
+    }
   }
   else
   {
@@ -262,15 +260,6 @@ void DOMParser::onCDATAStart(void *userData)
 #endif
 
   this->beginOfCDATASection();
-  
-  createAccumulatedTextNode();
-
-  if(_docNode->stateful()) {
-    _docNode->getCurrentElement()->markTextBufferAsCDATA();
-  }
-  else {
-  }
-
 }
 
 void DOMParser::onCDATAEnd(void *userData)
@@ -279,15 +268,24 @@ void DOMParser::onCDATAEnd(void *userData)
   cout << "onCDATAEnd: " << endl;
 #endif
   
-  if(_docNode->stateful()) {
-    createAccumulatedTextNode();
-    _docNode->getCurrentElement()->unmarkTextBufferAsCDATA();
+  DOMString text = this->getCDATABuffer();
+  DOMStringPtr textPtr = new DOMString(text);
+  if(_docNode->stateful() && _docNode->getCurrentElement())
+  {
+    if(text.length() > 0)
+    {
+      CDATASection* cdataNode = _docNode->getCurrentElement()->createCDATASection(textPtr);
+      //CDATASection* cdataNode = _docNode->createCDATASection(textPtr);
+      if(!cdataNode) {
+        throw DOMException("failed to create CDATASection");
+      }
+    }
   }
   else 
   {
-    DOMStringPtr textPtr = new DOMString(this->getCDATABufferOnDocBuild());
     CDATASection* cdataNode = _docNode->createCDATASection(textPtr);
   }
+
   this->endOfCDATASection();
 }
 
@@ -302,16 +300,13 @@ void DOMParser::onPI(void *userData,
     << " data=" << (dataPtr ? dataPtr->str().c_str() : "(null)")
     << endl;
 #endif
-  // FIXME: this may not be needed:
-  // <element> text1 PI text2 </element>
-  // in this case should we use concatenation of text1 and text2 to create one text node ???
-  createAccumulatedTextNode();
   PI* pi = _docNode->createProcessingInstruction(const_cast<DOMString *>(targetPtr), const_cast<DOMString *>(dataPtr));
   if(!pi) {
     throw DOMException("failed to create PI");
   }
 }
 
+#if 0
 void DOMParser::createAccumulatedTextNode()
 {
   if(_docNode->stateful() && _docNode->getCurrentElement())
@@ -341,7 +336,8 @@ void DOMParser::createAccumulatedTextNode()
     }
   }
 }
-    
+#endif    
+
 //       END :  parser callbacks 
 
 

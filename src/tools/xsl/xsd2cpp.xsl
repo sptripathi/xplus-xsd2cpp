@@ -149,27 +149,52 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
         <xsl:with-param name="documentName" select="@schemaLocation"/>
       </xsl:call-template>
     </xsl:variable>
-    <xsl:if test="$myTargetNsUri=$targetNsUriImportedDoc">
-      <xsl:call-template name="T_terminate_with_msg">
-        <xsl:with-param name="msg">
-  Invalid import. Can not import a document in same namespace as that of the importing document. 
-    target-namespace-uri of importing document being: "<xsl:value-of select="$myTargetNsUri"/>" 
-    target-namespace-uri of the imported document "<xsl:value-of select="@schemaLocation"/>" being: "<xsl:value-of select="$targetNsUriImportedDoc"/>" 
-        </xsl:with-param>
-      </xsl:call-template>
-    </xsl:if>  
-    <xsl:if test="$myTargetNsUri=@namespace">
-      <xsl:call-template name="T_terminate_with_msg">
-        <xsl:with-param name="msg">
-  Invalid import. Can not import a document in same namespace as that of the importing document. 
-  The target namespace-uri "<xsl:value-of select="$myTargetNsUri"/>" conflicts with:
-  &lt;import namespace="<xsl:value-of select="@namespace"/>" @schemaLocation="<xsl:value-of select="@schemaLocation"/>"&gt;) 
-        </xsl:with-param>
-      </xsl:call-template>
-    </xsl:if>  
+
+    <xsl:choose>
+      <xsl:when test="@namespace">
+        <xsl:if test="$targetNsUriImportedDoc != @namespace">
+          <xsl:call-template name="T_terminate_with_msg">
+            <xsl:with-param name="msg">
+  Invalid import. Mismatch between namespace specified in &lt;import&gt; statement and the target-namespace-uri of the document being imported
+  namespace found in &lt;import&gt; : {<xsl:value-of select="@namespace"/>}
+  target-namespace-uri found in document being imported (<xsl:value-of select="@schemaLocation"/>) : {<xsl:value-of select="$targetNsUriImportedDoc"/>}
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:if>
+        <xsl:if test="$myTargetNsUri=@namespace">
+          <xsl:call-template name="T_terminate_with_msg">
+            <xsl:with-param name="msg">
+  Invalid import. Can not import a document having same target-namespace-uri as that of the importing document. 
+  target-namespace-uri found in importing document : {<xsl:value-of select="$myTargetNsUri"/>}
+  target-namespace-uri found in document being imported(<xsl:value-of select="@schemaLocation"/>) : {<xsl:value-of select="@namespace"/>}
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:if>      
+      </xsl:when>
+      <!-- @namespace is absent -->
+      <xsl:otherwise>
+        <xsl:if test="$myTargetNsUri = ''">
+          <xsl:call-template name="T_terminate_with_msg">
+            <xsl:with-param name="msg">
+  Invalid import. In the absence of namespace attribute inside &lt;import&gt; statement, the importing document must have a non-empty target-namespace-uri.
+  Violated in the &lt;import&gt; statement with schemaLocation: <xsl:value-of select="@schemaLocation"/>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:if>
+        <xsl:if test="$targetNsUriImportedDoc != ''">
+          <xsl:call-template name="T_terminate_with_msg">
+            <xsl:with-param name="msg">
+  Invalid import. In the absence of namespace attribute inside &lt;import&gt; statement, the document being imported should have empty target-namespace-uri.
+  target-namespace-uri found in document being imported (<xsl:value-of select="@schemaLocation"/>) : {<xsl:value-of select="$targetNsUriImportedDoc"/>}
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+
+
   </xsl:for-each>     
 </xsl:template>
-
 
 
 <xsl:template name="T_validate_includes">
@@ -180,18 +205,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
         <xsl:with-param name="documentName" select="@schemaLocation"/>
       </xsl:call-template>
     </xsl:variable>
-    <!-- FIXME -->
-    <xsl:if test="$myTargetNsUri!=$targetNsUriIncludedDoc and $targetNsUriIncludedDoc!=''">
-      <xsl:call-template name="T_terminate_with_msg">
-        <xsl:with-param name="msg">
-  Invalid include. A document can not include "another document with different target-namespace" than that of itself. 
-    target-namespace-uri of including document being: "<xsl:value-of select="$myTargetNsUri"/>" 
-    target-namespace-uri of the included document "<xsl:value-of select="@schemaLocation"/>" being: "<xsl:value-of select="$targetNsUriIncludedDoc"/>" 
-        </xsl:with-param>
-      </xsl:call-template>
-    </xsl:if>  
 
-    <!-- FIXME -->
     <xsl:if test="@namespace">
       <xsl:call-template name="T_terminate_with_msg">
         <xsl:with-param name="msg">
@@ -200,6 +214,25 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
         </xsl:with-param>
       </xsl:call-template>
     </xsl:if>  
+
+    <xsl:if test="$myTargetNsUri!=$targetNsUriIncludedDoc and $targetNsUriIncludedDoc!=''">
+      <xsl:call-template name="T_terminate_with_msg">
+        <xsl:with-param name="msg">
+  Invalid include. A document can not include "another document with different target-namespace" than that of itself. 
+    target-namespace-uri of including document being: {<xsl:value-of select="$myTargetNsUri"/>}
+    target-namespace-uri of the included document "<xsl:value-of select="@schemaLocation"/>" being: {<xsl:value-of select="$targetNsUriIncludedDoc"/>}
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>  
+
+    <xsl:if test="$myTargetNsUri != '' and $targetNsUriIncludedDoc = ''">
+      <xsl:call-template name="T_unsupported_usage">
+        <xsl:with-param name="unsupportedItem">
+  A document with non-empty target-namespace-uri including another document with empty target-namespace-uri(aka Transformation for Chameleon Inclusion)
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>  
+
   </xsl:for-each>     
 </xsl:template>
 
@@ -531,7 +564,7 @@ XML Representation Summary: element Element Information Item
     <xsl:when test="*[local-name()='simpleType']">
       <xsl:call-template name="DEFINE_INLINE_SIMPLETYPE_ELEMENT_ATTR_H"/>
     </xsl:when>  
-    <xsl:when test="@type or @ref">
+    <xsl:otherwise>
       <xsl:variable name="typeLocalPart"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="@type"/></xsl:call-template></xsl:variable>
       <xsl:variable name="typeNsUri"><xsl:call-template name="T_get_nsUri_for_QName"><xsl:with-param name="qName" select="@type"/></xsl:call-template></xsl:variable>
       <xsl:variable name="resolvedType">
@@ -543,9 +576,6 @@ XML Representation Summary: element Element Information Item
       <xsl:variable name="cppType"><xsl:call-template name="T_get_cppType_ElementAttr"/></xsl:variable>
       <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
   typedef <xsl:value-of select="$cppType"/><xsl:text> </xsl:text><xsl:value-of select="$cppName"/>;
-    </xsl:when>
-    <xsl:otherwise>
-      UnknownElementType
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -560,13 +590,10 @@ XML Representation Summary: element Element Information Item
     <xsl:when test="*[local-name()='simpleType']">
       <xsl:call-template name="DEFINE_INLINE_SIMPLETYPE_ELEMENT_ATTR_H"/>
     </xsl:when>  
-    <xsl:when test="@type or @ref">
+    <xsl:otherwise>
       <xsl:variable name="cppType"><xsl:call-template name="T_get_cppType_ElementAttr"/></xsl:variable>
       <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
   typedef <xsl:value-of select="$cppType"/><xsl:text> </xsl:text><xsl:value-of select="$cppName"/>;
-    </xsl:when>
-    <xsl:otherwise>
-      UnknownAttrType
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -595,24 +622,25 @@ XML Representation Summary: element Element Information Item
 <xsl:template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_MG_MGD_H">
   <xsl:variable name="elemName" select="@name"/>
   <xsl:variable name="expandedQName"><xsl:call-template name="T_get_nsuri_name_ElementAttr"/></xsl:variable>
+  <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
 
 /// The class for element <xsl:value-of select="$expandedQName"/> with following structure: 
 /// \n complexType->ModelGroup-or-ModelGroupDefinition
 /// Read more on structures/methods inside ...
-class <xsl:value-of select="$elemName"/> : public XMLSchema::XmlElement&lt;XMLSchema::Types::anyType&gt;
+class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;XMLSchema::Types::anyType&gt;
 {
   public:
 
     /// constructor for the element node
-    MEMBER_FN <xsl:value-of select="$elemName"/>(ElementCreateArgs args);
+    MEMBER_FN <xsl:value-of select="$cppName"/>(ElementCreateArgs args);
 
   <xsl:for-each select="*[local-name()='complexType']">
     <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
-      <xsl:with-param name="schemaComponentName" select="$elemName"/>
+      <xsl:with-param name="schemaComponentName" select="$cppName"/>
     </xsl:call-template>   
   </xsl:for-each>
 
-}; //end class <xsl:value-of select="@name"/>
+}; //end class <xsl:value-of select="$cppName"/>
 </xsl:template>
 
 
@@ -936,7 +964,7 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
   <xsl:variable name="targetNsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
   <xsl:variable name="cppTargetNSDirChain"><xsl:call-template name="T_get_cppTargetNSDirChain"/></xsl:variable>
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
-  <xsl:variable name="schemaComponentName" select="@name" />
+  <xsl:variable name="schemaComponentName" select="$cppName" />
   <xsl:variable name="filename" select="concat('src/', $cppTargetNSDirChain, '/', $cppName, '.cpp')" />
   <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/', $cppName , '.h')" />
     <xsl:document method="text" href="{$filename}">
@@ -990,9 +1018,6 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
 #include "<xsl:value-of select="$hdrName"/>"    
   </xsl:for-each>
 
-  <!--
-  <xsl:for-each select="*[local-name()='complexType']">
-  -->
   <xsl:for-each select="*[local-name()='complexType' or local-name()='simpleType']">
     <xsl:variable name="transformedToken">
       <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="@name"/></xsl:call-template>
@@ -1049,14 +1074,22 @@ using namespace XPlus;
         <xsl:call-template name="GEN_INCLUDELIST_OF_COMPLEXTYPE_SIMPLETYPE_INCLUDE_H"/>
       </xsl:for-each>
     </xsl:when>
-    <xsl:when test="@type or @ref">
+    <xsl:when test="@type">
       <xsl:variable name="typeNsUri"><xsl:call-template name="T_get_type_nsUri_ElementAttr"/></xsl:variable>
       <xsl:if test="$typeNsUri!=$xmlSchemaNSUri">
-        <xsl:variable name="typeCppNSDirChain"><xsl:call-template name="T_get_cppTargetNSDirChain"/></xsl:variable>
         <xsl:variable name="typeLocalPart"><xsl:call-template name="T_gen_cppType_localPart_ElementAttr"/></xsl:variable>
+        <xsl:variable name="typeCppNSDirChain"><xsl:call-template name="T_get_type_cppNSDirChain_ElementAttr"/></xsl:variable>
 #include "<xsl:value-of select="$typeCppNSDirChain"/>/Types/<xsl:value-of select="$typeLocalPart"/>.h"
       </xsl:if>
     </xsl:when>
+    <xsl:when test="@ref">
+      <xsl:variable name="typeNsUri"><xsl:call-template name="T_get_type_nsUri_ElementAttr"/></xsl:variable>
+      <xsl:if test="$typeNsUri!=$xmlSchemaNSUri">
+        <xsl:variable name="typeLocalPart"><xsl:call-template name="T_gen_cppType_localPart_ElementAttr"/></xsl:variable>
+        <xsl:variable name="typeCppNSDirChain"><xsl:call-template name="T_get_type_cppNSDirChain_ElementAttr"/></xsl:variable>
+#include "<xsl:value-of select="$typeCppNSDirChain"/>/<xsl:value-of select="$typeLocalPart"/>.h"
+      </xsl:if>
+    </xsl:when>    
     <xsl:otherwise>
       <xsl:choose>
         <xsl:when test="count(child::*[local-name() != 'annotation']) = 0">

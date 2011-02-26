@@ -339,7 +339,7 @@
 
   <xsl:variable name="nsUriDoc">
     <xsl:choose>
-      <xsl:when test="$documentName!=''">
+      <xsl:when test="$documentName=''">
         <xsl:call-template name="T_get_targetNsUriDoc"/>
       </xsl:when>
       <xsl:otherwise>
@@ -461,7 +461,10 @@ namespace XMLSchema {
       </xsl:call-template>  
     </xsl:when>
     <xsl:otherwise>
-namespace UnrecognisedNS {
+      <xsl:variable name="cppValidNsStr">
+        <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="$nsUri"/></xsl:call-template>
+      </xsl:variable>
+namespace <xsl:value-of select="$cppValidNsStr"/>  {
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -515,7 +518,10 @@ namespace <xsl:value-of select="$nsStr"/>{
       </xsl:call-template>  
     </xsl:when>
     <xsl:otherwise>
-} // end namespace UnrecognisedNS
+      <xsl:variable name="cppValidNsStr">
+        <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="$nsUri"/></xsl:call-template>
+      </xsl:variable>
+} // end namespace <xsl:value-of select="$cppValidNsStr"/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -557,7 +563,9 @@ namespace <xsl:value-of select="$nsStr"/>{
           <xsl:with-param name="mode" select="$mode"/>
       </xsl:call-template>  
     </xsl:when>
-    <xsl:otherwise>UnrecognisedNS</xsl:otherwise>
+    <xsl:otherwise>
+      <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="$nsUri"/></xsl:call-template>
+    </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
 
@@ -574,25 +582,17 @@ namespace <xsl:value-of select="$nsStr"/>{
           <xsl:with-param name="mode" select="$mode"/>
         </xsl:call-template>  
       </xsl:when>
-
       <xsl:otherwise>
-
-        <xsl:variable name="url1">
           <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$url_part"/><xsl:with-param name="search-string" select="'://'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
-        </xsl:variable>
-        <xsl:variable name="url2">
-          <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$url1"/><xsl:with-param name="search-string" select="'/'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
-        </xsl:variable>
-        <xsl:variable name="url3">
-          <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$url2"/><xsl:with-param name="search-string" select="'#'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
-        </xsl:variable>
-        <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$url3"/><xsl:with-param name="search-string" select="'.'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
-
       </xsl:otherwise>
-
     </xsl:choose>
   </xsl:variable>
-  <xsl:value-of select="normalize-space($cppNsStr)"/>
+            
+  <xsl:variable name="cppValidNsStr">
+    <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="$cppNsStr"/></xsl:call-template>
+  </xsl:variable>
+
+  <xsl:value-of select="normalize-space($cppValidNsStr)"/>
 </xsl:template>
 
 
@@ -613,7 +613,10 @@ namespace <xsl:value-of select="$nsStr"/>{
   <xsl:variable name="cppNsStr">
     <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="substring-after($urn, 'urn:')"/><xsl:with-param name="search-string" select="':'"/><xsl:with-param name="replace-string" select="$joinStr"/></xsl:call-template>
   </xsl:variable>
-  <xsl:value-of select="normalize-space($cppNsStr)"/>
+  <xsl:variable name="cppValidNsStr">
+    <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="$cppNsStr"/></xsl:call-template>
+  </xsl:variable>
+  <xsl:value-of select="normalize-space($cppValidNsStr)"/>
 </xsl:template>
 
 
@@ -681,24 +684,35 @@ namespace <xsl:value-of select="$nsStr"/>{
 <!-- TODO: explore more transformations that maybe needed -->
 <xsl:template name="T_transform_token_to_cppValidToken">
   <xsl:param name="token"/>
-  <xsl:variable name="cppValidToken">
+
+  <xsl:variable name="token1">
     <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$token"/><xsl:with-param name="search-string" select="'-'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
   </xsl:variable>
-  <xsl:variable name="spaceTokenSpace" select="concat(' ', $token, ' ')"/>
+  <xsl:variable name="token2">
+    <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$token1"/><xsl:with-param name="search-string" select="'/'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="token3">
+    <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$token2"/><xsl:with-param name="search-string" select="'#'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="token4">
+    <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$token3"/><xsl:with-param name="search-string" select="'.'"/><xsl:with-param name="replace-string" select="'_'"/></xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="spaceTokenSpace" select="concat(' ', $token4, ' ')"/>
 
   <!-- translate for reserved keywords -->
-  <xsl:variable name="cppValidToken2">
+  <xsl:variable name="cppValidToken">
     <xsl:choose>
       <xsl:when test="contains($cppReservedKeywords, $spaceTokenSpace)">
-        <xsl:value-of select="$cppValidToken"/>_t
+        <xsl:value-of select="$token4"/>_t
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="$cppValidToken"/>
+        <xsl:value-of select="$token4"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
 
-  <xsl:value-of select="normalize-space($cppValidToken2)"/>
+  <xsl:value-of select="normalize-space($cppValidToken)"/>
 </xsl:template>
 
 
@@ -1963,6 +1977,8 @@ namespace <xsl:value-of select="$nsStr"/>{
       <xsl:when test="local-name()='element'">XsdEvent::ELEMENT_START</xsl:when>
     </xsl:choose>
   </xsl:variable>
+
+  <!--
   <xsl:variable name="minOccurenceFixed">
     <xsl:choose>
       <xsl:when test="local-name()='attribute'">
@@ -1974,9 +1990,10 @@ namespace <xsl:value-of select="$nsStr"/>{
       <xsl:when test="local-name()='element'"><xsl:call-template name="T_get_minOccurence"/></xsl:when>
     </xsl:choose>
   </xsl:variable>
-    
+  -->
+
   <xsl:variable name="out">
-    new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:value-of select="$minOccurenceFixed"/>, <xsl:call-template name="T_get_maxOccurence"/>), <xsl:value-of select="$fsmType"/>, new object_unary_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(<xsl:value-of select="$thisOrThat"/>, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>))
+    new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/>), <xsl:value-of select="$fsmType"/>, new object_unary_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(<xsl:value-of select="$thisOrThat"/>, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>))
   </xsl:variable> 
   <xsl:value-of select="normalize-space($out)"/>
 </xsl:template>
@@ -2244,11 +2261,13 @@ namespace <xsl:value-of select="$nsStr"/>{
 
 <xsl:template name="T_get_cppType_anonymousSimpleType">
   <xsl:param name="stNode"/>
+  <xsl:param name="pos" select="''"/>
+
   <xsl:choose>
     <xsl:when test="$stNode/@name"><xsl:value-of select="$stNode/@name"/></xsl:when>
     <xsl:otherwise>
       <xsl:if test="local-name($stNode/..) != 'schema'">
-        <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="$stNode/.."/></xsl:call-template>_<xsl:value-of select="local-name($stNode)"/>
+        <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="$stNode/.."/></xsl:call-template>_<xsl:value-of select="local-name($stNode)"/><xsl:if test="$pos != ''"><xsl:value-of select="$pos"/></xsl:if>
       </xsl:if>
     </xsl:otherwise>
   </xsl:choose>

@@ -345,6 +345,31 @@ namespace DOM
     return createChildTextNode(value);
   }
 
+  CDATASection* Node::createChildCDATASection(DOMString* data)
+  {
+    if( 
+        (_nodeType == ELEMENT_NODE) ||
+        (_nodeType == ATTRIBUTE_NODE)
+      )
+    {
+      CDATASection* pCDATA = NULL;
+      if(data) {
+        pCDATA = new CDATASection(data, this->getOwnerDocument(), this);
+      }
+      if(_nodeType == ATTRIBUTE_NODE) {
+        setNodeValue(data); //satya ????
+      }
+      return pCDATA;
+    }
+    else {
+      throw DOMException("CDATASection is allowed only inside ATTRIBUTE_NODE or ELEMENT_NODE");
+    }
+  }
+
+  CDATASection* Node::createCDATASection(DOMString* data)
+  {
+    return createChildCDATASection(data);
+  }
 
   TextNode* Node::createChildTextNode(DOMString* value) 
   {

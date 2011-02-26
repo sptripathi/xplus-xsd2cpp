@@ -75,11 +75,16 @@ Schema Component: Element Declaration, a kind of Term
   </xsl:variable>
 
   <xsl:variable name="cachedComponentDefn">
-    <xsl:call-template name="T_get_cached_componentDefinition">
-      <xsl:with-param name="componentName" select="$elemAttrName"/>
-      <xsl:with-param name="componentType" select="$componentType"/> 
-      <xsl:with-param name="componentTNSUri" select="$elemAttrTargetNsUri"/>
-    </xsl:call-template>
+    <xsl:choose>
+      <xsl:when test="local-name($node/..) = 'schema'">
+        <xsl:call-template name="T_get_cached_componentDefinition">
+          <xsl:with-param name="componentName" select="$elemAttrName"/>
+          <xsl:with-param name="componentType" select="$componentType"/> 
+          <xsl:with-param name="componentTNSUri" select="$elemAttrTargetNsUri"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
   </xsl:variable>
 
   <xsl:variable name="typeDefinition">
@@ -319,11 +324,13 @@ Schema Component: Element Declaration, a kind of Term
   </xsl:if>  
 
   <!-- cache in a document -->
-  <xsl:call-template name="output_componentDefinition">
-    <xsl:with-param name="componentName" select="$elemAttrName"/>
-    <xsl:with-param name="componentTNSUri" select="$elemAttrTargetNsUri"/>
-    <xsl:with-param name="xmlDefn" select="$elemAttrResolution"/>
-  </xsl:call-template>
+  <xsl:if test="local-name($node/..) = 'schema'">
+    <xsl:call-template name="output_componentDefinition">
+      <xsl:with-param name="componentName" select="$elemAttrName"/>
+      <xsl:with-param name="componentTNSUri" select="$elemAttrTargetNsUri"/>
+      <xsl:with-param name="xmlDefn" select="$elemAttrResolution"/>
+    </xsl:call-template>
+  </xsl:if>
 
   <xsl:copy-of select="$elemAttrResolution"/>
 </xsl:template>

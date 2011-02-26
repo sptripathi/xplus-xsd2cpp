@@ -1092,7 +1092,6 @@ All of the following must be true:
     <xsl:variable name="pred.3.1">
       <xsl:choose>
         <xsl:when test="$B.name='anySimpleType'">
-          <xsl:message>here</xsl:message>
           <xsl:choose>
             <xsl:when test="normalize-space($D/memberTypeDefinitions/simpleTypeDefinition/final/text())='union'">3.1.1.1</xsl:when>
             <xsl:when test="$node/*[local-name()='restriction']/*[local-name()='minExclusive' or local-name()='minInclusive' or local-name()='maxExclusive' or local-name()='maxInclusive' or local-name()='totalDigits' or local-name()='fractionDigits' or local-name()='maxScale' or local-name()='minScale' or local-name()='whiteSpace' or local-name()='length' or local-name()='minLength' or local-name()='maxLength' or local-name()='enumeration' or local-name()='pattern' or local-name()='assertion' or local-name()='explicitTimezone']">3.1.1.2</xsl:when>

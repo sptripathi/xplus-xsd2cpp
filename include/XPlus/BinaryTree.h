@@ -349,9 +349,9 @@ namespace XPlus
       
      void copyTree(const BinaryTree& ref)
      {
-      _root = copyTreeNodes(ref._root);
-      updateLeavesAfresh(_root);
-      /*
+       _root = copyTreeNodes(ref._root);
+       updateLeavesAfresh(_root);
+       /*
       cout << "***********************************************"
         << " leaves size:" << _leaves.size() 
         << " ref-leaves size:" << ref.getLeaves().size() << endl;

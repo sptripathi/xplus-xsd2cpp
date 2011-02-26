@@ -32,7 +32,7 @@ class DOMParser : public ExpatParser
   protected:
     Document*                 _docNode;
 
-    DOMString                 _cdataBufferOnDocBuild;
+    DOMString                 _cdataBuffer;
     bool                      _cdataInProgress;
 
   public:
@@ -89,20 +89,20 @@ class DOMParser : public ExpatParser
     }
     inline bool endOfCDATASection() {
       _cdataInProgress = false;
-      resetCDATABufferOnDocBuild();
+      resetCDATABuffer();
     }
     inline bool isCDATAInProgress() {
       return _cdataInProgress;
     }
 
-    inline void resetCDATABufferOnDocBuild() {
-      _cdataBufferOnDocBuild = "";
+    inline void resetCDATABuffer() {
+      _cdataBuffer = "";
     }
-    inline void addCDATABufferOnDocBuild(DOMString str) {
-      _cdataBufferOnDocBuild += str;
+    inline void addCDATABuffer(DOMString str) {
+      _cdataBuffer += str;
     }
-    inline DOMString getCDATABufferOnDocBuild() {
-      return _cdataBufferOnDocBuild;
+    inline DOMString getCDATABuffer() {
+      return _cdataBuffer;
     }
 };
 #endif

@@ -212,13 +212,13 @@ namespace XPlus
     if(len==0) {
       return;
     }
-    size_type pos= len-1;
+    int pos= len-1;
     while( (pos >= 0) && applicableToChar(this->at(pos)) ) {
       pos--;
     }
     if(pos < len-1) {
-      this->erase(this->begin()+pos+1);
-      this->erase(pos+1, len-pos+1);
+      this->erase(pos+1);
+      //this->erase(pos+1, len-pos+1);
     }
   }
 
