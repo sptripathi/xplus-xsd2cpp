@@ -38,7 +38,7 @@ int main (int argc, char** argv)
 void populateDocument(NoNS::Document* xsdDoc)
 {
   NoNS::root::items* pItems =  xsdDoc->element_root()->element_items();
-  pItems->mark_present_attr_id();
+  pItems->set_attr_id("100");
   pItems->set_item(0, "item 1");
   pItems->set_item(1, "item 2");
   pItems->set_item(2, "item 3");

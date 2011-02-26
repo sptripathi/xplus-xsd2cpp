@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <ns1:myComplexTypeElem ns1:globalStringAttr="abc" ns1:aNNI="unbounded" ns1:anotherNNI="100" ns1:aCommonName="abcde" xmlns:ns1="http://www.example.com/STDemo">
   Here you will see some examples of simpleType elements
-  Following are examples of -atomic- simpleType elements
+
+    Following are examples of -atomic- simpleType elements
   <ns1:xBoolean>false</ns1:xBoolean>
-  <ns1:xDecimal>-1.23e-6</ns1:xDecimal>
+      <ns1:xDecimal>-1.23e-6</ns1:xDecimal>
   <ns1:xFloat>-1.23e-3</ns1:xFloat>
   <ns1:xDouble>-1.23e-5</ns1:xDouble>
   <ns1:xInteger>-12678967543233</ns1:xInteger>
@@ -47,15 +48,18 @@
   <ns1:aDate>2010-01-04</ns1:aDate>
   <ns1:aYear>2009</ns1:aYear>
   <ns1:aCommonName>abcde</ns1:aCommonName>
-  End of -atomic- simpleType elements
-  Following are examples of -list- simpleType elements
+    End of -atomic- simpleType elements
+
+    Following are examples of -list- simpleType elements
   <ns1:aListOfIntMax5k>0 1000 2000 3000 4000</ns1:aListOfIntMax5k>
   <ns1:aListOfFourIntMax500>100 200 300 400</ns1:aListOfFourIntMax500>
   <ns1:aListOfTwoIntMax3k>1000 2000</ns1:aListOfTwoIntMax3k>
-  End of -list- simpleType elements
- Following are examples of -union- simpleType elements
+    End of -list- simpleType elements
+
+    Following are examples of -union- simpleType elements
   <ns1:aFont>medium</ns1:aFont>
   <ns1:anotherFont>72</ns1:anotherFont>
-  End of -union- simpleType elements
-End of all example elements
+    End of -union- simpleType elements
+
+  End of all example elements
 </ns1:myComplexTypeElem>
