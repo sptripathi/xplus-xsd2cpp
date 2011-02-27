@@ -30,6 +30,7 @@ int main (int argc, char**argv)
 // write code to populate the Document here
 void populateDocument(NoNS::Document* xsdDoc)
 {
+  xsdDoc->encoding(TextEncoding::UTF_8);
   xsdDoc->element_msg()->stringValue("Hellø Wø®l∂");
 }
 

@@ -26,6 +26,7 @@
 
 #include "XPlus/XPlusObject.h"
 #include "XPlus/ConvertUTF.h"
+#include "XPlus/TextEncoding.h"
 
 using namespace std;
 
@@ -46,6 +47,9 @@ namespace UTF8FNS {
   bool is_TAB_LF_CR(UChar ch);
   bool is_TAB_SPACE(UChar ch);
 }
+
+// TODO: change the iterations on string using at() to rather use
+// string iterators in .h and .cpp, for performance reasons
 
 namespace XPlus
 {
@@ -109,7 +113,7 @@ namespace XPlus
 #endif
       string str() const;
       void tokenize(UChar delim, vector<XPlus::UString>& tokens);
-      unsigned int countCodePoints();
+      unsigned int countCodePoints(TextEncoding::eTextEncoding enc=TextEncoding::UTF_8);
 
       void trimLeft(USTRING_CHAR_FN applicableToChar);
       void trimRight(USTRING_CHAR_FN applicableToChar);

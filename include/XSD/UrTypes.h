@@ -280,9 +280,7 @@ namespace XMLSchema
         //NB: returns length as used in CFacets:
         // eg in string it's number of code-points For derived types, this
         // function should be overriden if a different behaviour is needed
-        inline virtual unsigned int lengthFacet() {
-          return _value.countCodePoints(); 
-        }
+        virtual unsigned int lengthFacet();
     
         // NB: xsi attributes's values are not the values from Schema Doc.
         // All the xsi attributes appear in instance doc, and their values are

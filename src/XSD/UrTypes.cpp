@@ -134,6 +134,15 @@ namespace XMLSchema
       }
     }
 
+    unsigned int anyType::lengthFacet() 
+    {
+      TextEncoding::eTextEncoding docEncoding = TextEncoding::UTF_8;
+      if(this->ownerDocument()) {
+        docEncoding = ownerDocument()->encoding();
+      }
+      return _value.countCodePoints(docEncoding); 
+    }
+
     void anyType::setErrorContext(XPlus::Exception& ex)
     {
       if(this->ownerElement()) {

@@ -30,12 +30,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 <xsl:template name="ITERATE_SCHEMA_INCLUDES">
   <xsl:param name="mode" select="''"/>
   
-  <xsl:variable name="cntInc" select="count(//*[local-name()='schema']/*[local-name()='include'])"/>
-
   <xsl:for-each select="//*[local-name()='schema']/*[local-name()='include']">
-  <!--
-    <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="@schemaLocation"/></xsl:call-template>
-    -->
     <xsl:call-template name="ON_SCHEMA_INCLUDE">
       <xsl:with-param name="mode" select="$mode"/>
     </xsl:call-template>  
