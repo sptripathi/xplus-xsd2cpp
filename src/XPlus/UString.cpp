@@ -177,13 +177,15 @@ namespace XPlus
     }
   }
       
-  // FIXME: 
-  // UString is aimed to be a Unicode-String.
-  // However this function is very UTF-8 specific one.
-  // Generalize this function, using help of encoding
-  unsigned int UString::countCodePoints()
+  unsigned int UString::countCodePoints(TextEncoding::eTextEncoding enc)
   {
-    return countCodePointsInUTF8String((UTF8 *)this->c_str(), this->length());
+    switch(enc)
+    {
+      case TextEncoding::UTF_8:
+        return countCodePointsInUTF8String((UTF8 *)this->c_str(), this->length());
+      default:
+        return this->length();
+    }
   }
 
   bool UString::matchCharSet(USTRING_CHAR_FN applicableToChar)
