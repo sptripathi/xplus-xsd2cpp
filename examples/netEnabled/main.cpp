@@ -2,7 +2,7 @@
  //
  //  This file was automatically generated using XmlPlus xsd2cpp tool.
  //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
- //  You CAN edit this file.
+ //  You can edit this file.
  //
   
 #include <iostream>
@@ -13,16 +13,17 @@
 
 void populateDocument(examples_6_05::Document* xsdDoc);
 void updateOrConsumeDocument(examples_6_05::Document* xsdDoc);
+  
 void chooseDocumentElement(examples_6_05::Document* xsdDoc);
     
 
-int main (int argc, char**argv)
+int main (int argc, char** argv)
 {
   XSD::UserOps<examples_6_05::Document>::UserOpsCbStruct cbStruct;
   cbStruct.cbPopulateDocument           =  populateDocument;
   cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
   cbStruct.cbChooseDocumentElement      =  chooseDocumentElement;
-  
+
   XSD::UserOps<examples_6_05::Document> opHandle(cbStruct);
   opHandle.run(argc, argv);
 }
@@ -32,13 +33,14 @@ int main (int argc, char**argv)
 // You need to put "code" in the respective contexts.
 //
 
+  
 // choose the element inside Document that you want as root using
 // a call like : xsdDoc->set_root_xyz();
 void chooseDocumentElement(examples_6_05::Document* xsdDoc)
 {
   // uncomment one of folowing to choose root
   
-  xsdDoc->set_root_echoHexBinaryElement();
+  xsdDoc->set_root_echo();
   
   //xsdDoc->set_root_hexBinaryElement();
     
@@ -51,7 +53,7 @@ void chooseDocumentElement(examples_6_05::Document* xsdDoc)
 // write code to populate the Document here ...
 void populateDocument(examples_6_05::Document* xsdDoc)
 {
-  xsdDoc->element_echoHexBinaryElement()->set_hexBinaryElement("77696f646d6f6e7974637174716a7169696e6b65616f76786f746e66716b707875757261736e686469796b65706c656d7465626661637661646e6b65636662647669726d6f6e757361");
+  xsdDoc->element_echo()->element_echoHexBinaryElement()->set_hexBinaryElement("77696f646d6f6e7974637174716a7169696e6b65616f76786f746e66716b707875757261736e686469796b65706c656d7465626661637661646e6b65636662647669726d6f6e757361");
 }
 
 // write code to operate(update/consume/test etc.) on the Document here...

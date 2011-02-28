@@ -6,6 +6,13 @@
 
   <xsd:include schemaLocation="http://www.w3.org/2002/ws/databinding/examples/6/05/HexBinaryElement/echoHexBinaryElement.xsd"/>
 
-  <xsd:element ref="ns1:echoHexBinaryElement"/> 
+  
+  <xsd:element name="echo"> 
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="ns1:echoHexBinaryElement"/> 
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
 
 </xsd:schema>
