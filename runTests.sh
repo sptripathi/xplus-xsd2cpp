@@ -11,6 +11,7 @@ FAILED_DIRS=""
 INPUT_XSD=""
 
 EX_DIRS="
+        examples/library
         examples/includeDemo
         examples/helloWorld
         examples/helloWorldWide
@@ -56,6 +57,8 @@ XPLUS_TESTS_DIRS="
                   Tests/xplus_tests/xsiTest2
                   Tests/xplus_tests/xsiTest3
                   Tests/xplus_tests/nillableTest
+                  Tests/xplus_tests/includeTests
+                  Tests/xplus_tests/importTests
                  " 
 
 XPLUS_NEGTESTS_DIRS="
@@ -326,14 +329,17 @@ test_roundtrip()
   fi
 
   # rountrip
-  ./build/bin/$run -r ./t.xml >> tests.log 2>&1
-  
-  # check t.xml.rt.xml exists
-  if [ ! -f t.xml.rt.xml ]; then
-    echo "   t.xml.rt.xml doesn't exist"
-    fail_test
-    return
-  fi
+  validXmlFiles=`ls valid*.xml` 2>/dev/null
+  for xmlValid in $validXmlFiles
+  do
+    ./build/bin/$run -r $xmlValid >> tests.log 2>&1
+    # check xyz.xml.rt.xml exists
+    if [ ! -f $xmlValid.rt.xml ]; then
+      echo "   $xmlValid.rt.xml doesn't exist"
+      fail_test
+      return
+    fi
+  done
 
   # verify diff
   #differ=`diff t.xml.rt.xml t.xml`

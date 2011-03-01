@@ -747,7 +747,7 @@ Schema Component: Element Declaration, a kind of Term
         <xsl:variable name="importedNode" select="//*[local-name()='schema']/*[local-name()='import'][position()=$idxImportedDoc]"/>
         <xsl:choose>
           
-          <xsl:when test="$importedNode/@namespace=$typeNsUri">
+          <xsl:when test="normalize-space($importedNode/@namespace)=normalize-space($typeNsUri)">
             <xsl:variable name="typeInThisImpDoc">
               <xsl:call-template name="T_resolve_typeLocalPartNsUri">
                 <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
