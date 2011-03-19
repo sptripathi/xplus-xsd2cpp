@@ -305,14 +305,17 @@ public:
 
   virtual Node* insertAt(Node* newChild, unsigned int pos);
   virtual Node* insertFront(Node* newChild);
-  virtual Node* insertBack(Node* newChild);
+  virtual Node* insertBack(Node* newChild); 
   virtual Node* insertAfter(Node* newChild, Node* refChild);//not in DOM spec
   virtual Node* insertBefore(Node* newChild, Node* refChild);
   virtual Node* insertBetween(Node* newChild, Node *prevChild, Node *nextChild);
   virtual Node* replaceChild(Node* newChild, Node* oldChild);
   virtual void removeChild(Node* oldChild);
+  // FIXME duplicate of insertBack
   virtual Node* appendChild(Node* newChild);
-  unsigned int countPreviousSiblingsOfType(Node::NodeType nodeType);
+  unsigned int countPreviousSiblingsOfType(Node::NodeType nodeType) const;
+  unsigned int countChildrenOfType(Node::NodeType nodeType) const;
+  void removeChildrenOfType(Node::NodeType nodeType);
 
   virtual bool hasChildNodes() const;
 

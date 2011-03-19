@@ -48,7 +48,6 @@ using namespace std;
 namespace Poco {
 
 
-  //satya:FIXME :
   void DateTimeFormatter::append(std::string& str, const DateTime& dateTime, const std::string& fmt, int timeZoneDifferential)
   {
     std::string::const_iterator it  = fmt.begin();

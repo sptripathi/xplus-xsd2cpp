@@ -348,6 +348,13 @@ namespace XPlus
         if(nextNode) {
           nextNode->setPreviousSibling(prevNode);
         }
+        
+        if(_head == node) {
+          _head = NULL;
+        }
+        if(_tail == node) {
+          _tail = NULL;
+        }
 
         _size--;
         node->setNextSibling(NULL);

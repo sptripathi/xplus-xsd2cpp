@@ -59,6 +59,8 @@ XPLUS_TESTS_DIRS="
                   Tests/xplus_tests/nillableTest
                   Tests/xplus_tests/includeTests
                   Tests/xplus_tests/importTests
+                  Tests/xplus_tests/defaultTest
+                  Tests/xplus_tests/fixedTest
                  " 
 
 XPLUS_NEGTESTS_DIRS="
@@ -152,7 +154,7 @@ cleanup_dir()
   log_clean_dir
   change_dir_abort
   find . | grep -v svn | grep -v README | grep -v xsd | grep -v xml | grep -v testme | grep -v "main.cpp"  | xargs rm -rf 2>/dev/null 
-  rm -f *.template *.bak t.xml* sample.xml *.save README.build.txt 
+  rm -f *.template *.bak t.xml* *.xml.rt.xml sample.xml *.save README.build.txt 
   cd - > /dev/null 2>&1
   echo "   [ CLEANED ]"  
 }

@@ -195,85 +195,7 @@
     </xsl:choose>
   </xsl:variable>
   <xsl:value-of select="normalize-space($outIdx)" />
-  
-  <!--
-  <xsl:message>
-    T_get_last_existing_meta_idx|outIdx:<xsl:value-of select="$outIdx"/>|
-  </xsl:message>
-  -->
 </xsl:template>
-
-
-
-<!--
-<xsl:template name="T_log_next_meta_docPath">
-  <xsl:param name="docPath"/>
-      
-    <xsl:variable name="nextFreeIdx"><xsl:call-template name="T_get_next_nonexisting_meta_idx"/></xsl:variable>
-    <xsl:variable name="filename" select="concat($CWD,'/.xplusmeta/', $nextFreeIdx)"/>
-    <xsl:document method="text" href="{$filename}">&lt;doc name="<xsl:value-of select="$docPath"/>" /&gt;</xsl:document>
-</xsl:template>
--->
-
-
-<!--
-<xsl:template name="T_create_abs_xsd_path">
-  <xsl:param name="rel_xsd_path" />
- 
-  <xsl:variable name="abs_xsd_path">
-    <xsl:if test="not(starts-with($rel_xsd_path,'/')) and not(starts-with($rel_xsd_path,'http://'))"><xsl:value-of select="$input_xsd_dirname"/></xsl:if><xsl:value-of select="$rel_xsd_path"/>
-  </xsl:variable>
-
-  <xsl:value-of select="normalize-space($abs_xsd_path)" />
-</xsl:template>
-
-<xsl:template name="T_dirname_for_path">
-  <xsl:param name="path" />
- 
-  <xsl:variable name="dirname">
-    <xsl:choose>
-      <xsl:when test="contains($path,'/')">
-        <xsl:value-of select="substring-before($path, '/')"/>/<xsl:call-template name="T_dirname_for_path"><xsl:with-param name="path" select="substring-after($path, '/')"/></xsl:call-template>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:variable>
-  
-  <xsl:variable name="dirname2" select="normalize-space($dirname)"/>
-
-  <xsl:variable name="dirname3">
-    <xsl:choose>
-      <xsl:when test="$dirname2=''">./</xsl:when>
-      <xsl:otherwise><xsl:value-of select="$dirname2"/></xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-  <xsl:value-of select="normalize-space($dirname3)" />
-</xsl:template>
-
--->
-
-<!--
-    The hack of incrementing numbers to find currentDocument is used for user 
-    schemas, when there is at least one import or include.
--->
-<!--
-<xsl:template name="T_get_current_schema_doc">
-  <xsl:variable name="lastIdx">
-    <xsl:call-template name="T_get_last_existing_meta_idx"/>
-  </xsl:variable>
-  <xsl:variable name="filename" select="concat($CWD,'/.xplusmeta/', $lastIdx)" />
-  <xsl:variable name="currentDocument">
-    <xsl:choose>
-      <xsl:when test="starts-with(document($filename)/doc/@name, '/') or starts-with(document($filename)/doc/@name, 'http://')">
-        <xsl:value-of select="document($filename)/doc/@name"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="concat($input_xsd_dirname, document($filename)/doc/@name)"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-  <xsl:value-of select="normalize-space($currentDocument)" />
-</xsl:template>
--->
 
 <xsl:template name="T_count_top_level_elements_doc_and_includes">
   <xsl:variable name="cntTLESelf"><xsl:call-template name="T_count_top_level_elements"/></xsl:variable>
@@ -1978,22 +1900,17 @@ namespace <xsl:value-of select="$nsStr"/>{
     </xsl:choose>
   </xsl:variable>
 
-  <!--
-  <xsl:variable name="minOccurenceFixed">
+  <!--  we use defaultOccurence in case of attribute only, and the way it's value 
+        is 1 if attribute has a default or fixed value -->
+  <xsl:variable name="defaultOccur">
     <xsl:choose>
-      <xsl:when test="local-name()='attribute'">
-        <xsl:choose>
-          <xsl:when test="@fixed">1</xsl:when>
-          <xsl:otherwise><xsl:call-template name="T_get_minOccurence"/></xsl:otherwise>  
-        </xsl:choose>  
-      </xsl:when>
-      <xsl:when test="local-name()='element'"><xsl:call-template name="T_get_minOccurence"/></xsl:when>
+      <xsl:when test="local-name()='attribute' and (@fixed or @default)">1</xsl:when>
+      <xsl:otherwise>0</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
-  -->
 
   <xsl:variable name="out">
-    new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/>), <xsl:value-of select="$fsmType"/>, new object_unary_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(<xsl:value-of select="$thisOrThat"/>, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>))
+    new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/><xsl:if test="$defaultOccur != 0">, <xsl:value-of select="$defaultOccur"/></xsl:if>), <xsl:value-of select="$fsmType"/>, new object_unary_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(<xsl:value-of select="$thisOrThat"/>, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>))
   </xsl:variable> 
   <xsl:value-of select="normalize-space($out)"/>
 </xsl:template>

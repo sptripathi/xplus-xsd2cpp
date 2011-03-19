@@ -264,7 +264,7 @@ namespace XSD
   // T :   attribute's class
   template<typename T> T* createAttributeTmpl(StructCreateAttrThroughFsm t)
   {
-    if(t.ownerDoc->buildTree() || ! t.fsm->fsmCreatedNode())
+    if(t.ownerDoc->buildTree() || ! t.fsm->fsmCreatedNode() || t.options.isDefaultCreate)
     {
       AttributeCreateArgs args(t.tagName, t.nsUri, NULL, t.ownerElem, t.ownerDoc);
       T* node = new T(args);

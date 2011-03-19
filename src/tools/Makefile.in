@@ -56,9 +56,7 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
 PROGRAMS = $(bin_PROGRAMS)
 am_domParser_OBJECTS = DOMParse.$(OBJEXT)
 domParser_OBJECTS = $(am_domParser_OBJECTS)
-domParser_DEPENDENCIES = $(top_srcdir)/src/DOM/libdom.la \
-	$(top_srcdir)/src/XPlus/libxplus.la \
-	$(top_srcdir)/src/Poco/libpoco.la
+domParser_DEPENDENCIES = $(top_srcdir)/src/libxsdall.la
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -200,6 +198,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -218,7 +217,10 @@ top_srcdir = @top_srcdir@
 AM_CXXFLAGS = -g -O0 -I$(top_srcdir)/include -I$(top_srcdir)/foundation/include
 AM_LDFLAGS = -lpthread 
 domParser_SOURCES = DOMParse.cpp
-domParser_LDADD = $(top_srcdir)/src/DOM/libdom.la $(top_srcdir)/src/XPlus/libxplus.la $(top_srcdir)/src/Poco/libpoco.la
+domParser_LDADD = $(top_srcdir)/src/libxsdall.la 
+
+#xml2xsd_SOURCES=xml2xsd.cpp
+#xml2xsd_LDADD = $(top_srcdir)/src/libxsdall.la
 dist_bin_SCRIPTS = xsd2cpp 
 nobase_dist_data_DATA = resources/configure.ac \
                        resources/Makefile.am.src \

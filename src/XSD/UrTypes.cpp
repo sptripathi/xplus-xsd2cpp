@@ -54,7 +54,8 @@ namespace XMLSchema
       _abstract(args.abstract),
       _blockMask(args.blockMask),
       _finalMask(args.finalMask),
-      _defaultValue("")
+      _defaultValue(""),
+      _isDefaultText(false)
     {
       if(_abstract == true)
       {
@@ -218,18 +219,21 @@ namespace XMLSchema
     //    there, else sets the value in the TextNode
     void anyType::stringValue(DOMString value) 
     {
+      _isDefaultText = false;
       try
       {
-        normalizeValue(value);
-        checksOnSetValue(value);
-        _value = value;
-        postSetValue();
-
         createTextNodeOnSetValue(value);
+        setValueFromCreatedTextNodes();
       }
       catch(XPlus::Exception& ex)
       {
-        ex.setContext("element", *this->ownerElement()->getNodeName());
+        if(this->ownerElement()) 
+        {
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          if(this->ownerElement()->getNodeValue()) {
+            ex.setContext("node-value", *this->ownerElement()->getNodeValue());
+          }
+        }
         throw ex;
       }
     }
@@ -251,9 +255,20 @@ namespace XMLSchema
     }
     */
 
+    //
+    // _isDefaultText is set to true only in this function
+    // should be reset to false in:
+    //
+    //  * stringValue(...)    : expected to be called by application
+    //
+    //  * createTextNode(...) : called on DOM building while reading 
+    //                          from input xml file
+    //
     void anyType::defaultValue(DOMString value) 
     {
       _defaultValue = value;
+      this->stringValue(_defaultValue);
+      _isDefaultText = true;
     }
 
     TextNode* anyType::addTextNodeValueAtPos(DOMString text, int pos)
@@ -326,15 +341,6 @@ namespace XMLSchema
 
     void anyType::setValueFromCreatedTextNodes()
     {
-      //FIXME: in case or fixed/default should the text node be created or just 
-      // the values be populated in-memory. Looks like the latter one holds true...
-      if( (_textNodes.size() == 0) && (_defaultValue.length() > 0) )
-      {
-        TextNode* valueNode = this->ownerNode()->createChildTextNode(new DOMString(_defaultValue));
-        _textNodes.push_back(valueNode);
-      }
-
-      // value created by appending text from TextNodes
       DOMString value = "";
       for(unsigned int i=0; i<_textNodes.size(); i++) {
         value += *_textNodes.at(i)->getNodeValue();
@@ -356,21 +362,22 @@ namespace XMLSchema
       }
     }
 
+    // creates or resizes the _textNodes to make it's size exactly one.
+    // TextNode(created or existing) would have the supplied value 
     TextNode* anyType::createTextNodeOnSetValue(DOMString value)
     {
-      // NB: note that sometimes this anyType wouldnt have an owner Node, but it will be
-      // set a value with using stringValue(xyz), which in turn will call this function.
-      // eg. SimpleTypeListTmpl::stringValue ()
-      // For this reason we shouldn't throw an error if ownerNode is NULL, rather just do
-      // nothing inside this function
-      if(!this->ownerNode()) {
-        return NULL;
-      }
-
       TextNode* valueNode = NULL;
       if(_textNodes.size() == 0) 
       {
-        valueNode = this->ownerNode()->createChildTextNode(new DOMString(value));
+        if(this->ownerNode()) {
+          valueNode = this->ownerNode()->createChildTextNode(new DOMString(value));
+        }
+        else {
+          // this textNode would not get added to DOM ... heppens in following cases:
+          // * SimpleTypeListTmpl::stringValue -- harmless here
+          // * ...
+          valueNode = new TextNode(new DOMString(value), this->ownerDocument(), NULL);
+        }
         _textNodes.push_back(valueNode);
       }
       else if(_textNodes.size() == 1) 
@@ -383,8 +390,13 @@ namespace XMLSchema
         // TODO: should this new node be added to end of DOM children ??
         // delete the textNodes beyond 1st from node's children(DOM), and set 
         // the value in the 1st node
-        for(unsigned int i=1; i<_textNodes.size(); i++) {
-          this->ownerNode()->removeChild(_textNodes.at(i));
+
+        if(this->ownerNode())
+        {
+          for(unsigned int i=1; i<_textNodes.size(); i++)
+          {
+            this->ownerNode()->removeChild(_textNodes.at(i));
+          }
         }
         List<DOM::TextNode *>::iterator it = _textNodes.begin();
         _textNodes.erase(++it, _textNodes.end());
@@ -528,6 +540,16 @@ namespace XMLSchema
 
     TextNode* anyType::createTextNode(DOMString* data)
     {
+      if(_isDefaultText) 
+      {
+        for(unsigned int i=0; i<_textNodes.size(); i++) {
+          this->ownerNode()->removeChild(_textNodes.at(i));
+        }
+
+        _textNodes.clear();
+        _isDefaultText = false;
+      }
+
       TextNode* valueNode = this->ownerNode()->createChildTextNode(data);
       _textNodes.push_back(valueNode);
       return valueNode;
@@ -544,6 +566,10 @@ namespace XMLSchema
     {
       if(!localName) {
         throw XPlus::NullPointerException("endElementNS: localName is NULL");
+      }
+
+      if(_fsm->attributeFsm()) {
+        _fsm->attributeFsm()->fireDefaultEvents();
       }
 
       setValueFromCreatedTextNodes();
@@ -782,7 +808,13 @@ namespace XMLSchema
       validateCFacets();
       applyCFacets();
     }
+    
+    void anySimpleType::stringValue(DOMString val) 
+    {
+      anyType::stringValue(val);
+    }
 
+/*
     void anySimpleType::stringValue(DOMString val) 
     {
       try
@@ -804,7 +836,7 @@ namespace XMLSchema
         throw ex;
       }
     }
-
+*/
     void anySimpleType::validateCFacetsApplicability()
     {
       // example:

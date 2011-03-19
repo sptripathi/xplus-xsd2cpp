@@ -167,6 +167,7 @@ namespace DOM
   }
   
   Node* Node::insertBack(Node* newChild) {
+    newChild->setParentNode(this);
     return _childNodes.insertBack(newChild);
   }
 
@@ -357,7 +358,7 @@ namespace DOM
         pCDATA = new CDATASection(data, this->getOwnerDocument(), this);
       }
       if(_nodeType == ATTRIBUTE_NODE) {
-        setNodeValue(data); //satya ????
+        setNodeValue(data); //attribute with CDATA:FIXME ????
       }
       return pCDATA;
     }
@@ -411,7 +412,7 @@ namespace DOM
     }
   }
 
-  unsigned int Node::countPreviousSiblingsOfType(Node::NodeType nodeType)
+  unsigned int Node::countPreviousSiblingsOfType(Node::NodeType nodeType) const
   {
     Node *node = this->getPreviousSibling();
     unsigned int cnt=0;
@@ -424,5 +425,34 @@ namespace DOM
     }
     return cnt;
   }
+
+  unsigned int Node::countChildrenOfType(Node::NodeType nodeType) const
+  {
+    unsigned int cnt=0;
+    for(unsigned int i=0; i<_childNodes.getLength(); i++)
+    {
+      Node* node = _childNodes.item(i);
+      if(node->getNodeType() == nodeType) {
+        ++cnt;
+      }
+    }
+    return cnt;
+  }
+
+  void Node::removeChildrenOfType(Node::NodeType nodeType)
+  {
+    for(int i=0; i<(int)_childNodes.getLength(); i++)
+    {
+      Node* node = _childNodes.item(i);
+      if(node->getNodeType() == nodeType) 
+      {
+        _childNodes.removeNode(node);
+        i--;
+      }
+    }
+  }
+
+
+
 
 }

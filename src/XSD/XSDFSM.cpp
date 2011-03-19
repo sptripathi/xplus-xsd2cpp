@@ -657,9 +657,21 @@ void XsdFsmOfFSMs::fireRequiredEvents(bool docBuilding)
   
   for(unsigned int i=0; i<_allFSMs.size(); i++)
   {
+    /*
     if(!_allFSMs[i]->isInFinalState()) {
       _allFSMs[i]->fireRequiredEvents(docBuilding);
     }
+    */
+    
+    _allFSMs[i]->fireRequiredEvents(docBuilding);
+  }
+}
+
+void XsdFsmOfFSMs::fireDefaultEvents(bool docBuilding)
+{
+  for(unsigned int i=0; i<_allFSMs.size(); i++)
+  {
+    _allFSMs[i]->fireDefaultEvents(docBuilding);
   }
 }
 
@@ -1387,6 +1399,14 @@ void XsdFsmArray::fireRequiredEvents(bool docBuilding)
     fsmTreeNode->_data->fireRequiredEvents();
   }
   */
+}
+ 
+void XsdFsmArray::fireDefaultEvents(bool docBuilding)
+{
+  const list<BinaryFsmTree::TreeNodePtr> leaves = _fsmTree.getLeaves();
+  assert(leaves.size()==1);
+  FsmTreeNode* fsmTreeNode = const_cast<FsmTreeNode *>(dynamic_cast<const FsmTreeNode *>(leaves.front().get()));
+  fsmTreeNode->_data->fireDefaultEvents(docBuilding);
 }
 
 bool XsdFsmArray::addNewGreedyFsmToArray()

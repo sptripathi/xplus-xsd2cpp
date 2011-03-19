@@ -24,6 +24,7 @@ INST_BIN_DIR=@bindir@
 INST_LIB_DIR=@libdir@
 INST_INCL_DIR=@includedir@
 DATA_DIR=@datadir@
+RESOURCES_DIR=@datadir@/resources
 XSD2CPP_XSL_PATH=$DATA_DIR/xsl/xsd2cpp.xsl
 
 MKDIR=`which mkdir`
@@ -101,27 +102,33 @@ cleanup_meta()
 
 gen_source_files()
 {
+  echo
+  echo "=>  Generating source files..."
+
   BACKUP_DIR=""
   PID=$$
   if [ "$OUTDIR" = "." ] || [  "$OUTDIR" = ".." ]; then
     
     BACKUP_DIR=$OUTDIR/xplus.bak/$PID
-
+    DIRS_TO_BACKUP=""
     if [ -e "$OUTDIR/src" ]; then
-      echo "* the directory $OUTDIR/src already exists, backing up in $BACKUP_DIR"
       $MKDIR -p $BACKUP_DIR
-      $MV "$OUTDIR/src" $BACKUP_DIR/
+      DIRS_TO_BACKUP="$DIRS_TO_BACKUP $OUTDIR/src"
     fi
     if [ -e "$OUTDIR/include" ]; then
-      echo "* the directory $OUTDIR/include already exists, backing up in $BACKUP_DIR"
       $MKDIR -p $BACKUP_DIR
-      $MV "$OUTDIR/include" $BACKUP_DIR/
+      DIRS_TO_BACKUP="$DIRS_TO_BACKUP $OUTDIR/include"
+    fi
+    if [ "$DIRS_TO_BACKUP" != "" ]; then
+      echo "    * The directories ($DIRS_TO_BACKUP) already exist."
+      echo "      Backing them up in $BACKUP_DIR"
+      $MV $DIRS_TO_BACKUP $BACKUP_DIR/
     fi
 
   else
     BACKUP_DIR=xplus.bak/$PID
     if [ -e "$OUTDIR" ]; then
-      echo "* the directory $OUTDIR already exists, backing up in $BACKUP_DIR"
+      echo "    * the directory $OUTDIR already exists, backing up in $BACKUP_DIR"
       $MKDIR -p $BACKUP_DIR
       $MV "$OUTDIR" $BACKUP_DIR/
     fi
@@ -130,8 +137,6 @@ gen_source_files()
     
   $RM -rf $BACKUP_DIR/*
   
-  echo
-  echo "=>  Generating source files..."
 
   # generate the xsd-to-sources
   cd $OUTDIR
@@ -184,19 +189,26 @@ gen_source_files()
   # create main.cpp if it doesnt exist already
   if [ ! -e  main.cpp ]; then
     $MV main.cpp.template main.cpp
+  else
+    echo "    * Found a main.cpp file, so writing instead a main.cpp.template file."
+    echo "      Certain schema edits may require the new main.cpp.template to be"
+    echo "      used instead of the existing main.cpp. In such cases, please rename"
+    echo "      main.cpp.template to main.cpp after applying any of your edits from "
+    echo "      main.cpp to main.cpp.template"
   fi
   
   #GEN_XSD_SOURCES=`cd src && $FIND . -name "*.cpp" | $GREP -v "main\.cpp"`
   GEN_XSD_SOURCES=`cd src && $FIND . -name "*.cpp" | $AWK '/$/{printf "%s ", $0;next}{print}'`
   GEN_XSD_INCLUDES=`cd include && $FIND . -name "*.h" | $AWK '/$/{printf "%s ", $0;next}{print}'`
   cd - > /dev/null 2>&1
+    
+  echo 
 }
 
 gen_automake_files()
 {
   echo "=>  Generating automake/autoconf files ..."
 
-  RESOURCES_DIR=$DATA_DIR/resources
   CONFIG_AC_FILE=$RESOURCES_DIR/configure.ac
   MAKE_AM_TOP_SRC_DIR_FILE=$RESOURCES_DIR/Makefile.am.top_srcdir
   MAKE_AM_SRC_DIR_FILE=$RESOURCES_DIR/Makefile.am.src
@@ -213,9 +225,16 @@ gen_automake_files()
   echo "$GEN_XSD_SOURCES" >> $OUTDIR/src/Makefile.am
   echo "$GEN_XSD_INCLUDES" >> $OUTDIR/include/Makefile.am
   $CP $RESOURCES_DIR/autogen.sh $OUTDIR/autogen.sh && $CHMOD +x $OUTDIR/autogen.sh
-  $CP $RESOURCES_DIR/README.build.txt $OUTDIR/
+  
+  echo
 }
 
+gen_readme()
+{
+  echo "=>  Generating README.build.txt file ..."
+  $CP $RESOURCES_DIR/README.build.txt $OUTDIR/
+  echo
+}
 
 run()
 {
@@ -224,9 +243,8 @@ run()
   cleanup_meta
   gen_source_files
   gen_automake_files
-  echo 
-  echo "  Note: the generated source needs to be built now, please read README.build.txt for help on how to build" 
-  echo
+  gen_readme
+  #echo " The generated source needs to be built now. Please read README.build.txt to learn about steps to build" 
   cleanup_meta
 }
 

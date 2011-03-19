@@ -11,6 +11,7 @@
       
       <ul>
         <li><a href="#HOWTO_EXAMPLES">How to try examples</a>
+        <li><a href="#RUNTESTS">Build and test all of examples/ and Tests/ directories</a>
         <li><a href="#EX_BY_TAGS">Examples by tags</a>
         <li><a href="#ALL_EXAMPLES">All examples</a>
         <li><a href="#TESTS">Tests</a>
@@ -117,8 +118,26 @@
         </code>         
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
 
+      <br><br>
+      <a name="RUNTESTS"><h3>Build and test all of examples/ and Tests/ directories<hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
 
+    There is a script named <code>runTests.sh</code> in source home. The options for this script are:<br> 
+    <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+    <pre>
+  $ ./runTests.sh -h
 
+  Usage:
+  $ runTests.sh  [-c | -t]
+    -c  cleanup all the test directories
+    -t  cleanup and test all the test directories
+    -h  print help
+
+    (test directories include: Tests/ examples/) 
+    </pre>
+    <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+    The options are self-explanatory. When run with -t option, this script iteratively builds and tests all examples and Tests directories(though it takes long to finish).<br>
+    If you want save the effort of building all examples(and Tests directories) one by one, before you could experiment with the respective builds, running <b>"runTests.sh -t"</b> may be a good idea.<br>
+    Please be informed that with both "-c" and "-t" options, this script cleans up all the directories of files that it thinks are temporary files(it does warn you about about the same and requests your permission before proceeding). If you have important changes in those directories, those changes should be backed up before proceeding with this script.
 
       <br><br>
       <a name="EX_BY_TAGS"><h3>Examples by tags <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>

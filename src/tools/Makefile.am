@@ -1,10 +1,14 @@
 AM_CXXFLAGS= -g -O0 -I$(top_srcdir)/include -I$(top_srcdir)/foundation/include
 AM_LDFLAGS= -lpthread 
 
-bin_PROGRAMS=domParser 
+bin_PROGRAMS=domParser #xml2xsd
 
 domParser_SOURCES=DOMParse.cpp
-domParser_LDADD = $(top_srcdir)/src/DOM/libdom.la $(top_srcdir)/src/XPlus/libxplus.la $(top_srcdir)/src/Poco/libpoco.la
+domParser_LDADD = $(top_srcdir)/src/libxsdall.la 
+
+#xml2xsd_SOURCES=xml2xsd.cpp
+#xml2xsd_LDADD = $(top_srcdir)/src/libxsdall.la
+
 
 dist_bin_SCRIPTS=xsd2cpp 
 

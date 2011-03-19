@@ -109,68 +109,6 @@ complexType Content:
     </xsl:choose>
   </xsl:for-each>
 
-  <!-- 
-      TODO:satya: remove following if concluded that its not needed
-      additional loop over type resolved to by base attribute 
-      For now only looping through the attributes inside base only if it's a complex-type-definition
-  -->
-  <!--
-  <xsl:if test="*[local-name()='complexContent']">
-    <xsl:variable name="baseQName">
-      <xsl:call-template name="T_get_complexType_base"/>
-    </xsl:variable>
-    
-    <xsl:variable name="baseResolution">
-      <xsl:call-template name="T_resolve_typeQName">
-        <xsl:with-param name="typeQName" select="$baseQName"/>
-      </xsl:call-template>
-    </xsl:variable>
-    
-    <xsl:variable name="resolutionFoundInDoc">
-      <xsl:call-template name="T_get_resolution_foundInDoc">
-        <xsl:with-param name="resolution" select="$baseResolution"/>
-      </xsl:call-template>  
-    </xsl:variable>
-
-    <xsl:variable name="isBaseComplexType">
-      <xsl:call-template name="T_is_resolution_complexType">
-        <xsl:with-param name="resolution" select="$baseResolution"/>
-      </xsl:call-template>  
-    </xsl:variable>
-
-    <xsl:if test="$isBaseComplexType='true'">
-      <xsl:variable name="baseTypeLocalPart">
-        <xsl:call-template name="T_get_localPart_of_QName">
-          <xsl:with-param name="qName" select="$baseQName"/>
-        </xsl:call-template>
-      </xsl:variable>
-      <xsl:variable name="meCTNode" select="."/>
-      <xsl:variable name="baseComplexTypeNode" select="document($resolutionFoundInDoc)/*[local-name()='schema']/*[local-name()='complexType' and @name=$baseTypeLocalPart]"/>
-
-      <xsl:for-each select="$baseComplexTypeNode/*[local-name()='attribute']">
-        <xsl:variable name="effNodeName"><xsl:call-template name="T_get_name_ElementAttr"/></xsl:variable>
-        <xsl:variable name="nodeTargetNsUri"><xsl:call-template name="T_get_targetNsUri_ElementAttr"/></xsl:variable>
-
-        <xsl:variable name="isMatchingAttrPresentInsideSelf">
-          <xsl:call-template name="T_is_attribute_present_inside_node_complexType_with_complexContent">
-            <xsl:with-param name="ctNode" select="$meCTNode"/>
-            <xsl:with-param name="effNodeName" select="$effNodeName"/>
-            <xsl:with-param name="nodeTargetNsUri" select="$nodeTargetNsUri"/>
-          </xsl:call-template>
-        </xsl:variable>
-
-        <xsl:if test="$isMatchingAttrPresentInsideSelf='false'">
-          <xsl:call-template name="ON_COMPLEXTYPE_ATTRIBUTE">
-            <xsl:with-param name="mode" select="$mode"/>
-            <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
-          </xsl:call-template>
-        </xsl:if>
-      </xsl:for-each>
-
-    </xsl:if>
-
-  </xsl:if>
-  -->  
 </xsl:template>
 
 
@@ -862,19 +800,6 @@ namespace Types
   </xsl:for-each>
       NULL
     };
-    <!-- satya 15th Nov -->
-    <!--
-    _fsmAttrs = new XsdAllFsmOfFSMs(fsmsAttrs);
-  <xsl:for-each select="*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
-    <xsl:variable name="maxOccurChoiceOrSeq"><xsl:call-template name="T_get_maxOccurence"/></xsl:variable>
-    <xsl:variable name="listSuffix"><xsl:if test="$maxOccurChoiceOrSeq>1">List</xsl:if></xsl:variable>
-    <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
-    _fsmElems = _<xsl:value-of select="$mgName"/>;
-  </xsl:for-each>
-    XsdFsmBasePtr elemEndFsm = new XsdFSM&lt;void *&gt;(Particle(ownerElement()->getNamespaceURI(), *ownerElement()->getTagName(), 1, 1), XsdEvent::ELEMENT_END);
-    XsdFsmBasePtr fsms[] = { _fsmAttrs, _fsmElems, elemEndFsm, NULL };
-    _fsm = new XsdSequenceFsmOfFSMs(fsms);
-    -->
 
     _fsm->replaceOrAppendUniqueAttributeFsms(fsmsAttrs);
   <xsl:for-each select="*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
@@ -1761,6 +1686,14 @@ namespace Types
     </xsl:choose>
 
     <xsl:choose>
+    <!--
+      <xsl:when test="@default">
+    node->defaultValue("<xsl:value-of select="@default"/>");    
+      </xsl:when>
+      <xsl:when test="@fixed">
+    node->defaultValue("<xsl:value-of select="@fixed"/>");    
+      </xsl:when>
+      -->
       <xsl:when test="@default">
     node->defaultValue("<xsl:value-of select="@default"/>");    
       </xsl:when>
@@ -1785,9 +1718,12 @@ namespace Types
   <xsl:if test="$isOptionalScalar='true' and local-name()='attribute'">
   void <xsl:value-of select="$cppNSDerefLevel1Onwards"/>mark_present_<xsl:value-of select="$cppNameFunction"/>()
   {
-    XsdEvent event(<xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>, NULL, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:value-of select="$fsmType"/>);
-    _fsmAttrs->processEventThrow(event); 
-    _fsm->fsmCreatedNode(NULL);
+    if(!_<xsl:value-of select="$cppNameFunction"/>)
+    {
+      XsdEvent event(<xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>, NULL, DOMString("<xsl:value-of select="$elemAttrName"/>"), <xsl:value-of select="$fsmType"/>);
+      _fsmAttrs->processEventThrow(event); 
+      _fsm->fsmCreatedNode(NULL);
+    }
   }
 
   </xsl:if>

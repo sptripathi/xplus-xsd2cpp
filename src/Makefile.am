@@ -3,7 +3,7 @@ AM_CFLAGS= -g -O0 -I$(top_srcdir)/include -I$(top_srcdir)/src/DOM/
 AUTOMAKE_OPTIONS = subdir-objects
 AM_LDFLAGS=
 
-SUBDIRS = Poco XPlus DOM XSD tools
+SUBDIRS =  tools #Poco XPlus DOM XSD
 
 
 bin_PROGRAMS=fsmTest 

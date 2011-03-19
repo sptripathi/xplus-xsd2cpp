@@ -63,13 +63,15 @@ struct Particle
   DOMString localName;
   unsigned int minOccurence;
   unsigned int maxOccurence;
+  unsigned int defaultOccurence;
  
   Particle(DOMString* pNsUri=NULL, DOMString localNameStr="", 
-                unsigned int minOccur=0, int maxOccur=0):
+                unsigned int minOccur=0, int maxOccur=0, int defaultOccur=0):
     nsUri(pNsUri),
     localName(localNameStr),
     minOccurence(minOccur),
-    maxOccurence((unsigned int)maxOccur)
+    maxOccurence((unsigned int)maxOccur),
+    defaultOccurence((unsigned int)defaultOccur)
   {
   }
 
@@ -77,7 +79,7 @@ struct Particle
 
   void print() const {
   cout << "{" << ( (nsUri)? *nsUri : "" ) << "}"
-    << localName << "  [" << minOccurence << "," << maxOccurence << "]" << endl;
+    << localName << "  [" << minOccurence << "," << maxOccurence << "," << defaultOccurence <<  "]" << endl;
   }
 
 };
@@ -88,12 +90,15 @@ struct FsmCbOptions
   DOMString xsiNil;
   DOMString xsiSchemaLocation;
   DOMString xsiNoNamespaceSchemaLocation;
+
+  bool isDefaultCreate;
   
   FsmCbOptions(DOMString xsiType="", DOMString xsiNil="", DOMString xsiSchemaLocation="", DOMString xsiNoNamespaceSchemaLocation=""):
     xsiType(""),
     xsiNil(""),
     xsiSchemaLocation(""),
-    xsiNoNamespaceSchemaLocation("")
+    xsiNoNamespaceSchemaLocation(""),
+    isDefaultCreate(false)
     {
     }
 
@@ -219,7 +224,10 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
     virtual bool isInitFinalState() const=0;
     virtual list<DOMString> suggestNextEvents() const=0; 
     virtual XsdFsmBasePtr currentUnitFsm()=0;
+    
     virtual void fireRequiredEvents(bool docBuilding=true)=0;
+    virtual void fireDefaultEvents(bool docBuilding=true)=0;
+
     virtual void print() const =0;
     virtual void finish() {};
     
@@ -421,12 +429,24 @@ class XsdFSM : public XsdFsmBase
       return NULL;
     }
 
-    
+    // Note: max of (defaultOccurence, minOccurence) is used as required-occurence
     virtual void fireRequiredEvents(bool docBuilding=true)
     {
       XsdEvent event = this->toEvent();
       event.docBuilding = docBuilding;
-      for(unsigned int j=0; j<_nsName.minOccurence; j++) {
+      unsigned int occur = ((_nsName.defaultOccurence > _nsName.minOccurence) ? _nsName.defaultOccurence : _nsName.minOccurence);
+      
+      for(unsigned int j=0; j<occur; j++) {
+        this->processEventOnce(event);
+      }
+    }
+
+    virtual void fireDefaultEvents(bool docBuilding=true)
+    {
+      XsdEvent event = this->toEvent();
+      event.docBuilding = docBuilding;
+      event.cbOptions.isDefaultCreate = true;
+      for(unsigned int j=_nsName.minOccurence; j<_nsName.defaultOccurence; j++) {
         this->processEventOnce(event);
       }
     }
@@ -623,6 +643,7 @@ class XsdFsmOfFSMs : public XsdFsmBase
   virtual list<DOMString> suggestNextEvents() const; 
   virtual XsdFsmBasePtr currentUnitFsm();
   virtual void fireRequiredEvents(bool docBuilding=true);
+  virtual void fireDefaultEvents(bool docBuilding=true);
   virtual bool isInitFinalState() const;
   virtual Node* rightmostElement() const;
   virtual Node* leftmostElement() const;
@@ -960,6 +981,7 @@ class XsdFsmArray : public XsdFsmBase
     virtual list<DOMString> suggestNextEvents() const; 
     virtual XsdFsmBasePtr currentUnitFsm();
     virtual void fireRequiredEvents(bool docBuilding=true);
+    virtual void fireDefaultEvents(bool docBuilding=true);
     virtual void print() const;
     virtual void finish();
     virtual XsdFsmBase* fsmAt(unsigned int idx);

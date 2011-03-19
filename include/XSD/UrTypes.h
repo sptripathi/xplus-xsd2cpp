@@ -352,7 +352,9 @@ namespace XMLSchema
         AnyTypeFSMPtr                   _fsm;
 
         DOMString                       _value;
+
         List<TextNode* >                _textNodes; 
+        bool                            _isDefaultText;
 
         static std::map<DOMString, anyType*>   _qNameToTypeMap;
     };
