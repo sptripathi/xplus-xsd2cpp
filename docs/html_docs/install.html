@@ -19,14 +19,14 @@
       <a name="TPUSE"><h3>Note on third party tools/libraries used <hr NOSHADE SIZE=7 WIDTH=100%> </h3> </a>
       The thirdparty tools/libraries used are: 
       <ul>
-        <li><b>autotools</b> : automake, autoconf, libtool etc.<br>
+        <li><b><a href="http://www.gnu.org/software/hello/manual/automake/Autotools-Introduction.html" target="_blank">autotools</a></b> : automake, autoconf, libtool etc.<br>
           The XmlPlus source is built using gnu <b>automake/autoconf/libtool</b> set of tools.<br><br>
 
-        <li><b>xsltproc</b>  : xsl transformation tool <br><br>
+        <li><b><a href="http://xmlsoft.org/XSLT/xsltproc2.html" target="_blank">xsltproc</a></b>  : xsl transformation tool <br><br>
 
         <li><b><a href="http://expat.sourceforge.net/" target="_blank">expat</a></b>     : a xml parser library by <i>James Clark</i> <br><br>
 
-        <li><b><a href="http://pocoproject.org/" target="_blank">POCO C++ Libraries</a></b>      : a minimal customised version of <i>POCO</i><br>
+        <li><b><a href="http://pocoproject.org/" target="_blank">POCO C++ Libraries</a></b>      : We use a minimal customised version of <i>POCO</i>.<br>
             The custom mini version of <i>POCO</i> is bundled alongwith <i>XmlPlus</i> source package, therefore you do not need to download/install this library separately.
       </ul>
 
@@ -121,8 +121,7 @@
 
       <br><br>
       <a name="UPDATE_ENV"><h3>Updating the environment with the installation path <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-
-      Register the installation path with the system environment.<br>
+      If you chose custom path of instalation in previous steps, you would need to update your working environment with those paths. (typically done by exporting these variables in .bashrc or .profile files in Linux or Mac-OS machines).<br><br>
       <code>
         $ export PATH=$PATH:/path/of/installation/bin <br>  
         $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/of/installation/lib
@@ -147,58 +146,40 @@
       Once you have installed the <b>XmlPlus</b> tool, the libraries and the binaries must be in LD_LIBRARY_PATH and PATH respectively.
       Assuming that you have installed the build in the path <i>$HOME/xplusbuild/</i>, let us peek into the installation. 
       </p>
-      <br>
-
-      Some directories inside installation path:<br>
-      <code>
-        [~/xplusbuild] $ ls -1<br>
-        bin<br>
-        include<br>
-        lib<br>
-      </code>
-
-      <br>
-      Some of the installed binaries:<br>
-      <code>
-        [~/xplusbuild] $ ls -1 bin/<br>
-        domParser<br>
-        xsd2cpp<br>
-      </code>
-
-      <br>
-      Some of the installed headers:<br>
-      <code>
-        [~/xplusbuild] $ ls -1 include/<br>
-        DOM<br>
-        Poco<br>
-        XPlus<br>
-        XSD<br>
-      </code>
-
-      <br>
-      Some of the installed shared libraries:<br>
-      <code>
-        [~/xplusbuild] $ ls -1 lib/ | grep "so$" <br>
-        libdom.so<br>
-        libpoco.so<br>
-        libxplus.so<br>
-        libxsdall.so<br>
-        libxsd.so<br>
-      </code>
-
-      <br>
-      The static libraries:<br>
-      <code>
-        [~/xplusbuild] $ ls -1 lib/ | grep "\.a$" <br>
-        libdom.a <br>
-        libpoco.a <br>
-        libxplus.a <br>
-        libxsd.a <br>
-        libxsdall.a <br>
-      </code>
-
-      <br><br>
-      Now, try accessing the xsd2cpp tool: <br>
+ Some directories inside installation path:
+ <pre>
+   [~/xplusbuild] $ ls -1
+   bin
+   include
+   lib
+ </pre>
+ Some of the installed binaries:
+ <pre>
+   [~/xplusbuild] $ ls -1 bin/
+   domParser
+   xsd2cpp
+ </pre>
+ Some of the installed headers:
+ <pre>
+ [~/xplusbuild] $ ls -1 include/
+ DOM
+ Poco
+ XPlus
+ XSD
+ </pre>
+ Some of the installed shared libraries:
+ <pre>
+ $ ls -1 lib/ | grep "so.*"
+ libxsdall.so
+ libxsdall.so.0
+ libxsdall.so.0.0.0
+ </pre> 		
+ The static libraries:
+ <pre>
+ $ ls -1 lib/ | grep "\.a$"
+ libxsdall.a
+ </pre>
+ Now, try accessing the xsd2cpp tool: <br>
       <hr NOSHADE SIZE=1 WIDTH=50% align=left><pre>
   $ xsd2cpp 
   Usage:
@@ -215,7 +196,7 @@
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
 
       <br>
-      If you reached here fine, then you have finished the installation part.
+      If you reached here fine, then you have finished the installation part.<br>
       If faced problems, send us an email mentioning the details of installation problems.
       (see <a href="support.html#UPDATE_ENV">Report Bugs</a>)
 
