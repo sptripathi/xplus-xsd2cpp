@@ -1,0 +1,3841 @@
+<html> <head> <title>Examples</title> </head> <h2>Examples <hr NOSHADE SIZE=10 WIDTH=100%> </h2> <body> <form>
+<ul>
+<li> <a href="#examples_person">examples/person</a>
+<li> <a href="#examples_chineseDoc_utf8">examples/chineseDoc_utf8</a>
+<li> <a href="#examples_library">examples/library</a>
+<li> <a href="#examples_xmldsig">examples/xmldsig</a>
+<li> <a href="#examples_org">examples/org</a>
+<li> <a href="#examples_japaneseDoc_utf8">examples/japaneseDoc_utf8</a>
+<li> <a href="#examples_helloWorld">examples/helloWorld</a>
+<li> <a href="#examples_mails">examples/mails</a>
+<li> <a href="#examples_simpleTypesDemo">examples/simpleTypesDemo</a>
+<li> <a href="#examples_simplest">examples/simplest</a>
+<li> <a href="#examples_ipo">examples/ipo</a>
+<li> <a href="#examples_netEnabled">examples/netEnabled</a>
+<li> <a href="#examples_po">examples/po</a>
+<li> <a href="#examples_helloWorldWide">examples/helloWorldWide</a>
+<li> <a href="#examples_rss">examples/rss</a>
+<li> <a href="#examples_includeDemo">examples/includeDemo</a>
+</ul>
+<br><br>
+<h2><a name="examples_person">examples/person</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_person_person.xsd">examples/person/person.xsd</a>
+<li> <a href="#examples_person_valid.xml">examples/person/valid.xml</a>
+<li> <a href="#examples_person_main.cpp">examples/person/main.cpp</a>
+</ul>
+<h3><a name="examples_person_person.xsd">examples/person/person.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" &gt;
+
+  &lt;xs:complexType name="personName"&gt;
+    &lt;xs:sequence&gt;
+      &lt;xs:element name="title" type="xs:string" minOccurs="0"/&gt;
+      &lt;xs:element name="forename" type="xs:string" minOccurs="0" maxOccurs="unbounded"/&gt;
+      &lt;xs:element name="surname" type="xs:string"/&gt;
+    &lt;/xs:sequence&gt;
+  &lt;/xs:complexType&gt;
+
+  &lt;xs:complexType name="simpleName"&gt;
+    &lt;xs:complexContent&gt;
+      &lt;xs:restriction base="personName"&gt;
+        &lt;xs:sequence&gt;
+          &lt;xs:element name="forename" type="xs:string" minOccurs="1" maxOccurs="1"/&gt;
+          &lt;xs:element name="surname" type="xs:string"/&gt;
+        &lt;/xs:sequence&gt;
+      &lt;/xs:restriction&gt;
+    &lt;/xs:complexContent&gt;
+  &lt;/xs:complexType&gt;
+
+  &lt;xs:element name="who" type="simpleName"/&gt;
+
+&lt;!--
+   &lt;who&gt;
+    &lt;forename&gt;Bill&lt;/forename&gt;
+    &lt;surname&gt;Clinton&lt;/surname&gt;
+   &lt;/who&gt;
+--&gt;
+
+&lt;/xs:schema&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_person_valid.xml">examples/person/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;who&gt;
+  &lt;forename&gt;Bill&lt;/forename&gt;
+  &lt;surname&gt;Clinton&lt;/surname&gt;
+&lt;/who&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_person_main.cpp">examples/person/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "NoNS/all-include.h"
+
+void populateDocument(NoNS::Document* xsdDoc);
+void updateOrConsumeDocument(NoNS::Document* xsdDoc);
+    
+
+int main (int argc, char**argv)
+{
+  XSD::UserOps&lt;NoNS::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+
+  XSD::UserOps&lt;NoNS::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here ...
+void populateDocument(NoNS::Document* xsdDoc)
+{
+  xsdDoc-&gt;element_who()-&gt;set_forename("Bill");
+  xsdDoc-&gt;element_who()-&gt;set_surname("Clinton");
+}
+
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_chineseDoc_utf8">examples/chineseDoc_utf8</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_chineseDoc_utf8_chineseDoc_utf8.xsd">examples/chineseDoc_utf8/chineseDoc_utf8.xsd</a>
+<li> <a href="#examples_chineseDoc_utf8_valid.xml">examples/chineseDoc_utf8/valid.xml</a>
+<li> <a href="#examples_chineseDoc_utf8_main.cpp">examples/chineseDoc_utf8/main.cpp</a>
+</ul>
+<h3><a name="examples_chineseDoc_utf8_chineseDoc_utf8.xsd">examples/chineseDoc_utf8/chineseDoc_utf8.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+ 
+  &lt;xsd:element name="test" type="TestType"/&gt;
+
+  &lt;xsd:complexType name="TestType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="name" type="NameType"/&gt;
+      &lt;xsd:element name="data" type="DataType" maxOccurs="15"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="type" type="xsd:string" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="NameType"&gt;
+    &lt;xsd:simpleContent&gt;
+      &lt;xsd:extension base="xsd:string"&gt;
+        &lt;xsd:attribute name="id" type="xsd:string" use="required"/&gt;
+      &lt;/xsd:extension&gt;
+    &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="DataType"&gt;
+    &lt;xsd:simpleContent&gt;
+      &lt;xsd:extension base="xsd:string"&gt;
+        &lt;xsd:attribute name="char" type="xsd:string"/&gt;
+      &lt;/xsd:extension&gt;
+    &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;/xsd:schema&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_chineseDoc_utf8_valid.xml">examples/chineseDoc_utf8/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" standalone="yes" ?&gt;
+&lt;?xml-stylesheet type='text/css' href='http://www.ascc.net/xml/test/style.css' ?&gt;
+&lt;!DOCTYPE test SYSTEM 'http://www.ascc.net/xml/test/test.dtd'&gt;
+&lt;!-- Copyright 1998 Academia Sinica Computing Center --&gt;
+&lt;!-- Permission to use and distribute granted under MPL --&gt;
+&lt;!-- Email corrections to ricko@gate.sinica.net.tw --&gt;
+&lt;test type="io13" xml:lang="en"&gt;
+  &lt;name id="中"&gt;Chinese Test #13: UTF-8&lt;/name&gt;
+  &lt;data&gt;
+    This file collects the previous tests cases into a single file.
+    It is suitable for a quick overview. 
+  &lt;/data&gt;
+  &lt;data&gt;
+    The XML header of this file is
+      &lt;?xml version="1.0" encoding="UTF-8" standalone="yes" ?&gt;.
+  &lt;/data&gt;
+  &lt;data char="The character is here: [&#20013;]." &gt;
+    The character is here as decimal NCR: [&#20013;].
+    It is the Chinese character for middle.
+    It should look like a box with a vertical
+    line through its middle. 
+  &lt;/data&gt;
+  &lt;data char="The character is here: [&#x4E2D;]." &gt;
+    The character is here as hexadecimal NCR: [&#x4E2D;].
+    It is the Chinese character for middle.
+    It should look like a box with a vertical
+    line through its middle. 
+  &lt;/data&gt;
+  &lt;data char="The character is here: [中]." &gt;
+    The direct character is here: [中].
+    It is the Chinese character for middle.
+    It should look like a box with a vertical
+    line through its middle. 
+  &lt;/data&gt;
+  &lt;data char="The character is here: [究]." &gt;The other direct character is here: [究]. &lt;/data&gt;
+&lt;/test&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_chineseDoc_utf8_main.cpp">examples/chineseDoc_utf8/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "NoNS/all-include.h"
+
+void populateDocument(NoNS::Document* xsdDoc);
+void updateOrConsumeDocument(NoNS::Document* xsdDoc);
+    
+
+int main (int argc, char** argv)
+{
+  XSD::UserOps&lt;NoNS::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+
+  XSD::UserOps&lt;NoNS::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here ...
+void populateDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+{
+  NoNS::test* pElemTest = xsdDoc-&gt;element_test();
+  
+  cout &lt;&lt; "test.name: [" &lt;&lt; pElemTest-&gt;element_name()-&gt;stringValue() &lt;&lt; "]" &lt;&lt; endl
+       &lt;&lt; "       test.name.@id: ["
+       &lt;&lt; pElemTest-&gt;element_name()-&gt;get_attr_id_string() 
+       &lt;&lt; "]" &lt;&lt; endl;
+       
+  
+  unsigned int sizeDataArray = pElemTest-&gt;elements_data().size();
+  for(unsigned int i=0; i&lt;sizeDataArray; i++)
+  {
+    NoNS::Types::TestType::data* pElemData = pElemTest-&gt;element_data_at(i);
+    cout &lt;&lt; "test.data[" &lt;&lt; i &lt;&lt; "]: [" &lt;&lt; 
+        pElemTest-&gt;element_name()-&gt;stringValue() &lt;&lt; "]" &lt;&lt; endl;
+
+    if(pElemData-&gt;attribute_attr_char())
+    {
+      cout &lt;&lt; "     test.data[" &lt;&lt; i &lt;&lt; "].@char: [" 
+        &lt;&lt; pElemData-&gt;get_attr_char_string() &lt;&lt; "]";
+    }
+    cout &lt;&lt; endl;
+  }
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_library">examples/library</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_library_library.xsd">examples/library/library.xsd</a>
+<li> <a href="#examples_library_valid.xml">examples/library/valid.xml</a>
+<li> <a href="#examples_library_main.cpp">examples/library/main.cpp</a>
+</ul>
+<h3><a name="examples_library_library.xsd">examples/library/library.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;xs:element name="library"&gt;
+    &lt;xs:complexType&gt;
+      &lt;xs:sequence&gt;
+        &lt;xs:element name="book" maxOccurs="unbounded"&gt;
+          &lt;xs:complexType&gt;
+            &lt;xs:sequence&gt;
+              &lt;xs:element name="isbn" type="xs:integer"/&gt;
+              &lt;xs:element name="title"&gt;
+                &lt;xs:complexType&gt;
+                 &lt;xs:simpleContent&gt;
+                 &lt;xs:extension base="xs:string"&gt;
+                 &lt;xs:attribute name="lang" type="xs:language"/&gt;
+                 &lt;/xs:extension&gt;
+                 &lt;/xs:simpleContent&gt;
+                &lt;/xs:complexType&gt;
+              &lt;/xs:element&gt; 
+              &lt;xs:element name="author" minOccurs="0"
+                maxOccurs="unbounded"&gt;
+                &lt;xs:complexType&gt;
+                 &lt;xs:sequence&gt;
+                 &lt;xs:element name="name" type="xs:string"/&gt;
+                 &lt;xs:element name="born" type="xs:date"/&gt;
+                 &lt;xs:element name="dead" type="xs:date"/&gt;
+                 &lt;/xs:sequence&gt;
+                 &lt;xs:attribute name="id" type="xs:ID"/&gt;
+                &lt;/xs:complexType&gt;
+              &lt;/xs:element&gt; 
+              &lt;xs:element name="character" minOccurs="0"
+                maxOccurs="unbounded"&gt;
+                &lt;xs:complexType&gt;
+                 &lt;xs:sequence&gt;
+                 &lt;xs:element name="name" type="xs:string"/&gt;
+                 &lt;xs:element name="born" type="xs:date"/&gt;
+                 &lt;xs:element name="qualification" type="xs:string"/&gt;
+                 &lt;/xs:sequence&gt;
+                 &lt;xs:attribute name="id" type="xs:ID"/&gt;
+                &lt;/xs:complexType&gt;
+              &lt;/xs:element&gt;
+            &lt;/xs:sequence&gt;
+            &lt;xs:attribute name="id" type="xs:ID"/&gt;
+            &lt;xs:attribute name="available" type="xs:boolean"/&gt;
+          &lt;/xs:complexType&gt;
+        &lt;/xs:element&gt;
+      &lt;/xs:sequence&gt;
+    &lt;/xs:complexType&gt;
+  &lt;/xs:element&gt;
+&lt;/xs:schema&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_library_valid.xml">examples/library/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;library&gt;
+  &lt;book id="b0836217462" available="true"&gt;
+    &lt;isbn&gt;0836217462&lt;/isbn&gt;
+    &lt;title lang="en"&gt; Being a Dog Is a Full-Time Job &lt;/title&gt;
+    &lt;author id="CMS"&gt;
+      &lt;name&gt;Charles M. Schulz&lt;/name&gt;
+      &lt;born&gt;1922-11-26&lt;/born&gt;
+      &lt;dead&gt;2000-02-12&lt;/dead&gt;
+    &lt;/author&gt;
+    &lt;character id="Snoopy"&gt;
+      &lt;name&gt;Snoopy&lt;/name&gt;
+      &lt;born&gt;1950-10-04&lt;/born&gt;
+      &lt;qualification&gt;extroverted beagle&lt;/qualification&gt;
+    &lt;/character&gt;
+  &lt;/book&gt;
+&lt;/library&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_library_main.cpp">examples/library/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "NoNS/all-include.h"
+
+void populateDocument(NoNS::Document* xsdDoc);
+void updateOrConsumeDocument(NoNS::Document* xsdDoc);
+    
+
+int main (int argc, char** argv)
+{
+  XSD::UserOps&lt;NoNS::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+
+  XSD::UserOps&lt;NoNS::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here ...
+void populateDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+  </pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_xmldsig">examples/xmldsig</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_xmldsig_xmldsig-core-schema.xsd">examples/xmldsig/xmldsig-core-schema.xsd</a>
+<li> <a href="#examples_xmldsig_nsaliases.xml">examples/xmldsig/nsaliases.xml</a>
+<li> <a href="#examples_xmldsig_signature-example-dsa.xml">examples/xmldsig/signature-example-dsa.xml</a>
+<li> <a href="#examples_xmldsig_signature-example-rsa.xml">examples/xmldsig/signature-example-rsa.xml</a>
+<li> <a href="#examples_xmldsig_signature-example.xml">examples/xmldsig/signature-example.xml</a>
+<li> <a href="#examples_xmldsig_valid.xml">examples/xmldsig/valid.xml</a>
+<li> <a href="#examples_xmldsig_main.cpp">examples/xmldsig/main.cpp</a>
+</ul>
+<h3><a name="examples_xmldsig_xmldsig-core-schema.xsd">examples/xmldsig/xmldsig-core-schema.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+
+&lt;!-- Schema for XML Signatures
+    http://www.w3.org/2000/09/xmldsig#
+    $Revision: 1.1 $ on $Date: 2002/02/08 20:32:26 $ by $Author: reagle $
+
+    Copyright 2001 The Internet Society and W3C (Massachusetts Institute
+    of Technology, Institut National de Recherche en Informatique et en
+    Automatique, Keio University). All Rights Reserved.
+    http://www.w3.org/Consortium/Legal/
+
+    This document is governed by the W3C Software License [1] as described
+    in the FAQ [2].
+
+    [1] http://www.w3.org/Consortium/Legal/copyright-software-19980720
+    [2] http://www.w3.org/Consortium/Legal/IPR-FAQ-20000620.html#DTD
+--&gt;
+
+
+&lt;schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        targetNamespace="http://www.w3.org/2000/09/xmldsig#"
+        version="0.1" elementFormDefault="qualified"&gt; 
+
+&lt;!-- Basic Types Defined for Signatures --&gt;
+
+&lt;simpleType name="CryptoBinary"&gt;
+  &lt;restriction base="base64Binary"&gt;
+  &lt;/restriction&gt;
+&lt;/simpleType&gt;
+
+&lt;!-- Start Signature --&gt;
+
+&lt;element name="Signature" type="ds:SignatureType"/&gt;
+&lt;complexType name="SignatureType"&gt;
+  &lt;sequence&gt; 
+    &lt;element ref="ds:SignedInfo"/&gt; 
+    &lt;element ref="ds:SignatureValue"/&gt; 
+    &lt;element ref="ds:KeyInfo" minOccurs="0"/&gt; 
+    &lt;element ref="ds:Object" minOccurs="0" maxOccurs="unbounded"/&gt; 
+  &lt;/sequence&gt;  
+  &lt;attribute name="Id" type="ID" use="optional"/&gt;
+&lt;/complexType&gt;
+
+  &lt;element name="SignatureValue" type="ds:SignatureValueType"/&gt; 
+  &lt;complexType name="SignatureValueType"&gt;
+    &lt;simpleContent&gt;
+      &lt;extension base="base64Binary"&gt;
+        &lt;attribute name="Id" type="ID" use="optional"/&gt;
+      &lt;/extension&gt;
+    &lt;/simpleContent&gt;
+  &lt;/complexType&gt;
+
+&lt;!-- Start SignedInfo --&gt;
+
+&lt;element name="SignedInfo" type="ds:SignedInfoType"/&gt;
+&lt;complexType name="SignedInfoType"&gt;
+  &lt;sequence&gt; 
+    &lt;element ref="ds:CanonicalizationMethod"/&gt; 
+    &lt;element ref="ds:SignatureMethod"/&gt; 
+    &lt;element ref="ds:Reference" maxOccurs="unbounded"/&gt; 
+  &lt;/sequence&gt;  
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+  &lt;element name="CanonicalizationMethod" type="ds:CanonicalizationMethodType"/&gt; 
+  &lt;complexType name="CanonicalizationMethodType" mixed="true"&gt;
+    &lt;sequence&gt;
+      &lt;any namespace="##any" minOccurs="0" maxOccurs="unbounded"/&gt;
+      &lt;!-- (0,unbounded) elements from (1,1) namespace --&gt;
+    &lt;/sequence&gt;
+    &lt;attribute name="Algorithm" type="anyURI" use="required"/&gt; 
+  &lt;/complexType&gt;
+
+  &lt;element name="SignatureMethod" type="ds:SignatureMethodType"/&gt;
+  &lt;complexType name="SignatureMethodType" mixed="true"&gt;
+    &lt;sequence&gt;
+      &lt;element name="HMACOutputLength" minOccurs="0" type="ds:HMACOutputLengthType"/&gt;
+      &lt;any namespace="##other" minOccurs="0" maxOccurs="unbounded"/&gt;
+      &lt;!-- (0,unbounded) elements from (1,1) external namespace --&gt;
+    &lt;/sequence&gt;
+    &lt;attribute name="Algorithm" type="anyURI" use="required"/&gt; 
+  &lt;/complexType&gt;
+
+&lt;!-- Start Reference --&gt;
+
+&lt;element name="Reference" type="ds:ReferenceType"/&gt;
+&lt;complexType name="ReferenceType"&gt;
+  &lt;sequence&gt; 
+    &lt;element ref="ds:Transforms" minOccurs="0"/&gt; 
+    &lt;element ref="ds:DigestMethod"/&gt; 
+    &lt;element ref="ds:DigestValue"/&gt; 
+  &lt;/sequence&gt;
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+  &lt;attribute name="URI" type="anyURI" use="optional"/&gt; 
+  &lt;attribute name="Type" type="anyURI" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+  &lt;element name="Transforms" type="ds:TransformsType"/&gt;
+  &lt;complexType name="TransformsType"&gt;
+    &lt;sequence&gt;
+      &lt;element ref="ds:Transform" maxOccurs="unbounded"/&gt;  
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;element name="Transform" type="ds:TransformType"/&gt;
+  &lt;complexType name="TransformType" mixed="true"&gt;
+    &lt;choice minOccurs="0" maxOccurs="unbounded"&gt; 
+      &lt;any namespace="##other" processContents="lax"/&gt;
+      &lt;!-- (1,1) elements from (0,unbounded) namespaces --&gt;
+      &lt;element name="XPath" type="string"/&gt; 
+    &lt;/choice&gt;
+    &lt;attribute name="Algorithm" type="anyURI" use="required"/&gt; 
+  &lt;/complexType&gt;
+
+&lt;!-- End Reference --&gt;
+
+&lt;element name="DigestMethod" type="ds:DigestMethodType"/&gt;
+&lt;complexType name="DigestMethodType" mixed="true"&gt; 
+  &lt;sequence&gt;
+    &lt;any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/&gt;
+  &lt;/sequence&gt;    
+  &lt;attribute name="Algorithm" type="anyURI" use="required"/&gt; 
+&lt;/complexType&gt;
+
+&lt;element name="DigestValue" type="ds:DigestValueType"/&gt;
+&lt;simpleType name="DigestValueType"&gt;
+  &lt;restriction base="base64Binary"/&gt;
+&lt;/simpleType&gt;
+
+&lt;!-- End SignedInfo --&gt;
+
+&lt;!-- Start KeyInfo --&gt;
+
+&lt;element name="KeyInfo" type="ds:KeyInfoType"/&gt; 
+&lt;complexType name="KeyInfoType" mixed="true"&gt;
+  &lt;choice maxOccurs="unbounded"&gt;     
+    &lt;element ref="ds:KeyName"/&gt; 
+    &lt;element ref="ds:KeyValue"/&gt; 
+    &lt;element ref="ds:RetrievalMethod"/&gt; 
+    &lt;element ref="ds:X509Data"/&gt; 
+    &lt;element ref="ds:PGPData"/&gt; 
+    &lt;element ref="ds:SPKIData"/&gt;
+    &lt;element ref="ds:MgmtData"/&gt;
+    &lt;any processContents="lax" namespace="##other"/&gt;
+    &lt;!-- (1,1) elements from (0,unbounded) namespaces --&gt;
+  &lt;/choice&gt;
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+  &lt;element name="KeyName" type="string"/&gt;
+  &lt;element name="MgmtData" type="string"/&gt;
+
+  &lt;element name="KeyValue" type="ds:KeyValueType"/&gt; 
+  &lt;complexType name="KeyValueType" mixed="true"&gt;
+   &lt;choice&gt;
+     &lt;element ref="ds:DSAKeyValue"/&gt;
+     &lt;element ref="ds:RSAKeyValue"/&gt;
+     &lt;any namespace="##other" processContents="lax"/&gt;
+   &lt;/choice&gt;
+  &lt;/complexType&gt;
+
+  &lt;element name="RetrievalMethod" type="ds:RetrievalMethodType"/&gt; 
+  &lt;complexType name="RetrievalMethodType"&gt;
+    &lt;sequence&gt;
+      &lt;element ref="ds:Transforms" minOccurs="0"/&gt; 
+    &lt;/sequence&gt;  
+    &lt;attribute name="URI" type="anyURI"/&gt;
+    &lt;attribute name="Type" type="anyURI" use="optional"/&gt;
+  &lt;/complexType&gt;
+
+&lt;!-- Start X509Data --&gt;
+
+&lt;element name="X509Data" type="ds:X509DataType"/&gt; 
+&lt;complexType name="X509DataType"&gt;
+  &lt;sequence maxOccurs="unbounded"&gt;
+    &lt;choice&gt;
+      &lt;element name="X509IssuerSerial" type="ds:X509IssuerSerialType"/&gt;
+      &lt;element name="X509SKI" type="base64Binary"/&gt;
+      &lt;element name="X509SubjectName" type="string"/&gt;
+      &lt;element name="X509Certificate" type="base64Binary"/&gt;
+      &lt;element name="X509CRL" type="base64Binary"/&gt;
+      &lt;any namespace="##other" processContents="lax"/&gt;
+    &lt;/choice&gt;
+  &lt;/sequence&gt;
+&lt;/complexType&gt;
+
+&lt;complexType name="X509IssuerSerialType"&gt; 
+  &lt;sequence&gt; 
+    &lt;element name="X509IssuerName" type="string"/&gt; 
+    &lt;element name="X509SerialNumber" type="integer"/&gt; 
+  &lt;/sequence&gt;
+&lt;/complexType&gt;
+
+&lt;!-- End X509Data --&gt;
+
+&lt;!-- Begin PGPData --&gt;
+
+&lt;element name="PGPData" type="ds:PGPDataType"/&gt; 
+&lt;complexType name="PGPDataType"&gt; 
+  &lt;choice&gt;
+    &lt;sequence&gt;
+      &lt;element name="PGPKeyID" type="base64Binary"/&gt; 
+      &lt;element name="PGPKeyPacket" type="base64Binary" minOccurs="0"/&gt; 
+      &lt;any namespace="##other" processContents="lax" minOccurs="0"
+       maxOccurs="unbounded"/&gt;
+    &lt;/sequence&gt;
+    &lt;sequence&gt;
+      &lt;element name="PGPKeyPacket" type="base64Binary"/&gt; 
+      &lt;any namespace="##other" processContents="lax" minOccurs="0"
+       maxOccurs="unbounded"/&gt;
+    &lt;/sequence&gt;
+  &lt;/choice&gt;
+&lt;/complexType&gt;
+
+&lt;!-- End PGPData --&gt;
+
+&lt;!-- Begin SPKIData --&gt;
+
+&lt;element name="SPKIData" type="ds:SPKIDataType"/&gt; 
+&lt;complexType name="SPKIDataType"&gt;
+  &lt;sequence maxOccurs="unbounded"&gt;
+    &lt;element name="SPKISexp" type="base64Binary"/&gt;
+    &lt;any namespace="##other" processContents="lax" minOccurs="0"/&gt;
+  &lt;/sequence&gt;
+&lt;/complexType&gt; 
+
+&lt;!-- End SPKIData --&gt;
+
+&lt;!-- End KeyInfo --&gt;
+
+&lt;!-- Start Object (Manifest, SignatureProperty) --&gt;
+
+&lt;element name="Object" type="ds:ObjectType"/&gt; 
+&lt;complexType name="ObjectType" mixed="true"&gt;
+  &lt;sequence minOccurs="0" maxOccurs="unbounded"&gt;
+    &lt;any namespace="##any" processContents="lax"/&gt;
+  &lt;/sequence&gt;
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+  &lt;attribute name="MimeType" type="string" use="optional"/&gt; &lt;!-- add a grep facet --&gt;
+  &lt;attribute name="Encoding" type="anyURI" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+&lt;element name="Manifest" type="ds:ManifestType"/&gt; 
+&lt;complexType name="ManifestType"&gt;
+  &lt;sequence&gt;
+    &lt;element ref="ds:Reference" maxOccurs="unbounded"/&gt; 
+  &lt;/sequence&gt;
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+&lt;element name="SignatureProperties" type="ds:SignaturePropertiesType"/&gt; 
+&lt;complexType name="SignaturePropertiesType"&gt;
+  &lt;sequence&gt;
+    &lt;element ref="ds:SignatureProperty" maxOccurs="unbounded"/&gt; 
+  &lt;/sequence&gt;
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+   &lt;element name="SignatureProperty" type="ds:SignaturePropertyType"/&gt; 
+   &lt;complexType name="SignaturePropertyType" mixed="true"&gt;
+     &lt;choice maxOccurs="unbounded"&gt;
+       &lt;any namespace="##other" processContents="lax"/&gt;
+       &lt;!-- (1,1) elements from (1,unbounded) namespaces --&gt;
+     &lt;/choice&gt;
+     &lt;attribute name="Target" type="anyURI" use="required"/&gt; 
+     &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+   &lt;/complexType&gt;
+
+&lt;!-- End Object (Manifest, SignatureProperty) --&gt;
+
+&lt;!-- Start Algorithm Parameters --&gt;
+
+&lt;simpleType name="HMACOutputLengthType"&gt;
+  &lt;restriction base="integer"/&gt;
+&lt;/simpleType&gt;
+
+&lt;!-- Start KeyValue Element-types --&gt;
+
+&lt;element name="DSAKeyValue" type="ds:DSAKeyValueType"/&gt;
+&lt;complexType name="DSAKeyValueType"&gt;
+  &lt;sequence&gt;
+    &lt;sequence minOccurs="0"&gt;
+      &lt;element name="P" type="ds:CryptoBinary"/&gt;
+      &lt;element name="Q" type="ds:CryptoBinary"/&gt;
+    &lt;/sequence&gt;
+    &lt;element name="G" type="ds:CryptoBinary" minOccurs="0"/&gt;
+    &lt;element name="Y" type="ds:CryptoBinary"/&gt;
+    &lt;element name="J" type="ds:CryptoBinary" minOccurs="0"/&gt;
+    &lt;sequence minOccurs="0"&gt;
+      &lt;element name="Seed" type="ds:CryptoBinary"/&gt;
+      &lt;element name="PgenCounter" type="ds:CryptoBinary"/&gt;
+    &lt;/sequence&gt;
+  &lt;/sequence&gt;
+&lt;/complexType&gt;
+
+&lt;element name="RSAKeyValue" type="ds:RSAKeyValueType"/&gt;
+&lt;complexType name="RSAKeyValueType"&gt;
+  &lt;sequence&gt;
+    &lt;element name="Modulus" type="ds:CryptoBinary"/&gt; 
+    &lt;element name="Exponent" type="ds:CryptoBinary"/&gt; 
+  &lt;/sequence&gt;
+&lt;/complexType&gt; 
+
+&lt;!-- End KeyValue Element-types --&gt;
+
+&lt;!-- End Signature --&gt;
+
+&lt;/schema&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_xmldsig_nsaliases.xml">examples/xmldsig/nsaliases.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;nsaliases&gt;
+  &lt;alias uri="http://www.w3.org/2000/09/xmldsig#" toUrn="urn:xmldsig"/&gt;
+&lt;/nsaliases&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_xmldsig_signature-example-dsa.xml">examples/xmldsig/signature-example-dsa.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;Signature xmlns="http://www.w3.org/2000/09/xmldsig#"&gt;
+  &lt;SignedInfo&gt;
+    &lt;CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /&gt;
+    &lt;SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#dsa-sha1" /&gt;
+    &lt;Reference URI="http://www.w3.org/TR/xml-stylesheet"&gt;
+      &lt;DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /&gt;
+      &lt;DigestValue&gt;60NvZvtdTB+7UnlLp/H24p7h4bs=&lt;/DigestValue&gt;
+    &lt;/Reference&gt;
+  &lt;/SignedInfo&gt;
+  &lt;SignatureValue&gt;
+    qUADDMHZkyebvRdLs+6Dv7RvgMLRlUaDB4Q9yn9XoJA79a2882ffTg==
+  &lt;/SignatureValue&gt;
+  &lt;KeyInfo&gt;
+    &lt;KeyValue&gt;
+      &lt;DSAKeyValue&gt;
+        &lt;P&gt;
+          2iY3w062sDB3/DIlLWOeG9+4UpmDZ0dyqRk9dLlNQ6qaXI7tOrjdIhm6n/eOw45AQtuYSp6spCt9cQcNBAj22KvygvfJIIXX9sSQrugfGqifeSvY3VX5Sd1j+z0MSZ/n5jNt88uh2C11SAqX6nrXTY/1RwkoWRN23SYhOlaG0hU=
+        &lt;/P&gt;
+        &lt;Q&gt;
+          9B5ypLY9pMOmtxCeTDHgwdNFeGs=
+        &lt;/Q&gt;
+        &lt;G&gt;
+          MuGAlqeB1ax+vyO2+Osubjhl7pHxLu47RIH+/M52DjESA9KMSrwzsYx8yNR2WooByrE0t6fu0VncK7UK8olO4t7wpv2z4AFQPRVCKFwo0qgn5aKIkICGMlrRy81avb27wGcWothx3iPPMtFXtoDqK0JItaI9R8zc1msFhM1GKMY=
+        &lt;/G&gt;
+        &lt;Y&gt;
+          ctA8YGxrtngg/zKVvqEOefnwmViFztcnPBYPlJsvh6yKI4iDm68fnp4Mi3RrJ6bZAygFrUIQLxLjV+OJtgJAEto0xAs+Mehuq1DkSFEpP3oDzCTOsrOiS1DwQe4oIb7zVk/9l7aPtJMHW0LVlMdwZNFNNJoqMcT2ZfCPrfvYvQ0=
+        &lt;/Y&gt;
+      &lt;/DSAKeyValue&gt;
+    &lt;/KeyValue&gt;
+    &lt;X509Data&gt;
+      &lt;X509SubjectName&gt;
+        CN=Merlin Hughes,O=Baltimore Technologies\, Ltd.,ST=Dublin,C=IE
+      &lt;/X509SubjectName&gt;
+      &lt;X509IssuerSerial&gt;
+        &lt;X509IssuerName&gt;
+          CN=Test DSA CA,O=Baltimore Technologies\, Ltd.,ST=Dublin,C=IE
+        &lt;/X509IssuerName&gt;
+        &lt;X509SerialNumber&gt;970849936&lt;/X509SerialNumber&gt;
+      &lt;/X509IssuerSerial&gt;
+      &lt;X509Certificate&gt;
+        MIIDNzCCAvWgAwIBAgIEOd3+kDAJBgcqhkjOOAQDMFsxCzAJBgNVBAYTAklFMQ8wDQYDVQQIEwZEdWJsaW4xJTAjBgNVBAoTHEJhbHRpbW9yZSBUZWNobm9sb2dpZXMsIEx0ZC4xFDASBgNVBAMTC1Rlc3QgRFNBIENBMB4XDTAwMTAwNjE2MzIxNVoXDTAxMTAwNjE2MzIxNFowXTELMAkGA1UEBhMCSUUxDzANBgNVBAgTBkR1YmxpbjElMCMGA1UEChMcQmFsdGltb3JlIFRlY2hub2xvZ2llcywgTHRkLjEWMBQGA1UEAxMNTWVybGluIEh1Z2hlczCCAbYwggErBgcqhkjOOAQBMIIBHgKBgQDaJjfDTrawMHf8MiUtY54b37hSmYNnR3KpGT10uU1Dqppcju06uN0iGbqf947DjkBC25hKnqykK31xBw0ECPbYq/KC98kghdf2xJCu6B8aqJ95K9jdVflJ3WP7PQxJn+fmM23zy6HYLXVICpfqetdNj/VHCShZE3bdJiE6VobSFQIVAPQecqS2PaTDprcQnkwx4MHTRXhrAoGAMuGAlqeB1ax+vyO2+Osubjhl7pHxLu47RIH+/M52DjESA9KMSrwzsYx8yNR2WooByrE0t6fu0VncK7UK8olO4t7wpv2z4AFQPRVCKFwo0qgn5aKIkICGMlrRy81avb27wGcWothx3iPPMtFXtoDqK0JItaI9R8zc1msFhM1GKMYDgYQAAoGActA8YGxrtngg/zKVvqEOefnwmViFztcnPBYPlJsvh6yKI4iDm68fnp4Mi3RrJ6bZAygFrUIQLxLjV+OJtgJAEto0xAs+Mehuq1DkSFEpP3oDzCTOsrOiS1DwQe4oIb7zVk/9l7aPtJMHW0LVlMdwZNFNNJoqMcT2ZfCPrfvYvQ2jRzBFMB4GA1UdEQQXMBWBE21lcmxpbkBiYWx0aW1vcmUuaWUwDgYDVR0PAQH/BAQDAgeAMBMGA1UdIwQMMAqACEJZQG0KwRbPMAkGByqGSM44BAMDMQAwLgIVAK4skWEFYgrggaJA8vYAwSjg12+KAhUAwHTo7wd4tENw9LAKPklQ/74fH18=
+      &lt;/X509Certificate&gt;
+    &lt;/X509Data&gt;
+  &lt;/KeyInfo&gt;
+&lt;/Signature&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_xmldsig_signature-example-rsa.xml">examples/xmldsig/signature-example-rsa.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;Signature xmlns="http://www.w3.org/2000/09/xmldsig#"&gt;
+  &lt;SignedInfo&gt;
+    &lt;CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /&gt;
+    &lt;SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" /&gt;
+    &lt;Reference URI="http://www.w3.org/TR/xml-stylesheet"&gt;
+      &lt;DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /&gt;
+      &lt;DigestValue&gt;60NvZvtdTB+7UnlLp/H24p7h4bs=&lt;/DigestValue&gt;
+    &lt;/Reference&gt;
+  &lt;/SignedInfo&gt;
+  &lt;SignatureValue&gt;
+    juS5RhJ884qoFR8flVXd/rbrSDVGn40CapgB7qeQiT+rr0NekEQ6BHhUA8dT3+BCTBUQI0dBjlml9lwzENXvS83zRECjzXbMRTUtVZiPZG2pqKPnL2YU3A9645UCjTXU+jgFumv7k78hieAGDzNci+PQ9KRmm//icT7JaYztgt4=
+  &lt;/SignatureValue&gt;
+  &lt;KeyInfo&gt;
+    &lt;KeyValue&gt;
+      &lt;RSAKeyValue&gt;
+        &lt;Modulus&gt;
+          uCiukpgOaOmrq1fPUTH3CAXxuFmPjsmS4jnTKxrv0w1JKcXtJ2M3akaV1d/karvJlmeao20jNy9r+/vKwibjM77F+3bIkeMEGmAIUnFciJkR+ihO7b4cTuYnEi8xHtu4iMn6GODBoEzqFQYdd8p4vrZBsvs44nTrS8qyyhba648=
+        &lt;/Modulus&gt;
+        &lt;Exponent&gt;
+          AQAB
+        &lt;/Exponent&gt;
+      &lt;/RSAKeyValue&gt;
+    &lt;/KeyValue&gt;
+    &lt;X509Data&gt;
+      &lt;X509SubjectName&gt;
+        CN=Merlin Hughes,O=Baltimore Technologies\, Ltd.,ST=Dublin,C=IE
+      &lt;/X509SubjectName&gt;
+      &lt;X509IssuerSerial&gt;
+        &lt;X509IssuerName&gt;
+          CN=Test RSA CA,O=Baltimore Technologies\, Ltd.,ST=Dublin,C=IE
+        &lt;/X509IssuerName&gt;
+        &lt;X509SerialNumber&gt;970849928&lt;/X509SerialNumber&gt;
+      &lt;/X509IssuerSerial&gt;
+      &lt;X509Certificate&gt;
+        MIICeDCCAeGgAwIBAgIEOd3+iDANBgkqhkiG9w0BAQQFADBbMQswCQYDVQQGEwJJRTEPMA0GA1UECBMGRHVibGluMSUwIwYDVQQKExxCYWx0aW1vcmUgVGVjaG5vbG9naWVzLCBMdGQuMRQwEgYDVQQDEwtUZXN0IFJTQSBDQTAeFw0wMDEwMDYxNjMyMDdaFw0wMTEwMDYxNjMyMDRaMF0xCzAJBgNVBAYTAklFMQ8wDQYDVQQIEwZEdWJsaW4xJTAjBgNVBAoTHEJhbHRpbW9yZSBUZWNobm9sb2dpZXMsIEx0ZC4xFjAUBgNVBAMTDU1lcmxpbiBIdWdoZXMwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALgorpKYDmjpq6tXz1Ex9wgF8bhZj47JkuI50ysa79MNSSnF7SdjN2pGldXf5Gq7yZZnmqNtIzcva/v7ysIm4zO+xft2yJHjBBpgCFJxXIiZEfooTu2+HE7mJxIvMR7buIjJ+hjgwaBM6hUGHXfKeL62QbL7OOJ060vKssoW2uuPAgMBAAGjRzBFMB4GA1UdEQQXMBWBE21lcmxpbkBiYWx0aW1vcmUuaWUwDgYDVR0PAQH/BAQDAgeAMBMGA1UdIwQMMAqACEngrZIVgu03MA0GCSqGSIb3DQEBBAUAA4GBAHJu4JVq/WnXK2oqqfLWqes5vHOtfX/ZhCjFyDMhzslI8am62gZedwZ9IIZIwlNRMvEDQB2zds/eEBnIAQPl/yRLCLOfZnbA8PXrbFP5igs3qQWScBUjZVjik748HU2sUVZOa90c0mJl2vJs/RwyLW7/uCAfC/I/k9xGr7fneoIW
+      &lt;/X509Certificate&gt;
+    &lt;/X509Data&gt;
+  &lt;/KeyInfo&gt;
+&lt;/Signature&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_xmldsig_signature-example.xml">examples/xmldsig/signature-example.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version='1.0'?&gt;
+&lt;!DOCTYPE Signature SYSTEM "xmldsig-core-schema.dtd" [
+&lt;!ENTITY dsig "http://www.w3.org/2000/09/xmldsig#"&gt;
+   &lt;!ENTITY % SignatureProperty.ANY '| ts:timestamp'&gt;
+   &lt;!ELEMENT ts:timestamp (#PCDATA)&gt;
+   &lt;!ATTLIST ts:timestamp
+             xmlns:ts	CDATA	#FIXED   'http://www.example.org/rfc/rfcxxxx.txt'&gt;
+   &lt;!ATTLIST Signature
+             xmlns:xsi  CDATA #FIXED   'http://www.w3.org/2001/XMLSchema-instance'
+             xsi:schemaLocation	CDATA	#REQUIRED&gt;
+]&gt;
+&lt;Signature Id="MyFirstSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.w3.org/2000/09/xmldsig#
+   xmldsig-core-schema.xsd"&gt;
+  &lt;SignedInfo&gt; 
+	 &lt;CanonicalizationMethod Algorithm="http://www.w3.org/TR/2000/WD-xml-c14n-20000710"&gt;
+	 &lt;/CanonicalizationMethod&gt;
+	 &lt;SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#dsa"&gt;
+	 &lt;/SignatureMethod&gt;
+	 &lt;Reference URI="http://www.w3.org/TR/xml-stylesheet/"&gt; 
+		&lt;Transforms&gt; 
+		  &lt;Transform Algorithm="http://www.w3.org/2000/09/xmldsig#base64"/&gt;
+		  &lt;Transform Algorithm="http://www.w3.org/2000/09/xmldsig#null"/&gt;
+		&lt;/Transforms&gt; 
+		&lt;DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"&gt; 
+		&lt;/DigestMethod&gt;
+		&lt;DigestValue&gt;j6lwx3rvEPO0vKtMup4NbeVu8nk=&lt;/DigestValue&gt; 
+	 &lt;/Reference&gt; 
+	 &lt;Reference URI="http://www.w3.org/TR/REC-xml-names/"&gt; 
+		&lt;Transforms&gt; 
+		  &lt;Transform Algorithm="http://www.w3.org/2000/09/xmldsig#base64"/&gt; 
+		&lt;/Transforms&gt; 
+		&lt;DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"&gt; 
+		&lt;/DigestMethod&gt;
+		&lt;DigestValue&gt;UrXLDLBIta6skoV5/A8Q38GEw44=&lt;/DigestValue&gt; 
+	 &lt;/Reference&gt; 	 
+  &lt;/SignedInfo&gt; 
+  &lt;SignatureValue&gt;MC0CFFrVLtRlkMc3Daon4BqqnkhCOlEaAhUAk8pH1iRNK+q1I+sisDTz2TFEALE=&lt;/SignatureValue&gt; 
+  &lt;KeyInfo&gt;
+    &lt;KeyValue&gt;
+      &lt;DSAKeyValue&gt;
+        &lt;P&gt;...&lt;/P&gt;&lt;Q&gt;...&lt;/Q&gt;&lt;G&gt;...&lt;/G&gt;&lt;Y&gt;...&lt;/Y&gt;
+      &lt;/DSAKeyValue&gt; 
+    &lt;/KeyValue&gt; 
+  &lt;/KeyInfo&gt;
+  &lt;Object&gt;
+     &lt;SignatureProperties&gt;
+        &lt;SignatureProperty Target="#MyFirstSignature"&gt;
+          &lt;ts:timestamp xmlns:ts="http://www.example.org/rfc/rfcxxxx.txt"&gt;
+           this is a test of the mixed content model&lt;/ts:timestamp&gt;
+        &lt;/SignatureProperty&gt;
+      &lt;/SignatureProperties&gt;
+  &lt;/Object&gt;
+&lt;/Signature&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_xmldsig_valid.xml">examples/xmldsig/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;ns1:Signature xmlns:ns1="http://www.w3.org/2000/09/xmldsig#"&gt;
+  &lt;ns1:SignedInfo&gt;
+    &lt;ns1:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/&gt;
+    &lt;ns1:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#dsa-sha1"/&gt;
+    &lt;ns1:Reference URI="http://www.w3.org/TR/xml-stylesheet"&gt;
+      &lt;ns1:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/&gt;
+      &lt;ns1:DigestValue&gt;60NvZvtdTB+7UnlLp/H24p7h4bs=&lt;/ns1:DigestValue&gt;
+    &lt;/ns1:Reference&gt;
+  &lt;/ns1:SignedInfo&gt;
+  &lt;ns1:SignatureValue&gt;qUADDMHZkyebvRdLs+6Dv7RvgMLRlUaDB4Q9yn9XoJA79a2882ffTg==&lt;/ns1:SignatureValue&gt;
+  &lt;ns1:KeyInfo&gt;
+    &lt;ns1:KeyValue&gt;
+      &lt;ns1:DSAKeyValue&gt;
+        &lt;ns1:P&gt;2iY3w062sDB3/DIlLWOeG9+4UpmDZ0dyqRk9dLlNQ6qaXI7tOrjdIhm6n/eOw45AQtuYSp6spCt9cQcNBAj22KvygvfJIIXX9sSQrugfGqifeSvY3VX5Sd1j+z0MSZ/n5jNt88uh2C11SAqX6nrXTY/1RwkoWRN23SYhOlaG0hU=&lt;/ns1:P&gt;
+        &lt;ns1:Q&gt;9B5ypLY9pMOmtxCeTDHgwdNFeGs=&lt;/ns1:Q&gt;
+        &lt;ns1:G&gt;MuGAlqeB1ax+vyO2+Osubjhl7pHxLu47RIH+/M52DjESA9KMSrwzsYx8yNR2WooByrE0t6fu0VncK7UK8olO4t7wpv2z4AFQPRVCKFwo0qgn5aKIkICGMlrRy81avb27wGcWothx3iPPMtFXtoDqK0JItaI9R8zc1msFhM1GKMY=&lt;/ns1:G&gt;
+        &lt;ns1:Y&gt;ctA8YGxrtngg/zKVvqEOefnwmViFztcnPBYPlJsvh6yKI4iDm68fnp4Mi3RrJ6bZAygFrUIQLxLjV+OJtgJAEto0xAs+Mehuq1DkSFEpP3oDzCTOsrOiS1DwQe4oIb7zVk/9l7aPtJMHW0LVlMdwZNFNNJoqMcT2ZfCPrfvYvQ0=&lt;/ns1:Y&gt;
+      &lt;/ns1:DSAKeyValue&gt;
+    &lt;/ns1:KeyValue&gt;
+    &lt;ns1:X509Data&gt;
+      &lt;ns1:X509SubjectName&gt;CN=Merlin Hughes,O=Baltimore Technologies\, Ltd.,ST=Dublin,C=IE&lt;/ns1:X509SubjectName&gt;
+      &lt;ns1:X509IssuerSerial&gt;
+        &lt;ns1:X509IssuerName&gt;CN=Test DSA CA,O=Baltimore Technologies\, Ltd.,ST=Dublin,C=IE&lt;/ns1:X509IssuerName&gt;
+        &lt;ns1:X509SerialNumber&gt;970849936&lt;/ns1:X509SerialNumber&gt;
+      &lt;/ns1:X509IssuerSerial&gt;
+      &lt;ns1:X509Certificate&gt;MIIDNzCCAvWgAwIBAgIEOd3+kDAJBgcqhkjOOAQDMFsxCzAJBgNVBAYTAklFMQ8wDQYDVQQIEwZEdWJsaW4xJTAjBgNVBAoTHEJhbHRpbW9yZSBUZWNobm9sb2dpZXMsIEx0ZC4xFDASBgNVBAMTC1Rlc3QgRFNBIENBMB4XDTAwMTAwNjE2MzIxNVoXDTAxMTAwNjE2MzIxNFowXTELMAkGA1UEBhMCSUUxDzANBgNVBAgTBkR1YmxpbjElMCMGA1UEChMcQmFsdGltb3JlIFRlY2hub2xvZ2llcywgTHRkLjEWMBQGA1UEAxMNTWVybGluIEh1Z2hlczCCAbYwggErBgcqhkjOOAQBMIIBHgKBgQDaJjfDTrawMHf8MiUtY54b37hSmYNnR3KpGT10uU1Dqppcju06uN0iGbqf947DjkBC25hKnqykK31xBw0ECPbYq/KC98kghdf2xJCu6B8aqJ95K9jdVflJ3WP7PQxJn+fmM23zy6HYLXVICpfqetdNj/VHCShZE3bdJiE6VobSFQIVAPQecqS2PaTDprcQnkwx4MHTRXhrAoGAMuGAlqeB1ax+vyO2+Osubjhl7pHxLu47RIH+/M52DjESA9KMSrwzsYx8yNR2WooByrE0t6fu0VncK7UK8olO4t7wpv2z4AFQPRVCKFwo0qgn5aKIkICGMlrRy81avb27wGcWothx3iPPMtFXtoDqK0JItaI9R8zc1msFhM1GKMYDgYQAAoGActA8YGxrtngg/zKVvqEOefnwmViFztcnPBYPlJsvh6yKI4iDm68fnp4Mi3RrJ6bZAygFrUIQLxLjV+OJtgJAEto0xAs+Mehuq1DkSFEpP3oDzCTOsrOiS1DwQe4oIb7zVk/9l7aPtJMHW0LVlMdwZNFNNJoqMcT2ZfCPrfvYvQ2jRzBFMB4GA1UdEQQXMBWBE21lcmxpbkBiYWx0aW1vcmUuaWUwDgYDVR0PAQH/BAQDAgeAMBMGA1UdIwQMMAqACEJZQG0KwRbPMAkGByqGSM44BAMDMQAwLgIVAK4skWEFYgrggaJA8vYAwSjg12+KAhUAwHTo7wd4tENw9LAKPklQ/74fH18=&lt;/ns1:X509Certificate&gt;
+    &lt;/ns1:X509Data&gt;
+  &lt;/ns1:KeyInfo&gt;
+&lt;/ns1:Signature&gt;</pre>
+</div>
+<br><br>
+<h3><a name="examples_xmldsig_main.cpp">examples/xmldsig/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "xmldsig/all-include.h"
+
+void populateDocument(xmldsig::Document* xsdDoc);
+void updateOrConsumeDocument(xmldsig::Document* xsdDoc);
+  
+void chooseDocumentElement(xmldsig::Document* xsdDoc);
+    
+
+int main (int argc, char**argv)
+{
+  XSD::UserOps&lt;xmldsig::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  cbStruct.cbChooseDocumentElement      =  chooseDocumentElement;
+  
+  XSD::UserOps&lt;xmldsig::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+  
+// choose the element inside Document that you want as root using
+// a call like : xsdDoc-&gt;set_root_xyz();
+void chooseDocumentElement(xmldsig::Document* xsdDoc)
+{
+  // uncomment one of folowing to choose root
+  
+  xsdDoc-&gt;set_root_Signature();
+  
+  //xsdDoc-&gt;set_root_SignatureValue();
+  
+  //xsdDoc-&gt;set_root_SignedInfo();
+  
+  //xsdDoc-&gt;set_root_CanonicalizationMethod();
+  
+  //xsdDoc-&gt;set_root_SignatureMethod();
+  
+  //xsdDoc-&gt;set_root_Reference();
+  
+  //xsdDoc-&gt;set_root_Transforms();
+  
+  //xsdDoc-&gt;set_root_Transform();
+  
+  //xsdDoc-&gt;set_root_DigestMethod();
+  
+  //xsdDoc-&gt;set_root_DigestValue();
+  
+  //xsdDoc-&gt;set_root_KeyInfo();
+  
+  //xsdDoc-&gt;set_root_KeyName();
+  
+  //xsdDoc-&gt;set_root_MgmtData();
+  
+  //xsdDoc-&gt;set_root_KeyValue();
+  
+  //xsdDoc-&gt;set_root_RetrievalMethod();
+  
+  //xsdDoc-&gt;set_root_X509Data();
+  
+  //xsdDoc-&gt;set_root_PGPData();
+  
+  //xsdDoc-&gt;set_root_SPKIData();
+  
+  //xsdDoc-&gt;set_root_Object();
+  
+  //xsdDoc-&gt;set_root_Manifest();
+  
+  //xsdDoc-&gt;set_root_SignatureProperties();
+  
+  //xsdDoc-&gt;set_root_SignatureProperty();
+  
+  //xsdDoc-&gt;set_root_DSAKeyValue();
+  
+  //xsdDoc-&gt;set_root_RSAKeyValue();
+    
+}
+    
+
+void populateDSADocument(xmldsig::Document* xsdDoc)
+{
+  xmldsig::Signature* pSig = xsdDoc-&gt;element_Signature();
+  pSig-&gt;mark_present_KeyInfo();
+  pSig-&gt;element_KeyInfo()-&gt;set_count_choiceList(2);
+
+  xmldsig::SignedInfo* pSignedInfo = pSig-&gt;element_SignedInfo();
+  pSignedInfo-&gt;element_CanonicalizationMethod()-&gt;set_attr_Algorithm("http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
+  pSignedInfo-&gt;element_SignatureMethod()-&gt;set_attr_Algorithm("http://www.w3.org/2000/09/xmldsig#dsa-sha1");
+  xmldsig::Reference* pRef = pSignedInfo-&gt;element_Reference_at(0);
+  pRef-&gt;element_DigestMethod()-&gt;set_attr_Algorithm("http://www.w3.org/2000/09/xmldsig#sha1");
+  pRef-&gt;set_DigestValue("60NvZvtdTB+7UnlLp/H24p7h4bs=");
+  pRef-&gt;set_attr_URI("http://www.w3.org/TR/xml-stylesheet");
+
+
+  pSig-&gt;element_SignatureValue()-&gt;stringValue("qUADDMHZkyebvRdLs+6Dv7RvgMLRlUaDB4Q9yn9XoJA79a2882ffTg==");
+
+  // KeyInfo -&gt; choice1
+  pSig-&gt;element_KeyInfo()-&gt;choice_at(0)-&gt;choose_KeyValue()-&gt;get_choice()-&gt;choose_DSAKeyValue();
+  xmldsig::DSAKeyValue* pDSA_KV = pSig-&gt;element_KeyInfo()-&gt;choice_at(0)-&gt;element_KeyValue()-&gt;element_DSAKeyValue();
+  
+  // DSAKeyValue -&gt; sequence1
+  pDSA_KV-&gt;get_sequence()-&gt;mark_present_sequence1();
+  pDSA_KV-&gt;set_P("2iY3w062sDB3/DIlLWOeG9+4UpmDZ0dyqRk9dLlNQ6qaXI7tOrjdIhm6n/eOw45AQtuYSp6spCt9cQcNBAj22KvygvfJIIXX9sSQrugfGqifeSvY3VX5Sd1j+z0MSZ/n5jNt88uh2C11SAqX6nrXTY/1RwkoWRN23SYhOlaG0hU=");
+  pDSA_KV-&gt;set_Q("9B5ypLY9pMOmtxCeTDHgwdNFeGs=");
+
+  pDSA_KV-&gt;set_G("MuGAlqeB1ax+vyO2+Osubjhl7pHxLu47RIH+/M52DjESA9KMSrwzsYx8yNR2WooByrE0t6fu0VncK7UK8olO4t7wpv2z4AFQPRVCKFwo0qgn5aKIkICGMlrRy81avb27wGcWothx3iPPMtFXtoDqK0JItaI9R8zc1msFhM1GKMY=");        
+  pDSA_KV-&gt;set_Y("ctA8YGxrtngg/zKVvqEOefnwmViFztcnPBYPlJsvh6yKI4iDm68fnp4Mi3RrJ6bZAygFrUIQLxLjV+OJtgJAEto0xAs+Mehuq1DkSFEpP3oDzCTOsrOiS1DwQe4oIb7zVk/9l7aPtJMHW0LVlMdwZNFNNJoqMcT2ZfCPrfvYvQ0=");        
+
+  xmldsig::X509Data* pX509Data = pSig-&gt;element_KeyInfo()-&gt;choice_at(1)-&gt;choose_X509Data();
+  pX509Data-&gt;set_count_sequenceList(3);
+
+  //pX509Data-&gt;sequence_at(0)-&gt;get_choice1()-&gt;choose_X509SubjectName()-&gt;stringValue("CN=Merlin Hughes,O=Baltimore Technologies\\, Ltd.,ST=Dublin,C=IE");
+  pX509Data-&gt;sequence_at(0)-&gt;get_choice1()-&gt;set_X509SubjectName("CN=Merlin Hughes,O=Baltimore Technologies\\, Ltd.,ST=Dublin,C=IE");
+  
+  xmldsig::Types::X509IssuerSerialType* pIS = pX509Data-&gt;sequence_at(1)-&gt;get_choice1()-&gt;choose_X509IssuerSerial();
+  pIS-&gt;set_X509IssuerName("CN=Test DSA CA,O=Baltimore Technologies\\, Ltd.,ST=Dublin,C=IE");
+  pIS-&gt;set_X509SerialNumber("970849936");
+
+
+  pX509Data-&gt;sequence_at(2)-&gt;get_choice1()-&gt;choose_X509Certificate()-&gt;stringValue("MIIDNzCCAvWgAwIBAgIEOd3+kDAJBgcqhkjOOAQDMFsxCzAJBgNVBAYTAklFMQ8wDQYDVQQIEwZEdWJsaW4xJTAjBgNVBAoTHEJhbHRpbW9yZSBUZWNobm9sb2dpZXMsIEx0ZC4xFDASBgNVBAMTC1Rlc3QgRFNBIENBMB4XDTAwMTAwNjE2MzIxNVoXDTAxMTAwNjE2MzIxNFowXTELMAkGA1UEBhMCSUUxDzANBgNVBAgTBkR1YmxpbjElMCMGA1UEChMcQmFsdGltb3JlIFRlY2hub2xvZ2llcywgTHRkLjEWMBQGA1UEAxMNTWVybGluIEh1Z2hlczCCAbYwggErBgcqhkjOOAQBMIIBHgKBgQDaJjfDTrawMHf8MiUtY54b37hSmYNnR3KpGT10uU1Dqppcju06uN0iGbqf947DjkBC25hKnqykK31xBw0ECPbYq/KC98kghdf2xJCu6B8aqJ95K9jdVflJ3WP7PQxJn+fmM23zy6HYLXVICpfqetdNj/VHCShZE3bdJiE6VobSFQIVAPQecqS2PaTDprcQnkwx4MHTRXhrAoGAMuGAlqeB1ax+vyO2+Osubjhl7pHxLu47RIH+/M52DjESA9KMSrwzsYx8yNR2WooByrE0t6fu0VncK7UK8olO4t7wpv2z4AFQPRVCKFwo0qgn5aKIkICGMlrRy81avb27wGcWothx3iPPMtFXtoDqK0JItaI9R8zc1msFhM1GKMYDgYQAAoGActA8YGxrtngg/zKVvqEOefnwmViFztcnPBYPlJsvh6yKI4iDm68fnp4Mi3RrJ6bZAygFrUIQLxLjV+OJtgJAEto0xAs+Mehuq1DkSFEpP3oDzCTOsrOiS1DwQe4oIb7zVk/9l7aPtJMHW0LVlMdwZNFNNJoqMcT2ZfCPrfvYvQ2jRzBFMB4GA1UdEQQXMBWBE21lcmxpbkBiYWx0aW1vcmUuaWUwDgYDVR0PAQH/BAQDAgeAMBMGA1UdIwQMMAqACEJZQG0KwRbPMAkGByqGSM44BAMDMQAwLgIVAK4skWEFYgrggaJA8vYAwSjg12+KAhUAwHTo7wd4tENw9LAKPklQ/74fH18=");
+  
+}
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here ...
+void populateDocument(xmldsig::Document* xsdDoc)
+{
+  populateDSADocument(xsdDoc);
+}
+
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(xmldsig::Document* xsdDoc)
+{
+
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_org">examples/org</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_org_engg.xsd">examples/org/engg.xsd</a>
+<li> <a href="#examples_org_hr.xsd">examples/org/hr.xsd</a>
+<li> <a href="#examples_org_legal.xsd">examples/org/legal.xsd</a>
+<li> <a href="#examples_org_org.xsd">examples/org/org.xsd</a>
+<li> <a href="#examples_org_valid.xml">examples/org/valid.xml</a>
+<li> <a href="#examples_org_main.cpp">examples/org/main.cpp</a>
+</ul>
+<h3><a name="examples_org_engg.xsd">examples/org/engg.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:ns1="urn:org:engg"
+  xmlns:ns2="urn:org:hr"
+  targetNamespace="urn:org:engg"
+&gt;
+  &lt;xsd:import namespace="urn:org:hr" schemaLocation="hr.xsd"/&gt;
+
+  &lt;xsd:complexType name="EnggDept"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="ns2:leaderId"/&gt;
+      &lt;xsd:element name="project" type="ns1:EnggProject" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:token" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="EnggProject"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="ns2:leaderId"/&gt;
+      &lt;xsd:element name="projectName" type="xsd:string"/&gt;
+      &lt;xsd:element name="engineers" type="ns2:UserIdList"/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+
+
+&lt;/xsd:schema&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_org_hr.xsd">examples/org/hr.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:ns1="urn:org:hr"
+  targetNamespace="urn:org:hr"
+&gt;
+
+  &lt;xsd:element name="userId" type="ns1:UserId" /&gt;
+  &lt;xsd:element name="leaderId" type="ns1:UserId" /&gt;
+
+  &lt;xsd:simpleType name="UserId"&gt;
+    &lt;xsd:restriction base='xsd:token'&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:complexType name="UserIdList"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="ns1:userId" minOccurs="0" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="Employee"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="ns1:userId"/&gt;
+      &lt;xsd:element name="name" type="xsd:string"/&gt;
+      &lt;xsd:element name="title" type="xsd:string"/&gt;
+      &lt;xsd:element name="joiningDate" type="xsd:date"/&gt;
+      &lt;xsd:element name="reportsTo" type="ns1:UserId" minOccurs="0"/&gt;
+      &lt;xsd:element name="reportees" type="ns1:UserIdList"/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="AllEmployees"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="employee" type="ns1:Employee" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+
+&lt;/xsd:schema&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_org_legal.xsd">examples/org/legal.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:ns1="urn:org:legal"
+  xmlns:ns2="urn:org:hr"
+  targetNamespace="urn:org:legal"
+&gt;
+  &lt;xsd:import namespace="urn:org:hr" schemaLocation="hr.xsd"/&gt;
+
+  &lt;xsd:complexType name="LegalDept"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="ns2:leaderId"/&gt;
+      &lt;xsd:element name="legalAdvisors" type="ns2:UserIdList"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:token" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;/xsd:schema&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_org_org.xsd">examples/org/org.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:ns1="urn:org"
+  xmlns:ns2="urn:org:engg"
+  xmlns:ns3="urn:org:legal"
+  xmlns:ns4="urn:org:hr"
+  targetNamespace="urn:org"
+&gt;
+
+  &lt;xsd:import namespace="urn:org:engg" schemaLocation="engg.xsd"/&gt;
+  &lt;xsd:import namespace="urn:org:legal" schemaLocation="legal.xsd"/&gt;
+  &lt;xsd:import namespace="urn:org:hr" schemaLocation="hr.xsd"/&gt;
+
+  &lt;xsd:element name="organization"&gt;
+    &lt;xsd:complexType&gt;
+      &lt;xsd:sequence&gt;
+        &lt;xsd:element ref="ns4:leaderId"/&gt;
+        &lt;xsd:element name="name" type="xsd:string"/&gt;
+        &lt;xsd:element name="departments" type="ns1:Departments"/&gt;
+        &lt;xsd:element name="allEmployees" type="ns4:AllEmployees"/&gt;
+      &lt;/xsd:sequence&gt;
+      &lt;xsd:attribute name="id" type="xsd:token" use="required"/&gt;
+    &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
+
+  &lt;xsd:complexType name="Departments"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="engineering" type="ns2:EnggDept"/&gt;
+      &lt;xsd:element name="legal" type="ns3:LegalDept"/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;/xsd:schema&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_org_valid.xml">examples/org/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;ns1:organization id="nasa" xmlns:ns1="urn:org" xmlns:ns2="urn:org:hr"&gt;
+  &lt;ns2:leaderId&gt;jimb&lt;/ns2:leaderId&gt;
+  &lt;name&gt;NASA&lt;/name&gt;
+  &lt;departments&gt;
+    &lt;engineering id="nasa.deperatments.engineering"&gt;
+      &lt;ns2:leaderId&gt;paulb&lt;/ns2:leaderId&gt;
+      &lt;project&gt;
+        &lt;ns2:leaderId&gt;allenb&lt;/ns2:leaderId&gt;
+        &lt;projectName&gt;The unmanned moon mission 2015&lt;/projectName&gt;
+        &lt;engineers&gt;
+          &lt;ns2:userId&gt;charlese&lt;/ns2:userId&gt;
+          &lt;ns2:userId&gt;waynec&lt;/ns2:userId&gt;
+        &lt;/engineers&gt;
+      &lt;/project&gt;
+      &lt;project&gt;
+        &lt;ns2:leaderId&gt;leeb&lt;/ns2:leaderId&gt;
+        &lt;projectName&gt;The manned moon mission 2020&lt;/projectName&gt;
+        &lt;engineers&gt;
+          &lt;ns2:userId&gt;peterc&lt;/ns2:userId&gt;
+          &lt;ns2:userId&gt;davidc&lt;/ns2:userId&gt;
+        &lt;/engineers&gt;
+      &lt;/project&gt;
+    &lt;/engineering&gt;
+    &lt;legal id="nasa.deperatments.legal"&gt;
+      &lt;ns2:leaderId&gt;donb&lt;/ns2:leaderId&gt;
+      &lt;legalAdvisors&gt;
+        &lt;ns2:userId&gt;danc&lt;/ns2:userId&gt;
+        &lt;ns2:userId&gt;ugoc&lt;/ns2:userId&gt;
+      &lt;/legalAdvisors&gt;
+    &lt;/legal&gt;
+  &lt;/departments&gt;
+  &lt;allEmployees&gt;
+    &lt;employee&gt;
+      &lt;ns2:userId&gt;jimb&lt;/ns2:userId&gt;
+      &lt;name&gt;Jim Barnette&lt;/name&gt;
+      &lt;title&gt;org head&lt;/title&gt;
+      &lt;joiningDate&gt;1978-02-11&lt;/joiningDate&gt;
+      &lt;reportees&gt;
+        &lt;ns2:userId&gt;paulb&lt;/ns2:userId&gt;
+        &lt;ns2:userId&gt;donb&lt;/ns2:userId&gt;
+      &lt;/reportees&gt;
+    &lt;/employee&gt;
+    &lt;employee&gt;
+      &lt;ns2:userId&gt;paulb&lt;/ns2:userId&gt;
+      &lt;name&gt;Paul V. Biron&lt;/name&gt;
+      &lt;title&gt;Engg head&lt;/title&gt;
+      &lt;joiningDate&gt;1978-02-15&lt;/joiningDate&gt;
+      &lt;reportsTo&gt;jimb&lt;/reportsTo&gt;
+      &lt;reportees&gt;
+        &lt;ns2:userId&gt;allenb&lt;/ns2:userId&gt;
+        &lt;ns2:userId&gt;leeb&lt;/ns2:userId&gt;
+      &lt;/reportees&gt;
+    &lt;/employee&gt;
+    &lt;employee&gt;
+      &lt;ns2:userId&gt;donb&lt;/ns2:userId&gt;
+      &lt;name&gt;Don Box&lt;/name&gt;
+      &lt;title&gt;Legal head&lt;/title&gt;
+      &lt;joiningDate&gt;1978-02-15&lt;/joiningDate&gt;
+      &lt;reportsTo&gt;jimb&lt;/reportsTo&gt;
+      &lt;reportees&gt;
+        &lt;ns2:userId&gt;danc&lt;/ns2:userId&gt;
+        &lt;ns2:userId&gt;ugoc&lt;/ns2:userId&gt;
+      &lt;/reportees&gt;
+    &lt;/employee&gt;
+    &lt;employee&gt;
+      &lt;ns2:userId&gt;allenb&lt;/ns2:userId&gt;
+      &lt;name&gt;Allen Brown&lt;/name&gt;
+      &lt;title&gt;Proj1 head&lt;/title&gt;
+      &lt;joiningDate&gt;1978-02-15&lt;/joiningDate&gt;
+      &lt;reportsTo&gt;paulb&lt;/reportsTo&gt;
+      &lt;reportees&gt;
+        &lt;ns2:userId&gt;charlese&lt;/ns2:userId&gt;
+        &lt;ns2:userId&gt;waynec&lt;/ns2:userId&gt;
+      &lt;/reportees&gt;
+    &lt;/employee&gt;
+    &lt;employee&gt;
+      &lt;ns2:userId&gt;leeb&lt;/ns2:userId&gt;
+      &lt;name&gt;Lee Buck&lt;/name&gt;
+      &lt;title&gt;Proj2 head&lt;/title&gt;
+      &lt;joiningDate&gt;1978-02-15&lt;/joiningDate&gt;
+      &lt;reportsTo&gt;paulb&lt;/reportsTo&gt;
+      &lt;reportees&gt;
+        &lt;ns2:userId&gt;peterc&lt;/ns2:userId&gt;
+        &lt;ns2:userId&gt;davidc&lt;/ns2:userId&gt;
+      &lt;/reportees&gt;
+    &lt;/employee&gt;
+    &lt;employee&gt;
+      &lt;ns2:userId&gt;charlese&lt;/ns2:userId&gt;
+      &lt;name&gt;Charles E Campbell&lt;/name&gt;
+      &lt;title&gt;SMTS&lt;/title&gt;
+      &lt;joiningDate&gt;1978-02-15&lt;/joiningDate&gt;
+      &lt;reportsTo&gt;allenb&lt;/reportsTo&gt;
+      &lt;reportees/&gt;
+    &lt;/employee&gt;
+    &lt;employee&gt;
+      &lt;ns2:userId&gt;waynec&lt;/ns2:userId&gt;
+      &lt;name&gt;Wayne Carr&lt;/name&gt;
+      &lt;title&gt;SMTS&lt;/title&gt;
+      &lt;joiningDate&gt;1978-02-15&lt;/joiningDate&gt;
+      &lt;reportsTo&gt;allenb&lt;/reportsTo&gt;
+      &lt;reportees/&gt;
+    &lt;/employee&gt;
+    &lt;employee&gt;
+      &lt;ns2:userId&gt;peterc&lt;/ns2:userId&gt;
+      &lt;name&gt;Peter Chen&lt;/name&gt;
+      &lt;title&gt;SMTS&lt;/title&gt;
+      &lt;joiningDate&gt;1978-02-15&lt;/joiningDate&gt;
+      &lt;reportsTo&gt;leeb&lt;/reportsTo&gt;
+      &lt;reportees/&gt;
+    &lt;/employee&gt;
+    &lt;employee&gt;
+      &lt;ns2:userId&gt;davidc&lt;/ns2:userId&gt;
+      &lt;name&gt;David Cleary&lt;/name&gt;
+      &lt;title&gt;SMTS&lt;/title&gt;
+      &lt;joiningDate&gt;1978-02-15&lt;/joiningDate&gt;
+      &lt;reportsTo&gt;leeb&lt;/reportsTo&gt;
+      &lt;reportees/&gt;
+    &lt;/employee&gt;
+    &lt;employee&gt;
+      &lt;ns2:userId&gt;danc&lt;/ns2:userId&gt;
+      &lt;name&gt;Dan Connolly&lt;/name&gt;
+      &lt;title&gt;Legal Advisor&lt;/title&gt;
+      &lt;joiningDate&gt;1978-02-15&lt;/joiningDate&gt;
+      &lt;reportsTo&gt;donb&lt;/reportsTo&gt;
+      &lt;reportees/&gt;
+    &lt;/employee&gt;
+    &lt;employee&gt;
+      &lt;ns2:userId&gt;ugoc&lt;/ns2:userId&gt;
+      &lt;name&gt;Ugo Corda&lt;/name&gt;
+      &lt;title&gt;Legal Advisor&lt;/title&gt;
+      &lt;joiningDate&gt;1978-02-15&lt;/joiningDate&gt;
+      &lt;reportsTo&gt;donb&lt;/reportsTo&gt;
+      &lt;reportees/&gt;
+    &lt;/employee&gt;
+  &lt;/allEmployees&gt;
+&lt;/ns1:organization&gt;</pre>
+</div>
+<br><br>
+<h3><a name="examples_org_main.cpp">examples/org/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "org/all-include.h"
+
+void populateDocument(org::Document* xsdDoc);
+void updateOrConsumeDocument(org::Document* xsdDoc);
+    
+
+int main (int argc, char**argv)
+{
+  XSD::UserOps&lt;org::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+
+  XSD::UserOps&lt;org::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here ...
+void populateDocument(org::Document* xsdDoc)
+{
+  /*
+  Jim Barnette    : org head
+
+  Engg:  
+      Paul V. Biron : engg head
+   
+    Project1: 
+        Allen Brown : proj1 head
+        Charles E. Campbell
+        Wayne Carr
+
+    Project2:
+        Lee Buck : proj2 head
+        Peter Chen
+        David Cleary
+
+  
+  Legal:
+      Don Box :legal head
+      Dan Connolly
+      Ugo Corda
+
+  */
+
+  org::organization* pOrgn = xsdDoc-&gt;element_organization();
+  pOrgn-&gt;set_leaderId("jimb");
+  pOrgn-&gt;set_attr_id("nasa");
+  pOrgn-&gt;set_name("NASA");
+
+  // all employees
+  pOrgn-&gt;element_allEmployees()-&gt;set_count_employee(11);
+  org::hr::Types::Employee* pEmpl = NULL;
+  
+  pEmpl = pOrgn-&gt;element_allEmployees()-&gt;element_employee_at(0);
+  pEmpl-&gt;set_name("Jim Barnette");
+  pEmpl-&gt;set_userId("jimb");
+  pEmpl-&gt;set_joiningDate("1978-02-11");
+  pEmpl-&gt;set_title("org head");
+  pEmpl-&gt;element_reportees()-&gt;add_userId_string("paulb");
+  pEmpl-&gt;element_reportees()-&gt;add_userId_string("donb");
+  
+  pEmpl = pOrgn-&gt;element_allEmployees()-&gt;element_employee_at(1);
+  pEmpl-&gt;set_name("Paul V. Biron");
+  pEmpl-&gt;set_userId("paulb");
+  pEmpl-&gt;set_joiningDate("1978-02-15");
+  pEmpl-&gt;set_title("Engg head");
+  pEmpl-&gt;element_reportees()-&gt;add_userId_string("allenb");
+  pEmpl-&gt;element_reportees()-&gt;add_userId_string("leeb");
+  pEmpl-&gt;set_reportsTo("jimb");
+  
+  pEmpl = pOrgn-&gt;element_allEmployees()-&gt;element_employee_at(2);
+  pEmpl-&gt;set_name("Don Box");
+  pEmpl-&gt;set_userId("donb");
+  pEmpl-&gt;set_joiningDate("1978-02-15");
+  pEmpl-&gt;set_title("Legal head");
+  pEmpl-&gt;element_reportees()-&gt;add_userId_string("danc");
+  pEmpl-&gt;element_reportees()-&gt;add_userId_string("ugoc");
+  pEmpl-&gt;set_reportsTo("jimb");
+  
+  pEmpl = pOrgn-&gt;element_allEmployees()-&gt;element_employee_at(3);
+  pEmpl-&gt;set_name("Allen Brown");
+  pEmpl-&gt;set_userId("allenb");
+  pEmpl-&gt;set_joiningDate("1978-02-15");
+  pEmpl-&gt;set_title("Proj1 head");
+  pEmpl-&gt;element_reportees()-&gt;add_userId_string("charlese");
+  pEmpl-&gt;element_reportees()-&gt;add_userId_string("waynec");
+  pEmpl-&gt;set_reportsTo("paulb");
+  
+  pEmpl = pOrgn-&gt;element_allEmployees()-&gt;element_employee_at(4);
+  pEmpl-&gt;set_name("Lee Buck");
+  pEmpl-&gt;set_userId("leeb");
+  pEmpl-&gt;set_joiningDate("1978-02-15");
+  pEmpl-&gt;set_title("Proj2 head");
+  pEmpl-&gt;element_reportees()-&gt;add_userId_string("peterc");
+  pEmpl-&gt;element_reportees()-&gt;add_userId_string("davidc");
+  pEmpl-&gt;set_reportsTo("paulb");
+  
+  pEmpl = pOrgn-&gt;element_allEmployees()-&gt;element_employee_at(5);
+  pEmpl-&gt;set_name("Charles E Campbell");
+  pEmpl-&gt;set_userId("charlese");
+  pEmpl-&gt;set_joiningDate("1978-02-15");
+  pEmpl-&gt;set_title("SMTS");
+  pEmpl-&gt;set_reportsTo("allenb");
+
+  pEmpl = pOrgn-&gt;element_allEmployees()-&gt;element_employee_at(6);
+  pEmpl-&gt;set_name("Wayne Carr");
+  pEmpl-&gt;set_userId("waynec");
+  pEmpl-&gt;set_joiningDate("1978-02-15");
+  pEmpl-&gt;set_title("SMTS");
+  pEmpl-&gt;set_reportsTo("allenb");
+  
+  pEmpl = pOrgn-&gt;element_allEmployees()-&gt;element_employee_at(7);
+  pEmpl-&gt;set_name("Peter Chen");
+  pEmpl-&gt;set_userId("peterc");
+  pEmpl-&gt;set_joiningDate("1978-02-15");
+  pEmpl-&gt;set_title("SMTS");
+  pEmpl-&gt;set_reportsTo("leeb");
+  
+  pEmpl = pOrgn-&gt;element_allEmployees()-&gt;element_employee_at(8);
+  pEmpl-&gt;set_name("David Cleary");
+  pEmpl-&gt;set_userId("davidc");
+  pEmpl-&gt;set_joiningDate("1978-02-15");
+  pEmpl-&gt;set_title("SMTS");
+  pEmpl-&gt;set_reportsTo("leeb");
+
+  pEmpl = pOrgn-&gt;element_allEmployees()-&gt;element_employee_at(9);
+  pEmpl-&gt;set_name("Dan Connolly");
+  pEmpl-&gt;set_userId("danc");
+  pEmpl-&gt;set_joiningDate("1978-02-15");
+  pEmpl-&gt;set_title("Legal Advisor");
+  pEmpl-&gt;set_reportsTo("donb");
+  
+  pEmpl = pOrgn-&gt;element_allEmployees()-&gt;element_employee_at(10);
+  pEmpl-&gt;set_name("Ugo Corda");
+  pEmpl-&gt;set_userId("ugoc");
+  pEmpl-&gt;set_joiningDate("1978-02-15");
+  pEmpl-&gt;set_title("Legal Advisor");
+  pEmpl-&gt;set_reportsTo("donb");
+  
+
+  org::Types::Departments::engineering* pEnggDept = pOrgn-&gt;element_departments()-&gt;element_engineering();
+  pEnggDept-&gt;set_attr_id("nasa.deperatments.engineering");
+  pEnggDept-&gt;set_leaderId("paulb");
+  pEnggDept-&gt;set_count_project(2);
+
+  org::engg::Types::EnggDept::project* pProj = NULL;
+  
+  pProj = pEnggDept-&gt;element_project_at(0);
+  pProj-&gt;set_leaderId("allenb");
+  pProj-&gt;element_engineers()-&gt;add_userId_string("charlese");
+  pProj-&gt;element_engineers()-&gt;add_userId_string("waynec");
+  pProj-&gt;set_projectName("The unmanned moon mission 2015");
+
+  pProj = pEnggDept-&gt;element_project_at(1);
+  pProj-&gt;set_leaderId("leeb");
+  pProj-&gt;element_engineers()-&gt;add_userId_string("peterc");
+  pProj-&gt;element_engineers()-&gt;add_userId_string("davidc");
+  pProj-&gt;set_projectName("The manned moon mission 2020");
+
+  org::Types::Departments::legal* pLegalDept = pOrgn-&gt;element_departments()-&gt;element_legal();
+  pLegalDept-&gt;set_attr_id("nasa.deperatments.legal");
+  pLegalDept-&gt;set_leaderId("donb");
+  pLegalDept-&gt;element_legalAdvisors()-&gt;add_userId_string("danc");
+  pLegalDept-&gt;element_legalAdvisors()-&gt;add_userId_string("ugoc");
+}
+
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(org::Document* xsdDoc)
+{
+
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_japaneseDoc_utf8">examples/japaneseDoc_utf8</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_japaneseDoc_utf8_japaneseDoc_utf8.xsd">examples/japaneseDoc_utf8/japaneseDoc_utf8.xsd</a>
+<li> <a href="#examples_japaneseDoc_utf8_valid.xml">examples/japaneseDoc_utf8/valid.xml</a>
+<li> <a href="#examples_japaneseDoc_utf8_main.cpp">examples/japaneseDoc_utf8/main.cpp</a>
+</ul>
+<h3><a name="examples_japaneseDoc_utf8_japaneseDoc_utf8.xsd">examples/japaneseDoc_utf8/japaneseDoc_utf8.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+ 
+  &lt;xsd:element name="document" type="documentType"/&gt;
+
+  &lt;xsd:complexType name="documentType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="para" type="xsd:string" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;/xsd:schema&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_japaneseDoc_utf8_valid.xml">examples/japaneseDoc_utf8/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!--
+  Courtesy: http://www.w3.org/Submission/japanese-xml
+--&gt;
+&lt;document&gt;
+  &lt;para xml:lang="ja"&gt;これは段落です。&lt;/para&gt;
+  &lt;para xml:lang="en"&gt;This is a paragraph.&lt;/para&gt;
+&lt;/document&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_japaneseDoc_utf8_main.cpp">examples/japaneseDoc_utf8/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "NoNS/all-include.h"
+
+void populateDocument(NoNS::Document* xsdDoc);
+void updateOrConsumeDocument(NoNS::Document* xsdDoc);
+    
+
+int main (int argc, char** argv)
+{
+  XSD::UserOps&lt;NoNS::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+
+  XSD::UserOps&lt;NoNS::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here ...
+void populateDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+  </pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_helloWorld">examples/helloWorld</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_helloWorld_helloWorld.xsd">examples/helloWorld/helloWorld.xsd</a>
+<li> <a href="#examples_helloWorld_valid.xml">examples/helloWorld/valid.xml</a>
+<li> <a href="#examples_helloWorld_main.cpp">examples/helloWorld/main.cpp</a>
+</ul>
+<h3><a name="examples_helloWorld_helloWorld.xsd">examples/helloWorld/helloWorld.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+ 
+ &lt;xsd:element name="msg" type="xsd:string"/&gt;
+
+&lt;/xsd:schema&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_helloWorld_valid.xml">examples/helloWorld/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;msg&gt;Hello World&lt;/msg&gt;</pre>
+</div>
+<br><br>
+<h3><a name="examples_helloWorld_main.cpp">examples/helloWorld/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "NoNS/all-include.h"
+
+void populateDocument(NoNS::Document* xsdDoc);
+void updateOrConsumeDocument(NoNS::Document* xsdDoc);
+    
+
+int main (int argc, char**argv)
+{
+  XSD::UserOps&lt;NoNS::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+
+  XSD::UserOps&lt;NoNS::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here
+void populateDocument(NoNS::Document* xsdDoc)
+{
+  xsdDoc-&gt;element_msg()-&gt;stringValue("Hello World");
+}
+
+// write code to operate(update/consume/test etc.) on the Document, which is already
+// populated(eg. read from an input xml file)
+void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_mails">examples/mails</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_mails_mails.xsd">examples/mails/mails.xsd</a>
+<li> <a href="#examples_mails_valid.xml">examples/mails/valid.xml</a>
+<li> <a href="#examples_mails_main.cpp">examples/mails/main.cpp</a>
+</ul>
+<h3><a name="examples_mails_mails.xsd">examples/mails/mails.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+
+  &lt;xsd:element name="mails" type="mailsType" /&gt;
+  &lt;xsd:element name="header" type="xsd:string"/&gt;
+  &lt;xsd:element name="Date" type="xsd:dateTime" /&gt;
+  &lt;xsd:attribute name="name" type="xsd:string" /&gt;
+
+&lt;!--
+ &lt;xsd:element name="header"&gt;
+  &lt;xsd:complexType&gt;
+   &lt;xsd:simpleContent&gt;
+    &lt;xsd:extension base="xsd:string"&gt;
+     &lt;xsd:attribute ref="name" use="required" /&gt;
+    &lt;/xsd:extension&gt;
+   &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+ &lt;/xsd:element&gt;
+--&gt;
+
+ &lt;xsd:complexType name="mailsType"&gt;
+  &lt;xsd:sequence minOccurs="1" maxOccurs="unbounded"&gt;
+   &lt;xsd:element name="mail" type="mailType"/&gt;
+  &lt;/xsd:sequence&gt;
+ &lt;/xsd:complexType&gt;
+
+ &lt;xsd:complexType name="mailType"&gt;
+  &lt;xsd:sequence&gt;
+   &lt;xsd:element name="envelope" type="envelopeType" /&gt;
+   &lt;xsd:element name="body" type="bodyType" /&gt;
+   &lt;xsd:element name="attachment" type="attachmentType" minOccurs="0" maxOccurs="unbounded" /&gt;
+  &lt;/xsd:sequence&gt;
+  &lt;xsd:attribute use="required" name="id" type="xsd:integer" /&gt;
+ &lt;/xsd:complexType&gt;
+
+ &lt;xsd:complexType name="envelopeType"&gt;
+  &lt;xsd:sequence&gt;
+   &lt;xsd:element name="From" type="xsd:string" /&gt;
+   &lt;xsd:element name="To" type="xsd:string" /&gt;
+   &lt;xsd:element ref="Date" /&gt;
+   &lt;xsd:element name="Subject" type="xsd:string" /&gt;
+   &lt;xsd:element ref="header" minOccurs="0" maxOccurs="unbounded" /&gt;
+  &lt;/xsd:sequence&gt;
+ &lt;/xsd:complexType&gt;
+
+ &lt;xsd:simpleType name="bodyType"&gt;
+  &lt;xsd:restriction base="xsd:string" /&gt;
+ &lt;/xsd:simpleType&gt;
+
+ &lt;xsd:complexType name="attachmentType"&gt;
+  &lt;xsd:sequence&gt;
+   &lt;xsd:element name="mimetype" type="xsd:string"/&gt;
+   &lt;xsd:element name="content" type="xsd:base64Binary" minOccurs="0" /&gt;
+  &lt;/xsd:sequence&gt;
+  &lt;xsd:attribute ref="name" use="required" /&gt;
+ &lt;/xsd:complexType&gt;
+
+ &lt;xsd:simpleType name="mimeTopLevelType"&gt;
+  &lt;xsd:restriction base="xsd:string"&gt;
+   &lt;xsd:enumeration value="text" /&gt;
+   &lt;xsd:enumeration value="multipart" /&gt;
+   &lt;xsd:enumeration value="application" /&gt;
+   &lt;xsd:enumeration value="message" /&gt;
+   &lt;xsd:enumeration value="image" /&gt;
+   &lt;xsd:enumeration value="audio" /&gt;
+   &lt;xsd:enumeration value="video" /&gt;
+  &lt;/xsd:restriction&gt;
+ &lt;/xsd:simpleType&gt;
+
+&lt;/xsd:schema&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_mails_valid.xml">examples/mails/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;mails&gt;
+  &lt;mail id="101"&gt;
+    &lt;envelope&gt;
+      &lt;From&gt;tom@mgm.com&lt;/From&gt;
+      &lt;To&gt;jerry@mgm.com&lt;/To&gt;
+      &lt;Date&gt;1978-07-04T14:50:59Z&lt;/Date&gt;
+      &lt;Subject&gt;this shouldn't happen to dogs&lt;/Subject&gt;
+    &lt;/envelope&gt;
+    &lt;body&gt;Heard that the dogs are chained these days.
+	Who is going to save you now? :)&lt;/body&gt;
+  &lt;/mail&gt;
+  &lt;mail id="131"&gt;
+    &lt;envelope&gt;
+      &lt;From&gt;jerry@mgm.com&lt;/From&gt;
+      &lt;To&gt;tom@mgm.com&lt;/To&gt;
+      &lt;Date&gt;1978-07-04T23:50:59Z&lt;/Date&gt;
+      &lt;Subject&gt;Re: this shouldn't happen to dogs&lt;/Subject&gt;
+    &lt;/envelope&gt;
+    &lt;body&gt;&gt;Heard that the dogs are chained these days.
+	&gt;Who is going to save you now? :)
+
+	Hmmm... I am in trouble now, I guess :(&lt;/body&gt;
+  &lt;/mail&gt;
+&lt;/mails&gt;</pre>
+</div>
+<br><br>
+<h3><a name="examples_mails_main.cpp">examples/mails/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "NoNS/all-include.h"
+
+void populateDocument(NoNS::Document* xsdDoc);
+void updateOrConsumeDocument(NoNS::Document* xsdDoc);
+  
+void chooseDocumentElement(NoNS::Document* xsdDoc);
+    
+
+int main (int argc, char**argv)
+{
+  XSD::UserOps&lt;NoNS::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+  cbStruct.cbChooseDocumentElement    =  chooseDocumentElement;
+  
+
+  XSD::UserOps&lt;NoNS::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+  
+// choose the element inside Document that you want as root using
+// a call like : xsdDoc-&gt;set_root_xyz();
+void chooseDocumentElement(NoNS::Document* xsdDoc)
+{
+  // uncomment one of folowing to choose root
+  
+  xsdDoc-&gt;set_root_mails();
+  
+  //xsdDoc-&gt;set_root_header();
+  
+  //xsdDoc-&gt;set_root_Date();
+    
+}
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here ...
+void populateDocument(NoNS::Document* xsdDoc)
+{
+  NoNS::mails* pMails = xsdDoc-&gt;element_mails();
+  pMails-&gt;set_count_sequenceList(2);
+  
+  NoNS::mails::sequenceList::sequence* pSeq =NULL;
+  NoNS::mails::mail* pMail = NULL;
+  
+  pSeq = pMails-&gt;sequence_at(0);
+  pMail= pSeq-&gt;element_mail(); 
+  pMail-&gt;set_attr_id(101);
+  pMail-&gt;element_envelope()-&gt;set_From("tom@mgm.com");
+  pMail-&gt;element_envelope()-&gt;set_To("jerry@mgm.com");
+  pMail-&gt;element_envelope()-&gt;set_Date("1978-07-04T14:50:59Z");
+  pMail-&gt;element_envelope()-&gt;set_Subject("this shouldn't happen to dogs");
+  pMail-&gt;set_body("\n\tHeard that the dogs are chained these days.\n\tWho is going to save you now? :)\n");
+
+  pSeq = pMails-&gt;sequence_at(1);
+  pMail= pSeq-&gt;element_mail(); 
+  pMail-&gt;set_attr_id(131);
+  pMail-&gt;element_envelope()-&gt;set_From("jerry@mgm.com");
+  pMail-&gt;element_envelope()-&gt;set_To("tom@mgm.com");
+  pMail-&gt;element_envelope()-&gt;set_Date("1978-07-04T23:50:59Z");
+  pMail-&gt;element_envelope()-&gt;set_Subject("Re: this shouldn't happen to dogs");
+  pMail-&gt;set_body("\n\t&gt;Heard that the dogs are chained these days.\n\t&gt;Who is going to save you now? :)\n\n\tHmmm... I am in trouble now, I guess :(\n");
+
+}
+
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_simpleTypesDemo">examples/simpleTypesDemo</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_simpleTypesDemo_simpleTypesDemo.xsd">examples/simpleTypesDemo/simpleTypesDemo.xsd</a>
+<li> <a href="#examples_simpleTypesDemo_nsaliases.xml">examples/simpleTypesDemo/nsaliases.xml</a>
+<li> <a href="#examples_simpleTypesDemo_valid.xml">examples/simpleTypesDemo/valid.xml</a>
+<li> <a href="#examples_simpleTypesDemo_main.cpp">examples/simpleTypesDemo/main.cpp</a>
+</ul>
+<h3><a name="examples_simpleTypesDemo_simpleTypesDemo.xsd">examples/simpleTypesDemo/simpleTypesDemo.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+
+&lt;!--
+// This file is part of XmlPlus package
+// 
+// Copyright (C)   2010   Satya Prakash Tripathi
+// All rights reserved.
+//
+--&gt;
+
+&lt;xsd:schema
+elementFormDefault="qualified"
+attributeFormDefault="qualified"
+targetNamespace="http://www.example.com/STDemo"
+xmlns:tns="http://www.example.com/STDemo"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+&gt;
+
+  &lt;!-- 
+            1. global element/attribute declarations 
+  --&gt;
+
+  &lt;xsd:element name="myComplexTypeElem" type="tns:MyComplexType"/&gt;
+  &lt;xsd:element name="globalWaterTemp" type="tns:CelciusWaterTemp"/&gt;
+  &lt;xsd:attribute name="globalStringAttr"&gt;
+    &lt;xsd:simpleType&gt;
+      &lt;xsd:restriction base='xsd:string'&gt;
+        &lt;xsd:length value='3'/&gt;
+      &lt;/xsd:restriction&gt;
+    &lt;/xsd:simpleType&gt;
+  &lt;/xsd:attribute&gt;
+
+
+  &lt;!-- 
+          2. global simpleType/complexType declarations
+  --&gt;
+
+  &lt;xsd:complexType name="MyComplexType" mixed="true"&gt;
+    &lt;xsd:sequence&gt;
+      
+      &lt;!-- 2.1 atomic, builtin simpleTypes  --&gt;
+      &lt;xsd:element name="xBoolean" type="xsd:boolean" fixed="false"/&gt;
+      &lt;xsd:element name="xDecimal" type="xsd:decimal" default="-1.23e-6"/&gt;
+      &lt;xsd:element name="xFloat" type="xsd:float" default="-1.23e-3"/&gt;
+      &lt;xsd:element name="xDouble" type="xsd:double" default="-1.23e-5"/&gt;
+      &lt;xsd:element name="xInteger" type="xsd:integer" default="-12678967543233"/&gt;
+      &lt;xsd:element name="xPositiveInteger" type="xsd:positiveInteger" default="12678967543233"/&gt;
+      &lt;xsd:element name="xNonPositiveInteger" type="xsd:nonPositiveInteger" default="-12678967543233"/&gt;
+      &lt;xsd:element name="xNegativeInteger" type="xsd:negativeInteger" default="-12678967543233"/&gt;
+      &lt;xsd:element name="xNonNegativeInteger" type="xsd:nonNegativeInteger" default="12678967543233"/&gt;
+      &lt;xsd:element name="xLong" type="xsd:long" default="-9223372036854775808"/&gt;
+      &lt;xsd:element name="xInt" type="xsd:int" default="-2147483648"/&gt;
+      &lt;xsd:element name="xShort" type="xsd:short" default="-32768"/&gt;
+      &lt;xsd:element name="xByte" type="xsd:byte" default="-127"/&gt;
+      &lt;xsd:element name="xUnsignedLong" type="xsd:unsignedLong" default="18446744073709551615"/&gt;
+      &lt;xsd:element name="xUnsignedInt" type="xsd:unsignedInt" default="4294967295"/&gt;
+      &lt;xsd:element name="xUnsignedShort" type="xsd:unsignedShort" default="65535"/&gt;
+      &lt;xsd:element name="xUnsignedByte" type="xsd:unsignedByte" default="255"/&gt;
+      &lt;xsd:element name="xHexBinary" type="xsd:hexBinary" default="FEFF"/&gt;
+      &lt;xsd:element name="xBase64Binary" type="xsd:base64Binary" default="ZXF+NAQF/d"/&gt;
+      &lt;xsd:element name="xUri" type="xsd:anyURI" default="http://www.example.com/xmlplus"/&gt;
+      &lt;xsd:element name="xNormalizedString" type="xsd:normalizedString" default="no CR LF TAB"/&gt;
+      &lt;xsd:element name="xToken" type="xsd:token" default=" xs:hexBinary "/&gt;
+      &lt;xsd:element name="xLanguage" type="xsd:language" default="english"/&gt;
+      &lt;xsd:element name="xName" type="xsd:Name" default=":colonToken"/&gt;
+      &lt;xsd:element name="xNCName" type="xsd:NCName" default="noColonToken"/&gt;
+      &lt;xsd:element name="xQName" type="xsd:QName" default="xsi:schemaLocation"/&gt;
+      &lt;xsd:element name="xDateTime" type="xsd:dateTime" default="2001-07-04T14:50:59Z"/&gt;
+      &lt;xsd:element name="xDate" type="xsd:date" default="2010-01-04"/&gt;
+      &lt;xsd:element name="xYearMonth" type="xsd:gYearMonth" default="1980-11"/&gt;
+      &lt;xsd:element name="xYear" type="xsd:gYear" default="1978"/&gt;
+      &lt;xsd:element name="xMonthDay" type="xsd:gMonthDay" default="12-30"/&gt;
+      &lt;xsd:element name="xMonth" type="xsd:gMonth" default="7"/&gt;
+      &lt;xsd:element name="xDay" type="xsd:gDay" default="30"/&gt;
+      &lt;xsd:element name="xTime" type="xsd:time" default="14:59:57"/&gt;
+      &lt;xsd:element name="xDuration" type="xsd:duration" default="P1Y2M3DT10H30M40S"/&gt;
+
+      &lt;!-- 2.2 atomic, derived(non-builtin) simpleTypes  --&gt;
+      &lt;xsd:element name="anIntMax10" minOccurs="3" maxOccurs="5"&gt;
+        &lt;xsd:simpleType&gt;
+          &lt;xsd:restriction base='xsd:int'&gt;
+            &lt;xsd:maxInclusive value='10'/&gt;
+          &lt;/xsd:restriction&gt;
+        &lt;/xsd:simpleType&gt;
+      &lt;/xsd:element&gt;
+      &lt;xsd:element name="anIntMax5k" type="tns:IntMax5k"/&gt;
+      &lt;xsd:element ref="tns:globalWaterTemp"/&gt;
+      &lt;xsd:element name="aSKU" type="tns:SKU"/&gt;
+      &lt;xsd:element name="aDateTime" type="tns:DateTimeInARange"/&gt;
+      &lt;xsd:element name="aDate" type="tns:DateInARange" default="2010-01-04"/&gt;
+      &lt;xsd:element name="aYear" type="tns:YearInARange"/&gt;
+      &lt;xsd:element name="aCommonName"&gt;
+        &lt;xsd:simpleType&gt;
+          &lt;xsd:restriction base='xsd:string'&gt;
+            &lt;xsd:length value='5'/&gt;
+          &lt;/xsd:restriction&gt;
+        &lt;/xsd:simpleType&gt;
+      &lt;/xsd:element&gt;
+
+      &lt;!-- 2.3 list simpleTypes --&gt;
+      &lt;xsd:element name="aListOfIntMax5k" type="tns:ListOfIntMax5k"/&gt;
+      &lt;xsd:element name="aListOfFourIntMax500" type="tns:ListOfFourIntMax500"/&gt;
+      &lt;xsd:element name="aListOfTwoIntMax3k" type="tns:ListOfTwoIntMax3k"/&gt;
+
+      &lt;!-- 2.4 union simpleTypes --&gt;
+      &lt;xsd:element name="aFont" type="tns:Font"/&gt;
+      &lt;xsd:element name="anotherFont" type="tns:Font"/&gt;
+
+    &lt;/xsd:sequence&gt;
+
+    &lt;xsd:attribute name="xID" type="xsd:ID" default="NMTOKENS.minLength" use="optional"/&gt;
+    &lt;xsd:attribute name="xIDREF" type="xsd:IDREF" use="optional"/&gt;
+    &lt;xsd:attribute name="xIDREFS" type="xsd:IDREFS" use="optional"/&gt;
+    &lt;xsd:attribute name="xENTITY" type="xsd:ENTITY" use="optional"/&gt;
+    &lt;xsd:attribute name="xENTITIES" type="xsd:ENTITIES" use="optional"/&gt;
+    &lt;xsd:attribute name="xNMTOKEN" type="xsd:NMTOKEN" default="prohibited" use="optional"/&gt;
+    &lt;xsd:attribute name="xNMTOKENS" type="xsd:NMTOKENS" default="optional prohibited required" use="optional"/&gt;
+    &lt;xsd:attribute ref="tns:globalStringAttr" use="required"/&gt;
+    &lt;xsd:attribute name="aNOTATION" type="tns:PictureNotationType"/&gt;
+    &lt;xsd:attribute name="aNNI" type="tns:EnumNNI" use="required"/&gt;
+    &lt;xsd:attribute name="anotherNNI" type="tns:EnumNNI" use="required"/&gt;
+    &lt;xsd:attribute name="aCommonName" use="required"&gt;
+      &lt;xsd:simpleType&gt;
+        &lt;xsd:restriction base='xsd:string'&gt;
+          &lt;xsd:length value='5'/&gt;
+        &lt;/xsd:restriction&gt;
+      &lt;/xsd:simpleType&gt;
+    &lt;/xsd:attribute&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:simpleType name="CelciusWaterTemp"&gt;
+   &lt;xsd:restriction base="xsd:decimal"&gt;
+    &lt;xsd:fractionDigits value="2"/&gt;
+    &lt;xsd:minExclusive value="0.00"/&gt;
+    &lt;xsd:maxExclusive value="100.00"/&gt;
+   &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name="SKU"&gt;
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:pattern value="\d{3}-[A-Z]{2}"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+
+  &lt;xsd:simpleType name="DateTimeInARange"&gt;
+   &lt;xsd:restriction base="xsd:dateTime"&gt;
+    &lt;xsd:minInclusive value="2010-01-01T12:00:00Z"/&gt;
+    &lt;xsd:maxInclusive value="2010-05-31T23:00:00Z"/&gt;
+   &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+  
+  &lt;xsd:simpleType name="DateInARange"&gt;
+   &lt;xsd:restriction base="xsd:date"&gt;
+    &lt;xsd:minInclusive value="2010-01-01Z"/&gt;
+    &lt;xsd:maxInclusive value="2010-01-31Z"/&gt;
+   &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+  
+  
+  &lt;xsd:simpleType name="YearInARange"&gt;
+   &lt;xsd:restriction base="xsd:gYear"&gt;
+    &lt;xsd:minExclusive value="2005"/&gt;
+    &lt;xsd:maxInclusive value="2010"/&gt;
+   &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name='IntMax5k'&gt;
+    &lt;xsd:restriction base='xsd:int'&gt;
+      &lt;xsd:maxExclusive value='5000'/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name='ListOfIntMax5k'&gt;
+    &lt;xsd:list itemType='tns:IntMax5k'/&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name='ListOfIntMax500'&gt;
+    &lt;xsd:list&gt;
+      &lt;xsd:simpleType&gt;
+        &lt;xsd:restriction base='xsd:int'&gt;
+          &lt;xsd:maxExclusive value='500'/&gt;
+        &lt;/xsd:restriction&gt;
+      &lt;/xsd:simpleType&gt;
+    &lt;/xsd:list&gt;  
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name='ListOfFourIntMax500'&gt;
+    &lt;xsd:restriction base='tns:ListOfIntMax500'&gt;
+      &lt;xsd:maxLength value='4'/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name='ListOfIntMax3k'&gt;
+    &lt;xsd:list&gt;
+      &lt;xsd:simpleType&gt;
+        &lt;xsd:restriction&gt;
+          &lt;xsd:simpleType&gt;
+            &lt;xsd:restriction base='tns:IntMax5k'&gt;
+              &lt;xsd:maxExclusive value='4000'/&gt;
+            &lt;/xsd:restriction&gt;
+          &lt;/xsd:simpleType&gt;
+          &lt;xsd:maxExclusive value='3000'/&gt;
+        &lt;/xsd:restriction&gt;
+      &lt;/xsd:simpleType&gt;
+    &lt;/xsd:list&gt;  
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name='ListOfTwoIntMax3k'&gt;
+    &lt;xsd:restriction base='tns:ListOfIntMax3k'&gt;
+      &lt;xsd:maxLength value='2'/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name="Font"&gt;
+    &lt;xsd:union memberTypes="tns:Fontbynumber tns:Fontbystringname"/&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name="Fontbynumber"&gt;
+    &lt;xsd:restriction base="xsd:positiveInteger"&gt;
+      &lt;xsd:maxInclusive value="72"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name="Fontbystringname"&gt;
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:enumeration value="small"/&gt;
+      &lt;xsd:enumeration value="medium"/&gt;
+      &lt;xsd:enumeration value="large"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name="EnumNNI"&gt;
+    &lt;xsd:union memberTypes="xsd:nonNegativeInteger"&gt;
+     &lt;xsd:simpleType&gt;
+      &lt;xsd:restriction base="xsd:NMTOKEN"&gt;
+       &lt;xsd:enumeration value="unbounded"/&gt;
+      &lt;/xsd:restriction&gt;
+     &lt;/xsd:simpleType&gt;
+    &lt;/xsd:union&gt;
+  &lt;/xsd:simpleType&gt;
+
+
+  &lt;xsd:notation name="jpeg" public="JPG"/&gt;
+  &lt;xsd:notation name="gif" public="GIF"/&gt;
+  &lt;xsd:simpleType name="PictureNotationType"&gt;
+    &lt;xsd:restriction base="xsd:NOTATION"&gt;
+      &lt;xsd:enumeration value="jpeg"/&gt;
+      &lt;xsd:enumeration value="gif"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+
+&lt;/xsd:schema&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_simpleTypesDemo_nsaliases.xml">examples/simpleTypesDemo/nsaliases.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;nsaliases&gt;
+  &lt;alias uri="http://www.example.com/STDemo" toUrn="urn:STDemo"/&gt;
+&lt;/nsaliases&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_simpleTypesDemo_valid.xml">examples/simpleTypesDemo/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;ns1:myComplexTypeElem ns1:globalStringAttr="abc" ns1:aNNI="unbounded" ns1:anotherNNI="100" ns1:aCommonName="abcde" xmlns:ns1="http://www.example.com/STDemo"&gt;
+  Here you will see some examples of simpleType elements
+
+    Following are examples of -atomic- simpleType elements
+  &lt;ns1:xBoolean&gt;false&lt;/ns1:xBoolean&gt;
+      &lt;ns1:xDecimal&gt;-1.23e-6&lt;/ns1:xDecimal&gt;
+  &lt;ns1:xFloat&gt;-1.23e-3&lt;/ns1:xFloat&gt;
+  &lt;ns1:xDouble&gt;-1.23e-5&lt;/ns1:xDouble&gt;
+  &lt;ns1:xInteger&gt;-12678967543233&lt;/ns1:xInteger&gt;
+  &lt;ns1:xPositiveInteger&gt;12678967543233&lt;/ns1:xPositiveInteger&gt;
+  &lt;ns1:xNonPositiveInteger&gt;-12678967543233&lt;/ns1:xNonPositiveInteger&gt;
+  &lt;ns1:xNegativeInteger&gt;-12678967543233&lt;/ns1:xNegativeInteger&gt;
+  &lt;ns1:xNonNegativeInteger&gt;12678967543233&lt;/ns1:xNonNegativeInteger&gt;
+  &lt;ns1:xLong&gt;-9223372036854775808&lt;/ns1:xLong&gt;
+  &lt;ns1:xInt&gt;-2147483648&lt;/ns1:xInt&gt;
+  &lt;ns1:xShort&gt;-32768&lt;/ns1:xShort&gt;
+  &lt;ns1:xByte&gt;-127&lt;/ns1:xByte&gt;
+  &lt;ns1:xUnsignedLong&gt;18446744073709551615&lt;/ns1:xUnsignedLong&gt;
+  &lt;ns1:xUnsignedInt&gt;4294967295&lt;/ns1:xUnsignedInt&gt;
+  &lt;ns1:xUnsignedShort&gt;65535&lt;/ns1:xUnsignedShort&gt;
+  &lt;ns1:xUnsignedByte&gt;255&lt;/ns1:xUnsignedByte&gt;
+  &lt;ns1:xHexBinary&gt;FEFF&lt;/ns1:xHexBinary&gt;
+  &lt;ns1:xBase64Binary&gt;ZXF+NAQF/d&lt;/ns1:xBase64Binary&gt;
+  &lt;ns1:xUri&gt;http://www.example.com/xmlplus&lt;/ns1:xUri&gt;
+  &lt;ns1:xNormalizedString&gt;no CR LF TAB&lt;/ns1:xNormalizedString&gt;
+  &lt;ns1:xToken&gt;xs:hexBinary&lt;/ns1:xToken&gt;
+  &lt;ns1:xLanguage&gt;english&lt;/ns1:xLanguage&gt;
+  &lt;ns1:xName&gt;:colonToken&lt;/ns1:xName&gt;
+  &lt;ns1:xNCName&gt;noColonToken&lt;/ns1:xNCName&gt;
+  &lt;ns1:xQName&gt;xsi:schemaLocation&lt;/ns1:xQName&gt;
+  &lt;ns1:xDateTime&gt;2001-07-04T14:50:59Z&lt;/ns1:xDateTime&gt;
+  &lt;ns1:xDate&gt;2010-01-04&lt;/ns1:xDate&gt;
+  &lt;ns1:xYearMonth&gt;1980-11&lt;/ns1:xYearMonth&gt;
+  &lt;ns1:xYear&gt;1978&lt;/ns1:xYear&gt;
+  &lt;ns1:xMonthDay&gt;12-30&lt;/ns1:xMonthDay&gt;
+  &lt;ns1:xMonth&gt;7&lt;/ns1:xMonth&gt;
+  &lt;ns1:xDay&gt;30&lt;/ns1:xDay&gt;
+  &lt;ns1:xTime&gt;14:59:57&lt;/ns1:xTime&gt;
+  &lt;ns1:xDuration&gt;P1Y2M3DT10H30M40S&lt;/ns1:xDuration&gt;
+  &lt;ns1:anIntMax10&gt;10&lt;/ns1:anIntMax10&gt;
+  &lt;ns1:anIntMax10&gt;10&lt;/ns1:anIntMax10&gt;
+  &lt;ns1:anIntMax10&gt;10&lt;/ns1:anIntMax10&gt;
+  &lt;ns1:anIntMax5k&gt;4999&lt;/ns1:anIntMax5k&gt;
+  &lt;ns1:globalWaterTemp&gt;30&lt;/ns1:globalWaterTemp&gt;
+  &lt;ns1:aSKU&gt;123-AB&lt;/ns1:aSKU&gt;
+  &lt;ns1:aDateTime&gt;2010-01-04T12:00:00Z&lt;/ns1:aDateTime&gt;
+  &lt;ns1:aDate&gt;2010-01-04&lt;/ns1:aDate&gt;
+  &lt;ns1:aYear&gt;2009&lt;/ns1:aYear&gt;
+  &lt;ns1:aCommonName&gt;abcde&lt;/ns1:aCommonName&gt;
+    End of -atomic- simpleType elements
+
+    Following are examples of -list- simpleType elements
+  &lt;ns1:aListOfIntMax5k&gt;0 1000 2000 3000 4000&lt;/ns1:aListOfIntMax5k&gt;
+  &lt;ns1:aListOfFourIntMax500&gt;100 200 300 400&lt;/ns1:aListOfFourIntMax500&gt;
+  &lt;ns1:aListOfTwoIntMax3k&gt;1000 2000&lt;/ns1:aListOfTwoIntMax3k&gt;
+    End of -list- simpleType elements
+
+    Following are examples of -union- simpleType elements
+  &lt;ns1:aFont&gt;medium&lt;/ns1:aFont&gt;
+  &lt;ns1:anotherFont&gt;72&lt;/ns1:anotherFont&gt;
+    End of -union- simpleType elements
+
+  End of all example elements
+&lt;/ns1:myComplexTypeElem&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_simpleTypesDemo_main.cpp">examples/simpleTypesDemo/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "STDemo/all-include.h"
+
+void populateDocument(STDemo::Document* xsdDoc);
+void updateOrConsumeDocument(STDemo::Document* xsdDoc);
+  
+void chooseDocumentElement(STDemo::Document* xsdDoc);
+    
+
+int main (int argc, char**argv)
+{
+  XSD::UserOps&lt;STDemo::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+  cbStruct.cbChooseDocumentElement    =  chooseDocumentElement;
+  
+
+  XSD::UserOps&lt;STDemo::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+  
+// choose the element inside Document that you want as root using
+// a call like : xsdDoc-&gt;set_root_xyz();
+void chooseDocumentElement(STDemo::Document* xsdDoc)
+{
+  // uncomment one of folowing to choose root
+  
+  xsdDoc-&gt;set_root_myComplexTypeElem();
+  
+  //xsdDoc-&gt;set_root_globalWaterTemp();
+    
+}
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here
+void populateDocument(STDemo::Document* xsdDoc)
+{
+  //
+  // Noteworthy Things:
+  //
+  // - aCommonName : both an element and an attribute share this name, please 
+  //                 note the namespace/naming differences in generated classes
+  //                 corresponding to these two 
+  //
+  // - many elements inside MyComplexType are not populated here, they would 
+  //   show up in the xml with their default/fixed values
+  //
+
+  DOM::Node* markerNode = NULL;
+
+  STDemo::myComplexTypeElem *rootElem = xsdDoc-&gt;element_myComplexTypeElem();
+  
+  // set attributes
+  rootElem-&gt;set_attr_aCommonName("abcde");
+  rootElem-&gt;set_attr_globalStringAttr("abc");
+  rootElem-&gt;set_attr_aNNI("unbounded");
+  rootElem-&gt;set_attr_anotherNNI("100");
+
+  //  begin : atomic simpleType elements        
+  rootElem-&gt;set_anIntMax10(0, 10);
+  rootElem-&gt;set_anIntMax10(1, 10);
+  rootElem-&gt;set_anIntMax10(2, 10);
+  rootElem-&gt;set_anIntMax5k(4999);
+  rootElem-&gt;set_aSKU("123-AB");
+  rootElem-&gt;set_globalWaterTemp(30.00);
+  rootElem-&gt;set_aDateTime("2010-01-04T12:00:00Z");
+  // let default show up
+  //rootElem-&gt;set_aDate("2009");
+  rootElem-&gt;set_aYear(2009);
+  rootElem-&gt;set_aCommonName("abcde");
+  //  end : atomic simpleType elements
+
+  //  begin : list simpleType elements        
+  rootElem-&gt;set_aListOfIntMax5k("0 1000 2000 3000 4000");
+  rootElem-&gt;set_aListOfFourIntMax500("100 200 300 400");
+  rootElem-&gt;set_aListOfTwoIntMax3k("1000 2000");
+  //  end : list simpleType elements
+
+  
+  //  begin : union simpleType elements        
+  //rootElem-&gt;set_aNNI("unbounded");
+  //rootElem-&gt;set_anotherNNI("100");
+
+
+  rootElem-&gt;set_aFont("medium");
+  rootElem-&gt;set_anotherFont("72");
+  //  end : union simpleType elements
+
+  // set some text nodes which also do the job of describing the element sections
+  rootElem-&gt;setTextAmongChildrenAt("\nHere you will see some examples of simpleType elements", 0);
+  rootElem-&gt;setTextAmongChildrenAt("\nFollowing are examples of -atomic- simpleType elements", 1);
+  markerNode = rootElem-&gt;element_aCommonName();
+  rootElem-&gt;setTextAfterNode("End of -atomic- simpleType elements\n  Following are examples of -list- simpleType elements", markerNode);
+  markerNode = rootElem-&gt;element_aListOfTwoIntMax3k();
+  rootElem-&gt;setTextAfterNode("End of -list- simpleType elements\n Following are examples of -union- simpleType elements", markerNode);
+  rootElem-&gt;setTextEnd("End of -union- simpleType elements\nEnd of all example elements");
+
+}
+
+// write code to operate(update/consume/test etc.) on the Document, which is already
+// populated(eg. read from an input xml file)
+void updateOrConsumeDocument(STDemo::Document* xsdDoc)
+{
+
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_simplest">examples/simplest</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_simplest_simplest.xsd">examples/simplest/simplest.xsd</a>
+<li> <a href="#examples_simplest_nsaliases.xml">examples/simplest/nsaliases.xml</a>
+<li> <a href="#examples_simplest_valid.xml">examples/simplest/valid.xml</a>
+<li> <a href="#examples_simplest_main.cpp">examples/simplest/main.cpp</a>
+</ul>
+<h3><a name="examples_simplest_simplest.xsd">examples/simplest/simplest.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  targetNamespace="http://www.example.com/simplest"
+  elementFormDefault="qualified"
+  &gt;
+
+  &lt;xsd:element name="items"&gt;
+    &lt;xsd:complexType mixed="true"&gt;
+      &lt;xsd:sequence&gt;
+        &lt;xsd:element name="item" type="xsd:string" minOccurs="0" maxOccurs="5"/&gt;
+      &lt;/xsd:sequence&gt;
+      &lt;xsd:attribute name="id" type="xsd:string" default="102" use="optional"/&gt;
+    &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
+
+&lt;/xsd:schema&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_simplest_nsaliases.xml">examples/simplest/nsaliases.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;nsaliases&gt;
+  &lt;alias uri="http://www.example.com/simplest" toUrn="urn:simplest"/&gt;
+&lt;/nsaliases&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_simplest_valid.xml">examples/simplest/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;ns1:items xmlns:ns1="http://www.example.com/simplest"&gt;
+  text content1
+  &lt;ns1:item&gt;one&lt;/ns1:item&gt;
+  text content2
+  &lt;ns1:item&gt;two&lt;/ns1:item&gt;
+&lt;/ns1:items&gt;</pre>
+</div>
+<br><br>
+<h3><a name="examples_simplest_main.cpp">examples/simplest/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+extern "C" {
+#include &lt;getopt.h&gt;
+}
+#include "simplest/all-include.h"
+
+void populateDocument(simplest::Document xsdDoc);
+void updateOrConsumeDocument(simplest::Document xsdDoc);
+void writePopulatedDoc();
+void writeSample();
+void readUpdateWriteFile(string inFilePath);
+void roundtripFile(string inFilePath);
+void validateFile(string inFilePath);
+
+void writePopulatedDoc()
+{
+  cout &lt;&lt; "Going to populate Document and write xml file..." &lt;&lt; endl;
+  string outFile="t.xml";
+  try 
+  {
+    simplest::Document xsdDoc(true);
+    xsdDoc.prettyPrint(true);
+    populateDocument(xsdDoc);
+    ofstream ofs(outFile.c_str());
+    ofs &lt;&lt; xsdDoc;
+    cout &lt;&lt; "  =&gt; wrote file:" &lt;&lt; outFile &lt;&lt; " (using DOM Document)" 
+      &lt;&lt; endl &lt;&lt; endl;
+
+  }
+  catch(XPlus::Exception& ex) {
+    cerr &lt;&lt; "  =&gt; write failed" &lt;&lt; endl;
+    cerr &lt;&lt; endl &lt;&lt; "{" &lt;&lt; endl;
+    cerr &lt;&lt; ex.msg();
+    cerr &lt;&lt; endl &lt;&lt; "}" &lt;&lt; endl;
+    exit(1);
+  }
+}
+
+void writeSample()
+{
+  cout &lt;&lt; "writeSample:" &lt;&lt; endl;
+  string outFile = "sample.xml";
+
+  //write the Document back to a file
+  simplest::Document xsdDoc(true);
+  xsdDoc.prettyPrint(true);
+  ofstream ofs(outFile.c_str());
+  ofs &lt;&lt; xsdDoc;
+  cout &lt;&lt; "  =&gt; wrote file:" &lt;&lt; outFile &lt;&lt; " (using DOM Document)" 
+    &lt;&lt; endl &lt;&lt; endl;
+
+}
+
+void readUpdateWriteFile(string inFilePath)
+{
+  cout &lt;&lt; "readUpdateWriteFile:" &lt;&lt; inFilePath &lt;&lt; endl;
+  cout &lt;&lt; "Going to: \n"
+    &lt;&lt; "  1) read input-xml-file\n"
+    "  2) update the read Document with user-supplied function updateOrConsumeDocument()\n"
+    "  3) write xml file..." 
+    &lt;&lt; endl &lt;&lt; endl;
+  string outFile = inFilePath+ ".row.xml";
+  try 
+  {
+    //read the file into the Document
+    ifstream is(inFilePath.c_str());
+    simplest::Document xsdDoc(false);
+    is &gt;&gt; xsdDoc; 
+
+    xsdDoc.prettyPrint(true);
+    updateOrConsumeDocument(xsdDoc);
+    
+    //write the Document back to a file
+    ofstream ofs(outFile.c_str());
+    ofs &lt;&lt; xsdDoc;
+    cout &lt;&lt; "  =&gt; wrote file:" &lt;&lt; outFile &lt;&lt; " (using DOM Document)" 
+    &lt;&lt; endl &lt;&lt; endl;
+  }
+  catch(XPlus::Exception& ex) {
+    cerr &lt;&lt; "  =&gt; write failed" &lt;&lt; endl;
+    cerr &lt;&lt; endl &lt;&lt; "{" &lt;&lt; endl;
+    cerr &lt;&lt; ex.msg();
+    cerr &lt;&lt; endl &lt;&lt; "}" &lt;&lt; endl;
+    exit(1);
+  }
+}
+
+void roundtripFile(string inFilePath)
+{
+  cout &lt;&lt; "Going to roundtrip file:" &lt;&lt; inFilePath &lt;&lt; endl;
+  try 
+  {
+    //read the file into the Document
+    ifstream is(inFilePath.c_str());
+    simplest::Document xsdDoc(false);
+    is &gt;&gt; xsdDoc; 
+
+    //write the Document back to a file
+    xsdDoc.prettyPrint(true);
+    string outFile = inFilePath + ".rt.xml";
+    ofstream ofs(outFile.c_str());
+    ofs &lt;&lt; xsdDoc;
+
+    cout &lt;&lt; "  =&gt; wrote file:" &lt;&lt; outFile &lt;&lt; " (using DOM Document)" 
+      &lt;&lt; endl &lt;&lt; endl;
+  }
+  catch(XPlus::Exception& ex) {
+    cerr &lt;&lt; "Error:\n" &lt;&lt; ex.msg() &lt;&lt; endl;
+    exit(1);
+  }
+}
+
+void validateFile(string inFilePath)
+{
+  cout &lt;&lt; "validating file:" &lt;&lt; inFilePath &lt;&lt; endl;
+  // this is one way of validation:
+  // when the Document is built from a xml-file, the file
+  // does get validated. Any errors(exception) thrown, would
+  // be reported in the catch block
+  try
+  {
+    //read the file into the Document
+    ifstream is(inFilePath.c_str());
+    simplest::Document xsdDoc(false);
+    is &gt;&gt; xsdDoc; 
+  }
+  catch(XPlus::Exception& ex)
+  {
+    ex.setContext("file", inFilePath);
+    cerr &lt;&lt; "  =&gt; validation failed" &lt;&lt; endl;
+    cerr &lt;&lt; endl &lt;&lt; "Error: {" &lt;&lt; endl;
+    cerr &lt;&lt; ex.msg();
+    cerr &lt;&lt; endl &lt;&lt; "}" &lt;&lt; endl;
+    exit(1);
+  }
+  catch(std::exception& ex) {
+    cerr &lt;&lt; " unknown error" &lt;&lt; endl;
+  }
+  catch(...) {
+    cerr &lt;&lt; " unknown error" &lt;&lt; endl;
+  }
+  cout &lt;&lt; "  =&gt; validated successfully"
+    &lt;&lt; endl &lt;&lt; endl;
+
+}
+
+void printHelp(string argv0)
+{
+  cout &lt;&lt; "Usage: " &lt;&lt; argv0 &lt;&lt; " [options] XMLfiles ..." &lt;&lt; endl;
+  cout &lt;&lt; "Options:" &lt;&lt; endl;  
+  cout &lt;&lt; " -s, --sample\n"
+    &lt;&lt; "            create a schema-driven sample xml-file\n" 
+    &lt;&lt; "            Note: optional fields are omitted"
+    &lt;&lt; endl;
+  cout &lt;&lt; " -w, --write\n"
+    &lt;&lt; "            write a xml-file using populated Document\n" 
+    &lt;&lt; "            Note: populateDocument() function in main.cpp template,\n"
+    &lt;&lt; "            must be used to populate the Document"
+    &lt;&lt; endl;
+  cout &lt;&lt; " -v, --validate\n"
+    &lt;&lt; "            validate input xml-file(against compiled schema)"
+    &lt;&lt; endl;
+  cout &lt;&lt; " -r, --roundtrip\n"
+    &lt;&lt; "            roundtrip (read-&gt;write) input xml-file"
+    &lt;&lt; endl;
+  cout &lt;&lt; " -u, --row\n"
+    &lt;&lt; "         perform read-&gt;update-&gt;write operations on input xml-file"
+    &lt;&lt; endl;
+  cout &lt;&lt; " -h, --help\n"
+    &lt;&lt; "         print help"
+    &lt;&lt; endl;
+  cout &lt;&lt; endl;
+}
+
+
+int main (int argc, char**argv)
+{
+  int c;
+
+  /* Flag set by ‘--verbose’. */
+  int verbose_flag=0;
+  string inFile;
+
+  while (1)
+  {
+    static struct option long_options[] =
+    {
+      /* These options set a flag. */
+      {"verbose", no_argument,       &verbose_flag, 1},
+      /* These options don't set a flag.
+         We distinguish them by their indices. */
+      {"help",   no_argument,        0, 'h'},
+      {"sample",     no_argument,       0, 's'},
+      {"write",      no_argument,       0, 'w'},
+      {"validate",   required_argument, 0, 'v'},
+      {"roundtrip",  required_argument, 0, 'r'},
+      {"row",        required_argument, 0, 'u'},
+      {0, 0, 0, 0}
+    };
+    /* getopt_long stores the option index here. */
+    int option_index = 0;
+
+    c = getopt_long (argc, argv, "hr:su:v:w",
+        long_options, &option_index);
+
+    /* Detect the end of the options. */
+    if (c == -1)
+      break;
+
+    switch (c)
+    {
+      case 0:
+        /* If this option set a flag, do nothing else now. */
+        if (long_options[option_index].flag != 0)
+          break;
+        printf ("option %s", long_options[option_index].name);
+        if (optarg)
+          printf (" with arg %s", optarg);
+        printf ("\n");
+        break;
+
+      case 'h':
+        printHelp(argv[0]);
+        break;
+
+      case 's':
+        writeSample();
+        break;
+
+      case 'w':
+        writePopulatedDoc();
+        break;
+
+      case 'r':
+        inFile = optarg;
+        roundtripFile(inFile);
+        break;
+
+      case 'v':
+        inFile = optarg;
+        validateFile(inFile);
+        break;
+
+      case 'u':
+        inFile = optarg;
+        readUpdateWriteFile(inFile);
+        break;
+
+      case '?':
+        /* getopt_long already printed an error message. */
+        break;
+
+      default:
+        abort();
+    }
+  }
+
+  if (verbose_flag) {
+    //cout &lt;&lt; "verbose flag is set" &lt;&lt; endl;;
+  }
+
+  if (optind &lt; argc)
+  {
+    cout &lt;&lt; "Invalid arguments: " &lt;&lt; endl;
+    while (optind &lt; argc)
+      cout &lt;&lt;  argv[optind++] &lt;&lt; " ";
+
+    cout &lt;&lt; endl;
+    exit(1);
+  }
+}
+
+
+
+//
+// Following functions are templates.
+// You need to put code in the context
+//
+
+
+
+// template function to populate the Tree with values
+void populateDocument(simplest::Document xsdDoc)
+{
+  // write code to populate the Document here
+  simplest::items *pItems = xsdDoc.element_items();
+  pItems-&gt;setTextAmongChildrenAt("text content1", 0);
+
+  if(1)
+  {
+    pItems-&gt;add_item_string("one");
+    pItems-&gt;add_item_string("two");
+  }
+  else
+  {
+    XPlus::List&lt;simplest::items::item_ptr&gt;  list_items2 = pItems-&gt;set_count_item(2);
+    list_items2.at(0)-&gt;stringValue("one");
+    list_items2.at(1)-&gt;stringValue("two");
+  }
+  pItems-&gt;setTextAmongChildrenAt("text content2", 2);
+}
+
+void updateOrConsumeDocument(simplest::Document xsdDoc)
+{
+  // write code to update the populated-Document here
+  simplest::items *pItems = xsdDoc.element_items();
+  pItems-&gt;replaceTextAt("updated text content2", 1);
+}
+
+
+
+
+
+
+
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_ipo">examples/ipo</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_ipo_address.xsd">examples/ipo/address.xsd</a>
+<li> <a href="#examples_ipo_ipo.xsd">examples/ipo/ipo.xsd</a>
+<li> <a href="#examples_ipo_ipo.xml">examples/ipo/ipo.xml</a>
+<li> <a href="#examples_ipo_nsaliases.xml">examples/ipo/nsaliases.xml</a>
+<li> <a href="#examples_ipo_valid2.xml">examples/ipo/valid2.xml</a>
+<li> <a href="#examples_ipo_main.cpp">examples/ipo/main.cpp</a>
+</ul>
+<h3><a name="examples_ipo_address.xsd">examples/ipo/address.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;schema targetNamespace="http://www.example.com/IPO"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:ipo="http://www.example.com/IPO"&gt;
+
+  &lt;annotation&gt;
+    &lt;documentation xml:lang="en"&gt;
+      Addresses for International Purchase order schema
+      Copyright 2000 Example.com. All rights reserved.
+    &lt;/documentation&gt;
+  &lt;/annotation&gt;
+
+  &lt;complexType name="Address"&gt;
+    &lt;sequence&gt;
+      &lt;element name="name"   type="string"/&gt;
+      &lt;element name="street" type="string"/&gt;
+      &lt;element name="city"   type="string"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="USAddress"&gt;
+    &lt;complexContent&gt;
+      &lt;extension base="ipo:Address"&gt;
+        &lt;sequence&gt;
+          &lt;element name="state" type="ipo:USState"/&gt;
+          &lt;element name="zip"   type="positiveInteger"/&gt;
+        &lt;/sequence&gt;
+      &lt;/extension&gt;
+    &lt;/complexContent&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="USState"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;enumeration value="AK"/&gt;
+      &lt;enumeration value="AL"/&gt;
+      &lt;enumeration value="AR"/&gt;
+      &lt;enumeration value="PA"/&gt;
+      &lt;!-- and so on ... --&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;complexType name="UKAddress"&gt;
+    &lt;complexContent&gt;
+      &lt;extension base="ipo:Address"&gt;
+        &lt;sequence&gt;
+          &lt;element name="postcode" type="ipo:UKPostcode"/&gt;
+        &lt;/sequence&gt;
+        &lt;attribute name="exportCode" type="positiveInteger" fixed="1"/&gt;
+      &lt;/extension&gt;
+    &lt;/complexContent&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="UKPostcode"&gt;
+    &lt;restriction base="string"&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+&lt;/schema&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_ipo_ipo.xsd">examples/ipo/ipo.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;schema targetNamespace="http://www.example.com/IPO"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:ipo="http://www.example.com/IPO"&gt;
+
+  &lt;annotation&gt;
+    &lt;documentation xml:lang="en"&gt;
+      International Purchase order schema for Example.com
+      Copyright 2000 Example.com. All rights reserved.
+    &lt;/documentation&gt;
+  &lt;/annotation&gt;
+
+  &lt;!-- include address constructs --&gt;
+  &lt;include
+    schemaLocation="address.xsd"/&gt;
+
+  &lt;element name="purchaseOrder" type="ipo:PurchaseOrderType"/&gt;
+
+  &lt;element name="comment" type="string"/&gt;
+
+  &lt;complexType name="PurchaseOrderType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="shipTo"     type="ipo:Address"/&gt;
+      &lt;element name="billTo"     type="ipo:Address"/&gt;
+      &lt;element ref="ipo:comment" minOccurs="0"/&gt;
+      &lt;element name="items"      type="ipo:Items"/&gt;
+    &lt;/sequence&gt;
+    &lt;attribute name="orderDate" type="date"/&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="Items"&gt;
+    &lt;sequence&gt;
+      &lt;element name="item" minOccurs="0" maxOccurs="unbounded"&gt;
+        &lt;complexType&gt;
+          &lt;sequence&gt;
+            &lt;element name="productName" type="string"/&gt;
+            &lt;element name="quantity"&gt;
+              &lt;simpleType&gt;
+                &lt;restriction base="positiveInteger"&gt;
+                  &lt;maxExclusive value="100"/&gt;
+                &lt;/restriction&gt;
+              &lt;/simpleType&gt;
+            &lt;/element&gt;
+            &lt;element name="USPrice"    type="decimal"/&gt;
+            &lt;element ref="ipo:comment" minOccurs="0"/&gt;
+            &lt;element name="shipDate"   type="date" minOccurs="0"/&gt;
+          &lt;/sequence&gt;
+          &lt;attribute name="partNum" type="ipo:SKU" use="required"/&gt;
+        &lt;/complexType&gt;
+      &lt;/element&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="SKU"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;pattern value="\d{3}-[A-Z]{2}"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+&lt;/schema&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_ipo_ipo.xml">examples/ipo/ipo.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;ipo:purchaseOrder
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ipo="http://www.example.com/IPO"
+  orderDate="1999-12-01"&gt;
+
+  &lt;shipTo exportCode="1" xsi:type="ipo:UKAddress"&gt;
+    &lt;name&gt;Helen Zoe&lt;/name&gt;
+    &lt;street&gt;47 Eden Street&lt;/street&gt;
+    &lt;city&gt;Cambridge&lt;/city&gt;
+    &lt;postcode&gt;CB1 1JR&lt;/postcode&gt;
+  &lt;/shipTo&gt;
+
+  &lt;billTo xsi:type="ipo:USAddress"&gt;
+    &lt;name&gt;Robert Smith&lt;/name&gt;
+    &lt;street&gt;8 Oak Avenue&lt;/street&gt;
+    &lt;city&gt;Old Town&lt;/city&gt;
+    &lt;state&gt;PA&lt;/state&gt;
+    &lt;zip&gt;95819&lt;/zip&gt;
+  &lt;/billTo&gt;
+
+  &lt;items&gt;
+    &lt;item partNum="833-AA"&gt;
+      &lt;productName&gt;Lapis necklace&lt;/productName&gt;
+      &lt;quantity&gt;1&lt;/quantity&gt;
+      &lt;USPrice&gt;99.95&lt;/USPrice&gt;
+      &lt;ipo:comment&gt;Want this for the holidays&lt;/ipo:comment&gt;
+      &lt;shipDate&gt;1999-12-05&lt;/shipDate&gt;
+    &lt;/item&gt;
+  &lt;/items&gt;
+&lt;/ipo:purchaseOrder&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_ipo_nsaliases.xml">examples/ipo/nsaliases.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;nsaliases&gt;
+  &lt;alias uri="http://www.example.com/IPO" toUrn="urn:IPO"/&gt;
+&lt;/nsaliases&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_ipo_valid2.xml">examples/ipo/valid2.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;ipo:purchaseOrder
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ipo="http://www.example.com/IPO"
+  orderDate="1999-12-01"&gt;
+
+  &lt;shipTo exportCode="1" xsi:type="ipo:UKAddress"&gt;
+    &lt;name&gt;Helen Zoe&lt;/name&gt;
+    &lt;street&gt;47 Eden Street&lt;/street&gt;
+    &lt;city&gt;Cambridge&lt;/city&gt;
+    &lt;postcode&gt;CB1 1JR&lt;/postcode&gt;
+  &lt;/shipTo&gt;
+
+  &lt;billTo xsi:type="ipo:USAddress"&gt;
+    &lt;name&gt;Robert Smith&lt;/name&gt;
+    &lt;street&gt;8 Oak Avenue&lt;/street&gt;
+    &lt;city&gt;Old Town&lt;/city&gt;
+    &lt;state&gt;PA&lt;/state&gt;
+    &lt;zip&gt;95819&lt;/zip&gt;
+  &lt;/billTo&gt;
+
+  &lt;items&gt;
+    &lt;item partNum="833-AA"&gt;
+      &lt;productName&gt;Lapis necklace&lt;/productName&gt;
+      &lt;quantity&gt;1&lt;/quantity&gt;
+      &lt;USPrice&gt;99.95&lt;/USPrice&gt;
+      &lt;ipo:comment&gt;Want this for the holidays&lt;/ipo:comment&gt;
+      &lt;shipDate&gt;1999-12-05&lt;/shipDate&gt;
+    &lt;/item&gt;
+  &lt;/items&gt;
+&lt;/ipo:purchaseOrder&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_ipo_main.cpp">examples/ipo/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "XSD/TypeDefinitionFactory.h"
+#include "IPO/all-include.h"
+
+void populateDocument(IPO::Document* xsdDoc);
+void updateOrConsumeDocument(IPO::Document* xsdDoc);
+  
+void chooseDocumentElement(IPO::Document* xsdDoc);
+    
+
+int main (int argc, char**argv)
+{
+  XSD::UserOps&lt;IPO::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  cbStruct.cbChooseDocumentElement      =  chooseDocumentElement;
+
+  XSD::UserOps&lt;IPO::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+  
+// choose the element inside Document that you want as root using
+// a call like : xsdDoc-&gt;set_root_xyz();
+void chooseDocumentElement(IPO::Document* xsdDoc)
+{
+  // uncomment one of folowing to choose root
+  
+  xsdDoc-&gt;set_root_purchaseOrder();
+  
+  //xsdDoc-&gt;set_root_comment();
+    
+}
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here ...
+void populateDocument(IPO::Document* xsdDoc)
+{
+
+}
+
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(IPO::Document* xsdDoc)
+{
+
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_netEnabled">examples/netEnabled</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_netEnabled_netEnabled.xsd">examples/netEnabled/netEnabled.xsd</a>
+<li> <a href="#examples_netEnabled_echoHexBinaryElement-HexBinaryElement01.xml">examples/netEnabled/echoHexBinaryElement-HexBinaryElement01.xml</a>
+<li> <a href="#examples_netEnabled_echoHexBinaryElement-HexBinaryElement02.xml">examples/netEnabled/echoHexBinaryElement-HexBinaryElement02.xml</a>
+<li> <a href="#examples_netEnabled_nsaliases.xml">examples/netEnabled/nsaliases.xml</a>
+<li> <a href="#examples_netEnabled_valid.xml">examples/netEnabled/valid.xml</a>
+<li> <a href="#examples_netEnabled_main.cpp">examples/netEnabled/main.cpp</a>
+</ul>
+<h3><a name="examples_netEnabled_netEnabled.xsd">examples/netEnabled/netEnabled.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.w3.org/2002/ws/databinding/examples/6/05/"
+  xmlns="http://www.w3.org/2002/ws/databinding/examples/6/05/"
+  xmlns:ns1="http://www.w3.org/2002/ws/databinding/examples/6/05/"
+  &gt;
+
+  &lt;xsd:include schemaLocation="http://www.w3.org/2002/ws/databinding/examples/6/05/HexBinaryElement/echoHexBinaryElement.xsd"/&gt;
+
+  
+  &lt;xsd:element name="echo"&gt; 
+    &lt;xsd:complexType&gt;
+      &lt;xsd:sequence&gt;
+        &lt;xsd:element ref="ns1:echoHexBinaryElement"/&gt; 
+      &lt;/xsd:sequence&gt;
+    &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
+
+&lt;/xsd:schema&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_netEnabled_echoHexBinaryElement-HexBinaryElement01.xml">examples/netEnabled/echoHexBinaryElement-HexBinaryElement01.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!--
+
+    Copyright (C) 2006 W3C (R) (MIT ERCIM Keio), All Rights Reserved.
+    W3C liability, trademark and document use rules apply.
+
+    http://www.w3.org/Consortium/Legal/ipr-notice
+    http://www.w3.org/Consortium/Legal/copyright-documents
+
+    $Header: /w3ccvs/WWW/2002/ws/databinding/examples/6/05/HexBinaryElement/echoHexBinaryElement-HexBinaryElement01.xml,v 1.1 2006/09/05 15:07:00 pdowney Exp $
+
+--&gt;
+&lt;ex:echoHexBinaryElement xmlns:ex="http://www.w3.org/2002/ws/databinding/examples/6/05/"&gt;
+  &lt;ex:hexBinaryElement xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;76&lt;/ex:hexBinaryElement&gt;
+&lt;/ex:echoHexBinaryElement&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_netEnabled_echoHexBinaryElement-HexBinaryElement02.xml">examples/netEnabled/echoHexBinaryElement-HexBinaryElement02.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!--
+
+    Copyright (C) 2006 W3C (R) (MIT ERCIM Keio), All Rights Reserved.
+    W3C liability, trademark and document use rules apply.
+
+    http://www.w3.org/Consortium/Legal/ipr-notice
+    http://www.w3.org/Consortium/Legal/copyright-documents
+
+    $Header: /w3ccvs/WWW/2002/ws/databinding/examples/6/05/HexBinaryElement/echoHexBinaryElement-HexBinaryElement02.xml,v 1.1 2006/09/05 15:07:00 pdowney Exp $
+
+--&gt;
+&lt;ex:echoHexBinaryElement xmlns:ex="http://www.w3.org/2002/ws/databinding/examples/6/05/"&gt;
+  &lt;ex:hexBinaryElement xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;77696f646d6f6e7974637174716a7169696e6b65616f76786f746e66716b707875757261736e686469796b65706c656d7465626661637661646e6b65636662647669726d6f6e757361&lt;/ex:hexBinaryElement&gt;
+&lt;/ex:echoHexBinaryElement&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_netEnabled_nsaliases.xml">examples/netEnabled/nsaliases.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;nsaliases&gt;
+  &lt;alias uri="http://www.w3.org/2002/ws/databinding/examples/6/05/" toUrn="urn:examples_6_05"/&gt;
+&lt;/nsaliases&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_netEnabled_valid.xml">examples/netEnabled/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;ns1:echo xmlns:ns1="http://www.w3.org/2002/ws/databinding/examples/6/05/"&gt;
+  &lt;ns1:echoHexBinaryElement&gt;
+    &lt;ns1:hexBinaryElement&gt;77696f646d6f6e7974637174716a7169696e6b65616f76786f746e66716b707875757261736e686469796b65706c656d7465626661637661646e6b65636662647669726d6f6e757361&lt;/ns1:hexBinaryElement&gt;
+  &lt;/ns1:echoHexBinaryElement&gt;
+&lt;/ns1:echo&gt;</pre>
+</div>
+<br><br>
+<h3><a name="examples_netEnabled_main.cpp">examples/netEnabled/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "examples_6_05/all-include.h"
+
+void populateDocument(examples_6_05::Document* xsdDoc);
+void updateOrConsumeDocument(examples_6_05::Document* xsdDoc);
+  
+void chooseDocumentElement(examples_6_05::Document* xsdDoc);
+    
+
+int main (int argc, char** argv)
+{
+  XSD::UserOps&lt;examples_6_05::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  cbStruct.cbChooseDocumentElement      =  chooseDocumentElement;
+
+  XSD::UserOps&lt;examples_6_05::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+  
+// choose the element inside Document that you want as root using
+// a call like : xsdDoc-&gt;set_root_xyz();
+void chooseDocumentElement(examples_6_05::Document* xsdDoc)
+{
+  // uncomment one of folowing to choose root
+  
+  xsdDoc-&gt;set_root_echo();
+  
+  //xsdDoc-&gt;set_root_hexBinaryElement();
+    
+  //xsdDoc-&gt;set_root_echoHexBinaryElement();
+      
+}
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here ...
+void populateDocument(examples_6_05::Document* xsdDoc)
+{
+  xsdDoc-&gt;element_echo()-&gt;element_echoHexBinaryElement()-&gt;set_hexBinaryElement("77696f646d6f6e7974637174716a7169696e6b65616f76786f746e66716b707875757261736e686469796b65706c656d7465626661637661646e6b65636662647669726d6f6e757361");
+}
+
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(examples_6_05::Document* xsdDoc)
+{
+
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_po">examples/po</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_po_po.xsd">examples/po/po.xsd</a>
+<li> <a href="#examples_po_valid.xml">examples/po/valid.xml</a>
+<li> <a href="#examples_po_main.cpp">examples/po/main.cpp</a>
+</ul>
+<h3><a name="examples_po_po.xsd">examples/po/po.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  &gt;
+
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation xml:lang="en"&gt;
+     Purchase order schema for Example.com.
+     Copyright 2000 Example.com. All rights reserved.
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:element name="purchaseOrder" type="PurchaseOrderType"/&gt;
+
+  &lt;xsd:element name="comment" type="xsd:string"/&gt;
+
+  &lt;xsd:complexType name="PurchaseOrderType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="shipTo" type="USAddress"/&gt;
+      &lt;xsd:element name="billTo" type="USAddress"/&gt;
+      &lt;xsd:element ref="comment" minOccurs="0"/&gt;
+      &lt;xsd:element name="items"  type="Items"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="orderDate" type="xsd:date"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="USAddress"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="name"   type="xsd:string"/&gt;
+      &lt;xsd:element name="street" type="xsd:string"/&gt;
+      &lt;xsd:element name="city"   type="xsd:string"/&gt;
+      &lt;xsd:element name="state"  type="xsd:string"/&gt;
+      &lt;xsd:element name="zip"    type="xsd:decimal"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="country" type="xsd:NMTOKEN"
+                   fixed="US"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="Items"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="item" minOccurs="0" maxOccurs="unbounded"&gt;
+        &lt;xsd:complexType&gt;
+          &lt;xsd:sequence&gt;
+            &lt;xsd:element name="productName" type="xsd:string"/&gt;
+            &lt;xsd:element name="quantity"&gt;
+              &lt;xsd:simpleType&gt;
+                &lt;xsd:restriction base="xsd:positiveInteger"&gt;
+                  &lt;xsd:maxExclusive value="100"/&gt;
+                &lt;/xsd:restriction&gt;
+              &lt;/xsd:simpleType&gt;
+            &lt;/xsd:element&gt;
+            &lt;xsd:element name="USPrice"  type="xsd:decimal"/&gt;
+            &lt;xsd:element ref="comment"   minOccurs="0"/&gt;
+            &lt;xsd:element name="shipDate" type="xsd:date" minOccurs="0"/&gt;
+          &lt;/xsd:sequence&gt;
+          &lt;xsd:attribute name="partNum" type="SKU" use="required"/&gt;
+        &lt;/xsd:complexType&gt;
+      &lt;/xsd:element&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;!-- Stock Keeping Unit, a code for identifying products --&gt;
+  &lt;xsd:simpleType name="SKU"&gt;
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:pattern value="\d{3}-[A-Z]{2}"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+&lt;/xsd:schema&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_po_valid.xml">examples/po/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;purchaseOrder orderDate="1999-10-20"&gt;
+  &lt;shipTo country="US"&gt;
+    &lt;name&gt;Alice Smith&lt;/name&gt;
+    &lt;street&gt;123 Maple Street&lt;/street&gt;
+    &lt;city&gt;Mill Valley&lt;/city&gt;
+    &lt;state&gt;CA&lt;/state&gt;
+    &lt;zip&gt;90952&lt;/zip&gt;
+  &lt;/shipTo&gt;
+  &lt;billTo country="US"&gt;
+    &lt;name&gt;Robert Smith&lt;/name&gt;
+    &lt;street&gt;8 Oak Avenue&lt;/street&gt;
+    &lt;city&gt;Old Town&lt;/city&gt;
+    &lt;state&gt;PA&lt;/state&gt;
+    &lt;zip&gt;95819&lt;/zip&gt;
+  &lt;/billTo&gt;
+  &lt;comment&gt;Hurry, my lawn is going wild!&lt;/comment&gt;
+  &lt;items&gt;
+    &lt;item partNum="872-AA"&gt;
+      &lt;productName&gt;Lawnmower&lt;/productName&gt;
+      &lt;quantity&gt;1&lt;/quantity&gt;
+      &lt;USPrice&gt;148.95&lt;/USPrice&gt;
+      &lt;comment&gt;Confirm this is electric&lt;/comment&gt;
+    &lt;/item&gt;
+    &lt;item partNum="926-AA"&gt;
+      &lt;productName&gt;Baby Monitor&lt;/productName&gt;
+      &lt;quantity&gt;1&lt;/quantity&gt;
+      &lt;USPrice&gt;39.98&lt;/USPrice&gt;
+      &lt;shipDate&gt;1999-05-21&lt;/shipDate&gt;
+    &lt;/item&gt;
+  &lt;/items&gt;
+&lt;/purchaseOrder&gt;</pre>
+</div>
+<br><br>
+<h3><a name="examples_po_main.cpp">examples/po/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "NoNS/all-include.h"
+
+void populateDocument(NoNS::Document* xsdDoc);
+void updateOrConsumeDocument(NoNS::Document* xsdDoc);
+  
+void chooseDocumentElement(NoNS::Document* xsdDoc);
+    
+
+int main (int argc, char**argv)
+{
+  XSD::UserOps&lt;NoNS::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+  cbStruct.cbChooseDocumentElement    =  chooseDocumentElement;
+  
+
+  XSD::UserOps&lt;NoNS::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+  
+// choose the element inside Document that you want as root using
+// a call like : xsdDoc-&gt;set_root_xyz();
+void chooseDocumentElement(NoNS::Document* xsdDoc)
+{
+  // uncomment one of folowing to choose root
+  
+  xsdDoc-&gt;set_root_purchaseOrder();
+  
+  //xsdDoc-&gt;set_root_comment();
+    
+}
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here ...
+void populateDocument(NoNS::Document* xsdDoc)
+{
+  NoNS::purchaseOrder* pPO = xsdDoc-&gt;element_purchaseOrder();
+  pPO-&gt;set_attr_orderDate("1999-10-20");
+
+  NoNS::purchaseOrder::shipTo* pShipTo = pPO-&gt;element_shipTo();
+  pShipTo-&gt;set_name("Alice Smith");
+  pShipTo-&gt;set_street("123 Maple Street");
+  pShipTo-&gt;set_city("Mill Valley");
+  pShipTo-&gt;set_state("CA");
+  pShipTo-&gt;set_zip("90952");
+
+  NoNS::purchaseOrder::shipTo* pBillTo = pPO-&gt;element_billTo();
+  pBillTo-&gt;set_name("Robert Smith");
+  pBillTo-&gt;set_street("8 Oak Avenue");
+  pBillTo-&gt;set_city("Old Town");
+  pBillTo-&gt;set_state("PA");
+  pBillTo-&gt;set_zip("95819");
+
+  pPO-&gt;set_comment("Hurry, my lawn is going wild!");
+
+  pPO-&gt;element_items()-&gt;set_count_item(2);
+  NoNS::Types::Items::item* pItem = NULL;
+
+  pItem = pPO-&gt;element_items()-&gt;element_item_at(0);
+  pItem-&gt;set_attr_partNum("872-AA");
+  pItem-&gt;set_productName("Lawnmower");
+  pItem-&gt;set_quantity(1);
+  pItem-&gt;set_USPrice(148.95);
+  pItem-&gt;set_comment("Confirm this is electric");
+
+  pItem = pPO-&gt;element_items()-&gt;element_item_at(1);
+  pItem-&gt;set_attr_partNum("926-AA");
+  pItem-&gt;set_productName("Baby Monitor");
+  pItem-&gt;set_quantity(1);
+  pItem-&gt;set_USPrice(39.98);
+  pItem-&gt;set_shipDate("1999-05-21");
+
+}
+
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_helloWorldWide">examples/helloWorldWide</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_helloWorldWide_helloWorldWide.xsd">examples/helloWorldWide/helloWorldWide.xsd</a>
+<li> <a href="#examples_helloWorldWide_valid.xml">examples/helloWorldWide/valid.xml</a>
+<li> <a href="#examples_helloWorldWide_main.cpp">examples/helloWorldWide/main.cpp</a>
+</ul>
+<h3><a name="examples_helloWorldWide_helloWorldWide.xsd">examples/helloWorldWide/helloWorldWide.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+ 
+ &lt;xsd:element name="msg" type="MsgChars"/&gt;
+
+  &lt;xsd:simpleType name="MsgChars"&gt;
+    &lt;xsd:restriction base='xsd:string'&gt;
+      &lt;xsd:length value='11'/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+&lt;/xsd:schema&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_helloWorldWide_valid.xml">examples/helloWorldWide/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;msg&gt;Hellø Wø®l∂&lt;/msg&gt;</pre>
+</div>
+<br><br>
+<h3><a name="examples_helloWorldWide_main.cpp">examples/helloWorldWide/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "NoNS/all-include.h"
+
+void populateDocument(NoNS::Document* xsdDoc);
+void updateOrConsumeDocument(NoNS::Document* xsdDoc);
+    
+
+int main (int argc, char**argv)
+{
+  XSD::UserOps&lt;NoNS::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+
+  XSD::UserOps&lt;NoNS::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here
+void populateDocument(NoNS::Document* xsdDoc)
+{
+  xsdDoc-&gt;encoding(TextEncoding::UTF_8);
+  xsdDoc-&gt;element_msg()-&gt;stringValue("Hellø Wø®l∂");
+}
+
+// write code to operate(update/consume/test etc.) on the Document, which is already
+// populated(eg. read from an input xml file)
+void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_rss">examples/rss</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_rss_main.cpp">examples/rss/main.cpp</a>
+</ul>
+<h3><a name="examples_rss_main.cpp">examples/rss/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+
+ //
+ //  This file was automatically generated using XmlPlus xsd2cpp tool.
+ //  On subsequent "xsd2cpp" invocations, this file would not be overwritten.
+ //  You can edit this file.
+ //
+  
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "NoNS/all-include.h"
+
+void populateDocument(NoNS::Document* xsdDoc);
+void updateOrConsumeDocument(NoNS::Document* xsdDoc);
+    
+
+int main (int argc, char** argv)
+{
+  XSD::UserOps&lt;NoNS::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+
+  XSD::UserOps&lt;NoNS::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here ...
+void populateDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+// write code to operate(update/consume/test etc.) on the Document here...
+// This Document is typically already populated(eg. read from an input
+// xml file)
+void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+  </pre>
+</div>
+<br><br>
+<br>
+<h2><a name="examples_includeDemo">examples/includeDemo</a></h2>
+<hr NOSHADE SIZE=2 WIDTH=100%>
+<ul>
+<li> <a href="#examples_includeDemo_files.xsd">examples/includeDemo/files.xsd</a>
+<li> <a href="#examples_includeDemo_includeDemo.xsd">examples/includeDemo/includeDemo.xsd</a>
+<li> <a href="#examples_includeDemo_simplest.xml">examples/includeDemo/simplest.xml</a>
+<li> <a href="#examples_includeDemo_valid.xml">examples/includeDemo/valid.xml</a>
+<li> <a href="#examples_includeDemo_main.cpp">examples/includeDemo/main.cpp</a>
+</ul>
+<h3><a name="examples_includeDemo_files.xsd">examples/includeDemo/files.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" &gt;
+
+  &lt;xsd:complexType name="Files"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="fileName" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="Directory"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="path"  type="xsd:string" /&gt;
+      &lt;xsd:element name="files" type="Files"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="numberOfFiles" type="xsd:int" /&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;/xsd:schema&gt;
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_includeDemo_includeDemo.xsd">examples/includeDemo/includeDemo.xsd</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" &gt;
+
+  &lt;xsd:include schemaLocation="files.xsd"/&gt;
+
+  &lt;xsd:element name="myProject"&gt;
+    &lt;xsd:complexType&gt;
+      &lt;xsd:sequence&gt;
+        &lt;xsd:element name="description" type="xsd:string" /&gt;
+        &lt;xsd:element name="directory" type="Directory"/&gt;
+      &lt;/xsd:sequence&gt;
+    &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;  
+    
+  
+&lt;/xsd:schema&gt;
+
+</pre>
+</div>
+<br><br>
+<h3><a name="examples_includeDemo_simplest.xml">examples/includeDemo/simplest.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0" ?&gt;
+&lt;items&gt;
+  
+ text content1   
+  &lt;item&gt;one&lt;/item&gt;
+  
+ text content2   
+  &lt;item&gt;two&lt;/item&gt;
+&lt;/items&gt;</pre>
+</div>
+<br><br>
+<h3><a name="examples_includeDemo_valid.xml">examples/includeDemo/valid.xml</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;myProject&gt;
+  &lt;description&gt;my summer project and it's contents in a directory&lt;/description&gt;
+  &lt;directory numberOfFiles="3"&gt;
+    &lt;path&gt;/home/gilbert/summer_projects/project1/&lt;/path&gt;
+    &lt;files&gt;
+      &lt;fileName&gt;a.xml&lt;/fileName&gt;
+      &lt;fileName&gt;b.xml&lt;/fileName&gt;
+      &lt;fileName&gt;c.xml&lt;/fileName&gt;
+    &lt;/files&gt;
+  &lt;/directory&gt;
+&lt;/myProject&gt;</pre>
+</div>
+<br><br>
+<h3><a name="examples_includeDemo_main.cpp">examples/includeDemo/main.cpp</a></h3>
+<div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+<pre>
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include "XSD/UserOps.h"
+#include "NoNS/all-include.h"
+
+void populateDocument(NoNS::Document* xsdDoc);
+void updateOrConsumeDocument(NoNS::Document* xsdDoc);
+    
+
+int main (int argc, char**argv)
+{
+  XSD::UserOps&lt;NoNS::Document&gt;::UserOpsCbStruct cbStruct;
+  cbStruct.cbPopulateDocument           =  populateDocument;
+  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
+  
+
+  XSD::UserOps&lt;NoNS::Document&gt; opHandle(cbStruct);
+  opHandle.run(argc, argv);
+}
+
+//
+// Following functions are use case templates.
+// You need to put "code" in the respective contexts.
+//
+
+    
+
+// template function to populate the Tree with values
+// write code to populate the Document here
+void populateDocument(NoNS::Document* xsdDoc)
+{
+  NoNS::myProject* pMyProj = xsdDoc-&gt;element_myProject();
+  
+  pMyProj-&gt;element_description()-&gt;stringValue("my summer project and it's contents in a directory");
+
+  NoNS::myProject::directory_p pDir = pMyProj-&gt;element_directory();
+  pDir-&gt;element_path()-&gt;stringValue("/home/gilbert/summer_projects/project1/");
+  
+  pDir-&gt;mark_present_attr_numberOfFiles();
+  pDir-&gt;attribute_attr_numberOfFiles()-&gt;stringValue("3");
+
+  List&lt;NoNS::myProject::directory::files::fileName_ptr&gt; fileNames = pMyProj-&gt;element_directory()-&gt;element_files()-&gt;set_count_fileName(3);
+  fileNames.at(0)-&gt;stringValue("a.xml");
+  fileNames.at(1)-&gt;stringValue("b.xml");
+  fileNames.at(2)-&gt;stringValue("c.xml");
+}
+
+// write code to operate(update/consume/test etc.) on the Document, which is already
+// populated(eg. read from an input xml file)
+void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+{
+
+}
+
+  
+</pre>
+</div>
+<br><br>
+<br>
+</form></body></html>

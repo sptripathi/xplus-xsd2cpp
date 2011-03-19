@@ -10,75 +10,20 @@ TEST_FAILED=false
 FAILED_DIRS=""
 INPUT_XSD=""
 
-EX_DIRS="
-        examples/library
-        examples/includeDemo
-        examples/helloWorld
-        examples/helloWorldWide
-        examples/mails
-        examples/simpleTypesDemo
-        examples/simplest
-        examples/person
-        examples/po
-        examples/ipo
-        examples/netEnabled
-        examples/org
-        examples/xmldsig
-        examples/chineseDoc_utf8
-        examples/japaneseDoc_utf8
-        "
+EX_DIRS=""
+W3C_TESTS_DIRS=""
+XPLUS_TESTS_DIRS=""
+XPLUS_NEGTESTS_DIRS=""
 
-W3C_TESTS_DIRS="
-       Tests/w3c_tests/stE080
-       Tests/w3c_tests/stG003
-       Tests/w3c_tests/stH005
-       Tests/w3c_tests/stZ015
-       Tests/w3c_tests/ste099
-       Tests/w3c_tests/reDH7a
-       Tests/w3c_tests/nist5
-       Tests/w3c_tests/digtest"
+ascertain_test_dirs()
+{
+  #W3C_TESTS_DIRS=`ls -1d Tests/w3c_tests/*`
 
-XPLUS_TESTS_DIRS="
-                  Tests/xplus_tests/choice
-                  Tests/xplus_tests/choiceOfSeq
-                  Tests/xplus_tests/scExt
-                  Tests/xplus_tests/scExt2
-                  Tests/xplus_tests/scExt3
-                  Tests/xplus_tests/scExt4
-                  Tests/xplus_tests/ccRest
-                  Tests/xplus_tests/ccRest2
-                  Tests/xplus_tests/ccRest3
-                  Tests/xplus_tests/ccRest4
-                  Tests/xplus_tests/ccExt
-                  Tests/xplus_tests/ccExt2
-                  Tests/xplus_tests/ctAnyType
-                  Tests/xplus_tests/ctAnyTypeRest
-                  Tests/xplus_tests/xsiTest
-                  Tests/xplus_tests/xsiTest2
-                  Tests/xplus_tests/xsiTest3
-                  Tests/xplus_tests/nillableTest
-                  Tests/xplus_tests/includeTests
-                  Tests/xplus_tests/importTests
-                  Tests/xplus_tests/defaultTest
-                  Tests/xplus_tests/fixedTest
-                 " 
-
-XPLUS_NEGTESTS_DIRS="
-                  Tests/xplus_neg_tests/scRest
-                  Tests/xplus_neg_tests/scRest2
-                  Tests/xplus_neg_tests/scRest3
-                  Tests/xplus_neg_tests/scRest4
-                  Tests/xplus_neg_tests/ccExtAny
-                  Tests/xplus_neg_tests/ccExt2
-                  Tests/xplus_neg_tests/stInvalidDerivation1
-                  Tests/xplus_neg_tests/stInvalidDerivation2
-                  Tests/xplus_neg_tests/stInvalidDerivation3
-                  "
-
-#EX_DIRS=
-#W3C_TESTS_DIRS=
-#XPLUS_TESTS_DIRS=
-#XPLUS_NEGTESTS_DIRS=
+  EX_DIRS=`find examples  -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
+  W3C_TESTS_DIRS=`find Tests/w3c_tests  -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
+  XPLUS_TESTS_DIRS=`find Tests/xplus_tests -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
+  XPLUS_NEGTESTS_DIRS=`find Tests/xplus_neg_tests -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
+}
 
 print_usage()
 {
@@ -470,8 +415,6 @@ test_all()
   print_test_report
 }
 
-
-
 args=`getopt hct $*`
 if [ $? != 0 ]; then
   print_usage
@@ -485,9 +428,11 @@ do
       print_usage
       shift;break;;
     -c)
+      ascertain_test_dirs
       cleanup
       shift;break;;
     -t)
+      ascertain_test_dirs
       cleanup
       echo;echo
       test_all

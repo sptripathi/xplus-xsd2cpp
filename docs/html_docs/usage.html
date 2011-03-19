@@ -71,7 +71,12 @@
         </code>
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       <br>
-      <b>Note:</b> If there is a main.cpp file already present in output directory, then it is not overridden on invocation of xsd2cpp, instead a file named <code>main.cpp.template</code>, is made available under the same output directory.
+      <b>Note:</b> If there is a main.cpp file already present in output directory, then it is not overridden on invocation of xsd2cpp, instead a file named <code>main.cpp.template</code>, is made available under the same output directory. This is so to preserve any user edits inside main.cpp over it's generated copy. The important thing to remember is that if an edit is made to the XML-Schema file, the main.cpp may need to get updated with  changes like renamed classes, new includes, choice of documentElement etc. A "make" in this case may fail on main.cpp. So please make sure to do following in such cases:
+<ul>
+	<li>apply user edits(if any) from current main.cpp to main.cpp.template
+ 	<li>rename main.cpp.template to main.cpp
+ 	<li>then run "make"
+</ul>
 
       <br><br>
       <a name="BUILD_GEN_SOURCE"><h3>Building the generated source<hr NOSHADE SIZE=7 WIDTH=100%></h3></a>

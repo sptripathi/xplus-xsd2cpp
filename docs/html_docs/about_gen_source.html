@@ -691,14 +691,10 @@
   <br><br>
   <a name="MAIN_CPP"><h3>The main.cpp file <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
   The xsd2cpp tool generates a main.cpp in the output directory.
-  The main.cpp is a demo application. It serves the purpose of showing: <br> a) how the build of generated source(libraries and headers), are to be consumed<br> b) all uses cases possible, and their HOWTOs
-
-  <br><br>
-  <b>Note:</b> <i>If there is a main.cpp file already present in output directory, then it is not overridden on invocation of xsd2cpp, instead a file named <code>main.cpp.template</code>, is made available under the same output directory.</i>
-  <br><br>
-
-  This main.cpp common functions are placed inside src/XSD/UserOps.cpp relative to XmlPlus source-root. The main() function of the generated main.cpp, calls XSD_USER_OPS::xsd_main(), to use those funtions, which in turn call the template functions, which user needs to fill code with.<br><br>
-  Your application does not have to use the data-binding library like this. There is an unfolded main.cpp available under examples/simplest/main.cpp. An application could use call flow like used in the examples/simplest/main.cpp.
+  The main.cpp is a demo application. It serves the purpose of showing: <br> a) how the build of generated source(libraries and headers), are to be consumed<br> b) all uses cases possible, and their HOWTOs.
+<br><br>
+  This main.cpp common functions are placed inside src/XSD/UserOps.cpp relative to XmlPlus source-root. The main() function of the generated main.cpp, calls XSD_USER_OPS::xsd_main(), to use those funtions, which in turn callback the template functions, which user needs to fill code with.<br>
+  Your application does not have to use these utility functions, if you don't want to. There is an unfolded main.cpp available under examples/simplest/main.cpp, which does not use the utility functions and callback mechanism like stated before. Refer to examples/simplest/main.cpp for such a need.
 
   <br><br>
   In the generated main.cpp, you may need to write code in some template functions:

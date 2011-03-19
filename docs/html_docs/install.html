@@ -98,12 +98,37 @@
 
       <br><br>
 
-    <a name="BUILD"><h3>Building the source <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-      Once you are done with installation of prerequisites on your system, go through following steps:
+		<a name="BUILD"><h3>Building the source <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+			<ul>
+				<li><a href="#FIRST_BUILD">Building the source the first time</a>
+				<li><a href="#BUILD_LATER">Rebuilding the source later(probably with different options)</a>
+			</ul>
+
+    	<a name="FIRST_BUILD"><h5>Building the source the first time<hr NOSHADE SIZE=5 WIDTH=100%> </h5></a>
+      Typically because of version mismatch of <code>autotools</code>, the <code>configure</code> script that comes with source tarball may not work, when building the source for the first time. Therefore, for the first time build, run <code>autogen.sh</code> which generates compatible <code>configure</code> and <code>Makfile.in</code> files and then runs the <code>configure</code> script. Next time onwards you can just run <code>configure</code> instead of <code>autogen.sh</code>( alongwith with --prefix option if needed).<br> 
+      Please follow these steps:
       <ol>
-        <li> if you want the build to be installed in /usr/local/ path <br>
+        <li> If you want the build to be installed in standard system paths: <br>
+        <code>$ ./autogen.sh </code><br>
+        This step generates configure script and relevant Makefile.in files and then runs configure script which generates the Makefiles.<br>
+
+        <br>
+        Alternatively, if you want the build to be installed in user defined path <br>
+        <code>$ ./autogen.sh --prefix=/path/of/installation </code><br>
+        For example:<br>
+        <code>$ ./autogen.sh --prefix=$HOME/xplusbuild </code><br>
+
+        <br>
+        <li><code>$ make &amp;&amp; make install</code> <br>
+        This will build and install the build in the sepecified installation path.
+      </ol>
+    	
+			<a name="BUILD_LATER"><h5>Rebuilding the source later(probably with different options) <hr NOSHADE SIZE=5 WIDTH=100%> </h5></a>
+      Please follow these steps:
+      <ol>
+        <li> If you want the build to be installed in standard system paths: <br>
         <code>$ ./configure </code><br>
-        The configure script generates Makefile.<br>
+        This step generates relevant Makefiles.<br>
 
         <br>
         Alternatively, if you want the build to be installed in user defined path <br>
@@ -112,14 +137,13 @@
         <code>$ ./configure --prefix=$HOME/xplusbuild </code><br>
 
         <br>
-        <li>$ make &amp;&amp; make install <br>
+        <li><code>$ make &amp;&amp; make install</code> <br>
         This will build and install the build in the sepecified installation path.
       </ol>
 
-      If the <code>configure</code> script didn't work for some reason(typically because of version mismatch of <code>autotools</code>), run <code>autogen.sh</code>, followed by <code>"make &amp;&amp; make install"</code>. Later, in general, you don't have to run <code>configure</code> again. (unless for example, you want to change the installation path).
+
       <br>
 
-      <br><br>
       <a name="UPDATE_ENV"><h3>Updating the environment with the installation path <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
       If you chose custom path of instalation in previous steps, you would need to update your working environment with those paths. (typically done by exporting these variables in .bashrc or .profile files in Linux or Mac-OS machines).<br><br>
       <code>
@@ -197,7 +221,7 @@
 
       <br>
       If you reached here fine, then you have finished the installation part.<br>
-      If faced problems, send us an email mentioning the details of installation problems.
+      If you had problems with installation, send us an email mentioning the details of installation problems.
       (see <a href="support.html#UPDATE_ENV">Report Bugs</a>)
 
     </form>
