@@ -1,0 +1,11 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" >
+  
+  <xsd:element name="elem1_from_i1" type="xsd:int"/>
+
+  <xsd:simpleType name="AlphabeticString">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[A-Z]+"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

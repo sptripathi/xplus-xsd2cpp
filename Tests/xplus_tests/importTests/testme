@@ -1,0 +1,24 @@
+xsd2cpp importing1.xsd . > /dev/null   && ./autogen.sh &&  make install
+if [ $? -ne 0 ]; then
+  echo "   failed to build in dir: `pwd`"
+  exit 1
+fi
+
+xsd2cpp importing4.xsd . > /dev/null  # && ./autogen.sh &&  make install
+if [ $? -ne 0 ]; then
+  echo "   failed to build in dir: `pwd`"
+  exit 1
+fi
+
+xsd2cpp importing3.xsd . > /dev/null 2>&1  
+if [ $? -eq 0 ]; then
+  echo "   failed on negative test on: importing3.xsd"
+  exit 1
+fi
+
+xsd2cpp importing5.xsd . > /dev/null 2>&1  
+if [ $? -eq 0 ]; then
+  echo "   failed on negative test on: importing5.xsd"
+  exit 1
+fi
+

@@ -1,0 +1,13 @@
+
+xsd2cpp including1.xsd .  && ./autogen.sh &&  make install
+if [ $? -ne 0 ]; then
+  echo "   failed to build in dir: `pwd`"
+  exit 1
+fi
+
+xsd2cpp including2.xsd .
+if [ $? -eq 0 ]; then
+  echo "   failed on negative test on: including2.xsd"
+  exit 1
+fi
+

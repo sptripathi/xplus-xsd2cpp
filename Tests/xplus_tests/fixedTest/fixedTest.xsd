@@ -1,0 +1,16 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="root">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="e1" type="xsd:int" minOccurs="0" fixed="500"/>
+        <xsd:element name="e2" type="xsd:int" fixed="600"/>
+      </xsd:sequence>
+      <xsd:attribute name="a1" type="xsd:int" fixed="100" use="optional"/>
+      <xsd:attribute name="a2" type="xsd:int" fixed="200" use="required"/>
+      <xsd:attribute name="a3" type="xsd:int"/>
+    </xsd:complexType>
+  </xsd:element>
+	
+
+</xsd:schema>

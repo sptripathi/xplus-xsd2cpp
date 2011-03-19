@@ -1,0 +1,7 @@
+<xsd:schema 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  targetNamespace="urn:includeTests"
+>
+  <xsd:element name="elem1_from_i3" type="xsd:int"/>
+
+</xsd:schema>
