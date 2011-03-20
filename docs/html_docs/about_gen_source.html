@@ -298,7 +298,7 @@
   Note that the namespace (directory..namespace and CPP...namespace) corresponding to the targetNamespace of the XML-Schema is prepended to the respective types, and are ommitted here for sake of simplicity.
 
   <table border=1>
-    <caption><b>Naming</b></caption>
+    <caption><b>Naming and Namespaces</b></caption>
     <tr>
       <th width=20%>Annotation</th>
       <th width=50%>component's position in the tree</th>
@@ -306,12 +306,12 @@
     </tr>
     <tr>
       <td>top-level element</td>
-      <td>
-        &lt;schema&gt;<br>
-        &nbsp;&nbsp;<b>&lt;element name="myElement" type="MyElemType"/&gt;</b><br>
-        ...<br>
-        ....<br>
-        &lt;/schema&gt;<br>
+      <td><pre>
+  &lt;schema&gt;
+    <b>&lt;element name="myElement" type="MyElemType"/&gt;</b>
+    ...
+    ....
+  &lt;/schema&gt;</pre>
       </td>  
       <td>
         <ul>
@@ -323,12 +323,12 @@
     </tr>
     <tr>
       <td>top-level attribute</td>
-      <td>
-        &lt;schema&gt;<br><br>
-        &nbsp;&nbsp;<b>&lt;attribute name="MyAttr" type="MyAttrType"/&gt;</b><br>
-        ...<br>
-        ....<br>
-        &lt;/schema&gt;<br>
+      <td><pre>
+  &lt;schema&gt;
+    <b>&lt;attribute name="MyAttr" type="MyAttrType"/&gt;</b>
+    ...
+    ....
+  &lt;/schema&gt;</pre>
       </td>  
       <td>
         <ul>
@@ -340,14 +340,16 @@
     </tr>
     <tr>
       <td>top-level Type</td>
-      <td>
-        &lt;schema&gt;<br><br>
-        ...<br>
-        <b>&lt;complexType name="MyComplexType" &gt;</b><br>
-        &nbsp;&nbsp;...<br>
-        <b>&lt;/complexType name="MyComplexType" &gt;</b><br>
-        ...<br>
-        &lt;/schema&gt;<br>
+      <td><pre>
+  &lt;schema&gt;
+    ...
+
+    <b>&lt;complexType name="MyComplexType" &gt;</b>
+      ...
+    <b>&lt;/complexType&gt;</b>
+
+    ...
+  &lt;/schema&gt;</pre>
       </td>  
       <td>
         <ul>
@@ -361,17 +363,17 @@
       <td>local element</td>
       <td>
         <pre>
-        &lt;schema&gt;
-          &lt;element name="element1" ...&gt;
-            ...
-            &lt;element name="element2" ...&gt;
-              ...
-              <b>&lt;element name="myElement type="MyElemType"/&gt;</b>
-              ...
-            &lt;/element&gt;
-            ...
-          &lt;/element&gt;
-        &lt;/schema&gt;
+  &lt;schema&gt;
+    &lt;element name="element1" ...&gt;
+      ...
+      &lt;element name="element2" ...&gt;
+        ...
+        <b>&lt;element name="myElement type="MyElemType"/&gt;</b>
+        ...
+      &lt;/element&gt;
+      ...
+    &lt;/element&gt;
+  &lt;/schema&gt;
         </pre>
       </td>
       <td>
@@ -384,18 +386,18 @@
     </tr>
     <tr>
       <td>local attribute</td>
-      <td>
-        &lt;schema&gt;<br>
-        &nbsp;&nbsp;&lt;element name="element1" ...&gt;<br>
-        &nbsp;&nbsp;...<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&lt;element name="element2" ...&gt;<br>
-        &nbsp;&nbsp; &nbsp;&nbsp;...<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;attribute name="myAttr" type="MyAttrType"/&gt;</b><br>
-        &nbsp;&nbsp; &nbsp;&nbsp;...<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&lt;/element&gt;<br>
-        &nbsp;&nbsp;...<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&lt;/element&gt;<br>
-        &lt;/schema&gt;<br>
+      <td><pre>
+  &lt;schema&gt;
+    &lt;element name="element1" ...&gt;
+      ...
+      &lt;element name="element2" ...&gt;
+        ...
+        <b>&lt;attribute name="myAttr" type="MyAttrType"/&gt;</b>
+        ...
+      &lt;/element&gt;
+      ...
+    &lt;/element&gt;
+  &lt;/schema&gt;</pre>
       </td>
       <td>
         <ul>
@@ -501,7 +503,7 @@
     <ul>
     <li> <code><b>pAttrNode</b> attribute_attr_<b>nameAttr</b>()</code>
     <br><br>
-      Returns the scalar attribute node.
+      Returns the scalar attribute node. Returns <code>NULL</code> if the attribute is optional and is absent in Document. Therefore, this call should be used to check presence of optional attributes.
     <br><br>
 
     <li> <code>void set_attr_<b>nameAttr</b>(DOMString val)</code>
@@ -593,7 +595,7 @@
         <ul>
         <li> <code><b>pElemNode</b> element_<b>nameElem</b>()</code>
         <br><br>
-          Returns the scalar element node.
+          Returns the scalar element node. Returns <code>NULL</code> if the element is optional(ie. an element with minOccurs="0" and maxOccurs="1" in schema) and is absent in Document. Therefore, this call should be used to check presence of optional elements.
         <br><br>
 
         <li> <code>void set_<b>nameElem</b>(DOMString val)</code>
@@ -712,7 +714,7 @@
 
   A relevant sample code-snippet of main.cpp follows:<br>
 
-  <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
+  <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
  <pre>
  // Following functions are use case templates.
  // You need to put "code" in the respective contexts.
@@ -756,57 +758,68 @@
     <li><b>Creating a Document from an input-stream and writing back to an output-stream</b><br>
     <hr NOSHADE SIZE=3 WIDTH=100%>
     
-    Snippet taken from examples/simplest. Refer to the example for full details.
+    Code snippet taken from <code>examples/simplest/main.cpp</code>. Refer to the example for full details.
     <br><br>
 
-    <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
-    <b>//read the file into the Document</b><br>
-    ifstream is(inFilePath.c_str());<br>
-    simplest::Document xsdDoc(false);<br>
-    is &gt;&gt; xsdDoc;<br>
-    <br>
-    // do something, eg. update the Document<br>
-    <br>
-    <b>//write the Document back to a file</b><br>
-    xsdDoc.prettyPrint(true);<br>
-    ofstream ofs(outFile.c_str());<br>
-    ofs &lt;&lt; xsdDoc;<br>
-    </div>
+    <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;"><pre>
+  <b>//read the file into the Document</b>
+  ifstream is(inFilePath.c_str());
+  simplest::Document xsdDoc(false);
+  is &gt;&gt; xsdDoc;
+  
+  // <i>do something, eg. update the Document</i>
+  ...
+  ....
+  
+  <b>//write the Document back to a file</b>
+  xsdDoc.prettyPrint(true);
+  ofstream ofs(outFile.c_str());
+  ofs &lt;&lt; xsdDoc;
+    </pre></div>
 
     <br> <br> 
     
     <li><b><a name="ELEM_THRU_PARENT_ELEM">Working on elements through parent element <hr NOSHADE SIZE=3 WIDTH=100%> </a></b>
 
-    Snippet taken from examples/simpleTypesDemo. Refer to the example for full details.
+    Code snippet taken from <code>examples/simpleTypesDemo</code>. Refer to the example for full details.
     <br><br>
 
     The XML-Schema snippet:
 
-    <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
-    &lt;xsd:element name="myComplexTypeElem" type="tns:MyComplexType"/&gt;<br>
-    &lt;xsd:complexType name="MyComplexType" mixed="true"&gt;<br>
-    &nbsp;&nbsp;&lt;xsd:sequence&gt;<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;...<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;....<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;xsd:element name="aFont" type="tns:Font"/&gt;<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;xsd:element name="anotherFont" type="tns:Font"/&gt;<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;...<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;....<br>
-    &nbsp;&nbsp;&lt;/xsd:sequence&gt;<br>
-    &lt;/xsd:complexType&gt;<br>
-    </div>
+    <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;"><pre>
+  ...
+  ....
+  &lt;xsd:element name="myComplexTypeElem" type="tns:MyComplexType"/&gt;
+  
+  &lt;xsd:complexType name="MyComplexType" mixed="true"&gt;
+    &lt;xsd:sequence&gt;
+      ...
+      ....
+      &lt;xsd:element name="aFont" type="tns:Font"/&gt;
+      &lt;xsd:element name="anotherFont" type="tns:Font"/&gt;
+      ...
+      ....
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+  ...
+  ....
+    </pre></div>
     <br><br>
-    
-    Code snippet:
-    <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
-    STDemo::myComplexTypeElem *rootElem = docNode-&gt;element_myComplexTypeElem();<br>
-    rootElem-&gt;set_aFont("medium");<br>
-    rootElem-&gt;set_anotherFont("72");<br>
+
+    <code>main.cpp</code> code snippet:
+    <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+    <pre>
+ ...
+ ....
+ STDemo::myComplexTypeElem *rootElem = docNode-&gt;element_myComplexTypeElem();
+ rootElem-&gt;set_aFont("medium");
+ rootElem-&gt;set_anotherFont("72");
+ ...
+ ....
+    </pre>
     </div>
 
-
-    <br><br>
-    <br><br>
+    <br><br> <br><br>
 
     <li><b><a name="ELEM_THRU_PARENT_MG">Working on elements through parent MG eg. sequence <hr NOSHADE SIZE=3 WIDTH=100%> </a></b>
 
@@ -815,39 +828,50 @@
 
     The XML-Schema snippet:
 
-    <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
-  &lt;xsd:complexType name="mailsType"&gt;<br>
-  &nbsp;&nbsp;&lt;xsd:sequence minOccurs="1" maxOccurs="unbounded"&gt;<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&lt;xsd:element name="mail" type="mailType"/&gt;<br>
-  &nbsp;&nbsp;&lt;/xsd:sequence&gt;<br>
-  &lt;/xsd:complexType&gt;<br>
-  <br>
-  &lt;xsd:complexType name="mailType"&gt;<br>
-  &nbsp;&nbsp;&lt;xsd:sequence&gt;<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&lt;xsd:element name="envelope" type="envelopeType" /&gt;<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    ...<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    ....<br>
-  &nbsp;&nbsp;&lt;/xsd:sequence&gt;<br>
-  &nbsp;&nbsp;&lt;xsd:attribute use="required" name="id" type="xsd:integer" /&gt;<br>
-  &lt;/xsd:complexType&gt;<br>
+    <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+    <pre>
+  ...
+  ....
+  &lt;xsd:complexType name="mailsType"&gt;
+    &lt;xsd:sequence minOccurs="1" maxOccurs="unbounded"&gt;
+      &lt;xsd:element name="mail" type="mailType"/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+  
+  &lt;xsd:complexType name="mailType"&gt;
+    &lt;xsd:sequence&gt;
+    &lt;xsd:element name="envelope" type="envelopeType" /&gt;
+      ...
+      ....
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute use="required" name="id" type="xsd:integer" /&gt;
+  &lt;/xsd:complexType&gt;
+  ...
+  ....</pre>
     </div>
     
     <br><br>
 
-    Code snippet:
-    <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
-    pMails-&gt;set_count_sequenceList(2);<br>
-    <br>
-    NoNS::mails::sequenceList::sequence* pSeq =NULL;<br>
-    NoNS::mails::mail* pMail = NULL;<br>
-    <br>
-    pSeq = pMails-&gt;sequence_at(0);<br>
-    pMail= pSeq-&gt;element_mail();<br>
-    pMail-&gt;set_attr_id(101);<br>
-    pMail-&gt;element_envelope()-&gt;set_From("tom@mgm.com");<br>
-    pMail-&gt;element_envelope()-&gt;set_From("tom@mgm.com");<br>
-    pMail-&gt;element_envelope()-&gt;set_To("jerry@mgm.com");<br>
-    pMail-&gt;element_envelope()-&gt;set_Date("1978-07-04T14:50:59Z");<br>
+    <code>main.cpp</code> code snippet:
+    <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
+    <pre>
+    ...
+    ....
+    pMails-&gt;set_count_sequenceList(2);
+    
+    NoNS::mails::sequenceList::sequence* pSeq =NULL;
+    NoNS::mails::mail* pMail = NULL;
+    
+    pSeq = pMails-&gt;sequence_at(0);
+    pMail= pSeq-&gt;element_mail();
+    pMail-&gt;set_attr_id(101);
+    pMail-&gt;element_envelope()-&gt;set_From("tom@mgm.com");
+    pMail-&gt;element_envelope()-&gt;set_From("tom@mgm.com");
+    pMail-&gt;element_envelope()-&gt;set_To("jerry@mgm.com");
+    pMail-&gt;element_envelope()-&gt;set_Date("1978-07-04T14:50:59Z");
+    ...
+    ....
+    </pre>
     </div>
 
   </ul>
