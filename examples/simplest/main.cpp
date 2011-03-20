@@ -62,7 +62,7 @@ void readUpdateWriteFile(string inFilePath)
     "  2) update the read Document with user-supplied function updateOrConsumeDocument()\n"
     "  3) write xml file..." 
     << endl << endl;
-  string outFile = inFilePath+ ".row.xml";
+  string outFile = inFilePath+ ".ruw.xml";
   try 
   {
     //read the file into the Document
@@ -166,7 +166,7 @@ void printHelp(string argv0)
   cout << " -r, --roundtrip\n"
     << "            roundtrip (read->write) input xml-file"
     << endl;
-  cout << " -u, --row\n"
+  cout << " -u, --ruw\n"
     << "         perform read->update->write operations on input xml-file"
     << endl;
   cout << " -h, --help\n"
@@ -197,7 +197,7 @@ int main (int argc, char**argv)
       {"write",      no_argument,       0, 'w'},
       {"validate",   required_argument, 0, 'v'},
       {"roundtrip",  required_argument, 0, 'r'},
-      {"row",        required_argument, 0, 'u'},
+      {"ruw",        required_argument, 0, 'u'},
       {0, 0, 0, 0}
     };
     /* getopt_long stores the option index here. */

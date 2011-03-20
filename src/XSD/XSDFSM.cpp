@@ -21,7 +21,7 @@
 
 namespace FSM {
 
-void warnNullNode(void *pNode, const char* nodeName, const char* qName, int minOccurence)
+void warnNullNode(Node *pNode, const char* nodeName, const char* qName, int minOccurence)
 {
   if(pNode == NULL)
   {
@@ -36,22 +36,22 @@ void warnNullNode(void *pNode, const char* nodeName, const char* qName, int minO
   }
 }
 
-DOMString formatNamespaceName(XsdEvent::XsdFsmType fsmType, DOMString* nsUri, DOMString localName)
+DOMString formatNamespaceName(XsdFsmBase::XsdFsmType fsmType, DOMString* nsUri, DOMString localName)
 {
   DOMString evtTypeStr;
   switch(fsmType)
   {
-    case XsdEvent::ELEMENT_START:
+    case XsdFsmBase::ELEMENT_START:
       evtTypeStr = EVT_TYPE_ELEMENT;
       break;
-    case XsdEvent::ATTRIBUTE:
+    case XsdFsmBase::ATTRIBUTE:
       evtTypeStr = EVT_TYPE_ATTRIBUTE;
       break;
-    case XsdEvent::ELEMENT_END:
+    case XsdFsmBase::  ELEMENT_END:
       evtTypeStr = EVT_TYPE_ENDOFELEMENT;
       break;
       break;
-    case XsdEvent::DOCUMENT_END:
+    case XsdFsmBase::DOCUMENT_END:
       evtTypeStr = EVT_TYPE_ENDOFDOCUMENT;
       break;
     default:
@@ -135,28 +135,27 @@ bool matchNamespace(const DOMString* nsUri1, const DOMString* nsUri2)
 }
 
 
-bool Particle::operator==(const Particle& pairNSName) const
+bool NSNamePairOccur::operator==(const NSNamePairOccur& pairNSName)
 {
+
   if( matchNamespace(this->nsUri, pairNSName.nsUri) &&
       (this->localName == pairNSName.localName)
     )
   {
     return true;
   }
-  return false;  
+  false;  
 }
 
 
 //------------------------- XsdFsmOfFSMs ------------------------   //
 
 XsdFsmOfFSMs::XsdFsmOfFSMs():
-  XPlusObject("XsdFsmOfFSMs"),
   _currentFSMIdx(-1)
 {
 }
 
 XsdFsmOfFSMs::XsdFsmOfFSMs(XsdFsmBasePtr *fsms, FSMType fsmType):
-  XPlusObject("XsdFsmOfFSMs"),
   _currentFSMIdx(-1),
   _fsmType(fsmType)
 {
@@ -177,95 +176,16 @@ void XsdFsmOfFSMs::init(XsdFsmBasePtr *fsms, FSMType fsmType)
     _allFSMs.push_back(fsms[i]);
   }
 }
-  
-void XsdFsmOfFSMs::replaceOrAppendUniqueUnitFsms(XsdFsmBasePtr* fsms)
-{
-  for(unsigned idx1=0; !fsms[idx1].isNull();  idx1++)
-  {
-    XsdFsmBase* pNewFsm = fsms[idx1]->clone();
-    pNewFsm->parentFsm(this);
-    bool match = false;
-    for(unsigned int idx2=0; idx2<_allFSMs.size(); idx2++)
-    {
-      XsdFsmBase* pCurrentFsm = _allFSMs[idx2].get();
-      if( pNewFsm && pCurrentFsm && 
-          ( pNewFsm->nsName() == pCurrentFsm->nsName() )
-      )
-      {
-        //replace
-        match = true;
-        _allFSMs.erase(_allFSMs.begin()+idx2);
-        //_allFSMs.insert(_allFSMs.begin()+idx2, pNewFsm);
-        _allFSMs.push_back(pNewFsm);
-        break;
-      }
-    }
-
-    // append
-    if(!match) {
-      _allFSMs.push_back(pNewFsm);
-    }
-  }
-}
-
-void XsdFsmOfFSMs::appendUniqueUnitFsms(const vector<XsdFsmBasePtr>& fsms)
-{
-  for(unsigned i=0; i < fsms.size();  i++)
-  {
-    XsdFsmBase* pNewFsm = fsms[i]->clone();
-    pNewFsm->parentFsm(this);
-    bool match = false;
-    for(unsigned int j=0; j<_allFSMs.size(); j++)
-    {
-      XsdFsmBase* pCurrentFsm = _allFSMs[j].get();
-      if( pNewFsm && pCurrentFsm && 
-          ( pNewFsm->nsName() == pCurrentFsm->nsName() )
-      )
-      {
-        match = true;
-        break;
-      }
-      if(!match) {
-        _allFSMs.push_back(pNewFsm);
-      }
-    }
-  }
-}
-
-void XsdFsmOfFSMs::appendFsms(XsdFsmBasePtr* fsms)
-{
-  for(unsigned i=0; !fsms[i].isNull();  i++)
-  {
-    fsms[i]->parentFsm(this);
-    _allFSMs.push_back(fsms[i]);
-  }
-}
-
-void XsdFsmOfFSMs::replaceFsmAt(XsdFsmBase* fsm, unsigned int idx)
-{
-  XsdFsmBase* pFsm = fsm;
-  if(!pFsm) 
-  {
-    XsdFsmBasePtr fsms[] = { NULL };
-    pFsm = new XsdSequenceFsmOfFSMs(fsms); 
-  }
-  _allFSMs.erase(_allFSMs.begin()+idx);
-  pFsm->parentFsm(this);
-  _allFSMs.insert(_allFSMs.begin()+idx, pFsm);
-}
 
 XsdFsmOfFSMs::XsdFsmOfFSMs(const XsdFsmOfFSMs& fof):
-  XPlusObject("XsdFsmOfFSMs"),
   _currentFSMIdx(fof.currentFSMIdx()),
   _fsmType(fof.fsmType()),
   _indicesDirtyFsms(fof.indicesDirtyFsms())
 {
-  this->parentFsm(fof.parentFsm());
   const vector<XsdFsmBasePtr>& allFSMs = fof.allFSMs();
   for(unsigned int i=0; i<allFSMs.size(); i++)
   {
     XsdFsmBasePtr ptr = allFSMs[i]->clone();
-    ptr->parentFsm(this);
     _allFSMs.push_back(ptr);
   }
   _indicesDirtyFsms = fof.indicesDirtyFsms();
@@ -338,11 +258,11 @@ bool XsdFsmOfFSMs::isFsmDirty(int fsmIndex) const
 
 // if already in an active FSM, send event to that FSM
 // else try all FSMs
-bool XsdFsmOfFSMs::processEventChoice(XsdEvent& event)
+bool XsdFsmOfFSMs::processEventChoice(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding)
 {
   bool validEvent = false;
   if(_currentFSMIdx>=0) {
-    validEvent = _allFSMs[_currentFSMIdx]->processEvent(event);
+    validEvent = _allFSMs[_currentFSMIdx]->processEvent(nsUri, localName, fsmType, docBuilding);
     if(!validEvent && _allFSMs[_currentFSMIdx]->isInFinalState()) {
       _allFSMs[_currentFSMIdx]->finish(); 
     }
@@ -355,7 +275,7 @@ bool XsdFsmOfFSMs::processEventChoice(XsdEvent& event)
       _allFSMs[i-1]->finish();
     }
 
-    if(_allFSMs[i]->processEvent(event)) 
+    if(_allFSMs[i]->processEvent(nsUri, localName, fsmType, docBuilding)) 
     {
       _currentFSMIdx = i;
       validEvent = true;
@@ -366,7 +286,7 @@ bool XsdFsmOfFSMs::processEventChoice(XsdEvent& event)
 }
 
 
-bool XsdFsmOfFSMs::processEventSequence(XsdEvent& event)
+bool XsdFsmOfFSMs::processEventSequence(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding)
 {
   bool validEvent = false;
   // initially when no FSM consumed any event, _currentFSMIds <0
@@ -375,7 +295,7 @@ bool XsdFsmOfFSMs::processEventSequence(XsdEvent& event)
   for(; i<_allFSMs.size(); i++)
   {
     XsdFsmBasePtr currFSM = _allFSMs[i];
-    if(currFSM->processEvent(event)) {
+    if(currFSM->processEvent(nsUri, localName, fsmType, docBuilding)) {
       _currentFSMIdx = i;
       return true;
     }
@@ -394,13 +314,13 @@ bool XsdFsmOfFSMs::processEventSequence(XsdEvent& event)
 //  ELSE
 //      try posting event to all FSMs except those which are dirty, 
 //      until one FSM consumes it
-bool XsdFsmOfFSMs::processEventAll(XsdEvent& event)
+bool XsdFsmOfFSMs::processEventAll(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding)
 {
   // if currFSM exists post the event to it
   XsdFsmBasePtr currFSM = ((_currentFSMIdx>=0)? _allFSMs[_currentFSMIdx] : NULL);
   if(!currFSM.isNull()) 
   {
-    if(currFSM->processEvent(event)) {
+    if(currFSM->processEvent(nsUri, localName, fsmType, docBuilding)) {
       return true;
     }
     
@@ -423,7 +343,7 @@ bool XsdFsmOfFSMs::processEventAll(XsdEvent& event)
       continue;
     }
     XsdFsmBasePtr fsm = _allFSMs[i];
-    if(fsm->processEvent(event)) {
+    if(fsm->processEvent(nsUri, localName, fsmType, docBuilding)) {
       _indicesDirtyFsms[i] = true;
       _currentFSMIdx = i;
       return true;
@@ -433,7 +353,7 @@ bool XsdFsmOfFSMs::processEventAll(XsdEvent& event)
 }
 
 
-bool XsdFsmOfFSMs::processEvent(XsdEvent& event)
+bool XsdFsmOfFSMs::processEvent(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding)
 {
   if((_fsmType == ALL) || (_fsmType==SEQUENCE))
   {
@@ -441,7 +361,7 @@ bool XsdFsmOfFSMs::processEvent(XsdEvent& event)
     //    the documnet from input-stream. however, in the built doc,
     //    user may want to do some edits, so this _currentfsmidx 
     //    should be reset for each operation
-    if(!event.docBuilding) {
+    if(!docBuilding) {
       _currentFSMIdx = -1;
     }
   }
@@ -450,13 +370,13 @@ bool XsdFsmOfFSMs::processEvent(XsdEvent& event)
   switch(_fsmType)
   {
     case  ALL:
-      validEvent = processEventAll(event);
+      validEvent = processEventAll(nsUri, localName, fsmType, docBuilding);
       break;
     case CHOICE:
-      validEvent = processEventChoice(event);
+      validEvent = processEventChoice(nsUri, localName, fsmType, docBuilding);
       break;
     case SEQUENCE:
-      validEvent = processEventSequence(event);
+      validEvent = processEventSequence(nsUri, localName, fsmType, docBuilding);
       break;
     default:
       break;
@@ -466,14 +386,17 @@ bool XsdFsmOfFSMs::processEvent(XsdEvent& event)
 }
   
 // throws exception, with the error message describing next-allowed events
-bool XsdFsmOfFSMs::processEventThrow(XsdEvent& event)
+bool XsdFsmOfFSMs::processEventThrow( DOMString* nsUri, 
+                                      DOMString localName, 
+                                      XsdFsmBase::XsdFsmType fsmType,
+                                      bool docBuilding)
 {
-  if(!processEvent(event))
+  if(!processEvent(nsUri, localName, fsmType, docBuilding))
   {
     XMLSchema::FSMException ex("");
     list<DOMString> allowedEvents = this->suggestNextEvents();
-    DOMString gotEvent = formatNamespaceName(event.fsmType, event.nsUri, event.localName);
-    outputErrorToException(ex, allowedEvents, gotEvent, event.docBuilding);
+    DOMString gotEvent = formatNamespaceName(fsmType, nsUri, localName);
+    outputErrorToException(ex, allowedEvents, gotEvent, docBuilding);
     throw ex;
   }
 
@@ -525,7 +448,7 @@ bool XsdFsmOfFSMs::isInFinalStateAll() const
   return areAllFsmsInFinalState();
 }
 
-//FIXME: in choice case, does it need to be handled differently
+//TODO: in choice case, do i need to handle differently
 bool XsdFsmOfFSMs::isInitFinalState() const
 {
   for(unsigned int i=0; i<_allFSMs.size(); i++)
@@ -538,10 +461,6 @@ bool XsdFsmOfFSMs::isInitFinalState() const
 
 bool XsdFsmOfFSMs::isInFinalState() const
 {
-  if(nilled()) {
-    return true;
-  }
-
   switch(_fsmType)
   {
     case  ALL:
@@ -649,7 +568,7 @@ XsdFsmBasePtr XsdFsmOfFSMs::currentUnitFsm()
   return NULL;
 }
     
-void XsdFsmOfFSMs::fireRequiredEvents(bool docBuilding)
+void XsdFsmOfFSMs::fireRequiredEvents()
 {
   if(_fsmType == CHOICE) {
     return;
@@ -657,21 +576,9 @@ void XsdFsmOfFSMs::fireRequiredEvents(bool docBuilding)
   
   for(unsigned int i=0; i<_allFSMs.size(); i++)
   {
-    /*
     if(!_allFSMs[i]->isInFinalState()) {
-      _allFSMs[i]->fireRequiredEvents(docBuilding);
+      _allFSMs[i]->fireRequiredEvents();
     }
-    */
-    
-    _allFSMs[i]->fireRequiredEvents(docBuilding);
-  }
-}
-
-void XsdFsmOfFSMs::fireDefaultEvents(bool docBuilding)
-{
-  for(unsigned int i=0; i<_allFSMs.size(); i++)
-  {
-    _allFSMs[i]->fireDefaultEvents(docBuilding);
   }
 }
 
@@ -723,48 +630,10 @@ Node* XsdSequenceFsmOfFSMs::nextSiblingElementInSchemaOrder(XsdFsmBase *callerFs
   }
   
   if(_parentFsm) {
-    return _parentFsm->nextSiblingElementInSchemaOrder(this);
+    _parentFsm->nextSiblingElementInSchemaOrder(this);
   }
 
   return NULL;
-}
-
-
-AnyTypeFSM::AnyTypeFSM(XsdFsmBasePtr* attrFsms, XsdFsmBasePtr contentFsm, XsdFsmBasePtr elemEndFsm):
-  XPlusObject("AnyTypeFSM")
-{
-  XsdFsmBasePtr oneFsmOfAttrs = new XsdAllFsmOfFSMs(attrFsms);
-
-  XsdFsmBasePtr elemFsmModel[] = { oneFsmOfAttrs, contentFsm, elemEndFsm, NULL };
-
-  XsdSequenceFsmOfFSMs::init(elemFsmModel);
-}
-
-void AnyTypeFSM::appendAttributeFsms(XsdFsmBasePtr* fsmsAttrs)
-{
-  XsdFsmOfFSMs* pAttrFsm = dynamic_cast<XsdFsmOfFSMs *>(this->fsmAt(0));
-  if(pAttrFsm) {
-    pAttrFsm->appendFsms(fsmsAttrs);
-  }
-  else {
-    throw XMLSchema::FSMException("The attribute FSM or parent component, is NULL"); 
-  }
-}
-
-void AnyTypeFSM::replaceOrAppendUniqueAttributeFsms(XsdFsmBasePtr* fsmsAttrs)
-{
-  XsdFsmOfFSMs* pAttrFsm = dynamic_cast<XsdFsmOfFSMs *>(this->fsmAt(0));
-  if(pAttrFsm) {
-    pAttrFsm->replaceOrAppendUniqueUnitFsms(fsmsAttrs);
-  }
-  else {
-    throw XMLSchema::FSMException("The attribute FSM or parent component, is NULL"); 
-  }
-}
-
-void AnyTypeFSM::replaceContentFsm(XsdFsmBase* contentFsm)
-{
-  this->replaceFsmAt(contentFsm, 1);
 }
 
 
@@ -786,7 +655,7 @@ void FsmTreeNode::print() const
   cout << " } // end FsmTreeNode" << endl;
 }
 
-bool FsmTreeNode::processEvent(XsdEvent& event)
+bool FsmTreeNode::processEvent(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding)
 {
   bool processedBySelf=false;
   bool processedByChild = false;
@@ -801,7 +670,7 @@ bool FsmTreeNode::processEvent(XsdEvent& event)
       BinaryFsmTree::TreeNodePtr self = this;
       BinaryFsmTree::TreeNodePtr lchild = _bt->addLeft(self, greedyLC);
       // then post event to this node
-      processedByChild = lchild->_data->processEvent(event);
+      processedByChild = lchild->_data->processEvent(nsUri, localName, fsmType, docBuilding);
     }
     return processedByChild;
   }
@@ -809,7 +678,7 @@ bool FsmTreeNode::processEvent(XsdEvent& event)
   // not in final state : greedy or non-greedy
   if(!_data->isInFinalState()) 
   {
-    processedBySelf = _data->processEvent(event);  
+    processedBySelf = _data->processEvent(nsUri, localName, fsmType, docBuilding);  
     if(!processedBySelf) {
       _pruned = true;
     }
@@ -837,7 +706,7 @@ bool FsmTreeNode::processEvent(XsdEvent& event)
       */
     }
 
-    processedBySelf = _data->processEvent(event);
+    processedBySelf = _data->processEvent(nsUri, localName, fsmType, docBuilding);
     if(processedBySelf)
     {
       if(!greedyNodeCopy.isNull())
@@ -847,7 +716,7 @@ bool FsmTreeNode::processEvent(XsdEvent& event)
         
         // then post event to this node
         FsmTreeNode* rsibling = dynamic_cast<FsmTreeNode *>(rightSibling.get()); 
-        bool processedByChild = rsibling->processEvent(event);
+        bool processedByChild = rsibling->processEvent(nsUri, localName, fsmType, docBuilding);
         
         if(!processedByChild) {
           _bt->removeNode(rightSibling);
@@ -871,7 +740,7 @@ bool FsmTreeNode::processEvent(XsdEvent& event)
 
         BinaryFsmTree::TreeNodePtr lchild = _bt->addLeft(self, greedyLC);
         // then post event to this node
-        processedByChild = lchild->_data->processEvent(event);
+        processedByChild = lchild->_data->processEvent(nsUri, localName, fsmType, docBuilding);
         if(!processedByChild) 
         {
           _bt->removeNode(lchild);
@@ -899,7 +768,7 @@ bool FsmTreeNode::processEvent(XsdEvent& event)
 
       BinaryFsmTree::TreeNodePtr lchild = _bt->addLeft(self, greedyLC);
       // then post event to this node
-      processedByChild = lchild->_data->processEvent(event);
+      processedByChild = lchild->_data->processEvent(nsUri, localName, fsmType, docBuilding);
       if(!processedByChild) {
         _bt->removeNode(lchild);
       }
@@ -959,7 +828,6 @@ void BinaryFsmTree::removePrunedSubtrees()
 // ======================= XsdFsmArray ===========================
 
 XsdFsmArray::XsdFsmArray():
-  XPlusObject("XsdFsmArray"),
   _fsmTree(),
   _unitFsm(NULL),
   _minOccurence(0),
@@ -972,7 +840,6 @@ XsdFsmArray::XsdFsmArray():
 }
 
 XsdFsmArray::XsdFsmArray(XsdFsmBase* fsm, unsigned int minOccurence, unsigned int maxOccurence):
-  XPlusObject("XsdFsmArray"),
   _unitFsm(fsm),
   _minOccurence(minOccurence),
   _maxOccurence(maxOccurence)
@@ -1001,12 +868,9 @@ void XsdFsmArray::init(XsdFsmBase* fsm, unsigned int minOccurence, unsigned int 
 }
 
 XsdFsmArray::XsdFsmArray(const XsdFsmArray& ref):
-  XPlusObject("XsdFsmArray"),
   _fsmTree(ref.fsmTree())
 {
-  this->parentFsm(ref.parentFsm());
   _unitFsm = ref.unitFsm()->clone();
-  _unitFsm->parentFsm(this);
   /*
   const list<XsdFsmBasePtr>& fsmList = ref.fsmList();
   list<XsdFsmBasePtr>::const_iterator cit = fsmList.begin();
@@ -1146,7 +1010,7 @@ XsdFsmBase* XsdFsmArray::fsmAt(unsigned int idx)
       node = ((!node->_lc.isNull()) ? node->_lc : node->_rc);
     }
     else {
-      node = NULL;
+      throw XMLSchema::FSMException("fsm error");
     }
   }
   return NULL;
@@ -1160,7 +1024,6 @@ XsdFsmBase* XsdFsmArray::clone() const
 void XsdFsmArray::print() const
 {
   cout << "{ // XsdFsmArray " << endl;
-  cout << " this: " << this <<  " parentFsm: " << _parentFsm << endl;
   const list<BinaryFsmTree::TreeNodePtr>& leaves = _fsmTree.getLeaves();
   list<BinaryFsmTree::TreeNodePtr>::const_iterator it = leaves.begin();
   for( ; it!=leaves.end(); it++)
@@ -1174,7 +1037,7 @@ void XsdFsmArray::print() const
 }
 
 
-bool XsdFsmArray::processEvent(XsdEvent& event)
+bool XsdFsmArray::processEvent(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding)
 {
   //lazy delete of pruned subtree
   _fsmTree.removePrunedSubtrees();
@@ -1195,7 +1058,7 @@ bool XsdFsmArray::processEvent(XsdEvent& event)
   for( ; it!=leaves.end(); it++)
   {
     FsmTreeNode* fsmTreeNode = const_cast<FsmTreeNode *>(dynamic_cast<const FsmTreeNode *>(it->get())); 
-    bool processed = fsmTreeNode->processEvent(event);
+    bool processed = fsmTreeNode->processEvent(nsUri, localName, fsmType, docBuilding);
     processedEvent = (processedEvent || processed);
   }
 
@@ -1207,15 +1070,15 @@ bool XsdFsmArray::processEvent(XsdEvent& event)
 
 
 
-bool XsdFsmArray::processEventThrow(XsdEvent& event)
+bool XsdFsmArray::processEventThrow(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding)
 {
-  if(!processEvent(event))
+  if(!processEvent(nsUri, localName, fsmType, docBuilding))
   {
     ostringstream err;
     XMLSchema::FSMException ex("");
     list<DOMString> allowedEvents = this->suggestNextEvents();
-    DOMString gotEvent = formatNamespaceName(event.fsmType, event.nsUri, event.localName);
-    outputErrorToException(ex, allowedEvents, gotEvent, event.docBuilding);
+    DOMString gotEvent = formatNamespaceName(fsmType, nsUri, localName);
+    outputErrorToException(ex, allowedEvents, gotEvent, docBuilding);
     //throw XMLSchema::FSMException(err.str());
     throw ex;
   }
@@ -1224,9 +1087,6 @@ bool XsdFsmArray::processEventThrow(XsdEvent& event)
 
 bool XsdFsmArray::isInFinalState() const
 {
-  if(nilled()) {
-    return true;
-  }
   if(_fsmTree._minDepth==0) {
     return true;
   }
@@ -1345,15 +1205,14 @@ XsdFsmBasePtr XsdFsmArray::currentUnitFsm()
   return NULL;
 }
 
-void XsdFsmArray::resize(unsigned int size, bool docBuilding)
+void XsdFsmArray::resize(unsigned int size)
 {
   //cout << " ------------------ XsdFsmArray::resize called with size=" << size << endl;
   int sz = static_cast<int>(size);
   if( (sz < _fsmTree._minDepth) || (sz > _fsmTree._maxDepth)) {
     ostringstream oss;
-    oss << "size should be in range: [" 
-      << _fsmTree._minDepth
-      << "," << _fsmTree._maxDepth << "]";
+    oss << "size should be in range: [" << 1
+      << "," << 1 << "]";
     throw IndexOutOfBoundsException(oss.str());
   }
 
@@ -1370,17 +1229,16 @@ void XsdFsmArray::resize(unsigned int size, bool docBuilding)
     const list<BinaryFsmTree::TreeNodePtr> leaves = _fsmTree.getLeaves();
     assert(leaves.size()==1);
     FsmTreeNode* fsmTreeNode = const_cast<FsmTreeNode *>(dynamic_cast<const FsmTreeNode *>(leaves.front().get()));
-    fsmTreeNode->_data->fireRequiredEvents(docBuilding);
+    fsmTreeNode->_data->fireRequiredEvents();
   }
 }
 
-
-void XsdFsmArray::fireRequiredEvents(bool docBuilding)
+void XsdFsmArray::fireRequiredEvents()
 {
   if(_fsmTree._minDepth==0) {
     return;
   }
-  resize(_fsmTree._minDepth, docBuilding);
+  resize(_fsmTree._minDepth);
     
   /*
   const list<BinaryFsmTree::TreeNodePtr> leaves = _fsmTree.getLeaves();
@@ -1399,14 +1257,6 @@ void XsdFsmArray::fireRequiredEvents(bool docBuilding)
     fsmTreeNode->_data->fireRequiredEvents();
   }
   */
-}
- 
-void XsdFsmArray::fireDefaultEvents(bool docBuilding)
-{
-  const list<BinaryFsmTree::TreeNodePtr> leaves = _fsmTree.getLeaves();
-  assert(leaves.size()==1);
-  FsmTreeNode* fsmTreeNode = const_cast<FsmTreeNode *>(dynamic_cast<const FsmTreeNode *>(leaves.front().get()));
-  fsmTreeNode->_data->fireDefaultEvents(docBuilding);
 }
 
 bool XsdFsmArray::addNewGreedyFsmToArray()

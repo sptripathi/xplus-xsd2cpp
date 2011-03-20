@@ -23,8 +23,11 @@
 
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 targetNamespace="http://www.w3.org/2001/XMLSchema"
 >
+
+<xsl:output method="text"/>
 
 <xsl:include href="xsdUtils.xsl"/>
 
@@ -273,8 +276,6 @@ namespace Types
 
 <xsl:template name="ON_SIMPLETYPE">
   <xsl:param name="simpleTypeName"/>
-  
-  <xsl:call-template name="T_checks_on_schema_component"/>
 
   <xsl:variable name="cntAnnotation" select="count(*[local-name()='annotation'])"/>
   <xsl:variable name="cntList" select="count(*[local-name()='list'])"/>
@@ -369,10 +370,7 @@ namespace Types
         </xsl:when>
         <xsl:when test="$localName='simpleType'">
           <xsl:variable name="cppItemTypeInferred">
-            <xsl:call-template name="T_get_cppType_anonymousSimpleType">
-              <xsl:with-param name="stNode" select="."/>
-              <xsl:with-param name="pos" select="$pos"/>
-            </xsl:call-template>
+            <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="."/></xsl:call-template>
           </xsl:variable>
           <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="$cppItemTypeInferred"/></xsl:call-template>
   typedef XMLSchema::Types::SimpleTypeListTmpl&lt;<xsl:value-of select="$cppItemTypeInferred"/>&gt; <xsl:value-of select="$simpleTypeName"/>;
@@ -415,10 +413,7 @@ namespace Types
           </xsl:when>
           <xsl:when test="$localName='simpleType'">
             <xsl:variable name="cppItemTypeInferred">
-              <xsl:call-template name="T_get_cppType_anonymousSimpleType">
-                <xsl:with-param name="stNode" select="."/>
-                <xsl:with-param name="pos" select="$pos"/>
-              </xsl:call-template>
+              <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="."/></xsl:call-template>
             </xsl:variable>
             <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="$cppItemTypeInferred"/></xsl:call-template>
           </xsl:when>
@@ -426,24 +421,8 @@ namespace Types
     </xsl:for-each>
 
     /// constructor  
-    <xsl:value-of select="$myCppType"/>(AnyTypeCreateArgs args):
-      XMLSchema::Types::anySimpleType(args, XMLSchema::PD_STRING)
-    <xsl:for-each select="*[local-name()='simpleType']">
-      <xsl:variable name="pos" select="position()"/>
-      <xsl:variable name="cppItemTypeInferred">
-        <xsl:call-template name="T_get_cppType_anonymousSimpleType">
-          <xsl:with-param name="stNode" select="."/>
-          <xsl:with-param name="pos" select="$pos"/>
-        </xsl:call-template>
-      </xsl:variable>
-        ,_<xsl:value-of select="$cppItemTypeInferred"/>_val(AnyTypeCreateArgs())
-    </xsl:for-each>
-    <xsl:if test="@memberTypes">
-      <xsl:call-template name="ITERATE_SIMPLETYPE_UNION_MEMBERTYPES">
-        <xsl:with-param name="memberTypes" select="@memberTypes"/>
-        <xsl:with-param name="mode" select="'constr_param_initialization'"/>
-      </xsl:call-template>
-    </xsl:if>
+    <xsl:value-of select="$myCppType"/>(NodeP ownerNode= NULL, ElementP ownerElem= NULL, TDocumentP ownerDoc= NULL):
+      XMLSchema::Types::anySimpleType(XMLSchema::PD_STRING, ownerNode, ownerElem, ownerDoc)
     {
       <!--
       <xsl:call-template name="SET_CFACET_VALUES_IN_SIMPLETYPE_CTOR"/>
@@ -467,10 +446,7 @@ namespace Types
 
     <xsl:for-each select="*[local-name()='simpleType']">
       <xsl:variable name="cppItemTypeInferred">
-        <xsl:call-template name="T_get_cppType_anonymousSimpleType">
-          <xsl:with-param name="stNode" select="."/>
-          <xsl:with-param name="pos" select="position()"/>
-        </xsl:call-template>
+        <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="."/></xsl:call-template>
       </xsl:variable>
       if(!set) {  
         set = _<xsl:value-of select="$cppItemTypeInferred"/>_val.checkValue(val);
@@ -497,12 +473,9 @@ namespace Types
     </xsl:if>
     <xsl:for-each select="*[local-name()='simpleType']">
       <xsl:variable name="cppItemTypeInferred">
-        <xsl:call-template name="T_get_cppType_anonymousSimpleType">
-          <xsl:with-param name="stNode" select="."/>
-          <xsl:with-param name="pos" select="position()"/>
-        </xsl:call-template>
+        <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="."/></xsl:call-template>
       </xsl:variable>
-    MEMBER_VAR <xsl:value-of select="$cppItemTypeInferred"/> _<xsl:value-of select="$cppItemTypeInferred"/>_val;
+    <xsl:value-of select="$cppItemTypeInferred"/> _<xsl:value-of select="$cppItemTypeInferred"/>_val;
     </xsl:for-each>
   };
   </xsl:for-each>
@@ -546,11 +519,6 @@ namespace Types
         <xsl:with-param name="token" select="$memberType"/>
       </xsl:call-template>
     </xsl:when>
-    <xsl:when test="$mode='constr_param_initialization'">
-      <xsl:call-template name="PARAM_INITIALIZATION_OF_MEMBERTYPE_INSIDE_UNION">
-        <xsl:with-param name="token" select="$memberType"/>
-      </xsl:call-template>
-    </xsl:when>
     <xsl:when test="$mode='gen_member_incl'">
       <xsl:call-template name="GEN_INCL_LIST_MEMBERTYPE_INSIDE_UNION">
         <xsl:with-param name="token" select="$memberType"/>
@@ -561,24 +529,8 @@ namespace Types
         <xsl:with-param name="token" select="$memberType"/>
       </xsl:call-template>
     </xsl:when>
-    <xsl:when test="$mode='get_simpletype_def'">
-      <xsl:variable name="nodeSimpleTypeDef">
-        <xsl:call-template name="T_resolve_typeQName">
-          <xsl:with-param name="typeQName" select="$memberType"/>
-        </xsl:call-template>
-      </xsl:variable>
-      <xsl:copy-of select="$nodeSimpleTypeDef"/>
-    </xsl:when>
   </xsl:choose>
 
-</xsl:template>
-
-
-
-<xsl:template name="PARAM_INITIALIZATION_OF_MEMBERTYPE_INSIDE_UNION">
-  <xsl:param name="token"/>
-  <xsl:variable name="localPartToken"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="$token"/></xsl:call-template></xsl:variable>
-    ,_<xsl:value-of select="$localPartToken"/>_val(AnyTypeCreateArgs())
 </xsl:template>
 
 
@@ -588,8 +540,8 @@ namespace Types
 
   <xsl:variable name="localPartToken"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="$token"/></xsl:call-template></xsl:variable>
   <xsl:variable name="cppNSDeref">
-    <xsl:call-template name="T_get_cppNSDeref_for_QName">
-      <xsl:with-param name="typeQName" select="$token"/>
+    <xsl:call-template name="T_get_cppNSDeref_of_simpleType">
+      <xsl:with-param name="stName" select="$token"/>
     </xsl:call-template>
   </xsl:variable>
   
@@ -700,14 +652,14 @@ namespace Types
   {
   public:
     /// constructor  
-    <xsl:value-of select="$myCppType"/>(AnyTypeCreateArgs args)
+    <xsl:value-of select="$myCppType"/>(NodeP ownerNode= NULL, ElementP ownerElem= NULL, TDocumentP ownerDoc= NULL)
     <xsl:choose>
       <xsl:when test="$baseCppType='anySimpleType'">
-        : anySimpleType(args, PD_<xsl:call-template name="T_capitalize_all"><xsl:with-param name="subjStr" select="$simpleTypeName"/></xsl:call-template>)
+        : anySimpleType(PD_<xsl:call-template name="T_capitalize_all"><xsl:with-param name="subjStr" select="$simpleTypeName"/></xsl:call-template>, ownerNode, ownerElem, ownerDoc)
         <xsl:if test="$isBuiltinPrimType='true' and ($defVal != '')">,_implValue(<xsl:value-of select="$defVal"/>)</xsl:if>
       </xsl:when>
       <xsl:otherwise>
-        : <xsl:value-of select="$baseCppType"/>(args)
+        : <xsl:value-of select="$baseCppType"/>(ownerNode, ownerElem, ownerDoc)
       </xsl:otherwise>
     </xsl:choose>
     {
@@ -897,8 +849,8 @@ namespace Types
   {
   public:
     /// constructor  
-    <xsl:value-of select="$myCppType"/>(AnyTypeCreateArgs args):
-      <xsl:value-of select="$cppBaseTypeInferred"/>(args)
+    <xsl:value-of select="$myCppType"/>(NodeP ownerNode= NULL, ElementP ownerElem= NULL, TDocumentP ownerDoc= NULL):
+      <xsl:value-of select="$cppBaseTypeInferred"/>(ownerNode, ownerElem, ownerDoc)
     {
       <xsl:call-template name="SET_CFACET_VALUES_IN_SIMPLETYPE_CTOR">
         <xsl:with-param name="simpleTypeName" select="$simpleTypeName"/>
@@ -930,10 +882,7 @@ namespace Types
       _enumerationCFacet.value(enums);
   </xsl:if>
 
-  <!--
-    attribute is not expected inside simpleType, though this template is also callled from complexType/simpleContent where attribute is expected inside restriction, which should not be interpreted as a facet
-  -->
-  <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)!='simpleType' and local-name(.)!='annotation' and local-name(.)!='enumeration' and local-name(.)!='attribute']">
+  <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)!='simpleType' and local-name(.)!='annotation' and local-name(.)!='enumeration']">
     <xsl:variable name="facet" select="local-name(.)"/>
     <xsl:variable name="facetValue" select="@value"/>
     <xsl:choose>  
@@ -949,7 +898,7 @@ namespace Types
       _<xsl:value-of select="$facet"/>CFacetDouble.value(<xsl:value-of select="$newValue"/>);
           </xsl:when>
           <xsl:otherwise>
-      XMARKER <xsl:value-of select="$facet"/>CFacet().stringValue("<xsl:value-of select="@value"/>");
+      <xsl:value-of select="$facet"/>CFacet().stringValue("<xsl:value-of select="@value"/>");
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>

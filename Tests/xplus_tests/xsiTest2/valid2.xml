@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-
-<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
-  <items id="102" xsi:type="SomeType2">
-    <item>abc</item>
-    <item2>123</item2>
-  </items>
-</root>
-

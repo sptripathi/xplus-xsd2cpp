@@ -28,10 +28,6 @@ namespace DOM
   {
 
     public:
-      EntityRef():
-      XPlusObject("EntityRef")
-      {
-      }
       virtual ~EntityRef() {}
   };
 }

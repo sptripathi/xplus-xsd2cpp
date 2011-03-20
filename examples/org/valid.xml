@@ -91,7 +91,7 @@
       <title>SMTS</title>
       <joiningDate>1978-02-15</joiningDate>
       <reportsTo>allenb</reportsTo>
-      <reportees/>
+      <reportees></reportees>
     </employee>
     <employee>
       <ns2:userId>waynec</ns2:userId>
@@ -99,7 +99,7 @@
       <title>SMTS</title>
       <joiningDate>1978-02-15</joiningDate>
       <reportsTo>allenb</reportsTo>
-      <reportees/>
+      <reportees></reportees>
     </employee>
     <employee>
       <ns2:userId>peterc</ns2:userId>
@@ -107,7 +107,7 @@
       <title>SMTS</title>
       <joiningDate>1978-02-15</joiningDate>
       <reportsTo>leeb</reportsTo>
-      <reportees/>
+      <reportees></reportees>
     </employee>
     <employee>
       <ns2:userId>davidc</ns2:userId>
@@ -115,7 +115,7 @@
       <title>SMTS</title>
       <joiningDate>1978-02-15</joiningDate>
       <reportsTo>leeb</reportsTo>
-      <reportees/>
+      <reportees></reportees>
     </employee>
     <employee>
       <ns2:userId>danc</ns2:userId>
@@ -123,7 +123,7 @@
       <title>Legal Advisor</title>
       <joiningDate>1978-02-15</joiningDate>
       <reportsTo>donb</reportsTo>
-      <reportees/>
+      <reportees></reportees>
     </employee>
     <employee>
       <ns2:userId>ugoc</ns2:userId>
@@ -131,7 +131,7 @@
       <title>Legal Advisor</title>
       <joiningDate>1978-02-15</joiningDate>
       <reportsTo>donb</reportsTo>
-      <reportees/>
+      <reportees></reportees>
     </employee>
   </allEmployees>
 </ns1:organization>

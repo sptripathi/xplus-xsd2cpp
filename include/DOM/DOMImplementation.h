@@ -28,11 +28,6 @@ namespace DOM
   class DOMImplementation : public XPlus::XPlusObject 
   {
     public:
-      DOMImplementation():
-      XPlusObject("DOMImplementation")
-      {
-      }
-
       virtual ~DOMImplementation() {}
       virtual bool hasFeature(DOMString* feature, DOMString* version);
 

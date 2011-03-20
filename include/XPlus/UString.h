@@ -26,7 +26,6 @@
 
 #include "XPlus/XPlusObject.h"
 #include "XPlus/ConvertUTF.h"
-#include "XPlus/TextEncoding.h"
 
 using namespace std;
 
@@ -48,9 +47,6 @@ namespace UTF8FNS {
   bool is_TAB_SPACE(UChar ch);
 }
 
-// TODO: change the iterations on string using at() to rather use
-// string iterators in .h and .cpp, for performance reasons
-
 namespace XPlus
 {
 
@@ -63,17 +59,16 @@ namespace XPlus
 #if defined(XPLUS_UNICODE_WCHAR_T)
   class UString: public std::wstring 
 #else
-  class UString: public std::string, public XPlusObject 
+  class UString: public std::string 
 #endif
   {
 
     private:
-    //  int _refCnt;
+      int _refCnt;
 
     public:
       UString():
-      XPlusObject("UString")
-      //  _refCnt(0)
+        _refCnt(0)
     {
     }
       
@@ -86,7 +81,6 @@ namespace XPlus
       UString(const char *buffer, unsigned int len);
       UString(const string buffer);
 
-#if 0
       // AutoPtr requires:
       inline void printRefCnt() {
         cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : printRefCnt" << endl;
@@ -110,10 +104,10 @@ namespace XPlus
           delete this;
         }
       }
-#endif
+
       string str() const;
       void tokenize(UChar delim, vector<XPlus::UString>& tokens);
-      unsigned int countCodePoints(TextEncoding::eTextEncoding enc=TextEncoding::UTF_8);
+      unsigned int countCodePoints();
 
       void trimLeft(USTRING_CHAR_FN applicableToChar);
       void trimRight(USTRING_CHAR_FN applicableToChar);

@@ -10,11 +10,9 @@ libdom_la_SOURCES = \
  expat/xmltok_ns.c \
  \
  Attribute.cpp \
- CDATASection.cpp \
  CharacterData.cpp \
  Comment.cpp \
  Document.cpp \
- DocumentType.cpp \
  DOMParser.cpp \
  Element.cpp \
  ExpatParser.cpp \
@@ -22,7 +20,6 @@ libdom_la_SOURCES = \
  Node.cpp \
  Stream.cpp \
  TextNode.cpp \
- XmlDecl.cpp \
   $(top_srcdir)/include/DOM/Attribute.h \
   $(top_srcdir)/include/DOM/CDATASection.h \
   $(top_srcdir)/include/DOM/CharacterData.h \

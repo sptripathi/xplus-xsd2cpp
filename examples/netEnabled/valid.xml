@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<ns1:echo xmlns:ns1="http://www.w3.org/2002/ws/databinding/examples/6/05/">
-  <ns1:echoHexBinaryElement>
-    <ns1:hexBinaryElement>77696f646d6f6e7974637174716a7169696e6b65616f76786f746e66716b707875757261736e686469796b65706c656d7465626661637661646e6b65636662647669726d6f6e757361</ns1:hexBinaryElement>
-  </ns1:echoHexBinaryElement>
-</ns1:echo>

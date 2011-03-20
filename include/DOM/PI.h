@@ -38,7 +38,6 @@ namespace DOM
     PI(DOMString* target, 
       DOMString* data,
       Document* ownerDocument=NULL):
-    XPlusObject("PI"),  
     Node(target, Node::PROCESSING_INSTRUCTION_NODE, NULL, NULL, ownerDocument, NULL, ownerDocument),
     _target(target),
     _data(data)

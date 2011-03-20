@@ -74,8 +74,8 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libxplus_la_LIBADD =
 am_libxplus_la_OBJECTS = DateAlgo.lo DateTime.lo DateTimeUtils.lo \
-	Duration.lo Exception.lo TextEncoding.lo FPA.lo Namespaces.lo \
-	StringUtils.lo UString.lo ConvertUTF.lo
+	Duration.lo Exception.lo FPA.lo StringUtils.lo UString.lo \
+	ConvertUTF.lo
 libxplus_la_OBJECTS = $(am_libxplus_la_OBJECTS)
 PROGRAMS = $(bin_PROGRAMS)
 am_xplusTest_OBJECTS = main.$(OBJEXT)
@@ -212,7 +212,6 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
-lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -238,9 +237,7 @@ libxplus_la_SOURCES = \
   DateTimeUtils.cpp \
   Duration.cpp \
   Exception.cpp \
-  TextEncoding.cpp \
   FPA.cpp \
-  Namespaces.cpp \
   StringUtils.cpp \
   UString.cpp \
   ConvertUTF.c
@@ -375,9 +372,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Duration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FPA.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Namespaces.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StringUtils.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TextEncoding.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UString.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 

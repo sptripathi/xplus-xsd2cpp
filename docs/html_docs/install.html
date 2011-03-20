@@ -4,82 +4,71 @@
     <title>Installation</title>
   </head>
 
-  <h2>Installation Instructions <hr NOSHADE SIZE=10 WIDTH=100%> </h2>
+  <h2>Installation Instructions</h2>
+  <hr NOSHADE SIZE=10 WIDTH=100%>
 
   <body>
     <form>
       <ul>
-        <li><a href="#TPUSE">Note on third party tools/libraries used</a>
-        <li><a href="#PREREQ">Installing the prerequisites</a>
-        <li><a href="#BUILD">Building the source</a>
-        <li><a href="#UPDATE_ENV">Updating the environment with the installation path</a>
-        <li><a href="#VERIFY_INSTALL">Verifying the installation</a>
-      </ul>
-      
-      <a name="TPUSE"><h3>Note on third party tools/libraries used <hr NOSHADE SIZE=7 WIDTH=100%> </h3> </a>
-      The thirdparty tools/libraries used are: 
-      <ul>
-        <li><b><a href="http://www.gnu.org/software/hello/manual/automake/Autotools-Introduction.html" target="_blank">autotools</a></b> : automake, autoconf, libtool etc.<br>
-          The XmlPlus source is built using gnu <b>automake/autoconf/libtool</b> set of tools.<br><br>
-
-        <li><b><a href="http://xmlsoft.org/XSLT/xsltproc2.html" target="_blank">xsltproc</a></b>  : xsl transformation tool <br><br>
-
-        <li><b><a href="http://expat.sourceforge.net/" target="_blank">expat</a></b>     : a xml parser library by <i>James Clark</i> <br><br>
-
-        <li><b><a href="http://pocoproject.org/" target="_blank">POCO C++ Libraries</a></b>      : We use a minimal customised version of <i>POCO</i>.<br>
-            The custom mini version of <i>POCO</i> is bundled alongwith <i>XmlPlus</i> source package, therefore you do not need to download/install this library separately.
-      </ul>
-
-
-
-      <a name="PREREQ"><h3>Installing the prerequisites <hr NOSHADE SIZE=7 WIDTH=100%> </h3> </a>
+        <li><a href="#PREREQ">Install Prerequisites</a>
         <ul>
-          <li><a href="#PREREQ_UBUNTU">Installing the prerequisites on Ubuntu, Debian and the likes</a>
-          <li><a href="#PREREQ_LIKES_OF_REDHAT">Installing the prerequisites on RedHat, Fedora etc.</a>
-          <li><a href="#PREREQ_MACOSX">Installing the prerequisites on Mac OS X</a>
+          <li><a href="#PREREQ_UBUNTU">Install prerequisites on Ubuntu</a>
+          <li><a href="#PREREQ_LIKES_OF_REDHAT">Install prerequisites on RedHat, Fedora</a>
+          <li><a href="#PREREQ_MACOSX">Install Prerequisites on Mac OS X</a>
         </ul>
-      <p>
-      The thirdparty packages that would need to be installed as prerequisites are: 
-      <ul>
-        <li> autotools
-        <li> xsltproc 
-        <li> expat (library and dev packages) 
+        <li><a href="#BUILD">Build the source</a>
+        <li><a href="#UPDATE_ENV">Update env with the installation path</a>
+        <li><a href="#VERIFY_INSTALL">Verify the installation</a>
       </ul>
 
-      These tools are typically already present on most Linux distributions. If they are not available on your system, you would need to get them before proceeding on installations. Please read the OS specific subsections to find how to install the prerequisites.<br><br>
-      <strong>Note:</strong> suggested package names, may sometimes not be correct/exact with respect to your OS release. Please find the exact package name based on your system's OS. For example, to list various available packages names matching a pattern(eg. expat) on Fedora, try following command:<br> 
-      <code>$ yum search expat</code>
-      </ol>
+      <a name="PREREQ"><h3>Install Prerequisites</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
+
+      <p>
+      XmlPlus provides <b>"simple to use"</b> C++ data-bindings for XML-Schema.<br>
+      The XmlPlus tool source is built using gnu <b>automake/autoconf/libtool</b> set of tools. 
+      The thirdparty tools used are  <b>xsltproc</b>(xsl transformation tool called) and <b>expat</b>(a xml parser).<br>
+      These tools are typically already present on most Linux distributions. 
+      If they are not available on your system, you would need to get them before proceeding on installations.
+
+      <ul>
+        <li><a>automake/autoconf/libtool</a>
+        <li><a>expat</a>
+        <li><a>xsltproc</a>
+      </ul>  
+
+      Please read the OS specific subsections to find how to install the prerequisites.
       </p>
 
       <br>
-      <a name="PREREQ_UBUNTU"><h4>Installing the prerequisites on Ubuntu, Debian and the likes<hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
+      <a name="PREREQ_UBUNTU"><h4>Install prerequisites on UBuntu</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
 
       <ol>
-        <li> If not already installed, install automake, autoconf, libtool <br>
+        <li> If not already installed, install automake, autoconf, libtool
+        <br>
         <code>$ sudo apt-get install automake autoconf libtool</code>
         <br> <br>
-        <li>If not already installed, install xsltproc <br>
-        <code>$ sudo apt-get install xsltproc</code>
-        <br> <br>
-        <li>If not already installed, install expat library and devel packages<br> 
-        <code>$ sudo apt-get install libexpat libexpat-dev</code><br>
+        <li>If not already installed, install xsltproc and expat
+        <br>
+        <code>$ sudo apt-get install xsltproc libexpat1</code><br>
       </ol>  
 
-      <a name="PREREQ_LIKES_OF_REDHAT"><h4>Installing the prerequisites on Redhat, Fedora etc.  <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
+      <a name="PREREQ_LIKES_OF_REDHAT"><h4>Install prerequisites on Redhat, Fedora etc.</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
 
       <ol>
-        <li> If not already installed, install automake, autoconf, libtool <br>
+        <li> If not already installed, install automake, autoconf, libtool
+        <br>
         <code>$ sudo yum install automake autoconf libtool</code>
-        <br> <br>
-        <li>If not already installed, install xsltproc<br>
-        <code>$ sudo yum install xsltproc</code>
-        <br> <br>
-        <li>If not already installed, install expat library and devel packages<br>
-        <code>$ sudo yum install  expat expat-devel</code><br>
+        <br><br>
+        <li> If not already installed, install xsltproc, expat
+        <br>
+        <code>$ sudo yum install xsltproc libexpat1</code><br>
       </ol>
 
-      <a name="PREREQ_MACOSX"><h4>Installing the prerequisites on Mac OS X <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
+      <a name="PREREQ_MACOSX"><h4>Install prerequisites on Mac OS X</h4></a>
+      <hr NOSHADE SIZE=3 WIDTH=100%>
 
       <ol>
         <li> If not already installed, install automake, autoconf, libtool
@@ -87,48 +76,22 @@
         <code>$ sudo port install automake autoconf libtool</code><br>
         <br>
         <strong>Note:</strong> on Mac OS X, there is a binary named <b>libtool</b>, which is different from what we need.
-        On Mac OS X, we need <b>glibtool</b>, which is exactly what the port install of libtool would bring.
-        <br> <br>
-        <li>If not already installed, install xsltproc<br>
-        <code>$ sudo port install xsltproc</code>
-        <br> <br>
-        <li>If not already installed, install expat library and devel packages<br>
-        <code>$ sudo port install expat expat-devel</code><br>
+        On Mac OSX, We need <b>glibtool</b>, which is exactly what the port install of libtool would bring.
+        <br><br>
+        <li> If not already installed, install xsltproc, expat
+        <br>
+        <code>$ sudo port install xsltproc</code><br>
+        <code>$ sudo port install libexpat1</code><br>
       </ol>
-
       <br><br>
 
-		<a name="BUILD"><h3>Building the source <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-			<ul>
-				<li><a href="#FIRST_BUILD">Building the source the first time</a>
-				<li><a href="#BUILD_LATER">Rebuilding the source later(probably with different options)</a>
-			</ul>
-
-    	<a name="FIRST_BUILD"><h5>Building the source the first time<hr NOSHADE SIZE=5 WIDTH=100%> </h5></a>
-      Typically because of version mismatch of <code>autotools</code>, the <code>configure</code> script that comes with source tarball may not work, when building the source for the first time. Therefore, for the first time build, run <code>autogen.sh</code> which generates compatible <code>configure</code> and <code>Makfile.in</code> files and then runs the <code>configure</code> script. Next time onwards you can just run <code>configure</code> instead of <code>autogen.sh</code>( alongwith with --prefix option if needed).<br> 
-      Please follow these steps:
+      <a name="BUILD"><h3>Build the source</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
+      Once you are done with installation of prerequisites on your system, go through following steps:
       <ol>
-        <li> If you want the build to be installed in standard system paths: <br>
-        <code>$ ./autogen.sh </code><br>
-        This step generates configure script and relevant Makefile.in files and then runs configure script which generates the Makefiles.<br>
-
-        <br>
-        Alternatively, if you want the build to be installed in user defined path <br>
-        <code>$ ./autogen.sh --prefix=/path/of/installation </code><br>
-        For example:<br>
-        <code>$ ./autogen.sh --prefix=$HOME/xplusbuild </code><br>
-
-        <br>
-        <li><code>$ make &amp;&amp; make install</code> <br>
-        This will build and install the build in the sepecified installation path.
-      </ol>
-    	
-			<a name="BUILD_LATER"><h5>Rebuilding the source later(probably with different options) <hr NOSHADE SIZE=5 WIDTH=100%> </h5></a>
-      Please follow these steps:
-      <ol>
-        <li> If you want the build to be installed in standard system paths: <br>
+        <li> if you want the build to be installed in /usr/local/ path <br>
         <code>$ ./configure </code><br>
-        This step generates relevant Makefiles.<br>
+        The configure script generates Makefile.<br>
 
         <br>
         Alternatively, if you want the build to be installed in user defined path <br>
@@ -137,15 +100,19 @@
         <code>$ ./configure --prefix=$HOME/xplusbuild </code><br>
 
         <br>
-        <li><code>$ make &amp;&amp; make install</code> <br>
+        <li>$ make &amp;&amp; make install <br>
         This will build and install the build in the sepecified installation path.
       </ol>
 
-
+      If the configure script didn't work or is missing, run autogen.sh, followed by "make &amp;&amp; make install".<br>
+      Later, in general, you don't have to run configure again. (unless for example, you want to change the installation path).
       <br>
 
-      <a name="UPDATE_ENV"><h3>Updating the environment with the installation path <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-      If you chose custom path of instalation in previous steps, you would need to update your working environment with those paths. (typically done by exporting these variables in .bashrc or .profile files in Linux or Mac-OS machines).<br><br>
+      <br><br>
+      <a name="UPDATE_ENV"><h3>Update env with the installation path</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
+
+      Register the installation path with the system environment.<br>
       <code>
         $ export PATH=$PATH:/path/of/installation/bin <br>  
         $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/of/installation/lib
@@ -165,63 +132,73 @@
       </code>
 
       <br><br>
-      <a name="VERIFY_INSTALL"><h3>Verifying the installation <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+      <a name="VERIFY_INSTALL"><h3>Verify the installation</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
       <p>
       Once you have installed the <b>XmlPlus</b> tool, the libraries and the binaries must be in LD_LIBRARY_PATH and PATH respectively.
       Assuming that you have installed the build in the path <i>$HOME/xplusbuild/</i>, let us peek into the installation. 
       </p>
- Some directories inside installation path:
- <pre>
-   [~/xplusbuild] $ ls -1
-   bin
-   include
-   lib
- </pre>
- Some of the installed binaries:
- <pre>
-   [~/xplusbuild] $ ls -1 bin/
-   domParser
-   xsd2cpp
- </pre>
- Some of the installed headers:
- <pre>
- [~/xplusbuild] $ ls -1 include/
- DOM
- Poco
- XPlus
- XSD
- </pre>
- Some of the installed shared libraries:
- <pre>
- $ ls -1 lib/ | grep "so.*"
- libxsdall.so
- libxsdall.so.0
- libxsdall.so.0.0.0
- </pre> 		
- The static libraries:
- <pre>
- $ ls -1 lib/ | grep "\.a$"
- libxsdall.a
- </pre>
- Now, try accessing the xsd2cpp tool: <br>
-      <hr NOSHADE SIZE=1 WIDTH=50% align=left><pre>
-  $ xsd2cpp 
-  Usage:
+      <br>
 
-  1.  xsd2cpp xsd-file [outdir]
-        outdir: directory to output the generated source to
-        (if unspecified, defaults to xsd-file-name)
-
-  2.  xsd2cpp -v
-        prints verion
-
-  3.  xsd2cpp -h
-        prints help</pre>
-      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      Some directories inside installation path:<br>
+      <code>
+        [~/xplusbuild] $ ls -1<br>
+        bin<br>
+        include<br>
+        lib<br>
+      </code>
 
       <br>
-      If you reached here fine, then you have finished the installation part.<br>
-      If you had problems with installation, send us an email mentioning the details of installation problems.
+      Some of the installed binaries:<br>
+      <code>
+        [~/xplusbuild] $ ls -1 bin/<br>
+        domParser<br>
+        xsd2cpp<br>
+      </code>
+
+      <br>
+      Some of the installed headers:<br>
+      <code>
+        [~/xplusbuild] $ ls -1 include/<br>
+        DOM<br>
+        Poco<br>
+        XPlus<br>
+        XSD<br>
+      </code>
+
+      <br>
+      Some of the installed shared libraries:<br>
+      <code>
+        [~/xplusbuild] $ ls -1 lib/ | grep "so$" <br>
+        libdom.so<br>
+        libpoco.so<br>
+        libxplus.so<br>
+        libxsdall.so<br>
+        libxsd.so<br>
+      </code>
+
+      <br>
+      The static libraries:<br>
+      <code>
+        [~/xplusbuild] $ ls -1 lib/ | grep "\.a$" <br>
+        libdom.a <br>
+        libpoco.a <br>
+        libxplus.a <br>
+        libxsd.a <br>
+        libxsdall.a <br>
+      </code>
+
+      <br><br>
+      Now, try accessing the xsd2cpp tool:
+      <br>
+      <code>
+        $ xsd2cpp <br> 
+        Usage: xsd2cpp    xsd-file    [outdir] <br>
+      </code>
+
+      <br>
+      If you reached here fine, then you have finished the installation part.
+      If faced problems, send us an email mentioning the details of installation problems.
       (see <a href="support.html#UPDATE_ENV">Report Bugs</a>)
 
     </form>

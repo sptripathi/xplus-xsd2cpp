@@ -27,10 +27,9 @@ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 targetNamespace="http://www.w3.org/2001/XMLSchema"
 >
 
+<xsl:output method="text"/>
+
 <xsl:include href="xsd2cppST.xsl"/>
-<xsl:include href="test.xsl"/>
-<xsl:include href="resolution.xsl"/>
-<xsl:include href="constraints.xsl"/>
 
 <xsl:template match="/">
   <xsl:apply-templates select="*[local-name()='schema']"/>
@@ -38,9 +37,7 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 
 
 <xsl:template match="*[local-name()='schema']">
-<!--
   <xsl:call-template name="T_log_next_meta_docPath"><xsl:with-param name="docPath" select="$input_doc"/></xsl:call-template>
-  -->
   <xsl:call-template name="ON_SCHEMA_PROCESS_SIMPLE_TYPES"/>
 </xsl:template>
 

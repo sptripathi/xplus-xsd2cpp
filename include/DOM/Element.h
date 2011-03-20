@@ -30,6 +30,9 @@ namespace DOM
   protected:
     const DOMStringPtr        _tagName;
 
+    // buffer used at DOM statful building, eg. reading xml file, to accumalate
+    // fragments of text
+    DOMString                 _textBufferOnDocBuild;
   public:
 
     Element(
@@ -48,6 +51,16 @@ namespace DOM
       return _tagName;
     }
 
+    inline void resetTextBufferOnDocBuild() {
+      _textBufferOnDocBuild = "";
+    }
+    inline void addTextBufferOnDocBuild(DOMString str) {
+      _textBufferOnDocBuild += str;
+    }
+    inline DOMString getTextBufferOnDocBuild() {
+      return _textBufferOnDocBuild;
+    }
+
     virtual const DOMString* getAttribute(DOMString* name);
     virtual void setAttribute(DOMString* name,
                               DOMString* value); // throws();
@@ -58,7 +71,7 @@ namespace DOM
     virtual NodeList* getElementsByTagName(DOMString* name);
 
         // Introduced in DOM Level 2:
-    virtual const DOMString* getAttributeNS(DOMString* namespaceURI,
+    virtual DOMString* getAttributeNS(DOMString* namespaceURI,
                                      DOMString* localName);
     virtual void setAttributeNS(DOMString* namespaceURI,
                                 DOMString* qualifiedName,

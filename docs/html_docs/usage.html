@@ -4,7 +4,9 @@
     <title>Tool Usage</title>
   </head>
 
-  <h2>Tool Usage<hr NOSHADE SIZE=10 WIDTH=100%></h2>
+  <h2>Tool Usage</h2>
+  <hr NOSHADE SIZE=10 WIDTH=100%>
+    
 
   <body>
     <form>
@@ -17,7 +19,8 @@
       </ul>
 
       <br>
-      <a name="ABOUT_XSD2CPP"><h3>About <code>xsd2cpp</code><hr NOSHADE SIZE=7 WIDTH=100%></h3></a>
+      <a name="ABOUT_XSD2CPP"><h3>About <code>xsd2cpp</code></h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
         <code>XmlPlus</code> build has a binary called <code>xsd2cpp</code>.
         This binary when invoked on a XML-Schema file, generates:
         <ul>
@@ -40,25 +43,28 @@
       </p>
 
       <br><br>
-      <a name="XSD2CPP_RUN"><h3>Running the <code>xsd2cpp</code> tool<hr NOSHADE SIZE=7 WIDTH=100%></h3></a>
+      <a name="XSD2CPP_RUN"><h3>Running the <code>xsd2cpp</code> tool</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
       As long as XmlPlus installation path is set in the environment, one should be able to run xsd2cpp from anywhere in the directory tree.<br>
-      (see <a href="install.html#UPDATE_ENV">Updating the environment with the installation path</a>)<br>
+      (see <a href="install.html#UPDATE_ENV">Update env with the installation path</a>)<br>
       <br>
       Try accessing the xsd2cpp tool:
-      <hr NOSHADE SIZE=1 WIDTH=50% align=left><pre>
-  $ xsd2cpp 
-  Usage:
-
-  1.  xsd2cpp xsd-file [outdir]
-        outdir: directory to output the generated source to
-        (if unspecified, defaults to xsd-file-name)
-
-  2.  xsd2cpp -v
-        prints verion
-
-  3.  xsd2cpp -h
-        prints help</pre>
-      <hr NOSHADE SIZE=1 WIDTH=50% align=left> <br>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      <code>
+        $ xsd2cpp <br> 
+        Usage:<br>
+        1.  xsd2cpp xsd-file [outdir]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;outdir: directory to output the generated source, like foo, . , .. etc.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;(if unspecified, defaults to xsd-file-name)<br>
+        <br>
+        2.  xsd2cpp -v<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;prints verion<br>
+        <br>
+        3.  xsd2cpp -h<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;prints help<br>
+      </code>
+      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+      <br>
 
       The xsd2cpp when run on a XML-Schema file, generates the C++ source/header files along with the make related files.<br>
       An example follows: 
@@ -71,15 +77,11 @@
         </code>
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       <br>
-      <b>Note:</b> If there is a main.cpp file already present in output directory, then it is not overridden on invocation of xsd2cpp, instead a file named <code>main.cpp.template</code>, is made available under the same output directory. This is so to preserve any user edits inside main.cpp over it's generated copy. The important thing to remember is that if an edit is made to the XML-Schema file, the main.cpp may need to get updated with  changes like renamed classes, new includes, choice of documentElement etc. A "make" in this case may fail on main.cpp. So please make sure to do following in such cases:
-<ul>
-	<li>apply user edits(if any) from current main.cpp to main.cpp.template
- 	<li>rename main.cpp.template to main.cpp
- 	<li>then run "make"
-</ul>
+      <b>Note:</b> If there is a main.cpp file already present in output directory, then it is not overridden on invocation of xsd2cpp, instead a file named <code>main.cpp.template</code>, is made available under the same output directory.
 
       <br><br>
-      <a name="BUILD_GEN_SOURCE"><h3>Building the generated source<hr NOSHADE SIZE=7 WIDTH=100%></h3></a>
+      <a name="BUILD_GEN_SOURCE"><h3>Building the generated source</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
         Steps to build the generated source:
         <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       <table border=0>
@@ -138,7 +140,8 @@
         </ul>
 
       <br>
-      <a name="USE_BUILD"><h3>Using the build<hr NOSHADE SIZE=7 WIDTH=100%></h3></a>
+      <a name="USE_BUILD"><h3>Using the build</h3></a>
+      <hr NOSHADE SIZE=7 WIDTH=100%>
       <p>
         The built library alongwith the generated headers for user supplied XML-Schema, can be consumed by user applications in their builds.<br>
 
@@ -216,7 +219,7 @@
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       
       <br>
-      On fixing the error in st.xml, when the validation is done again, it should look like this: 
+      On fixing the error in st.xml, when the validation is done again, it would look like so: 
         <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       <code>
       $ ./build/bin/simpleTypesDemorun -v st.xml<br>

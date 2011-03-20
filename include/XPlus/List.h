@@ -67,16 +67,6 @@ namespace XPlus
           
         throw IndexOutOfBoundsException("IndexOutOfBoundsException");
       }
-      
-      T& back() 
-      {
-        return list<T>::back();
-      }
-      
-      const T& back() const
-      {
-        return list<T>::back();
-      }
 
     protected:
   };

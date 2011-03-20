@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<ns1:myData xmlns:ns1="urn:ns1">
-  <ns1:e1>e1 value</ns1:e1>
-  <ns1:e2>e2 value</ns1:e2>
-</ns1:myData>

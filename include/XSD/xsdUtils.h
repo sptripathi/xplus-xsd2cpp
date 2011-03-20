@@ -32,12 +32,10 @@
 #include "XSD/XSDException.h"
 #include "XSD/XSDFSM.h"
 #include "XSD/PrimitiveTypes.h"
-#include "XSD/UrTypes.h"
 
 using namespace std;
 using namespace XPlus;
 using namespace FSM;
-using namespace XMLSchema::Types;
 
 
 /*
@@ -70,13 +68,12 @@ using namespace XMLSchema::Types;
  */  
 
 // Implementation Note:
-// Every XMLObject corresponding to an Element, is-a(derivation) XmlElement<T> 
-// Every XMLObject corresponding to an Attribute is-a(derivation) XmlAttribute<T>
+// Every XSD-Element is-a(derivation) XmlElement<T> 
+// Every XSD-Attribute is-a(derivation) XmlAttribute<T>
 
 
 namespace XMLSchema
 {
-
   //forward declarations
   class TElement;
   class TDocument;
@@ -91,12 +88,18 @@ namespace XMLSchema
   {
     public:
 
-      XmlAttribute(AttributeCreateArgs args):
-        DOM::Attribute(args.name, args.strValue, args.nsUri, args.nsPrefix, args.ownerElem, args.ownerDoc),
-        T(AnyTypeCreateArgs(true, this, args.ownerElem, args.ownerDoc))
+      XmlAttribute(DOMString* name, 
+          DOMStringP nsUri=NULL,
+          DOMStringP nsPrefix=NULL,
+          ElementP ownerElem= NULL,
+          TDocumentP ownerDoc= NULL,
+          DOMString* strValue=NULL
+          ):
+        DOM::Attribute(name, strValue, nsUri, nsPrefix, ownerElem, ownerDoc),
+        T(this, ownerElem, ownerDoc)
       { 
-        if(args.strValue) {
-          T::stringValue(*args.strValue);
+        if(strValue) {
+          T::stringValue(*strValue);
         }
       }
 
@@ -106,19 +109,6 @@ namespace XMLSchema
       {
         try {
           return T::createTextNode(data);
-        }
-        catch(XPlus::Exception& ex) 
-        {
-          ex.setContext("attribute", *this->ownerNode()->getNodeName());
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          throw ex;
-        }
-      }
-
-      virtual inline CDATASection* createCDATASection(DOMString* data) 
-      {
-        try {
-          return T::createCDATASection(data);
         }
         catch(XPlus::Exception& ex) 
         {
@@ -153,7 +143,7 @@ namespace XMLSchema
     {
     }
 
-      virtual ~TDocument();
+      virtual ~TDocument(){}
 
       inline void buildTree(bool b) {
         _buildTree = b;
@@ -166,10 +156,11 @@ namespace XMLSchema
       inline void currentElement(ElementP elem);
 
       virtual TextNodeP createTextNode(DOMString* data);
-      
-      virtual Element* createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec);
-
-      //virtual AttributeP createAttributeNS(DOMString* namespaceURI, DOMString* nsPrefix, DOMString* localName, DOMString* value);
+      virtual ElementP createElementNS(DOMString* nsUri, 
+        DOMString* nsPrefix, 
+        DOMString* localName); 
+      virtual AttributeP createAttributeNS(DOMString* namespaceURI,
+          DOMString* nsPrefix, DOMString* localName, DOMString* value);
       void endElementNS(DOMString* nsURI, DOMString* nsPrefix, DOMString* localName);
       void startDocument();
       void endDocument();
@@ -188,29 +179,27 @@ namespace XMLSchema
   {
     protected:
 
-      bool   _abstract;
-      bool   _nillable;
-      bool   _fixed;
-
     public:
 
-      // constructor 
-      // NB: 
+      //NB: 
       // previousSiblingElement : is previousSibling to this TElement
-    TElement(ElementCreateArgs args):
-        DOM::Element(args.name, args.nsUri, args.nsPrefix, args.ownerDoc, args.parentNode, args.previousSiblingElement, args.nextSiblingElement),
-        _abstract(args.abstract),
-        _nillable(args.nillable),
-        _fixed(args.fixed)
+      TElement(
+          DOMString* tagName,
+          DOMString* nsUri =NULL, 
+          DOMString* nsPrefix=NULL,
+          TDocument*   ownerDoc=NULL,
+          Node*        parentNode=NULL,
+          Node*        previousSiblingElement=NULL,
+          Node*        nextSiblingElement=NULL
+          ):
+        DOM::Element(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSiblingElement, nextSiblingElement)
     {
-      if(abstract())
-      {
-        ValidationException ex("The element can not be used in the instance document because it is declared abstract in the schema document. A member of this element's substitution group must appear in the instance document");
-        if(this->getParentNode()) {
-          this->getParentNode()->removeChild(this);  
-        }
-        throw ex;
-      }
+#if 0
+      // child is likely to override _fsm allocation
+        XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(nsUri, *tagName, 1, 1), XsdFsmBase::ELEMENT_END);
+        XsdFsmBasePtr ptrFsms[] = { elemEndFsm, NULL };
+        _fsm = new XsdFsmOfFSMs(ptrFsms, XsdFsmOfFSMs::SEQUENCE);
+#endif
     }
 
     virtual ~TElement() {}  
@@ -218,7 +207,10 @@ namespace XMLSchema
     virtual TDocumentP ownerDocument() =0;
     virtual TElementP ownerElement() =0; 
       
-    virtual Element* createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec)=0;
+    virtual TElementP createElementNS(DOMString* nsUri, 
+        DOMString* nsPrefix, 
+        DOMString* localName) =0; 
+
 
     virtual void endElementNS(DOMString* nsURI, DOMString* nsPrefix, DOMString* localName) =0;
 
@@ -228,31 +220,27 @@ namespace XMLSchema
     virtual void endDocument() =0;
       
     virtual TextNodeP createTextNode(DOMString* data) =0;
-
-    inline bool abstract() {
-      return _abstract;
-    }
-    inline bool nillable() {
-      return _nillable;
-    }
-    inline bool fixed() {
-      return _fixed;
-    }
   };
   
 
-  template <class T> class XmlElement :  public TElement, public T
+  template <class T>
+    class XmlElement :  public TElement, public T
   {
     protected:
 
     public:
 
-      XmlElement(ElementCreateArgs args):
-          TElement(args),
-          T(AnyTypeCreateArgs(true, this, this, args.ownerDoc, args.childBuildsTree, false, 
-                              Types::BOF_NONE, Types::BOF_NONE, Types::CONTENT_TYPE_VARIETY_MIXED, 
-                              Types::ANY_TYPE, args.suppressTypeAbstract)
-           )
+      XmlElement(
+          DOMString* tagName,
+          DOMString* nsUri =NULL, 
+          DOMString* nsPrefix=NULL,
+          TDocumentP ownerDoc=NULL,
+          NodeP      parentNode=NULL,
+          Node*      previousSibling=NULL,
+          Node*      nextSibling=NULL
+          ):
+        TElement(tagName, nsUri, nsPrefix, ownerDoc, parentNode, previousSibling, nextSibling),
+        T(this, this, ownerDoc)
     { 
     }
 
@@ -269,10 +257,12 @@ namespace XMLSchema
         return T::ownerElement();
       }
       
-      virtual TElement* createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec)
+      virtual inline TElementP createElementNS(DOMString* nsURI, 
+          DOMString* nsPrefix, 
+          DOMString* localName) 
       {
         try {
-          return T::createElementWithAttributes(nsUri, nsPrefix, localName, attrVec);
+          return T::createElementNS(nsURI, nsPrefix, localName);
         }
         catch(XPlus::Exception& ex) 
         {
@@ -318,19 +308,6 @@ namespace XMLSchema
           throw ex;
         }
       }
-
-      virtual inline CDATASection* createCDATASection(DOMString* data) 
-      {
-        try {
-          return T::createCDATASection(data);
-        }
-        catch(XPlus::Exception& ex) 
-        {
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          throw ex;
-        }
-      }
-
 
       inline void print() {
         cout << "XmlElement:"

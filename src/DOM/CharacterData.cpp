@@ -35,7 +35,6 @@ namespace DOM
       Node* parentNode,
       Node* prevSibling
       ):
-    XPlusObject("CharacterData"),  
     Node(nodeName, nodeType, NULL, NULL, ownerDocument, data, parentNode, prevSibling)
   {
   }

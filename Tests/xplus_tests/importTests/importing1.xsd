@@ -1,9 +1,0 @@
-<xsd:schema 
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-  xmlns:ns1="urn:importTests"
->
-
-  <xsd:import namespace="urn:importTests" schemaLocation="i2.xsd"/>
-  <xsd:element ref="ns1:elem1_from_i2"/>
-
-</xsd:schema>

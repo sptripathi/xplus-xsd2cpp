@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  Courtesy: http://www.w3.org/Submission/japanese-xml
--->
-<document>
-  <para xml:lang="ja">これは段落です。</para>
-  <para xml:lang="en">This is a paragraph.</para>
-</document>
-

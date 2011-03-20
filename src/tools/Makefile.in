@@ -16,7 +16,6 @@
 @SET_MAKE@
 
 
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -38,7 +37,7 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = domParser$(EXEEXT)
 subdir = src/tools
-DIST_COMMON = $(dist_bin_SCRIPTS) $(nobase_dist_data_DATA) \
+DIST_COMMON = $(dist_bin_SCRIPTS) $(nobase_dist_bin_SCRIPTS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
@@ -52,11 +51,13 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
-	"$(DESTDIR)$(datadir)"
+	"$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_domParser_OBJECTS = DOMParse.$(OBJEXT)
 domParser_OBJECTS = $(am_domParser_OBJECTS)
-domParser_DEPENDENCIES = $(top_srcdir)/src/libxsdall.la
+domParser_DEPENDENCIES = $(top_srcdir)/src/DOM/libdom.la \
+	$(top_srcdir)/src/XPlus/libxplus.la \
+	$(top_srcdir)/src/Poco/libpoco.la
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -78,7 +79,7 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-SCRIPTS = $(dist_bin_SCRIPTS)
+SCRIPTS = $(dist_bin_SCRIPTS) $(nobase_dist_bin_SCRIPTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -94,7 +95,6 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(domParser_SOURCES)
 DIST_SOURCES = $(domParser_SOURCES)
-DATA = $(nobase_dist_data_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -198,7 +198,6 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
-lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -217,38 +216,27 @@ top_srcdir = @top_srcdir@
 AM_CXXFLAGS = -g -O0 -I$(top_srcdir)/include -I$(top_srcdir)/foundation/include
 AM_LDFLAGS = -lpthread 
 domParser_SOURCES = DOMParse.cpp
-domParser_LDADD = $(top_srcdir)/src/libxsdall.la 
-
-#xml2xsd_SOURCES=xml2xsd.cpp
-#xml2xsd_LDADD = $(top_srcdir)/src/libxsdall.la
+domParser_LDADD = $(top_srcdir)/src/DOM/libdom.la $(top_srcdir)/src/XPlus/libxplus.la $(top_srcdir)/src/Poco/libpoco.la
 dist_bin_SCRIPTS = xsd2cpp 
-nobase_dist_data_DATA = resources/configure.ac \
-                       resources/Makefile.am.src \
-                       resources/Makefile.am.include \
-                       resources/Makefile.am.top_srcdir \
-                       resources/autogen.sh \
-                       resources/acinclude.m4 \
-                       resources/aminclude.am \
-                       resources/doxygen.cfg \
-                       resources/README.build.txt \
-                       resources/version \
-                       \
-                       xsl/xsdUtils.xsl \
-                       xsl/xsd2cpp.xsl \
-                       xsl/xsd2cppST.xsl \
-                       xsl/complexTypeC.xsl \
-                       xsl/complexTypeH.xsl \
-                       xsl/xsdIncludes.xsl \
-                       xsl/xsd2cppBuiltinSimple.xsl \
-                       xsl/constraints.xsl \
-                       xsl/resolution.xsl \
-                       xsl/test.xsl \
-                       xsl/xmlplusDict.xml \
-                       xsl/rules.xml 
+nobase_dist_bin_SCRIPTS = makeTmpl/configure.ac \
+                        makeTmpl/Makefile.am.src \
+                        makeTmpl/Makefile.am.include \
+                        makeTmpl/Makefile.am.top_srcdir \
+                        makeTmpl/autogen.sh \
+                        makeTmpl/acinclude.m4 \
+                        makeTmpl/aminclude.am \
+                        makeTmpl/doxygen.cfg \
+                        \
+                        xsl/xsdUtils.xsl \
+                        xsl/xsd2cpp.xsl \
+                        xsl/xsd2cppST.xsl \
+                        xsl/xsdIncludes.xsl \
+                        xsl/xsd2cppBuiltinSimple.xsl \
+                        xsl/xmlplusDict.xml
 
+EXTRA_DIST = xsd2cpp.in Makefile.am.src.in Makefile.am.top_srcdir.in 
 do_subst = sed -e 's,[@]bindir[@],$(bindir),g' \
                -e 's,[@]libdir[@],$(libdir),g' \
-               -e 's,[@]datadir[@],$(datadir),g' \
                -e 's,[@]includedir[@],$(includedir),g'
 
 all: all-am
@@ -365,6 +353,47 @@ uninstall-dist_binSCRIPTS:
 	test -n "$$list" || exit 0; \
 	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
 	cd "$(DESTDIR)$(bindir)" && rm -f $$files
+install-nobase_dist_binSCRIPTS: $(nobase_dist_bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
+	@list='$(nobase_dist_bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
+	$(am__nobase_strip_setup); \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n' \
+	    -e "s|$$srcdirstrip/||" -e 'h;s|[^/]*$$||; s|^$$|.|' \
+	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
+	      if (++n[d] == $(am__install_max)) { \
+		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
+	    else { print "f", d "/" $$4, $$1 } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	  case $$type in \
+	  d) echo " $(MKDIR_P) '$(DESTDIR)$(bindir)/$$dir'"; \
+	     $(MKDIR_P) "$(DESTDIR)$(bindir)/$$dir" || exit $$?;; \
+	  f) \
+	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	     test -z "$$files" || { \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	     } \
+	  ;; esac \
+	; done
+
+uninstall-nobase_dist_binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(nobase_dist_bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
+	$(am__nobase_strip_setup); \
+	files=`$(am__nobase_strip) \
+	       -e 'h;s,.*/,,;$(transform);x;s|[^/]*$$||;G;s,\n,,'`; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -400,29 +429,6 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-nobase_dist_dataDATA: $(nobase_dist_data_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(datadir)" || $(MKDIR_P) "$(DESTDIR)$(datadir)"
-	@list='$(nobase_dist_data_DATA)'; test -n "$(datadir)" || list=; \
-	$(am__nobase_list) | while read dir files; do \
-	  xfiles=; for file in $$files; do \
-	    if test -f "$$file"; then xfiles="$$xfiles $$file"; \
-	    else xfiles="$$xfiles $(srcdir)/$$file"; fi; done; \
-	  test -z "$$xfiles" || { \
-	    test "x$$dir" = x. || { \
-	      echo "$(MKDIR_P) '$(DESTDIR)$(datadir)/$$dir'"; \
-	      $(MKDIR_P) "$(DESTDIR)$(datadir)/$$dir"; }; \
-	    echo " $(INSTALL_DATA) $$xfiles '$(DESTDIR)$(datadir)/$$dir'"; \
-	    $(INSTALL_DATA) $$xfiles "$(DESTDIR)$(datadir)/$$dir" || exit $$?; }; \
-	done
-
-uninstall-nobase_dist_dataDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(nobase_dist_data_DATA)'; test -n "$(datadir)" || list=; \
-	$(am__nobase_strip_setup); files=`$(am__nobase_strip)`; \
-	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(datadir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(datadir)" && rm -f $$files
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -508,9 +514,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(DATA)
+all-am: Makefile $(PROGRAMS) $(SCRIPTS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(datadir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -560,13 +566,14 @@ info: info-am
 
 info-am:
 
-install-data-am: install-nobase_dist_dataDATA
+install-data-am:
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS install-dist_binSCRIPTS
+install-exec-am: install-binPROGRAMS install-dist_binSCRIPTS \
+	install-nobase_dist_binSCRIPTS
 
 install-html: install-html-am
 
@@ -607,7 +614,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-binPROGRAMS uninstall-dist_binSCRIPTS \
-	uninstall-nobase_dist_dataDATA
+	uninstall-nobase_dist_binSCRIPTS
 
 .MAKE: install-am install-strip
 
@@ -619,24 +626,24 @@ uninstall-am: uninstall-binPROGRAMS uninstall-dist_binSCRIPTS \
 	install-dist_binSCRIPTS install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-man \
-	install-nobase_dist_dataDATA install-pdf install-pdf-am \
+	install-nobase_dist_binSCRIPTS install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-dist_binSCRIPTS uninstall-nobase_dist_dataDATA
+	uninstall-dist_binSCRIPTS uninstall-nobase_dist_binSCRIPTS
 
 
 xsd2cpp: xsd2cpp.in Makefile 
 	$(do_subst) < $(srcdir)/xsd2cpp.in > xsd2cpp
 	chmod +x xsd2cpp
 
-resources/Makefile.am.src: resources/Makefile.am.src.in Makefile
-	$(do_subst) < $(srcdir)/resources/Makefile.am.src.in > $(srcdir)/resources/Makefile.am.src
+makeTmpl/Makefile.am.src: makeTmpl/Makefile.am.src.in Makefile
+	$(do_subst) < $(srcdir)/makeTmpl/Makefile.am.src.in > $(srcdir)/makeTmpl/Makefile.am.src
 
-resources/Makefile.am.top_srcdir: resources/Makefile.am.top_srcdir.in Makefile
-	$(do_subst) < $(srcdir)/resources/Makefile.am.top_srcdir.in > $(srcdir)/resources/Makefile.am.top_srcdir
+makeTmpl/Makefile.am.top_srcdir: makeTmpl/Makefile.am.top_srcdir.in Makefile
+	$(do_subst) < $(srcdir)/makeTmpl/Makefile.am.top_srcdir.in > $(srcdir)/makeTmpl/Makefile.am.top_srcdir
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

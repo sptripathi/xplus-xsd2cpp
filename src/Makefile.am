@@ -1,14 +1,14 @@
-AM_CXXFLAGS= -g -O0 -I$(top_srcdir)/include 
-AM_CFLAGS= -g -O0 -I$(top_srcdir)/include -I$(top_srcdir)/src/DOM/
+AM_CXXFLAGS= -S -g -O0 -I$(top_srcdir)/include 
+AM_CFLAGS= -S -g -O0 -I$(top_srcdir)/include -I$(top_srcdir)/src/DOM/
 AUTOMAKE_OPTIONS = subdir-objects
 AM_LDFLAGS=
 
-SUBDIRS =  tools #Poco XPlus DOM XSD
+SUBDIRS = Poco XPlus DOM XSD tools
 
 
-bin_PROGRAMS=fsmTest 
-fsmTest_SOURCES=XSD/FsmTest.cpp 
-fsmTest_LDADD =libxsdall.la
+#bin_PROGRAMS=fsmTest 
+#fsmTest_SOURCES=XSD/FsmTest.cpp 
+#fsmTest_LDADD =libxsdall.la
 
 
 lib_LTLIBRARIES = libxsdall.la
@@ -59,17 +59,13 @@ libxsdall_la_SOURCES = \
   XPlus/Duration.cpp \
   XPlus/Exception.cpp \
   XPlus/FPA.cpp \
-  XPlus/Namespaces.cpp \
   XPlus/StringUtils.cpp \
-  XPlus/TextEncoding.cpp \
   XPlus/UString.cpp \
   \
   DOM/Attribute.cpp \
-  DOM/CDATASection.cpp \
   DOM/CharacterData.cpp \
   DOM/Comment.cpp \
   DOM/Document.cpp \
-  DOM/DocumentType.cpp \
   DOM/DOMParser.cpp \
   DOM/Element.cpp \
   DOM/ExpatParser.cpp \
@@ -77,13 +73,13 @@ libxsdall_la_SOURCES = \
   DOM/Node.cpp \
   DOM/Stream.cpp \
   DOM/TextNode.cpp \
-  DOM/XmlDecl.cpp \
    \
   XSD/Enums.cpp \
   XSD/FSM.cpp \
   XSD/UrTypes.cpp \
+  XSD/UserOps.cpp \
   XSD/XSDFSM.cpp \
   XSD/xsdUtils.cpp
 
-libxsdall_la_LDFLAGS = -lpthread -lexpat
+libxsdall_la_LDFLAGS = -lexpat -lpthread
 

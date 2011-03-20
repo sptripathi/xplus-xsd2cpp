@@ -50,8 +50,7 @@ namespace XPlus
 
 #if defined(XPLUS_UNICODE_WCHAR_T)
   UString::UString(std::string str):
-    XPlusObject("UString")
-    //_refCnt(0)
+    _refCnt(0)
   {
     this->reserve(str.size());
     for (std::string::const_iterator it = str.begin(); it != str.end();)
@@ -64,15 +63,13 @@ namespace XPlus
   }
 
   UString::UString(const wstring wstr):
-    XPlusObject("UString"),
-    wstring(wstr)
-    //_refCnt(0)
+    wstring(wstr),
+    _refCnt(0)
   {
   }
 
   UString::UString(const char *buffer):
-    XPlusObject("UString")
-    //_refCnt(0)
+    _refCnt(0)
   {
     if(!buffer) {
       throw NullPointerException("UString constructed with NULL buffer");
@@ -87,8 +84,7 @@ namespace XPlus
   }
 
   UString::UString(const char *buffer, unsigned int len)
-    XPlusObject("UString")
-    //_refCnt(0)
+    _refCnt(0)
   {
     if(!buffer) {
       throw NullPointerException("UString constructed with NULL buffer");
@@ -119,23 +115,20 @@ namespace XPlus
 #else
 
   UString::UString(const string str):
-    XPlusObject("UString"),
-    string(str)
-    //_refCnt(0)
+    string(str),
+    _refCnt(0)
   {
   }
 
   UString::UString(const char *buffer):
-    XPlusObject("UString"),
-    string(buffer)
-    //_refCnt(0)
+    string(buffer),
+    _refCnt(0)
   {
   }
 
   UString::UString(const char *buffer, unsigned int len):
-    XPlusObject("UString"),
-    string(buffer, len)
-    //_refCnt(0)
+    string(buffer, len),
+    _refCnt(0)
   {
   }
   
@@ -177,15 +170,13 @@ namespace XPlus
     }
   }
       
-  unsigned int UString::countCodePoints(TextEncoding::eTextEncoding enc)
+  // FIXME: 
+  // UString is aimed to be a Unicode-String.
+  // However this function is very UTF-8 specific one.
+  // Generalize this function, using help of encoding
+  unsigned int UString::countCodePoints()
   {
-    switch(enc)
-    {
-      case TextEncoding::UTF_8:
-        return countCodePointsInUTF8String((UTF8 *)this->c_str(), this->length());
-      default:
-        return this->length();
-    }
+    return countCodePointsInUTF8String((UTF8 *)this->c_str(), this->length());
   }
 
   bool UString::matchCharSet(USTRING_CHAR_FN applicableToChar)
@@ -214,13 +205,13 @@ namespace XPlus
     if(len==0) {
       return;
     }
-    int pos= len-1;
+    size_type pos= len-1;
     while( (pos >= 0) && applicableToChar(this->at(pos)) ) {
       pos--;
     }
     if(pos < len-1) {
-      this->erase(pos+1);
-      //this->erase(pos+1, len-pos+1);
+      this->erase(this->begin()+pos+1);
+      this->erase(pos+1, len-pos+1);
     }
   }
 

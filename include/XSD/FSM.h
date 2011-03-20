@@ -45,7 +45,6 @@ namespace FSM
     int nextStateId;
 
     Edge(int aStateId, int aEventId, int aNextStateId):
-      XPlusObject("Edge"),
       stateId(aStateId),
       eventId(aEventId),
       nextStateId(aNextStateId)
@@ -84,9 +83,7 @@ namespace FSM
   {
     public:
 
-    FSMBase():
-      XPlusObject("FSMBase")
-    {}
+    FSMBase() {};
     virtual ~FSMBase() {};
     virtual FSMBase* clone() const =0;
     virtual bool processEvent(int eventId)=0; 

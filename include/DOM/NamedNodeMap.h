@@ -27,8 +27,6 @@
 namespace DOM
 {
 
-  // maps name-ptr to node-ptr
-  // eg. in case of attributes, maps attribute's localName to Attribute NodePtr
   class NamedNodeMap : public std::map<DOMStringPtr, NodePtr>
   {
     protected:

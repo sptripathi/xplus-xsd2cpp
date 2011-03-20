@@ -57,12 +57,15 @@ void DOMParser::onXmlDecl(void            *userData,
                  const DOMString  *encoding,
                  int             standalone)
 {
-  XmlDecl xmlDecl(version, encoding, standalone);
-  //FIXME : this may not be the right place
-  _docNode->xmlDecl(xmlDecl);
+  _docXmlDecl.version = version;
+  _docXmlDecl.encoding = encoding;
+  _docXmlDecl.standalone = (standalone==1);
+
+  //FIXME : this may not be the best place
+  _docNode->setXmlDecl(_docXmlDecl);
 }
 
-void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet, vector<AttributeInfo> attrVec)
+void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet)
 {
 #ifdef _DOM_DBG
   cout << "onElementStart: element:"
@@ -70,13 +73,7 @@ void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet, vector<A
     << endl;
 #endif
 
-  // the strategy is to construct element along with attribute info, so that if 
-  // needed the elemnt can take advantage of the attributes while constructing.
-  // The advantage  of such an approach, becomes more obvious in DOM derivations
-  // in XSD model where attributes such xsi:type dictate the way the element has
-  // to be constructed
-
-#if 0
+  createAccumulatedTextNode();
   Node* elemNode = _docNode->createElementNS(
       const_cast<DOMString *>(nsTriplet.nsUri()),
       const_cast<DOMString *>(nsTriplet.nsPrefix()),
@@ -87,15 +84,6 @@ void DOMParser::onElementStart(void *userData, NodeNSTriplet nsTriplet, vector<A
     err << "failed to create element ["  << *nsTriplet.localName() << "] ";
     throw DOMException(err.str());
   }
-  for(unsigned int i=0; i<attrVec.size(); i++)
-  {
-    onAttribute(userData, attrVec[i]);
-  }
-#endif
-  Node* elemNode = _docNode->createElementWithAttributes(const_cast<DOMString *>(nsTriplet.nsUri()),
-      const_cast<DOMString *>(nsTriplet.nsPrefix()),
-      const_cast<DOMString *>(nsTriplet.localName()),
-      attrVec);
 }
 
 void DOMParser::onElementEnd(void *userData, NodeNSTriplet nsTriplet)
@@ -106,28 +94,30 @@ void DOMParser::onElementEnd(void *userData, NodeNSTriplet nsTriplet)
     << endl;
 #endif
   
+  createAccumulatedTextNode();
   _docNode->endElementNS(
         const_cast<DOMString *>(nsTriplet.nsUri()),
         const_cast<DOMString *>(nsTriplet.nsPrefix()),
         const_cast<DOMString *>(nsTriplet.localName()) );
 }
 
-void DOMParser::onAttribute(void *userData, AttributeInfo attrInfo)
+void DOMParser::onAttribute(void *userData, NodeNSTriplet nsTriplet,
+    const DOMString* value)
 {
 #ifdef _DOM_DBG
   cout << "onAttribute:"
-    << " attr: " << attrInfo.toString()
+    << " attr: " << nsTriplet.toString()
     << endl;
 #endif
 
-  AttributeP attrNode = _docNode->createAttributeNS(const_cast<DOMString *>(attrInfo.nsUri()),
-      const_cast<DOMString *>(attrInfo.nsPrefix()),
-      const_cast<DOMString *>(attrInfo.localName()),
-      const_cast<DOMString *>(attrInfo.value()));
+  AttributeP attrNode = _docNode->createAttributeNS(const_cast<DOMString *>(nsTriplet.nsUri()),
+      const_cast<DOMString *>(nsTriplet.nsPrefix()),
+      const_cast<DOMString *>(nsTriplet.localName()),
+      const_cast<DOMString *>(value));
 
   if(!attrNode) {
     ostringstream err;
-    err << "failed to create attribute ["  << *attrInfo.localName() << "] ";
+    err << "failed to create attribute ["  << *nsTriplet.localName() << "] ";
     throw DOMException(err.str());
   }
 }
@@ -137,7 +127,8 @@ void DOMParser::onComment(void *userData, const DOMString* dataPtr)
 #ifdef _DOM_DBG
   cout << "onComment data:[" << dataPtr->str() << "]"  << endl;
 #endif
-
+  createAccumulatedTextNode();
+  
   Comment* cmt = _docNode->createComment(const_cast<DOMString *>(dataPtr));
   if(!cmt) {
     throw DOMException("failed to create Comment");
@@ -154,18 +145,8 @@ void DOMParser::onCharacterData(void *userData,
     return;
   }
 
-  if(_docNode->stateful()) 
-  {
-    if(this->isCDATAInProgress()) {
-      this->addCDATABuffer(*charDataPtr);
-    }
-    else
-    { // it is a non-CDATA TextNode
-      TextNodeP textNode = _docNode->getCurrentElement()->createTextNode(const_cast<DOMString *>(charDataPtr));
-      if(!textNode) {
-        throw DOMException("failed to create Text");
-      }
-    }
+  if(_docNode->stateful()) {
+    _docNode->getCurrentElement()->addTextBufferOnDocBuild(*charDataPtr);
   }
   else
   {
@@ -186,9 +167,9 @@ void DOMParser::onNamespaceStart(void *userData,
       << " uri=" << (nsUri ? nsUri->str().c_str() : "(null)")
       << endl;
 #endif
-    _docNode->registerNsPrefixNsUri(nsPrefix, nsUri);
-    //delete nsPrefix;
-    //delete nsUri;
+    delete nsPrefix;
+    delete nsUri;
+    //_docNode->createNamespace(nsUri);
 } 
 
 void DOMParser::onNamespaceEnd(void *userData, 
@@ -199,20 +180,9 @@ void DOMParser::onNamespaceEnd(void *userData,
       << (nsPrefix ? nsPrefix->str().c_str() : "(null)")
       << endl;
 #endif
-  //delete nsPrefix;
+  delete nsPrefix;
 } 
 
-
-// Here is an example of DocumentType:
-//  =========================================
-// <!DOCTYPE ex SYSTEM "ex.dtd" [
-//  <!ENTITY foo "foo">
-//  <!ENTITY bar "bar">
-//  <!ENTITY bar "bar2">
-//  <!ENTITY % baz "baz">
-//  ]>
-//  =========================================
-//
 void DOMParser::onDocTypeStart(void  *userData,
     const DOMString* doctypeNamePtr,
     const DOMString* sysidPtr,
@@ -231,19 +201,6 @@ void DOMParser::onDocTypeStart(void  *userData,
     << endl;
 #endif
 
-  // FIXME:
-  // The parse callback currently not implemented for entity/notation objects.
-  // For now let's just construct the DocumentType assuming there are no
-  // entities/notations inside it. When the parsing info is available for
-  // entities/notations, then this creation should be shifted to onNamespaceEnd
-  // so that entities/notations can also be used in the constructor.
-  DocumentType* docType = _docNode->createDocumentType( doctypeNamePtr, 
-                                                        NamedNodeMap(), //FIXME
-                                                        NamedNodeMap(), //FIXME
-                                                        pubidPtr,
-                                                        sysidPtr,
-                                                        NULL            // FIXME
-                                                      );
 }
 
 void DOMParser::onDocTypeEnd(void *userData)
@@ -258,8 +215,6 @@ void DOMParser::onCDATAStart(void *userData)
 #ifdef _DOM_DBG
   cout << "onCDATAStart: " << endl;
 #endif
-
-  this->beginOfCDATASection();
 }
 
 void DOMParser::onCDATAEnd(void *userData)
@@ -267,26 +222,6 @@ void DOMParser::onCDATAEnd(void *userData)
 #ifdef _DOM_DBG
   cout << "onCDATAEnd: " << endl;
 #endif
-  
-  DOMString text = this->getCDATABuffer();
-  DOMStringPtr textPtr = new DOMString(text);
-  if(_docNode->stateful() && _docNode->getCurrentElement())
-  {
-    if(text.length() > 0)
-    {
-      CDATASection* cdataNode = _docNode->getCurrentElement()->createCDATASection(textPtr);
-      //CDATASection* cdataNode = _docNode->createCDATASection(textPtr);
-      if(!cdataNode) {
-        throw DOMException("failed to create CDATASection");
-      }
-    }
-  }
-  else 
-  {
-    CDATASection* cdataNode = _docNode->createCDATASection(textPtr);
-  }
-
-  this->endOfCDATASection();
 }
 
 void DOMParser::onPI(void *userData,
@@ -300,13 +235,15 @@ void DOMParser::onPI(void *userData,
     << " data=" << (dataPtr ? dataPtr->str().c_str() : "(null)")
     << endl;
 #endif
-  PI* pi = _docNode->createProcessingInstruction(const_cast<DOMString *>(targetPtr), const_cast<DOMString *>(dataPtr));
+  createAccumulatedTextNode();
+  PI* pi = _docNode->createProcessingInstruction(
+      const_cast<DOMString *>(targetPtr), 
+      const_cast<DOMString *>(dataPtr));
   if(!pi) {
     throw DOMException("failed to create PI");
   }
 }
 
-#if 0
 void DOMParser::createAccumulatedTextNode()
 {
   if(_docNode->stateful() && _docNode->getCurrentElement())
@@ -315,29 +252,16 @@ void DOMParser::createAccumulatedTextNode()
     //cout << "onElementStart: text:|" << text << "|" << endl;
     if(text.length() > 0)
     {
-      if(_docNode->getCurrentElement()->isTextBufferCDATA())
-      {
-        DOMStringPtr textPtr = new DOMString(text);
-        CDATASection* cdataNode = _docNode->createCDATASection(textPtr);
-        _docNode->getCurrentElement()->resetTextBufferOnDocBuild();
-        if(!cdataNode) {
-          throw DOMException("failed to create CDATASection");
-        }
-      }
-      else // it is a TextNode
-      {
-        DOMStringPtr textPtr = new DOMString(text);
-        TextNode* textNode = _docNode->createTextNode(textPtr);
-        _docNode->getCurrentElement()->resetTextBufferOnDocBuild();
-        if(!textNode) {
-          throw DOMException("failed to create Text");
-        }
+      DOMStringPtr textPtr = new DOMString(text);
+      TextNodeP textNode = _docNode->createTextNode(textPtr);
+      _docNode->getCurrentElement()->resetTextBufferOnDocBuild();
+      if(!textNode) {
+        throw DOMException("failed to create Text");
       }
     }
   }
 }
-#endif    
-
+    
 //       END :  parser callbacks 
 
 

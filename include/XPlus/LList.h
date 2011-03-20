@@ -31,7 +31,7 @@
 using namespace std;
 
 // TODO NB:
-// 1. findNode disabled: find way to verify that the supplied "node"
+// 1. findNode disabled: find way to veridy that the supplied "node"
 //    arg claimed to be part of list is actually part of the list
 // 2. removeNode : decide about retaining this functionality
 //
@@ -45,42 +45,18 @@ namespace XPlus
   //  - setNextSibling(T * ptrNode)       : sets the next-sibling of self to ptrNode
   //  - getNextSibling(T * ptrNode)       : returns the next-sibling of self
   //
-  template<class T> class LList : public virtual XPlus::XPlusObject
+  template<class T>
+  class LList : public virtual XPlus::XPlusObject
   {
     public:
       typedef AutoPtr<T> TPtr;
 
       LList():
-        XPlusObject("LList"),
         _head(NULL),
         _tail(NULL),
         _size(0)
     {
     }
-
-      ~LList()
-      {
-        /*
-        cout << "{ destructing LList:"  << this << " map size:" << _nodesMap.size() << " head:" << _head << " tail:" <<  _tail << endl;
-        this->print();
-        cout << "} destructing LList:" << this << " END" << endl;
-        */
-        
-        typename map<TPtr, bool>::iterator it = _nodesMap.begin();
-        for( ; it != _nodesMap.end(); ++it ) {
-          TPtr tptr = it->first;
-          tptr->removedFromParentList(true);
-        }
-      }
-
-      void print()
-      {
-        typename map<TPtr, bool>::iterator it = _nodesMap.begin();
-        for( ; it != _nodesMap.end(); ++it ) {
-          cout << "   nodeMap node:" << it->first << " name:" << *it->first->getNodeName() << endl;
-        }
-      }
-
 
       T* item(unsigned long index) const
       {
@@ -174,14 +150,14 @@ namespace XPlus
           // findNode disabled in the interest of perf
           //T * listRefNode = findNode(refNode);
           T * listRefNode = refNode;
-
+          
           if(listRefNode)
           {
             T * prevNode = listRefNode->getPreviousSibling();
-
+            
             // disabled in the interest of perf
             //removeNode(newNode);
-
+            
             return insertBetween(newNode, prevNode, refNode);
           }
           else
@@ -212,7 +188,7 @@ namespace XPlus
           if(listRefNode)
           {
             T * nextNode = listRefNode->getNextSibling();
-
+            
             // disabled in the interest of perf
             //removeNode(newNode);
 
@@ -254,10 +230,10 @@ namespace XPlus
             T * prevNode = listOldNode->getPreviousSibling();
             T * nextNode = listOldNode->getNextSibling();
             /*
-            // disabled in the interest of perf
+               // disabled in the interest of perf
             removeNode(listOldNode);
             removeNode(newNode);
-             */
+            */
             return insertBetween(newNode, prevNode, nextNode);
           }
           else
@@ -272,26 +248,22 @@ namespace XPlus
         return newNode; 
       }
 
-
       T* findNode(T * refNode)
       {
         if(!refNode) {
           return NULL;
         }
-        //  why duplicate ? Because otherwise, refNode is destructed after the call because ref count goes 0->1->0
-        // This would need to change if AutoPtr/XPlusObject behaviour is changed
-        refNode->duplicate();
-        bool bDontFree = refNode->dontFree();
-        refNode->dontFree(true);
-        typename map<TPtr, bool>::iterator it = _nodesMap.find(refNode);
-        refNode->dontFree(bDontFree);
-        if(it == _nodesMap.end()) {
-          return NULL;
+
+        T *node = _head;
+        while(node)
+        {
+          if(node == refNode) {
+            return node;
+          }
+          node = node->getNextSibling();
         }
-
-        return const_cast<T *>(it->first.get());
+        return NULL;
       }
-
 
       void markHead(T * node)
       {
@@ -331,51 +303,36 @@ namespace XPlus
         return node;
       }
 
-      void removeNode(T * refNode)
+      T* removeNode(T * oldNode)
       {
-        //cout << "LList::removeNode called on: "  << *refNode->getNodeName() << endl;
-        T* node = findNode(refNode);
-        if(!node) {
-          cerr << "didnt find the node to remove" << endl;
-          return ;
+        if(!oldNode) {
+          return oldNode;
         }
 
-        T * prevNode = node->getPreviousSibling();
-        T * nextNode = node->getNextSibling();
-        if(prevNode) {
-          prevNode->setNextSibling(nextNode);
-        }
-        if(nextNode) {
-          nextNode->setPreviousSibling(prevNode);
-        }
-        
-        if(_head == node) {
-          _head = NULL;
-        }
-        if(_tail == node) {
-          _tail = NULL;
-        }
+        T * node = _head;
+        while(node)
+        {
+          if(node == oldNode) 
+          {
+            T * prevNode = node->getPreviousSibling();
+            T * nextNode = node->getNextSibling();
+            if(prevNode) {
+              prevNode->setNextSibling(nextNode);
+            }
+            if(nextNode) {
+              nextNode->setPreviousSibling(prevNode);
+            }
 
-        _size--;
-        node->setNextSibling(NULL);
-        node->setPreviousSibling(NULL);
-
-        node->duplicate();
-        bool bDontFree = refNode->dontFree();
-        refNode->dontFree(true);
-        typename map<TPtr, bool>::iterator it = _nodesMap.find(node);
-        refNode->dontFree(bDontFree);
-          
-        refNode->removedFromParentList(true);
-        if(it != _nodesMap.end()) {
-          //node->printRefCnt();
-          //cout << " ***  erasing node from map. name:" << *node->getNodeName() 
-          //<< " dontFree:" << it->first->dontFree() << endl;
-          _nodesMap.erase(it); 
+            _size--;
+            node->setNextSibling(NULL);
+            node->setPreviousSibling(NULL);
+            return node;
+          }
+          node = node->getNextSibling();
         }
-        //return node;
+        return NULL;
       }
-
+    
     protected:
 
       T*                    _head;
@@ -383,7 +340,7 @@ namespace XPlus
       unsigned int          _size;
       map<TPtr, bool>        _nodesMap;
   };
-
+  
 }
 
 #endif

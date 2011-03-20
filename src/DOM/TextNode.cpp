@@ -28,7 +28,6 @@ namespace DOM
       Node* parentNode,
       Node* prevSibling
       ):
-    XPlusObject("TextNode"),  
     CharacterData(new DOMString("#text"), Node::TEXT_NODE, nodeValue, ownerDocument, parentNode, prevSibling)
   {
   }

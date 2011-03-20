@@ -43,7 +43,6 @@ namespace XPlus
     T                         _data;
 
     TreeNode(T data):
-      XPlusObject("TreeNode"),
       _parent(NULL),
       _lc(NULL),
       _rc(NULL),
@@ -53,7 +52,6 @@ namespace XPlus
     }
 
     TreeNode(const TreeNode& node):
-      XPlusObject("TreeNode"),
       _parent(node._parent),
       _lc(node._lc),
       _rc(node._rc),
@@ -159,13 +157,11 @@ namespace XPlus
       typedef TreeNode<T>* TreeNodeP;
 
       BinaryTree():
-      //XPlusObject("BinaryTree"),
         _root(NULL)
     {
     }
 
       BinaryTree(const BinaryTree& ref):
-      //XPlusObject("BinaryTree"),
         _root(NULL)
     {
       copyTree(ref);
@@ -349,9 +345,9 @@ namespace XPlus
       
      void copyTree(const BinaryTree& ref)
      {
-       _root = copyTreeNodes(ref._root);
-       updateLeavesAfresh(_root);
-       /*
+      _root = copyTreeNodes(ref._root);
+      updateLeavesAfresh(_root);
+      /*
       cout << "***********************************************"
         << " leaves size:" << _leaves.size() 
         << " ref-leaves size:" << ref.getLeaves().size() << endl;

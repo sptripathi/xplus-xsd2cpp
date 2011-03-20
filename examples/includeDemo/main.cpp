@@ -1,35 +1,48 @@
+
 #include <iostream>
 #include <string>
 
 #include "XSD/UserOps.h"
 #include "NoNS/all-include.h"
 
-void populateDocument(NoNS::Document* xsdDoc);
-void updateOrConsumeDocument(NoNS::Document* xsdDoc);
     
 
 int main (int argc, char**argv)
 {
-  XSD::UserOps<NoNS::Document>::UserOpsCbStruct cbStruct;
-  cbStruct.cbPopulateDocument           =  populateDocument;
-  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
-  
+  XSD_USER_OPS::xsd_main(argc, argv);
+}
 
-  XSD::UserOps<NoNS::Document> opHandle(cbStruct);
-  opHandle.run(argc, argv);
+DOM::Document* createXsdDocument(bool buildTree)
+{
+  NoNS::Document* xsdDoc = new NoNS::Document(buildTree);
+    
+  return xsdDoc;
+}
+
+DOM::Document* createXsdDocument(string inFilePath)
+{
+  XPlusFileInputStream is;
+  is.open(inFilePath.c_str(), ios::binary);
+
+  NoNS::Document* xsdDoc = new NoNS::Document(false);
+
+  is >> *xsdDoc; 
+  return xsdDoc;
 }
 
 //
-// Following functions are use case templates.
-// You need to put "code" in the respective contexts.
+// Following functions are templates.
+// You need to put code in the context
 //
 
     
 
 // template function to populate the Tree with values
-// write code to populate the Document here
-void populateDocument(NoNS::Document* xsdDoc)
+void populateDocument(DOM::Document* pDoc)
 {
+  NoNS::Document* xsdDoc = dynamic_cast<NoNS::Document *>(pDoc);
+  // write code to populate the Document here
+
   NoNS::myProject* pMyProj = xsdDoc->element_myProject();
   
   pMyProj->element_description()->stringValue("my summer project and it's contents in a directory");
@@ -44,12 +57,14 @@ void populateDocument(NoNS::Document* xsdDoc)
   fileNames.at(0)->stringValue("a.xml");
   fileNames.at(1)->stringValue("b.xml");
   fileNames.at(2)->stringValue("c.xml");
+
+
 }
 
-// write code to operate(update/consume/test etc.) on the Document, which is already
-// populated(eg. read from an input xml file)
-void updateOrConsumeDocument(NoNS::Document* xsdDoc)
+void updateOrConsumeDocument(DOM::Document* pDoc)
 {
+  NoNS::Document* xsdDoc = dynamic_cast<NoNS::Document *>(pDoc);
+  // write code to operate on the populated-Document here
 
 }
 

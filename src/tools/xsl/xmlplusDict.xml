@@ -24,15 +24,6 @@
 <xmlplusDict>
 
   <primitiveTypes>
-    <type name="anyType">>
-      <impl implType="XMLSchema::Types::anyType" adt="true">
-      </impl>  
-    </type>
-    <type name="anySimpleType">>
-      <impl implType="XMLSchema::Types::anySimpleType" adt="true">
-      </impl>  
-    </type>
-
     <type name="string">>
       <impl implType="DOM::DOMString" adt="false">
       </impl>  
@@ -252,7 +243,7 @@
     </type>
 
     <!-- used only on attributes -->
-    <type name="IDREFS" baseType="anySimpleType">
+    <type name="IDREFS" primType="string">
       <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
@@ -264,7 +255,7 @@
     </type>
 
     <!-- used only on attributes -->
-    <type name="ENTITIES" baseType="anySimpleType">
+    <type name="ENTITIES" primType="string">
       <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
@@ -389,6 +380,6 @@
     <facet name="fractionDigits"/>
   </ConstrainingFacets>
 
-  <CPPReservedKeywords> version auto const double float int short struct unsigned break continue else for long signed switch void case default enum goto register sizeof typedef volatile char do extern if return static union while asm dynamic_cast namespace reinterpret_cast try bool explicit new static_cast typeid catch false operator template typename class friend private this using const_cast inline public throw virtual delete mutable protected true wchar_t and bitand compl not_eq or_eq xor_eq and_eq bitor not or xor </CPPReservedKeywords>
+  <CPPReservedKeywords> auto const double float int short struct unsigned break continue else for long signed switch void case default enum goto register sizeof typedef volatile char do extern if return static union while asm dynamic_cast namespace reinterpret_cast try bool explicit new static_cast typeid catch false operator template typename class friend private this using const_cast inline public throw virtual delete mutable protected true wchar_t and bitand compl not_eq or_eq xor_eq and_eq bitor not or xor </CPPReservedKeywords>
 
 </xmlplusDict>

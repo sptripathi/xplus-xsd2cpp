@@ -52,7 +52,33 @@
 
 namespace DOM
 {
- 
+  struct XmlDecl
+  {
+    const DOMString  *version;
+    const DOMString  *encoding;
+    bool        standalone;
+
+    XmlDecl():
+      version(NULL),
+      encoding(NULL)
+    {
+    }
+
+    void print() const
+    {
+      cout << "XmlDecl: ";
+      if(version) 
+        cout << " version:" << *version; 
+      if(encoding) 
+        cout << " encoding:" << *encoding; 
+        
+      cout << " standalone:" << standalone; 
+
+      cout << endl; 
+    }
+
+  };
+
   static string  sg_nodeTypeString[] =
   {
     "(UNKNOWN_TYPE)"             ,
@@ -94,9 +120,9 @@ namespace DOM
       }
 
       NodeNSTriplet(
-          DOMString* nsUri, 
-          DOMString* nsPrefix,
-          DOMString* localName 
+          DOMStringP nsUri, 
+          DOMStringP nsPrefix,
+          DOMStringP localName 
           ):
         _nsUri(nsUri),
         _nsPrefix(nsPrefix),
@@ -122,26 +148,6 @@ namespace DOM
             ( this->localName() == nsTriplet.localName())
             );
       }
-  };
-
-  struct AttributeInfo : public NodeNSTriplet
-  {
-
-    AttributeInfo(  DOMString* nsUri, 
-           DOMString* nsPrefix,
-           DOMString* localName,
-           DOMString* value ):
-      NodeNSTriplet(nsUri, nsPrefix, localName),
-      _value(value)
-      {
-      }
-      
-      inline const DOMString* value() const {
-        return _value;
-      }
-    
-    private:
-    DOMStringPtr      _value;
   };
 
 
@@ -177,9 +183,9 @@ protected:
 
   DOMStringPtr              _nodeName;
   DOMStringPtr              _nodeValue;
-  NodeType                  _nodeType;
+  const NodeType            _nodeType;
 
-  Node*                   _parentNode;
+  NodeP                   _parentNode;
   NodeList                _childNodes;
   //NodePtr                   _firstChild;
   //NodePtr                   _lastChild;
@@ -197,7 +203,6 @@ protected:
 
   //impl needs
   int                       _depth;
-  bool                      _removedFromParentList;
   
 public:
 
@@ -231,11 +236,8 @@ public:
   virtual inline const NodeType getNodeType() const {
     return _nodeType;
   }
-  virtual inline void setNodeType(NodeType nodeType) {
-    _nodeType = nodeType;
-  }
 
-  virtual inline Node* getParentNode() const {
+  virtual inline NodeP getParentNode() const {
     return _parentNode;
   }
 
@@ -305,17 +307,14 @@ public:
 
   virtual Node* insertAt(Node* newChild, unsigned int pos);
   virtual Node* insertFront(Node* newChild);
-  virtual Node* insertBack(Node* newChild); 
+  virtual Node* insertBack(Node* newChild);
   virtual Node* insertAfter(Node* newChild, Node* refChild);//not in DOM spec
   virtual Node* insertBefore(Node* newChild, Node* refChild);
   virtual Node* insertBetween(Node* newChild, Node *prevChild, Node *nextChild);
   virtual Node* replaceChild(Node* newChild, Node* oldChild);
-  virtual void removeChild(Node* oldChild);
-  // FIXME duplicate of insertBack
+  virtual Node* removeChild(Node* oldChild);
   virtual Node* appendChild(Node* newChild);
-  unsigned int countPreviousSiblingsOfType(Node::NodeType nodeType) const;
-  unsigned int countChildrenOfType(Node::NodeType nodeType) const;
-  void removeChildrenOfType(Node::NodeType nodeType);
+  unsigned int countPreviousSiblingsOfType(Node::NodeType nodeType);
 
   virtual bool hasChildNodes() const;
 
@@ -340,26 +339,18 @@ public:
   TextNode* createChildTextNodeAt(DOMString *value, unsigned int pos);
   virtual TextNode* createChildTextNode(DOMString* value);
   virtual TextNode* createChildTextNodeAfterNode(DOMString *value, Node *prevNode);
-  
-  virtual CDATASection* createCDATASection(DOMString* data);
-  CDATASection* createChildCDATASection(DOMString* data);
-  
   bool prettyPrint() const ;
-
+  
   inline int getDepth() const{
     return _depth;
   }
   inline void setDepth(int depth) {
-    _depth = depth;
-  }
-  inline void removedFromParentList(bool b) {
-    _removedFromParentList = b;
+    _depth=depth;
   }
 
   void registerNsPrefixNsUri();
 
   bool isDocumentElement() const;
-
 };
 
 }

@@ -21,19 +21,13 @@
 #define __CDATA_SECTION_H__
 
 #include "DOM/DOMCommonInc.h"
-#include "DOM/TextNode.h"
 
 namespace DOM
 {
-  class CDATASection : public DOM::TextNode
+  class CDATASection : public XPlus::XPlusObject
   {
     public:
-    CDATASection(DOMString* nodeValue,
-          Document* ownerDocument=NULL,
-          Node* parentNode=NULL,
-          Node* prevSibling=NULL);
-
-    virtual ~CDATASection();
+    virtual ~CDATASection() {}
   };
 }
 

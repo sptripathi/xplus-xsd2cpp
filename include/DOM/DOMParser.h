@@ -30,17 +30,13 @@ using namespace DOM;
 class DOMParser : public ExpatParser
 {
   protected:
-    Document*                 _docNode;
-
-    DOMString                 _cdataBuffer;
-    bool                      _cdataInProgress;
+    Document* _docNode;
+    XmlDecl   _docXmlDecl;
 
   public:
 
     DOMParser(Document* docNode=NULL):
-      _docNode(docNode),
-      _cdataBuffer(""),
-      _cdataInProgress(false)
+      _docNode(docNode)
   {
     if(_docNode)
       _docNode->stateful(true);
@@ -61,8 +57,9 @@ class DOMParser : public ExpatParser
                  const DOMString  *version,
                  const DOMString  *encoding,
                  int             standalone);
-    void onElementStart(void *userData, NodeNSTriplet nsTriplet, vector<AttributeInfo> attrVec); 
-    void onAttribute(void *userData, AttributeInfo attrInfo);
+    void onElementStart(void *userData, NodeNSTriplet nsTriplet); 
+    void onAttribute(void *userData, NodeNSTriplet nsTriplet,
+        const DOMString* value);
     void onElementEnd(void *userData, NodeNSTriplet nsTriplet);
     void onNamespaceStart(void *userData, 
         const DOMString* prefix, 
@@ -85,26 +82,5 @@ class DOMParser : public ExpatParser
     void onDocumentStart(void *userData);
     void onDocumentEnd(void *userData);
     void createAccumulatedTextNode();
-
-    inline bool beginOfCDATASection() {
-      _cdataInProgress = true;
-    }
-    inline bool endOfCDATASection() {
-      _cdataInProgress = false;
-      resetCDATABuffer();
-    }
-    inline bool isCDATAInProgress() {
-      return _cdataInProgress;
-    }
-
-    inline void resetCDATABuffer() {
-      _cdataBuffer = "";
-    }
-    inline void addCDATABuffer(DOMString str) {
-      _cdataBuffer += str;
-    }
-    inline DOMString getCDATABuffer() {
-      return _cdataBuffer;
-    }
 };
 #endif

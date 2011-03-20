@@ -21,7 +21,6 @@
 #define __XMLPLUSOBJECT_H__
 
 #include <iostream>
-#include <sstream>
 
 using namespace std;
 //#define _SHAREDPTR_OBJ_DBG 1
@@ -30,52 +29,37 @@ namespace XPlus
 {
 
 struct XPlusObject {
-  string _objName;
   int _refCnt;
-  bool _dontFree;
-
-
-  inline void dontFree(bool b) {
-    _dontFree = b;
-  }
-  inline bool dontFree() const {
-    return _dontFree;
-  }
 
   inline void printRefCnt() {
-    cout << "@@@@@@@@@@ ptr= " << this  << " name:" <<  _objName << " cnt=" << _refCnt << " : printRefCnt" << endl;
+    cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : printRefCnt" << endl;
   }
 
   inline virtual void duplicate() {
     ++_refCnt;
 #ifdef _SHAREDPTR_OBJ_DBG
-    cout << "@@@@@@@@@@ ptr= " << this  << " name:" <<  _objName << " cnt=" << _refCnt << " : duplicate" << endl;
+    cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : duplicate" << endl;
 #endif
   }
 
   inline virtual void release() {
     --_refCnt;
 #ifdef _SHAREDPTR_OBJ_DBG
-    cout << "   @@@@@@@@@@ ptr= " << this << " name:" <<  _objName << " cnt=" << _refCnt << " : release ";
+    cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : release ";
     if(_refCnt==0) cout << ":     ***           DELETE ";
     cout << endl;
 #endif
-    if( (_refCnt==0) && !_dontFree) {
-      //cout << "       @@@@ delete called..." << endl;
+    if(_refCnt==0) {
       delete this;
     }
   }
 
-  XPlusObject(string name=""):
-    _objName(name),
-    _refCnt(0),
-    _dontFree(false)
+  XPlusObject():
+    _refCnt(0)
   {
 #ifdef _SHAREDPTR_OBJ_DBG
-    cout << "@@@@@@@@@@ ptr= " << this  << " name:" <<  _objName << " cnt=" << _refCnt << " : XPlusObject::constr" << endl;
+    cout << "@@@@@@@@@@ ptr= " << this << " cnt=" << _refCnt << " : XPlusObject::constr" << endl;
 #endif
-    ostringstream oss;
-    oss << this;
   }
 
   virtual ~XPlusObject() {};

@@ -123,17 +123,8 @@ namespace XMLSchema
 
       virtual void validateCFacetValueWrtParent(T val)
       {
-
         string currFacetValStr = this->stringValue();
-        
-        // seting the value of self with new value, to get string of new value
-        // and resetting it back
-        //string newFacetValStr = facetToStringValue(type(), val);
-        T tmpVal = _value; 
-        _value = val;
-        string newFacetValStr = this->stringValue();
-        _value = tmpVal;
-
+        string newFacetValStr = facetToStringValue(type(), val);
         //NB: throwing exception in constructor causes some strange issues.
         // So storing the errors to be reported later
         if(fixed() && val != _value) 
@@ -146,13 +137,11 @@ namespace XMLSchema
           _errors.push_back(oss.str());
         }
 
-        //FIXME: try to parameterize folong error as done in exceptions
-        // for cleaner output of error
         ostringstream oss2;
         oss2 << "Facet value violated wrt parent:"
           "\nFacet: {" << enumToStringCFacet(type()) << "}"
-          << "\n parent-facet-value: (" << currFacetValStr << ")"
-          << "\n child-facet-value:" << newFacetValStr ;
+          << " parent-facet-value: (" << currFacetValStr << ")"
+          << " child-facet-value:" << newFacetValStr ;
         if( (_type == CF_LENGTH) && isSet() && (_value != val)) {
           _errors.push_back(oss2.str());
         }

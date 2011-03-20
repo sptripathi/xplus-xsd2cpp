@@ -4,7 +4,8 @@
     <title>Motivation</title>
   </head>
 
-  <h2>Motivation<hr NOSHADE SIZE=10 WIDTH=100%></h2>
+  <h2>Motivation</h2>
+  <hr NOSHADE SIZE=10 WIDTH=100%>
 
   <body>
     <form>
@@ -15,12 +16,14 @@
        <li><a href="#WHY_XSD2CPP">Why XmlPlus xsd2cpp?</a>
      </ul>
 
-    <a name="WHY_XMLSCHEMA"><h3>Why W3C XML-Schema?  <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-    <i>How do I constrain a well-formed XML document to a schema?</i>
+    <a name="WHY_XMLSCHEMA"><h3>Why W3C XML-Schema?</h3></a>
+    <hr NOSHADE SIZE=7 WIDTH=100%>
+    How do I constrain a well-formed XML document to a schema?
     <br><br>
 
-    <br>
-    The XML file can have a schema specification for it. There are at least two standard ways of providing schema for XML documents:
+    <b>Answer:</b><br>
+    The XML file can have a schema specification for it.<br>
+    There are at least two standard ways of providing schema for XML documents:
     <ul>
       <li> DTD -  Document Type Definition<br>
       <li> <b>W3C XML-Schema</b><br>
@@ -40,9 +43,9 @@
         <br>
         To know more about XML-Schema, read <b>W3C</b> specifications on it. Following are a few related useful links:<br>
         <ul>
-          <li> <a href="http://www.w3.org/TR/xmlschema-0/" target="_blank">XML Schema Part 0: Primer Second Edition</a>
-          <li> <a href="http://www.w3.org/TR/xmlschema-1/" target="_blank">XML Schema Part 1: Structures Second Edition</a>
-          <li> <a href="http://www.w3.org/TR/xmlschema-2/" target="_blank">XML Schema Part 2: Datatypes Second Edition</a>
+          <li><a href="http://www.w3.org/TR/xmlschema-0/">XML Schema Part 0: Primer Second Edition</a>
+          <li> <a href="http://www.w3.org/TR/xmlschema-1/">XML Schema Part 1: Structures Second Edition</a>
+          <li> <a href="http://www.w3.org/TR/xmlschema-2/">XML Schema Part 2: Datatypes Second Edition</a>
         </ul>
 
         </td>
@@ -53,38 +56,32 @@
 
     <br><br>
     
-    <a name="WHY_DB"><h3>Why Data-Binding?  <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-    <i>
-    My application needs to do XML I/O. Now that I have XML-Schemas for the XML files that my application needs to do I/O on, do I have to write custom handwritten parser for each such XML-Schema ? Couldn't the life be any easier ? </i>   
+    <a name="WHY_DB"><h3>Why Data-Binding?</h3></a>
+    <hr NOSHADE SIZE=7 WIDTH=100%>
+
+    Given that we have a XML-Schema for my XML file, how do we write and read only the valid XML files ?  <br>
+    If we use DOM API to write the XML files then it may take many iterations before we write the valid XML file. Where is the solution?
       <br><br>
     
-    <br> The data-binding comes for rescue here. The data-binding implementations typically provide following utilities:
+    <b>Answer:</b><br> The solution is to use data-bindings for the XML-Schema.<br>
+    The data-binding implementations typically provide following utilities:
     <ul>
-      <li> <b>X/O mapping</b>:<br> 
-      The data-binding tool automatically generates structures( eg. classes in OO languages) mapped for XML-Schema components. The in-memory objects holding xml data are also known as <i>XML-Object</i>s. The applications interact with xml data directly through in-memory objects, rather than using DOM/SAX APIs.<br><br>
-      <li> <b>Parsing ie. Deserailization/Unmarshalling:</b><br> 
-      Parser to read valid XML documents into in-memory <i>XML-Object</i>s<br><br>
-      <li> <b>Marshalling/Serialization:</b><br> 
-      Writer to write the <i>XML-Object</i>s to xml files
+      <li> The data-binding structures for XML-Schema eg. C++ classes for XML-Schema components 
+      <li> Parser to read valid XML documents into data-binding structures
+      <li> Writer to write the data-bindings to a xml file
     </ul>
-
-    In essence, the application has to interact only with readymade in-memory object-interface. These objects hide(and save) all the complexities of XML I/O from(for) the application. Thus, one is saved from writing XML I/O implementations(ie. Classes to hold xml data, alongwith Serialization/Deserialization code) for xml data.<br><br>
-    
-    There are several data-binding solutions available across platforms/programming-languages.<br>  
+    There are many data-binding solutions available across several platforms/programming-languages.<br>  
 
     
     <br><br>
-    <a name="WHY_XSD2CPP"><h3>Why <i>XmlPlus-xsd2cpp</i>?  <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-    <i>Why should I use XmlPlus data-binding? </i>
+    <a name="WHY_XSD2CPP"><h3>Why <i>XmlPlus-xsd2cpp</i>?</h3></a>
+    <hr NOSHADE SIZE=7 WIDTH=100%>
+    Why should I use XmlPlus?
     <br><br>
     
-    Here are a few reasons:<br>
-    <ul>
-      <li> XmlPlus is <i>open-source</i> and <i>free</i>
-      <li> XmlPlus provides <i>"simple to use"</i> C++ data-binding
-      <li> XmlPlus <i>Serialization</i> has <i>in-built</i> validation
-      <li> XmlPlus <i>Serialization/Deserialization</i> retains not just elements and attributes but also processing-instructions and comments, across roundtrips.
-    </ul>
+    <b>Answer:</b><br>
+    XmlPlus provides <b>"simple to use"</b> C++ data-bindings for XML-Schema.<br>
+    It is <b>free</b>. Read <a href="license.html">License</a> for terms of use.<br>
     Please read other sections on XmlPlus documentation, to learn more about it.
 
     <br><br>

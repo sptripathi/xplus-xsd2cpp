@@ -29,7 +29,6 @@
 #include "XPlus/Functor.h"
 #include "XPlus/BinaryTree.h"
 #include "XPlus/List.h"
-#include "XPlus/Namespaces.h"
 
 #include "DOM/DOMAllInc.h"
 #include "XSD/XSDException.h"
@@ -43,7 +42,6 @@
 
 using namespace std;
 using namespace XPlus;
-using XPlus::Namespaces;
 
 
 namespace FSM {
@@ -52,110 +50,51 @@ namespace FSM {
   typedef AutoPtr<XsdFsmBase> XsdFsmBasePtr;
   typedef XsdFsmBase* XsdFsmBaseP;
 
-void warnNullNode(void *pNode, const char* nodeName, const char* qName, int minOccurence);
+void warnNullNode(Node *pNode, const char* nodeName, const char* qName, int minOccurence);
 bool matchNamespace(const DOMString* nsUri1, const DOMString* nsUri2);
 void outputErrorToException(XPlus::Exception& ex, list<DOMString> possibleEvents, DOMString gotEvent, bool docBuilding=true);
 
-struct Particle
-{
+struct NSNamePairOccur {
   
   DOMStringPtr nsUri;
   DOMString localName;
   unsigned int minOccurence;
   unsigned int maxOccurence;
-  unsigned int defaultOccurence;
  
-  Particle(DOMString* pNsUri=NULL, DOMString localNameStr="", 
-                unsigned int minOccur=0, int maxOccur=0, int defaultOccur=0):
+  NSNamePairOccur(DOMString* pNsUri, DOMString localNameStr, unsigned int minOccur, unsigned int maxOccur):
     nsUri(pNsUri),
     localName(localNameStr),
     minOccurence(minOccur),
-    maxOccurence((unsigned int)maxOccur),
-    defaultOccurence((unsigned int)defaultOccur)
+    maxOccurence(maxOccur)
   {
   }
 
-  bool operator==(const Particle& pairNSName) const;
+  bool operator==(const NSNamePairOccur& pairNSName);
 
   void print() const {
   cout << "{" << ( (nsUri)? *nsUri : "" ) << "}"
-    << localName << "  [" << minOccurence << "," << maxOccurence << "," << defaultOccurence <<  "]" << endl;
+    << localName << "  [" << minOccurence << "," << maxOccurence << "]" << endl;
   }
 
 };
-
-struct FsmCbOptions
-{
-  DOMString xsiType;
-  DOMString xsiNil;
-  DOMString xsiSchemaLocation;
-  DOMString xsiNoNamespaceSchemaLocation;
-
-  bool isDefaultCreate;
-  
-  FsmCbOptions(DOMString xsiType="", DOMString xsiNil="", DOMString xsiSchemaLocation="", DOMString xsiNoNamespaceSchemaLocation=""):
-    xsiType(""),
-    xsiNil(""),
-    xsiSchemaLocation(""),
-    xsiNoNamespaceSchemaLocation(""),
-    isDefaultCreate(false)
-    {
-    }
-
-    void printDebug() {
-      cout << "FsmCbOptions:" << endl
-           << " xsiType:" << xsiType << endl
-           << " xsiNil:" << xsiNil << endl
-           << " xsiSchemaLocation:" << xsiSchemaLocation << endl
-           << " xsiNoNamespaceSchemaLocation:" << xsiNoNamespaceSchemaLocation
-           << endl;
-    }
-};
-
-
-
-struct XsdEvent
-{
-  enum XsdFsmType {
-    DOCUMENT_START,
-    ATTRIBUTE,
-    ELEMENT_START,
-    ELEMENT_END,
-    DOCUMENT_END
-  };
-
-  DOMStringPtr nsUri;
-  DOMStringPtr nsPrefix;
-  DOMString localName;
-  XsdEvent::XsdFsmType fsmType;
-  bool docBuilding;
-  FsmCbOptions cbOptions;
-
-  XsdEvent(DOMString* nsUri_, DOMString* nsPrefix_, DOMString localName_, XsdEvent::XsdFsmType fsmType_, bool docBuilding_=true):
-    nsUri(nsUri_),
-    nsPrefix(nsPrefix_),
-    localName(localName_),
-    fsmType(fsmType_),
-    docBuilding(docBuilding_)
-  {
-  }
-
-};
-
-
 
 
 class XsdFsmBase : public virtual XPlus::XPlusObject
 {
   public:
+    enum XsdFsmType {
+      DOCUMENT_START,
+      ATTRIBUTE,
+      ELEMENT_START,
+      ELEMENT_END,
+      DOCUMENT_END
+    };
 
     XsdFsmBase():
-      XPlusObject("XsdFsmBase"),
       _parentFsm(NULL),
       _prevSiblNodeRunTime(NULL),
       _nextSiblNodeRunTime(NULL),
-      _fsmCreatedNode(NULL),
-      _nilled(false)
+      _fsmCreatedNode(NULL)
     {
     };
 
@@ -202,20 +141,9 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
       }
       return fsm;
     }
-    
-    inline const Particle& nsName() const {
-      return _nsName;
-    }
 
-    inline void nilled(bool b) {
-      _nilled = b;
-    }
-    inline bool nilled() const {
-      return _nilled;
-    }
-
-    virtual bool processEvent(XsdEvent& event)=0; 
-    virtual bool processEventThrow(XsdEvent& event)=0; 
+    virtual bool processEvent(DOMString* nsUri, DOMString localName, XsdFsmType fsmType, bool docBuilding=true)=0; 
+    virtual bool processEventThrow(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true)=0; 
     virtual Node* rightmostElement() const =0;
     virtual Node* leftmostElement() const =0;
     virtual Node* previousSiblingElementInSchemaOrder(XsdFsmBase* callerFsm) =0;
@@ -224,10 +152,7 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
     virtual bool isInitFinalState() const=0;
     virtual list<DOMString> suggestNextEvents() const=0; 
     virtual XsdFsmBasePtr currentUnitFsm()=0;
-    
-    virtual void fireRequiredEvents(bool docBuilding=true)=0;
-    virtual void fireDefaultEvents(bool docBuilding=true)=0;
-
+    virtual void fireRequiredEvents()=0;
     virtual void print() const =0;
     virtual void finish() {};
     
@@ -240,53 +165,36 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
     NodePtr         _prevSiblNodeRunTime;
     NodePtr         _nextSiblNodeRunTime;
     NodePtr         _fsmCreatedNode;
-    
-    // applicable only to XsdFsm(UnitFsm)
-    Particle          _nsName;
-    
-    bool              _nilled; 
 };
 
+DOMString formatNamespaceName(XsdFsmBase::XsdFsmType fsmType, DOMString* nsUri, DOMString localName);
 
-
-
-
-
-DOMString formatNamespaceName(XsdEvent::XsdFsmType fsmType, DOMString* nsUri, DOMString localName);
-
-// Another meaningful name for this class is UnitFsm (TODO: rename it later)
 template<class ReturnType>
 class XsdFSM : public XsdFsmBase 
 {
   public:
 
     typedef AutoPtr<noargs_function_base<ReturnType> > noargs_function_base_ptr;
-    typedef AutoPtr<unary_function_base<ReturnType, FsmCbOptions> > unary_function_base_ptr;
 
-    XsdFSM(Particle pair, 
-        XsdEvent::XsdFsmType fsmType, 
-        unary_function_base_ptr cbFunctor=NULL):
-      //_nsName(pair),
+    XsdFSM(NSNamePairOccur pair, 
+        XsdFsmBase::XsdFsmType fsmType, 
+        noargs_function_base_ptr cbFunctor=NULL):
+      _nsName(pair),
       _cbFunctor(cbFunctor),
       _fsmType(fsmType),
       _fsm(NULL)
   {
-    _nsName = pair;
 
     init();
   }
-
-    // copy constructor
     XsdFSM(const XsdFSM& xsdFsm):
-      //_nsName(xsdFsm.nsName()),
+      _nsName(xsdFsm.nsName()),
       _eventIds(xsdFsm.eventIds()),
       _eventNames(xsdFsm.eventNames()),
       _cbFunctor(xsdFsm.cbFunctor()),
       _fsmType(xsdFsm.fsmType()),
       _fsm(xsdFsm.stateFsm()->clone())
     {
-      _nsName = xsdFsm.nsName(); // FIXME: will operator = work ?
-      this->parentFsm(xsdFsm.parentFsm());
       //init();
     }
 
@@ -296,14 +204,18 @@ class XsdFSM : public XsdFsmBase
       return this;
     }
 
+    /*
+    virtual bool processEvent(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType); 
+    virtual bool processEventThrow(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType); 
+    virtual bool isInFinalState();
+    virtual list<DOMString> suggestNextEvents(); 
+    */
     void print() const 
     {
       cout << "     { //UnitFSM(" << _fsmType <<  ") " << endl;
       _nsName.print();
       if(_fsm)
         _fsm->print();
-      
-      cout << "       this: " << this <<  " parentFsm: " << _parentFsm << endl;
       cout << "     } // end UnitFSM" << endl;
     }
 
@@ -311,10 +223,10 @@ class XsdFSM : public XsdFsmBase
     {
       switch(_fsmType)
       {
-        case  XsdEvent::ATTRIBUTE:
-        case  XsdEvent::ELEMENT_START:
-        case  XsdEvent::ELEMENT_END:
-        case  XsdEvent::DOCUMENT_END:
+        case  ATTRIBUTE:
+        case  ELEMENT_START:
+        case  ELEMENT_END:
+        case  DOCUMENT_END:
           {
             vector<FSM::ActionEdge> transitions;
             vector<int> finalStates;
@@ -371,7 +283,7 @@ class XsdFSM : public XsdFsmBase
     
     virtual Node* rightmostElement() const
     {
-      if( (_fsmType == XsdEvent::ELEMENT_START) && (_nodeList.size()>0) )
+      if( (_fsmType == ELEMENT_START) && (_nodeList.size()>0) )
       {
         //NB: revisit
         // dynamic_cast fails below, so using static_cast with check for famType 
@@ -387,7 +299,7 @@ class XsdFSM : public XsdFsmBase
 
     virtual Node* leftmostElement() const
     {
-      if( (_fsmType == XsdEvent::ELEMENT_START) && (_nodeList.size()>0) )
+      if( (_fsmType == ELEMENT_START) && (_nodeList.size()>0) )
       {
         //NB: revisit
         // dynamic_cast fails below, so using static_cast with check for famType 
@@ -423,41 +335,42 @@ class XsdFSM : public XsdFsmBase
       //revisit:
       // if the node is being added at some index in elem[] array then
       // will need to find nexts-sibling here
+
       if(_parentFsm) {
         return _parentFsm->nextSiblingElementInSchemaOrder(this);
       }
       return NULL;
     }
 
-    // Note: max of (defaultOccurence, minOccurence) is used as required-occurence
-    virtual void fireRequiredEvents(bool docBuilding=true)
+    
+    virtual void fireRequiredEvents()
     {
-      XsdEvent event = this->toEvent();
-      event.docBuilding = docBuilding;
-      unsigned int occur = ((_nsName.defaultOccurence > _nsName.minOccurence) ? _nsName.defaultOccurence : _nsName.minOccurence);
-      
-      for(unsigned int j=0; j<occur; j++) {
-        this->processEventOnce(event);
+      for(unsigned int j=0; j<_nsName.minOccurence; j++) {
+        this->processEventOnce(true);
       }
     }
 
-    virtual void fireDefaultEvents(bool docBuilding=true)
+    virtual bool processEventOnce(bool docBuilding=true)
     {
-      XsdEvent event = this->toEvent();
-      event.docBuilding = docBuilding;
-      event.cbOptions.isDefaultCreate = true;
-      for(unsigned int j=_nsName.minOccurence; j<_nsName.defaultOccurence; j++) {
-        this->processEventOnce(event);
+      bool validEvent = false;
+      int  eventId = _eventIds[0];
+      if(_fsm && (eventId >= 0)) 
+      {
+        validEvent = _fsm->processEvent(eventId); 
+        if(validEvent && !_cbFunctor.isNull()) {
+          ReturnType t = (*_cbFunctor)();
+          _nodeList.push_back(t);
+        }
       }
+      return validEvent;
     }
 
-    virtual bool processEventOnce(XsdEvent& event)
+    virtual bool processEvent(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true)
     {
       // if not building the Document from input-stream
       // then set the scratchpad context
       Node *p=NULL, *n=NULL;
-
-      if(!event.docBuilding && rootFsm()) 
+      if(!docBuilding && rootFsm()) 
       {
         p = previousSiblingElementInSchemaOrder(this);
         // nextSibling is needed as an anchor only if previousSibling is not there
@@ -465,40 +378,16 @@ class XsdFSM : public XsdFsmBase
           n = nextSiblingElementInSchemaOrder(this);
         }
       }
+      
       rootFsm()->prevSiblingNodeRunTime(p);
       rootFsm()->nextSiblingNodeRunTime(n);
 
-      bool validEvent = false;
-      int  eventId = _eventIds[0];
-      if(_fsm && (eventId >= 0)) 
-      {
-        validEvent = _fsm->processEvent(eventId); 
-        if(validEvent && !_cbFunctor.isNull()) 
-        {
-          ReturnType t = (*_cbFunctor)(event.cbOptions);
-          _nodeList.push_back(t);
-        }
-      }
-      
-      /*  
-      if(event.cbOptions.error.length() > 0) {
-        XMLSchema::ValidationException ex(event.cbOptions.error);
-        ex.setContext("element", event.localName);
-        throw ex;  
-      }
-      */
-      return validEvent;
-    }
-
-    virtual bool processEvent(XsdEvent& event)
-    {
-
-      if( (_nsName.localName == event.localName) &&
-          (_fsmType == event.fsmType) &&
-          matchNamespace(_nsName.nsUri, event.nsUri) 
+      if( (_nsName.localName == localName) &&
+          (_fsmType == fsmType) &&
+          matchNamespace(_nsName.nsUri, nsUri) 
         ) 
       {
-        return this->processEventOnce(event); 
+        return this->processEventOnce(docBuilding); 
       }
       return false;
     }
@@ -514,15 +403,18 @@ class XsdFSM : public XsdFsmBase
 
 
     // throws exception, with the error message describing next-allowed events
-    virtual bool processEventThrow(XsdEvent& event)
+    virtual bool processEventThrow( DOMString* nsUri, 
+        DOMString localName, 
+        XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true)
     {
-      bool consumed =  processEvent(event);
-      if(!consumed)
+      if(!processEvent(nsUri, localName, fsmType, docBuilding))
       {
         XMLSchema::FSMException ex("");
         list<DOMString> allowedEvents = this->suggestNextEvents();
-        DOMString gotEvent = formatNamespaceName(event.fsmType, event.nsUri, event.localName);
-        outputErrorToException(ex, allowedEvents, gotEvent, event.docBuilding);
+        DOMString gotEvent = formatNamespaceName(fsmType, nsUri, localName);
+        outputErrorToException(ex, allowedEvents, gotEvent, docBuilding);
+        //ostringstream err;
+        //throw XMLSchema::FSMException(err.str());
         throw ex;
       }
 
@@ -534,10 +426,7 @@ class XsdFSM : public XsdFsmBase
     }
 
     virtual bool isInFinalState() const {
-      if(nilled()) {
-        return true;
-      }
-      else if(_fsm) {
+      if(_fsm) {
         return _fsm->isInFinalState();
       }
       return false;
@@ -546,16 +435,6 @@ class XsdFSM : public XsdFsmBase
     virtual list<DOMString> suggestNextEvents() const 
     {
       list<DOMString> possibleNSNameEvents;
-
-      // xsi namespace attributes do not have to be suggested
-      if( nsName().nsUri && 
-          ( (*nsName().nsUri == Namespaces::s_xsiUri)  ||
-            (*nsName().nsUri == Namespaces::s_xmlUri) )
-        )
-      {
-        return possibleNSNameEvents;
-      }
-
       if(!_fsm) {
         return possibleNSNameEvents;
       }
@@ -573,17 +452,20 @@ class XsdFSM : public XsdFsmBase
       return new XsdFSM(*this);
     }
   
+    inline const NSNamePairOccur& nsName() const {
+      return _nsName;
+    }
     inline const vector<int>& eventIds() const {
       return _eventIds;
     }
     inline const vector<DOMString>& eventNames() const {
       return _eventNames;
     }
-    inline const unary_function_base_ptr cbFunctor() const {
+    inline const noargs_function_base_ptr cbFunctor() const {
       return _cbFunctor;
     }
     
-    inline const XsdEvent::XsdFsmType fsmType() const {
+    inline const XsdFsmBase::XsdFsmType fsmType() const {
       return _fsmType;
     }
     
@@ -595,18 +477,20 @@ class XsdFSM : public XsdFsmBase
       return _nodeList;
     }
 
-    inline XsdEvent toEvent() {
-      return XsdEvent(_nsName.nsUri, NULL,  _nsName.localName, _fsmType);
-    }
-
   protected:
-       //int                      _eventId;
-       //DOMString                _eventName;
+
+    //void init();
+
+    NSNamePairOccur          _nsName;
+    /*
+       int                      _eventId;
+       DOMString                _eventName;
+     */
     vector<int>              _eventIds;
     vector<DOMString>        _eventNames;
-    unary_function_base_ptr  _cbFunctor;
-    XsdEvent::XsdFsmType     _fsmType;
-    FSM::FSMBasePtr          _fsm;
+    noargs_function_base_ptr _cbFunctor;
+    XsdFsmBase::XsdFsmType   _fsmType;
+    FSM::FSMBasePtr            _fsm;
 
     List<ReturnType>         _nodeList;
 };
@@ -635,25 +519,19 @@ class XsdFsmOfFSMs : public XsdFsmBase
 
   virtual XsdFsmBase* clone() const;
 
-  virtual bool processEventThrow(XsdEvent& event); 
+  virtual bool processEventThrow(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true); 
   // throws exception, with the error message describing next-allowed events
-  virtual bool processEvent(XsdEvent& event); 
+  virtual bool processEvent(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true); 
   
   virtual bool isInFinalState() const;
   virtual list<DOMString> suggestNextEvents() const; 
   virtual XsdFsmBasePtr currentUnitFsm();
-  virtual void fireRequiredEvents(bool docBuilding=true);
-  virtual void fireDefaultEvents(bool docBuilding=true);
+  virtual void fireRequiredEvents();
   virtual bool isInitFinalState() const;
   virtual Node* rightmostElement() const;
   virtual Node* leftmostElement() const;
   virtual Node* previousSiblingElementInSchemaOrder(XsdFsmBase *callerFsm);
   virtual Node* nextSiblingElementInSchemaOrder(XsdFsmBase *callerFsm);
-
-  void appendUniqueUnitFsms(const vector<XsdFsmBasePtr>& fsmVec);
-  void replaceOrAppendUniqueUnitFsms(XsdFsmBasePtr* fsms);
-  void appendFsms(XsdFsmBasePtr* fsms);
-  void replaceFsmAt(XsdFsmBase* fsm, unsigned int idx);
 
   int currentFSMIdx() const {
     return _currentFSMIdx;
@@ -670,15 +548,11 @@ class XsdFsmOfFSMs : public XsdFsmBase
   const vector<XsdFsmBasePtr>& allFSMs() const {
     return _allFSMs;
   }
-    
-  XsdFsmBase* fsmAt(unsigned int idx) {
-    return _allFSMs[idx].get(); 
-  }
   
   vector<XsdFsmBasePtr>& allFSMs() {
     return _allFSMs;
   }
-
+  
   const map<int,bool>&  indicesDirtyFsms() const {
     return _indicesDirtyFsms;
   }
@@ -686,7 +560,6 @@ class XsdFsmOfFSMs : public XsdFsmBase
   void print() const 
   {
     cout << "   { // XsdFsmOfFSMs count=" << _allFSMs.size()  << endl;
-    cout << "     this: " << this <<  " parentFsm: " << _parentFsm << endl;
     for(unsigned int i=0; i<_allFSMs.size(); i++) {
       _allFSMs[i]->print();
     }
@@ -706,9 +579,9 @@ class XsdFsmOfFSMs : public XsdFsmBase
   //    but may not be in final state
   map<int,bool>           _indicesDirtyFsms;
 
-  bool processEventChoice(XsdEvent& event);
-  bool processEventSequence(XsdEvent& event);
-  bool processEventAll(XsdEvent& event);
+  bool processEventChoice(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true);
+  bool processEventSequence(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true);
+  bool processEventAll(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true);
 
   bool areAllFsmsInFinalState() const;
   bool isAnyFsmInFinalState() const;
@@ -728,12 +601,9 @@ typedef AutoPtr<XsdFsmOfFSMs> XsdFsmOfFSMsPtr;
 
 struct XsdSequenceFsmOfFSMs : public XsdFsmOfFSMs
 {
-  XsdSequenceFsmOfFSMs():
-    XPlusObject("XsdSequenceFsmOfFSMs")
-  { }
+  XsdSequenceFsmOfFSMs() { }
 
   XsdSequenceFsmOfFSMs(XsdFsmBasePtr *fsms):
-    XPlusObject("XsdSequenceFsmOfFSMs"),
     XsdFsmOfFSMs(fsms, XsdFsmOfFSMs::SEQUENCE)
   {
   }
@@ -752,12 +622,9 @@ typedef AutoPtr<XsdSequenceFsmOfFSMs> XsdSequenceFsmOfFSMsPtr;
 
 struct XsdChoiceFsmOfFSMs : public XsdFsmOfFSMs
 {
-  XsdChoiceFsmOfFSMs():
-    XPlusObject("XsdChoiceFsmOfFSMs")
-  { }
+  XsdChoiceFsmOfFSMs() { }
 
   XsdChoiceFsmOfFSMs(XsdFsmBasePtr *fsms):
-    XPlusObject("XsdChoiceFsmOfFSMs"),
     XsdFsmOfFSMs(fsms, XsdFsmOfFSMs::CHOICE)
   {
   }
@@ -772,12 +639,9 @@ typedef AutoPtr<XsdChoiceFsmOfFSMs> XsdChoiceFsmOfFSMsPtr;
 
 struct XsdAllFsmOfFSMs : public XsdFsmOfFSMs
 {
-  XsdAllFsmOfFSMs():
-    XPlusObject("XsdAllFsmOfFSMs")
-  { }
+  XsdAllFsmOfFSMs() { }
 
   XsdAllFsmOfFSMs(XsdFsmBasePtr *fsms):
-    XPlusObject("XsdAllFsmOfFSMs"),
     XsdFsmOfFSMs(fsms, XsdFsmOfFSMs::ALL)
   {
   }
@@ -792,12 +656,9 @@ typedef AutoPtr<XsdAllFsmOfFSMs> XsdAllFsmOfFSMsPtr;
 
 struct XsdGroupFsmOfFSMs : public XsdFsmOfFSMs
 {
-  XsdGroupFsmOfFSMs():
-    XPlusObject("XsdGroupFsmOfFSMs")
-  { }
+  XsdGroupFsmOfFSMs() { }
 
   XsdGroupFsmOfFSMs(XsdFsmBasePtr *fsms):
-    XPlusObject("XsdGroupFsmOfFSMs"),
     XsdFsmOfFSMs(fsms, XsdFsmOfFSMs::GROUP)
   {
   }
@@ -808,35 +669,6 @@ struct XsdGroupFsmOfFSMs : public XsdFsmOfFSMs
   }
 };
 typedef AutoPtr<XsdGroupFsmOfFSMs> XsdGroupFsmOfFSMsPtr;
-
-
-struct AnyTypeFSM : public XsdSequenceFsmOfFSMs
-{
-  AnyTypeFSM():
-    XPlusObject("AnyTypeFSM")
-  { }
-
-  AnyTypeFSM(XsdFsmBasePtr* attrFsms, XsdFsmBasePtr contentFsm, XsdFsmBasePtr elemEndFsm);
-
-  virtual ~AnyTypeFSM() {}
-
-  inline XsdAllFsmOfFSMs* attributeFsm() {
-    XsdFsmBase* attrFsm = this->fsmAt(0);
-    return dynamic_cast<XsdAllFsmOfFSMs *>(attrFsm);
-  }
-  inline XsdFsmBase* contentFsm() {
-    return this->fsmAt(1);
-  }
-
-  void replaceOrAppendUniqueAttributeFsms(XsdFsmBasePtr* fsms);
-  void appendAttributeFsms(XsdFsmBasePtr* fsms);
-  void replaceContentFsm(XsdFsmBase* contentFsm);
-
-};
-typedef AutoPtr<AnyTypeFSM> AnyTypeFSMPtr;
-
-
-
 
 class BinaryFsmTree;
 struct FsmTreeNode : public XPlus::TreeNode<XsdFsmBasePtr>
@@ -879,7 +711,7 @@ struct FsmTreeNode : public XPlus::TreeNode<XsdFsmBasePtr>
 
   void print() const;
 
-  bool processEvent(XsdEvent& event);
+  bool processEvent(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true);
 };
 typedef AutoPtr<FsmTreeNode> FsmTreeNodePtr;
 
@@ -928,7 +760,7 @@ struct BinaryFsmTree : public BinaryTree<XsdFsmBasePtr>
 
     void assignBT(const TreeNodePtr& node)
     {
-      //cout << "assignBT callled" << endl;
+      cout << "assignBT callled" << endl;
       if(node.isNull()) {
         return;
       }
@@ -974,19 +806,18 @@ class XsdFsmArray : public XsdFsmBase
     
     virtual void init(XsdFsmBase* fsm, unsigned int minOccurence, unsigned int maxOccurence);
     virtual XsdFsmBase* clone() const;    
-    virtual bool processEvent(XsdEvent& event); 
-    virtual bool processEventThrow(XsdEvent& event); 
+    virtual bool processEvent(DOMString* nsUri, DOMString localName, XsdFsmType fsmType, bool docBuilding=true); 
+    virtual bool processEventThrow(DOMString* nsUri, DOMString localName, XsdFsmBase::XsdFsmType fsmType, bool docBuilding=true); 
     virtual bool isInFinalState() const;
     virtual bool isInitFinalState() const;
     virtual list<DOMString> suggestNextEvents() const; 
     virtual XsdFsmBasePtr currentUnitFsm();
-    virtual void fireRequiredEvents(bool docBuilding=true);
-    virtual void fireDefaultEvents(bool docBuilding=true);
+    virtual void fireRequiredEvents();
     virtual void print() const;
     virtual void finish();
     virtual XsdFsmBase* fsmAt(unsigned int idx);
     virtual unsigned int size();
-    virtual void resize(unsigned int size, bool docBuilding=true);
+    virtual void resize(unsigned int size);
 
     // non-interface functions
     virtual Node* rightmostElement() const;

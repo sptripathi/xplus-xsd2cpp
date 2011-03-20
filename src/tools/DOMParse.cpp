@@ -30,40 +30,27 @@ using namespace std;
 void printUsage(string argv0)
 {
   cout  << "Usage: "  << endl 
-    << "1. " << argv0 << " <xml-file> [-]" << endl
-    << "      Parse the input xml-file and output back the parsed DOM to" << endl
-    << "      specified output-stream, which is stdout if arg2 is specified" << endl
-    << "      as '-', else is a file named <xmlfile>.out.xml" << endl << endl
-    << "2. " << argv0 << " <xml-file> <loop-count>" << endl 
-    << "      loop over parsing loop-count times." << endl << endl
-    << "3. " << argv0 << " -h" << endl
-    << "      print help " << endl << endl;
+        << "1. " << argv0 << " <xml-file> [-]" << endl
+        << "      Parse the input xml-file and output back the parsed DOM to" << endl
+        << "      specified output-stream, which is stdout if arg2 is specified" << endl
+        << "      as '-', else is a file named <xmlfile>.out.xml" << endl << endl
+        << "2. " << argv0 << " <xml-file> <loop-count>" << endl 
+        << "      loop over parsing loop-count times." << endl << endl
+        << "3. " << argv0 << " -h" << endl
+        << "      print help " << endl << endl;
 }
 
 void parse(string inFile, ostream& os)
 {
-
+   
   // read input file in a ifstream
   ifstream is;
   is.open(inFile.c_str(), ios::binary);
   Document docNode;
-  try{
-    is >> docNode; 
-  }
-  catch(XPlus::Exception& ex) {
-    cerr << "Error in parsing the file(" << inFile << "):" << endl
-         << ex.msg() << endl;
-  }
-  //docNode.prettyPrint(true);
+  is >> docNode; 
 
   /* write back DOM to output stream  */
-  try {
-    os << docNode;
-  }
-  catch(XPlus::Exception& ex) {
-    cerr << "Error in marshalling the Document:" << endl
-         << ex.msg() << endl;
-  }
+  os << docNode;
   //parser.printTree();
 }
 

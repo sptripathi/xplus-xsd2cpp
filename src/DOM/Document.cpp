@@ -20,7 +20,7 @@
 #include <iostream>
 
 #include "DOM/DOMAllInc.h"
-#include "Poco/Bugcheck.h"
+#include <assert.h>
 
 using namespace std;
 
@@ -30,7 +30,6 @@ namespace DOM
   Document::Document( DocumentType*       doctype,
                       DOMImplementation*  implementation
                     ):
-    XPlusObject("Document"),                
     Node(new DOMString("#document"), Node::DOCUMENT_NODE, NULL, NULL, NULL, NULL, NULL),
     _doctype(doctype),
     _implementation(implementation),
@@ -72,7 +71,7 @@ namespace DOM
     _buildingFromInputStream = false;
   }
 
-  Element* Document::createElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)
+  ElementP Document::createElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)
   {
     Node* parentNode = NULL;
     if(_stateful) { 
@@ -83,63 +82,39 @@ namespace DOM
         parentNode = this;
       }
     }
-    Element* elemNode = new Element(localName, nsUri, nsPrefix, this, parentNode);
+    ElementP elemNode = new Element(localName, nsUri, nsPrefix, this, parentNode);
     if(_stateful){
       _currentElement = elemNode;
     }
     return elemNode;
   }
   
-  Element* Document::createElement(DOMString* tagName)
+  ElementP Document::createElement(DOMString* tagName)
   {
     return createElementNS(NULL, NULL, tagName);
   }
   
-  Element* Document::createElementNS(DOMString* nsUri, DOMString* qualifiedName)
+  ElementP Document::createElementNS(DOMString* nsUri, DOMString* qualifiedName)
   {
     if(!qualifiedName) {
-      throw DOMException("createElementNS: qualifiedName arg is NULL");
+      // TODO: throw exception
+      return NULL;
     }
     vector<XPlus::UString> tokens;
     qualifiedName->tokenize(':', tokens);
-    poco_assert(tokens.size()==2);
+    assert(tokens.size()==2);
     return createElementNS(nsUri, new DOMString(tokens[0]), new DOMString(tokens[1]));
-  }
-      
-  Element* Document::createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec)
-  {
-    Element* elemNode = this->createElementNS(nsUri, nsPrefix, localName);
-    if(!elemNode) {
-      ostringstream err;
-      err << "failed to create element ["  << *localName << "] ";
-      throw DOMException(err.str());
-    }
-
-    for(unsigned int i=0; i<attrVec.size(); i++)
-    {
-      AttributeInfo& attrInfo = attrVec[i];
-      Attribute* attrNode = this->createAttributeNS(const_cast<DOMString *>(attrInfo.nsUri()),
-          const_cast<DOMString *>(attrInfo.nsPrefix()),
-          const_cast<DOMString *>(attrInfo.localName()),
-          const_cast<DOMString *>(attrInfo.value()));
-
-      if(!attrNode) {
-        ostringstream err;
-        err << "failed to create attribute ["  << *attrInfo.localName() << "] ";
-        throw DOMException(err.str());
-      }
-    }
-    return elemNode;
   }
     
   void Document::endElementNS(DOMString* nsURI, DOMString* nsPrefix, DOMString* localName)
   {
     if(_stateful) {
       if(_currentElement && _currentElement->getParentNode()) {
-        _currentElement = dynamic_cast<Element*>(_currentElement->getParentNode()); 
+        //_currentElement = dynamic_cast<ElementP>(_currentElement->getParentNode().get()); 
+        _currentElement = dynamic_cast<ElementP>(_currentElement->getParentNode()); 
       }
       else {
-        throw DOMException("endElementNS: found end of an element end without context");
+        //TODO: throw exception: found an element end without a context _currentElement
       }
     }
   }
@@ -149,14 +124,14 @@ namespace DOM
       DOMString* localName,
       DOMString* value )
   {
-    Element* ownerElement = NULL;
+    ElementP ownerElement = NULL;
     
     if(_stateful) { 
       if(_currentElement) {
         ownerElement = _currentElement;
       }
       else {
-        throw DOMException("createAttributeNS: found an attrNode without any owner element");
+        //TODO: throw exception : attrNode without owner element
       }
     }
     return new Attribute( localName, value, nsUri, nsPrefix, ownerElement, this);
@@ -193,32 +168,6 @@ namespace DOM
     return txt;
     //return new TextNode(data, this, parentNode);
   }
-
-  CDATASection* Document::createCDATASection(DOMString* data)
-  {
-    Node* parentNode = NULL;
-    if(_stateful) { 
-      if(_currentElement) {
-        parentNode = _currentElement;
-      }
-      else {
-        parentNode = this;
-      }
-    }
-    return new CDATASection(data, this, parentNode);
-  }
-
-  DocumentType* Document::createDocumentType(
-        const DOMString*      name,
-        NamedNodeMap          entities,
-        NamedNodeMap          notations,
-        const DOMString*      publicId,
-        const DOMString*      systemId,
-        const DOMString*      internalSubset)
-  {
-    _doctype = new DocumentType(name, entities, notations, publicId, systemId, internalSubset, this);
-    return _doctype;
-  }
   
   Comment* Document::createComment(DOMString* data)
   {
@@ -234,6 +183,11 @@ namespace DOM
     return new Comment(data, this, parentNode);
   }
   
+  CDATASection* Document::createCDATASection(DOMString* data)
+  {
+    return NULL; //TODO:
+  }
+
   PI* Document::createProcessingInstruction(DOMString* target,
       DOMString* data)
   {
@@ -263,7 +217,7 @@ namespace DOM
     return NULL; //TODO:
   }
 
-  Element* Document::getElementById(DOMString* elementId)
+  ElementP Document::getElementById(DOMString* elementId)
   {
     return NULL; //TODO
   }
@@ -271,17 +225,17 @@ namespace DOM
   const Element* Document::getDocumentElement() const 
   {
     if(getChildNodes().getLength() > 0) {
-      return dynamic_cast<Element*>(const_cast<Node*>(getChildNodes().item(0)));
-      //return dynamic_cast<Element*>(getChildNodes().item(0));
+      return dynamic_cast<ElementP>(const_cast<Node*>(getChildNodes().item(0)));
+      //return dynamic_cast<ElementP>(getChildNodes().item(0));
     }
     return NULL;
   }
   
-  Element* Document::getDocumentElement()  
+  ElementP Document::getDocumentElement()  
   {
     if(getChildNodes().getLength() > 0) {
-      return dynamic_cast<Element*>(getChildNodes().item(0));
-      //return dynamic_cast<Element*>(getChildNodes().item(0));
+      return dynamic_cast<ElementP>(getChildNodes().item(0));
+      //return dynamic_cast<ElementP>(getChildNodes().item(0));
     }
     return NULL;
   }
@@ -291,35 +245,40 @@ namespace DOM
     _prefixedNamespaces.insert(std::pair<DOMString, DOMString>(nsPrefixStr, nsUriStr));
   }
 
-  const DOMString Document::getNsUriForNsPrefixExplicit(const DOMString nsPrefix) const
-  {
-    std::map<DOMString, DOMString>::const_iterator cit = _prefixedNamespaces.find(nsPrefix);
-    std::map<DOMString, DOMString>::const_iterator end = _prefixedNamespaces.end();
-    if(cit == end) {
-      return "";
-    }
-    return cit->second;
-  }
-      
-  const DOMString Document::getNsPrefixForNsUriExplicit(const DOMString nsUri) const
-  {
-    map<DOMString, DOMString>::const_iterator it = _prefixedNamespaces.begin();
-    for( ; it != _prefixedNamespaces.end(); ++it)
+    
+  void Document::addUnprefixedNamespace(DOMString nsUriStr) {
+    //TODO: improve eg. use some hash than lookup each time to check presence
+    list<DOMString>::const_iterator it = _unprefixedNamepspaces.begin();
+    for( ; it != _unprefixedNamepspaces.end(); it++)
     {
-      if(nsUri == it->second) {
-        return it->first;
+      if(*it == nsUriStr) {
+        return;
       }
     }
-    return "";
+
+    _unprefixedNamepspaces.push_back(nsUriStr);
+    /*
+    ostringstream nsPrefix;
+    nsPrefix << "ns" << _unprefixedNamepspaces.size()+1;
+    _unprefixedNamepspaces.insert(std::pair<DOMString, DOMString>( DOMString(nsPrefix.str()), nsUriStr) );
+    */
+  }
+  
+  void Document::registerNsPrefixNsUri(DOMString* nsPrefix, DOMString* nsUri)
+  {
+    if(!nsUri) {
+      return;
+    }
+    if(!nsPrefix) {
+      addUnprefixedNamespace(*nsUri); 
+    }
+    else {
+      addPrefixedNamespace(*nsPrefix, *nsUri);
+    }
   }
 
-  const DOMString Document::getNsPrefixForNsUriImplicit(const DOMString nsUriStr) const
+  DOMString Document::getImplicitNsPrefixForNsUri(DOMString nsUriStr) const
   {
-    DOMString explicitNsPrefix = getNsPrefixForNsUriExplicit(nsUriStr);
-    if(explicitNsPrefix.length()>0) {
-      return explicitNsPrefix;
-    }
-
     list<DOMString>::const_iterator it = _unprefixedNamepspaces.begin();
     unsigned int i = _prefixedNamespaces.size() + 1;
     for( ; it != _unprefixedNamepspaces.end(); it++, i++)
@@ -345,37 +304,6 @@ namespace DOM
     }
     return "";
   }
-
-    
-  void Document::addUnprefixedNamespace(DOMString nsUriStr) {
-    //TODO: improve eg. use some hash than lookup each time to check presence
-    list<DOMString>::const_iterator it = _unprefixedNamepspaces.begin();
-    for( ; it != _unprefixedNamepspaces.end(); it++)
-    {
-      if(*it == nsUriStr) {
-        return;
-      }
-    }
-
-    _unprefixedNamepspaces.push_back(nsUriStr);
-    //ostringstream nsPrefix;
-    //nsPrefix << "ns" << _unprefixedNamepspaces.size()+1;
-    //_unprefixedNamepspaces.insert(std::pair<DOMString, DOMString>( DOMString(nsPrefix.str()), nsUriStr) );
-  }
-  
-  void Document::registerNsPrefixNsUri(const DOMString* nsPrefix, const DOMString* nsUri)
-  {
-    if(!nsUri) {
-      return;
-    }
-    if(!nsPrefix) {
-      addUnprefixedNamespace(*nsUri); 
-    }
-    else {
-      addPrefixedNamespace(*nsPrefix, *nsUri);
-    }
-  }
-
     
   bool Document::isPrefixTaken(DOMString nsPrefixStr) const
   {

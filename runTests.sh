@@ -1,42 +1,41 @@
-#!/bin/bash
+#!/bin/sh
 
-CNT_TOTAL_TESTS=0
-CNT_FAILED_TESTS=0
-CNT_PASSED_TESTS=0
 
-# xmllint core dumps, on certain schemas, dont use it in tests
-XMLLINT=`which xmllint`
-TEST_FAILED=false
-FAILED_DIRS=""
-INPUT_XSD=""
+EX_DIRS="
+        examples/org
+        examples/includeDemo
+        examples/helloWorld
+        examples/helloWorldWide
+        examples/mails
+        examples/simpleTypesDemo
+        examples/simplest
+        examples/po"
+      ex_dirs=""
 
-EX_DIRS=""
-W3C_TESTS_DIRS=""
-XPLUS_TESTS_DIRS=""
-XPLUS_NEGTESTS_DIRS=""
 
-ascertain_test_dirs()
-{
-  #W3C_TESTS_DIRS=`ls -1d Tests/w3c_tests/*`
+W3C_TESTS_DIRS="
+       w3c_tests/stE080
+       w3c_tests/stG003
+       w3c_tests/stH005
+       w3c_tests/stZ015
+       w3c_tests/ste099
+       w3c_tests/reDH7a
+       w3c_tests/nist5
+       w3c_tests/digtest"
 
-  EX_DIRS=`find examples  -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
-  W3C_TESTS_DIRS=`find Tests/w3c_tests  -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
-  XPLUS_TESTS_DIRS=`find Tests/xplus_tests -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
-  XPLUS_NEGTESTS_DIRS=`find Tests/xplus_neg_tests -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
-}
+#EX_DIRS=
+#W3C_TESTS_DIRS=
+
 
 print_usage()
 {
-  echo
   echo "Usage:"
-  echo "$ `basename $0`  [-c | -t]"
-  echo "    -c  cleanup all the test directories"
-  echo "    -t  cleanup and test all the test directories"
+  echo
+  echo " $0  -ct"
+  echo "    -c  cleanup all the example directories"
+  echo "    -t  test all the example directories"
   echo "    -h  print help"
   echo
-  echo " (test directories include: Tests/ examples/) "
-  echo
-
 }
 
 change_dir_abort()
@@ -48,20 +47,18 @@ change_dir_abort()
   fi
 }
 
-get_INPUT_XSD()
+get_input_xsd()
 {
-  INPUT_XSD=`ls -1 *.xsd`
-  cnt_xsds=`echo "$INPUT_XSD" | wc -l | sed -e 's/ *//g'`
+  input_xsd=`ls -1 *.xsd`
+  cnt_xsds=`echo "$input_xsd" | wc -l | sed -e 's/ *//g'`
   if [ $cnt_xsds -ne 1 ]; then
     if [ -f README ]; then
-      INPUT_XSD=`cat README | grep INPUT_XSD | cut -d= -f2 | sed -e 's/ *//g'`
-      if [ -z "$INPUT_XSD" ]; then
-        echo "unable to ascertain INPUT_XSD, exiting..."
-        fail_test
+      input_xsd=`cat README | grep INPUT_XSD | cut -d= -f2 | sed -e 's/ *//g'`
+      if [ -z "$input_xsd" ]; then
+        echo "unable to ascertain input_xsd, exiting..."; exit 2
       fi
     else  
-      echo "unable to ascertain INPUT_XSD in dir:$dir, exiting..."
-      fail_test
+      echo "unable to ascertain input_xsd in dir:$dir, exiting..."; exit 2
     fi
   fi
 }
@@ -78,81 +75,31 @@ log_tests_dir()
 
 fail_test()
 {
-  CNT_FAILED_TESTS=`expr $CNT_FAILED_TESTS + 1`
-  TEST_FAILED=true
-  FAILED_DIRS="$FAILED_DIRS $dir"
-
   echo "   [ FAILED ]"
-  #exit 2
+  exit 2
 }
 
 pass_test()
 {
-  if [ $TEST_FAILED != 'true' ]; then
-    CNT_PASSED_TESTS=`expr $CNT_PASSED_TESTS + 1`
-    echo "   [ PASSED ]"
-  fi
+  echo "   [ PASSED ]"
 }
 
 cleanup_dir()
 {
   log_clean_dir
   change_dir_abort
-  find . | grep -v svn | grep -v README | grep -v xsd | grep -v xml | grep -v testme | grep -v "main.cpp"  | xargs rm -rf 2>/dev/null 
-  rm -f *.template *.bak t.xml* *.xml.rt.xml sample.xml *.save README.build.txt 
+  find . | grep -v svn | grep -v README | grep -v xsd | grep -v xml | grep -v "main.cpp"  | xargs rm -rf 2>/dev/null 
+  rm -f *.template *.bak t.xml* sample.xml *.save  
   cd - > /dev/null 2>&1
   echo "   [ CLEANED ]"  
 }
 
 cleanup()
 {
-  echo
-  echo "  =========================  WARNING ============================"
-  echo "  Requested execution will cleanup many files recursively inside"
-  echo "  certain directories, so that any of user added files and edits"
-  echo "  may get lost. If you think you have added/edited important "
-  echo "  changes inside these directories, please back them up, before"
-  echo "  proceeding."
-  echo
-  echo "  Following directories would get cleaned up recursively:"
-  echo "  * Tests/ "
-  echo "  * examples/"
-  echo 
-  echo -n "Do you want to continue [y/N]? "
-  read ans
-  if [ "$ans" != 'y' ]; then
-    echo  "  => aborting the execution..."
-    echo
-    exit 2
-  fi
-
-
   echo "#------------------------------------------------------"
   echo "# cleaning up w3c_tests ..."
   echo "#------------------------------------------------------"
   for dir in $W3C_TESTS_DIRS
-  do
-    cleanup_dir
-  done
-  echo "#------------------------------------------------------"
-
-  echo; echo
-
-  echo "#------------------------------------------------------"
-  echo "# cleaning up xplus_tests ..."
-  echo "#------------------------------------------------------"
-  for dir in $XPLUS_TESTS_DIRS
-  do
-    cleanup_dir
-  done
-  echo "#------------------------------------------------------"
-
-  echo; echo
-
-  echo "#------------------------------------------------------"
-  echo "# cleaning up xplus_neg_tests ..."
-  echo "#------------------------------------------------------"
-  for dir in $XPLUS_NEGTESTS_DIRS
   do
     cleanup_dir
   done
@@ -171,65 +118,10 @@ cleanup()
 }
   
 
-#  2 testcases
-test_valid()
-{
-  if [ $TEST_FAILED = 'true' ]; then
-    return
-  fi
 
-  validXmlFiles=`ls valid*.xml` 2>/dev/null
-  # check valid.xml exists
-  if [ -z "$validXmlFiles" ]; then
-    echo "  No valid xml file(s) available to validate against"
-    fail_test
-    return
-  fi
 
-  # validate valid.xml
-  for xmlValid in $validXmlFiles
-  do
-    ./build/bin/$run -v $xmlValid >> tests.log 2>&1
-    if [ $? -ne 0 ]; then
-      echo "   failed to validate valid xml file: $xmlValid"
-      fail_test
-      return
-    fi
-  done
-
- #if [ ! -z  "$XMLLINT" ]; then
- #  $XMLLINT --noout --schema $INPUT_XSD valid.xml > /dev/null 2>&1 
- #  if [ $? -ne 0 ]; then
- #    echo "  failed to validate valid.xml using xmllint"
- #    #fail_test
- #    #return
- #  fi
- #fi
-}
-
-#  1 testcase
-test_build()
-{
-  if [ $TEST_FAILED = 'true' ]; then
-    return
-  fi
-
-  # verify that the dir builds
-  xsd2cpp $INPUT_XSD . >> tests.log 2>&1 && ./autogen.sh >> tests.log 2>&1 &&  make install >> tests.log 2>&1
-  if [ $? -ne 0 ]; then
-    echo "   failed to build"
-    fail_test
-    return
-  fi
-}
-
-#  1 testcase
 test_sample()
 {
-  if [ $TEST_FAILED = 'true' ]; then
-    return
-  fi
-
   # write sample.xml
   ./build/bin/$run -s  >> tests.log 2>&1
   
@@ -237,18 +129,12 @@ test_sample()
   if [ ! -f sample.xml ]; then
     echo "   sample.xml doesn't exist"
     fail_test
-    return
   fi
 }
 
 
-#  2 testcases
 test_write()
 {
-  if [ $TEST_FAILED = 'true' ]; then
-    return
-  fi
-
   # write t.xml
   ./build/bin/$run -w  >> tests.log 2>&1
   
@@ -256,114 +142,67 @@ test_write()
   if [ ! -f t.xml ]; then
     echo "   t.xml doesn't exist"
     fail_test
-    return
   fi
 
   # verify diff
-  #differ=`diff t.xml valid.xml`
-  #if [ ! -z "$differ" ]; then
-  #  echo "   failed to compare t.xml with valid.xml"
-  #  fail_test
-  #  return
-  #fi
+  differ=`diff t.xml valid.xml`
+  if [ ! -z "$differ" ]; then
+    echo "   failed to compare t.xml with valid.xml"
+    fail_test
+  fi
 }
 
-#  2 testcases
 test_roundtrip()
 {
-  if [ $TEST_FAILED = 'true' ]; then
-    return
-  fi
-
   # rountrip
-  validXmlFiles=`ls valid*.xml` 2>/dev/null
-  for xmlValid in $validXmlFiles
-  do
-    ./build/bin/$run -r $xmlValid >> tests.log 2>&1
-    # check xyz.xml.rt.xml exists
-    if [ ! -f $xmlValid.rt.xml ]; then
-      echo "   $xmlValid.rt.xml doesn't exist"
-      fail_test
-      return
-    fi
-  done
+  ./build/bin/$run -r ./t.xml >> tests.log 2>&1
+  
+  # check t.xml.rt.xml exists
+  if [ ! -f t.xml.rt.xml ]; then
+    echo "   t.xml.rt.xml doesn't exist"
+    fail_test
+  fi
 
   # verify diff
-  #differ=`diff t.xml.rt.xml t.xml`
-  #if [ ! -z "$differ" ]; then
-  #  echo "   failed to compare t.xml.rt.xml with t.xml"
-  #  fail_test
-  #  return
-  #fi
-}
-
-neg_test_dir()
-{
-  echo
-  cd $dir 
-  log_tests_dir
-
-  xsd2cpp $INPUT_XSD . >> tests.log 2>&1 
-  if [ $? -eq 0 ]; then
-    echo "   failed because xsd2cpp succeeded"
+  differ=`diff t.xml.rt.xml t.xml`
+  if [ ! -z "$differ" ]; then
+    echo "   failed to compare t.xml.rt.xml with t.xml"
     fail_test
-    return
   fi
-  
-  pass_test
-  cd - >/dev/null 2>&1
 }
 
-# several testcases(8) are run in each test directory
-# this functions does all the tests to be done, inside a particular test directory
 test_dir()
 {
   echo
   cd $dir 
   log_tests_dir
+  
   > tests.log
+  get_input_xsd
+  echo "   input: $input_xsd"
+  run=`basename $input_xsd | cut -d'.' -f1`run
 
-  if [ -f testme ]; then
-    echo "     ->running custom tests"
-    ./testme >> tests.log 2>&1
-    if [ $? -ne 0 ]; then
-      fail_test  
-    fi
-  else  
-    get_INPUT_XSD
-    echo "   input: $INPUT_XSD"
-    run=`basename $INPUT_XSD | cut -d'.' -f1 |sed -e 's/-/_/g'`run
-    #run=`basename $INPUT_XSD | cut -d'.' -f1`run
-    TEST_FAILED=false
-    test_build
-    test_valid
-    test_sample
-    test_write
-    test_roundtrip
+  # check valid.xml exists
+  if [ ! -f valid.xml ]; then
+    echo "  valid.xml doesn't exist"
+    fail_test
   fi
+ 
+  # verify that the dir builds
+  xsd2cpp $input_xsd . >> tests.log 2>&1 && ./autogen.sh >> tests.log 2>&1 &&  make install >> tests.log 2>&1
+  if [ $? -ne 0 ]; then
+    echo "   failed to build"
+    fail_test
+  fi
+  
+  test_sample
+  test_write
+  test_roundtrip
 
   pass_test
   cd - >/dev/null 2>&1
 }
 
-print_test_report()
-{
-  CNT_TOTAL_TESTS=`expr $CNT_PASSED_TESTS + $CNT_FAILED_TESTS`
-  echo; echo
-  echo "#-----------------------------------------"
-  echo "            Test Report                  "
-  echo "#-----------------------------------------"
-  echo " Total Tests  : $CNT_TOTAL_TESTS" 
-  echo " Passed Tests : $CNT_PASSED_TESTS" 
-  echo " Failed Tests : $CNT_FAILED_TESTS" 
-  if [ $CNT_FAILED_TESTS -eq 0 ]; then
-    echo
-    echo "        *** ALL TESTS PASSED ***       "
-  else
-    echo " tests failed : $FAILED_DIRS"
-  fi
-  echo "#-----------------------------------------"
-}
 
 test_all()
 {
@@ -379,30 +218,6 @@ test_all()
   echo;echo
 
   echo "#------------------------------------------------------"
-  echo "# running tests on xplus_tests ..."
-  echo "#------------------------------------------------------"
-  for dir in $XPLUS_TESTS_DIRS
-  do
-    test_dir
-  done
-  echo "#------------------------------------------------------"
-
-
-
-  echo "#------------------------------------------------------"
-  echo "# running tests on xplus_neg_tests ..."
-  echo "#------------------------------------------------------"
-  for dir in $XPLUS_NEGTESTS_DIRS
-  do
-    neg_test_dir
-  done
-  echo "#------------------------------------------------------"
-
-  
-
-  echo;echo
-
-  echo "#------------------------------------------------------"
   echo "# running tests on examples ..."
   echo "#------------------------------------------------------"
   for dir in $EX_DIRS
@@ -410,10 +225,14 @@ test_all()
     test_dir
   done
   echo "#------------------------------------------------------"
-  
 
-  print_test_report
+  echo; echo
+  echo "          ============================           "
+  echo "                ALL TESTS PASSED                 "
+  echo "          ============================           "
 }
+
+
 
 args=`getopt hct $*`
 if [ $? != 0 ]; then
@@ -426,19 +245,16 @@ do
   case "$i" in
     -h)
       print_usage
-      shift;break;;
+      shift;;
     -c)
-      ascertain_test_dirs
       cleanup
-      shift;break;;
+      shift;;
     -t)
-      ascertain_test_dirs
       cleanup
       echo;echo
       test_all
-      shift;break;;
+      shift;;
     --)
-      print_usage
       shift; break;;
   esac
 done

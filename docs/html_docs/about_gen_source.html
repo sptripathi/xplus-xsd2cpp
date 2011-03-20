@@ -1,23 +1,35 @@
 <html>
 
   <head>
-    <title>About Generated Source</title>
+    <title>About generated source</title>
   </head>
 
-  <h2>About generated source <hr NOSHADE SIZE=10 WIDTH=100%> </h2>
+  <h2>About generated source</h2>
+  <hr NOSHADE SIZE=10 WIDTH=100%>
 
   <body>
     <form>
       <ul>
         <li><a href="#DOXY_DOC">The doxygen documentation</a>
         <li><a href="#NS">Namespaces</a>
+          <ul>
+            <li><a href="#GEN_SOURCE_NS">Understanding namespaces of the generated source</a>
+            <li><a href="#XML_NS">Namespaces of the elements and attributes in the XML instance document</a>
+            <li><a href="#NAMING">Naming of the C++ Classes corresponding to elements and attributes of XML-Schema</a>
+          </ul>
         <li><a href="#SIMPLETYPE_IMPL">simpleType to implementation-type mapping</a>
         <li><a href="#API">Understanding API</a>
+          <ul>
+            <li><a href="#API_ATTRIBUTES">Working on attributes</a>
+            <li><a href="#API_MG">Access MGs</a>
+            <li><a href="#API_ELEMENTS">Working on elements</a>
+          </ul>
         <li><a href="#MAIN_CPP">The main.cpp file</a>
         <li><a href="#SRC_USE_CASE">Use Cases with generated source</a>
       </ul>
 
-  <a name="DOXY_DOC"><h3>The doxygen documentation<hr NOSHADE SIZE=7 WIDTH=100%></h3></a>
+  <a name="DOXY_DOC"><h3>The doxygen documentation</h3></a>
+  <hr NOSHADE SIZE=7 WIDTH=100%>
   You should generate doxygen documentation for the generated code from your XML-Schema while going through this documentation.<br>
   <br>  
   In the output directory, run:<br>
@@ -27,14 +39,11 @@
   The html documentation is generated in doc/html path relative to the output directory. Open doc/html/index.html in the browser of your choice, to read the documentation.
   <br><br>
 
-  <a name="NS"><h3>Namespaces <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-    <ul>
-      <li><a href="#GEN_SOURCE_NS">Understanding namespaces of the generated source</a>
-      <li><a href="#XML_NS">Namespaces of the elements and attributes in the XML instance document</a>
-      <li><a href="#NAMING">Naming of the C++ Classes corresponding to elements and attributes of XML-Schema</a>
-    </ul>
+  <a name="NS"><h3>Namespaces</h3></a>
+  <hr NOSHADE SIZE=7 WIDTH=100%>
 
-  <a name="GEN_SOURCE_NS"><h4>Understanding namespaces of the generated source<hr NOSHADE SIZE=5 WIDTH=100%></h4></a>
+  <a name="GEN_SOURCE_NS"><h4>Understanding namespaces of the generated source</h4></a>
+  <hr NOSHADE SIZE=5 WIDTH=100%>
 
   The C++ type-definition for each schema-component has two namespaces:
   <ul>
@@ -169,7 +178,7 @@
       </table>
 
   <br><br>
-  Obviously, the an URL mapped to directory/C++-namespace such as "http_www_example_com_org_engg", seems unfriendly from programming perspective.<br>
+  Obviously, the an URL mapped to directory/C++-namespace such as "http_www_example_com_org_engg", seems unfriendly for programming perspective.<br>
   There is a solution to this scenario. Before generating C++ code using <code>xsd2cpp</code>, create a file named <code>nsaliases.xml</code> in the same path as that of the XML-Schema file. This xml file should provide mappings for target-namespace URLs of your XML-Schema(s) to coresponding URNs of your choice. <br> 
  
 
@@ -198,9 +207,10 @@
 
 
   <br><br>
-  <a name="XML_NS"><h4>Namespaces of the elements and attributes in the XML instance document<hr NOSHADE SIZE=5 WIDTH=100%></h4></a>
+  <a name="XML_NS"><h4>Namespaces of the elements and attributes in the XML instance document</h4></a>
+  <hr NOSHADE SIZE=5 WIDTH=100%>
 
-  XML-Namespace of an element/attribute in a valid instance XML document, is based on the XML-Schema specification. An implementation like XmlPlus has no semantics to add here.<br>
+  XML-Namespace of an element/attribute in a valid instance XML document, is based on the XML-Schema specification. An implementation like XmlPlus has nothing to do here.<br>
 
   If the XML-Schema, and the imported Documents, have no targetNamespace specified, then none of elements/attributes in the instance XML document would have a namespace URI. Otherwise, some elements/attributes in the instance XML document would have a namespace URI. Even in the later case, not all elements/attributes in the instance XML document would have a namespace URI.<br> 
   If a non-ref element/attribute does have a XML-Namespace, the namespace URI would be the targetNamespace URI of the XML-Schema document in which the element/attribute appears.<br>
@@ -292,13 +302,14 @@
   </table>
 
   <br><br>
-  <a name="NAMING"><h4>Naming of the C++ Classes corresponding to the XML-Schema components <hr NOSHADE SIZE=5 WIDTH=100%> </h4></a>
+  <a name="NAMING"><h4>Naming of the C++ Classes corresponding to the XML-Schema components</h4></a>
+  <hr NOSHADE SIZE=5 WIDTH=100%>
 
   Folowing table enumerates different C++ types for schema-components(elements/attributes/simpleType/complexType etc.).<br> 
   Note that the namespace (directory..namespace and CPP...namespace) corresponding to the targetNamespace of the XML-Schema is prepended to the respective types, and are ommitted here for sake of simplicity.
 
   <table border=1>
-    <caption><b>Naming and Namespaces</b></caption>
+    <caption><b>Naming</b></caption>
     <tr>
       <th width=20%>Annotation</th>
       <th width=50%>component's position in the tree</th>
@@ -306,12 +317,12 @@
     </tr>
     <tr>
       <td>top-level element</td>
-      <td><pre>
-  &lt;schema&gt;
-    <b>&lt;element name="myElement" type="MyElemType"/&gt;</b>
-    ...
-    ....
-  &lt;/schema&gt;</pre>
+      <td>
+        &lt;schema&gt;<br>
+        &nbsp;&nbsp;<b>&lt;element name="myElement" type="MyElemType"/&gt;</b><br>
+        ...<br>
+        ....<br>
+        &lt;/schema&gt;<br>
       </td>  
       <td>
         <ul>
@@ -323,12 +334,12 @@
     </tr>
     <tr>
       <td>top-level attribute</td>
-      <td><pre>
-  &lt;schema&gt;
-    <b>&lt;attribute name="MyAttr" type="MyAttrType"/&gt;</b>
-    ...
-    ....
-  &lt;/schema&gt;</pre>
+      <td>
+        &lt;schema&gt;<br><br>
+        &nbsp;&nbsp;<b>&lt;attribute name="MyAttr" type="MyAttrType"/&gt;</b><br>
+        ...<br>
+        ....<br>
+        &lt;/schema&gt;<br>
       </td>  
       <td>
         <ul>
@@ -340,16 +351,14 @@
     </tr>
     <tr>
       <td>top-level Type</td>
-      <td><pre>
-  &lt;schema&gt;
-    ...
-
-    <b>&lt;complexType name="MyComplexType" &gt;</b>
-      ...
-    <b>&lt;/complexType&gt;</b>
-
-    ...
-  &lt;/schema&gt;</pre>
+      <td>
+        &lt;schema&gt;<br><br>
+        ...<br>
+        <b>&lt;complexType name="MyComplexType" &gt;</b><br>
+        &nbsp;&nbsp;...<br>
+        <b>&lt;/complexType name="MyComplexType" &gt;</b><br>
+        ...<br>
+        &lt;/schema&gt;<br>
       </td>  
       <td>
         <ul>
@@ -360,21 +369,19 @@
       </td>
     </tr>
     <tr>
-      <td>local element</td>
+      <td>nested(anonymous) element</td>
       <td>
-        <pre>
-  &lt;schema&gt;
-    &lt;element name="element1" ...&gt;
-      ...
-      &lt;element name="element2" ...&gt;
-        ...
-        <b>&lt;element name="myElement type="MyElemType"/&gt;</b>
-        ...
-      &lt;/element&gt;
-      ...
-    &lt;/element&gt;
-  &lt;/schema&gt;
-        </pre>
+        &lt;schema&gt;<br>
+        &nbsp;&nbsp;&lt;element name="element1" ...&gt;<br>
+        &nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;element name="element2" ...&gt;<br>
+        &nbsp;&nbsp; &nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;element name="myElement type="MyElemType"/&gt;</b><br>
+        &nbsp;&nbsp; &nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;/element&gt;<br>
+        &nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;/element&gt;<br>
+        &lt;/schema&gt;<br>
       </td>
       <td>
         <ul>
@@ -385,19 +392,19 @@
       </td>
     </tr>
     <tr>
-      <td>local attribute</td>
-      <td><pre>
-  &lt;schema&gt;
-    &lt;element name="element1" ...&gt;
-      ...
-      &lt;element name="element2" ...&gt;
-        ...
-        <b>&lt;attribute name="myAttr" type="MyAttrType"/&gt;</b>
-        ...
-      &lt;/element&gt;
-      ...
-    &lt;/element&gt;
-  &lt;/schema&gt;</pre>
+      <td>nested(anonymous) attribute</td>
+      <td>
+        &lt;schema&gt;<br>
+        &nbsp;&nbsp;&lt;element name="element1" ...&gt;<br>
+        &nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;element name="element2" ...&gt;<br>
+        &nbsp;&nbsp; &nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;attribute type="MyAttrType"/&gt;</b><br>
+        &nbsp;&nbsp; &nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;/element&gt;<br>
+        &nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;/element&gt;<br>
+        &lt;/schema&gt;<br>
       </td>
       <td>
         <ul>
@@ -415,9 +422,10 @@
   </table>
 
   <br><br>
-  <a name="SIMPLETYPE_IMPL"><h3>simpleType to implementation-type mapping <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+  <a name="SIMPLETYPE_IMPL"><h3>simpleType to implementation-type mapping</h3></a>
+  <hr NOSHADE SIZE=7 WIDTH=100%>
 
-  This C++ data-binding mapping for XML Schema simpleTypes, is available in excel file <b>xsd.xls</b> inside html_docs/files  directory.
+  This C++ data-binding mapping for XML Schema simpleTypes, is available in excel file <b>xsd.xls</b> in the docs directory.
   <br>Open this file and view the tab named "XSD_Builtiin_DataTypes".
 
 
@@ -459,16 +467,12 @@
 
   <br><br>
   Following sections describe the various relevant APIs:
-   <ul>
-     <li><a href="#API_ATTRIBUTES">Working on attributes</a>
-     <li><a href="#API_MG">Access MGs</a>
-     <li><a href="#API_ELEMENTS">Working on elements</a>
-   </ul>
   <br><br>
   
   <ul>
   
-  <li><a name="DOCUMENT_CLASS"><h4>The Document class <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
+  <li><a name="DOCUMENT_CLASS"><h4>The Document class</h4></a>
+  <hr NOSHADE SIZE=3 WIDTH=100%>
 
   For every unique targetNamespace URI among all XML-Schema files(the input and the imported ones), there would be one Document class generated.<br>
   The Document class has a notion similar to that of the DOM Document. The root of the XML-Document is a direct child of this Document class.<br><br> 
@@ -496,14 +500,15 @@
   
   
   <br><br>
-  <li><a name="API_ATTRIBUTES"><h4>Working on attributes <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
+  <li><a name="API_ATTRIBUTES"><h4>Working on attributes</h4></a>
+  <hr NOSHADE SIZE=3 WIDTH=100%>
     The methods for operating on child-attributes, are available in parent-element.
     <br>
 
     <ul>
     <li> <code><b>pAttrNode</b> attribute_attr_<b>nameAttr</b>()</code>
     <br><br>
-      Returns the scalar attribute node. Returns <code>NULL</code> if the attribute is optional and is absent in Document. Therefore, this call should be used to check presence of optional attributes.
+      Returns the scalar attribute node.
     <br><br>
 
     <li> <code>void set_attr_<b>nameAttr</b>(DOMString val)</code>
@@ -536,7 +541,8 @@
 
   
   <br><br>
-  <li><a name="API_MG"><h4>Access MGs <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a>
+  <li><a name="API_MG"><h4>Access MGs</h4></a>
+  <hr NOSHADE SIZE=3 WIDTH=100%>
   
   Methods to access MGs are available in the parent component, which may be an element or a sequence.
   
@@ -573,7 +579,8 @@
 
 
   
-  <li><a name="API_ELEMENTS"><h4>Working on elements <hr NOSHADE SIZE=3 WIDTH=100%> </h4></a> 
+  <li><a name="API_ELEMENTS"><h4>Working on elements</h4></a>
+  <hr NOSHADE SIZE=3 WIDTH=100%>
 
   The child-elements can be operated on, from parent-element or parent-MG:</b>
   <ol>
@@ -595,7 +602,7 @@
         <ul>
         <li> <code><b>pElemNode</b> element_<b>nameElem</b>()</code>
         <br><br>
-          Returns the scalar element node. Returns <code>NULL</code> if the element is optional(ie. an element with minOccurs="0" and maxOccurs="1" in schema) and is absent in Document. Therefore, this call should be used to check presence of optional elements.
+          Returns the scalar element node.
         <br><br>
 
         <li> <code>void set_<b>nameElem</b>(DOMString val)</code>
@@ -691,12 +698,17 @@
 
 
   <br><br>
-  <a name="MAIN_CPP"><h3>The main.cpp file <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+  <a name="MAIN_CPP"><h3>The main.cpp file</h3></a>
+  <hr NOSHADE SIZE=7 WIDTH=100%>
   The xsd2cpp tool generates a main.cpp in the output directory.
-  The main.cpp is a demo application. It serves the purpose of showing: <br> a) how the build of generated source(libraries and headers), are to be consumed<br> b) all uses cases possible, and their HOWTOs.
-<br><br>
-  This main.cpp common functions are placed inside src/XSD/UserOps.cpp relative to XmlPlus source-root. The main() function of the generated main.cpp, calls XSD_USER_OPS::xsd_main(), to use those funtions, which in turn callback the template functions, which user needs to fill code with.<br>
-  Your application does not have to use these utility functions, if you don't want to. There is an unfolded main.cpp available under examples/simplest/main.cpp, which does not use the utility functions and callback mechanism like stated before. Refer to examples/simplest/main.cpp for such a need.
+  The main.cpp is a demo application. It serves the purpose of showing: <br> a) how the build of generated source(libraries and headers), are to be consumed<br> b) all uses cases possible, and their HOWTOs
+
+  <br><br>
+  <b>Note:</b> <i>If there is a main.cpp file already present in output directory, then it is not overridden on invocation of xsd2cpp, instead a file named <code>main.cpp.template</code>, is made available under the same output directory.</i>
+  <br><br>
+
+  This main.cpp common functions are placed inside src/XSD/UserOps.cpp relative to XmlPlus source-root. The main() function of the generated main.cpp, calls XSD_USER_OPS::xsd_main(), to use those funtions, which in turn call the template functions, which user needs to fill code with.<br><br>
+  Your application does not have to use the data-binding library like this. There is an unfolded main.cpp available under examples/simplest/main.cpp. An application could use call flow like used in the examples/simplest/main.cpp.
 
   <br><br>
   In the generated main.cpp, you may need to write code in some template functions:
@@ -714,41 +726,42 @@
 
   A relevant sample code-snippet of main.cpp follows:<br>
 
-  <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
- <pre>
- // Following functions are use case templates.
- // You need to put "code" in the respective contexts.
- //
-
- void chooseDocumentElement(STDemo::Document* xsdDoc)
- {
-     // uncomment one of folowing to choose root
-     xsdDoc-&gt;set_root_myComplexTypeElem();
-     //xsdDoc-&gt;set_root_intValue2();
- }
-
- void populateDocument(DOM::Document* pDoc)
- {
-     STDemo::Document* docNode = dynamic_cast&lt;STDemo::Document *&gt;(pDoc);
-     // write code to populate the Document here
-     ...
-     ....
-     rootElem-&gt;set_aFont("medium");
-     rootElem-&gt;set_anotherFont("72");
-     ....
-     ...
- }
-
- void updateOrConsumeDocument(DOM::Document* pDoc)
- {
-     STDemo::Document* xsdDoc = dynamic_cast&lt;STDemo::Document *&gt;(pDoc);
-     // write code to update the populated-Document here
- }
-    </pre>
+  <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
+    <code>
+    // Following functions are templates.<br>
+    // You need to put code in the context
+    <br><br>
+    void chooseDocumentElement(STDemo::Document* xsdDoc)<br>
+    {<br>
+      &nbsp;&nbsp;// uncomment one of folowing to choose root<br>
+      &nbsp;&nbsp;xsdDoc-&gt;set_root_myComplexTypeElem();<br>
+      &nbsp;&nbsp;//xsdDoc-&gt;set_root_intValue2();<br>
+    }
+    <br><br>
+    void populateDocument(DOM::Document* pDoc)<br>
+    {<br>
+      &nbsp;&nbsp;STDemo::Document* docNode = dynamic_cast&lt;STDemo::Document *&gt;(pDoc);
+      <br><br>
+      &nbsp;&nbsp;// write code to populate the Document here<br>
+      &nbsp;&nbsp;...<br>
+      &nbsp;&nbsp;....<br>
+      &nbsp;&nbsp;rootElem-&gt;set_aFont("medium");<br>
+      &nbsp;&nbsp;rootElem-&gt;set_anotherFont("72");<br>
+      &nbsp;&nbsp;....<br>
+      &nbsp;&nbsp;...<br>
+    }
+    <br><br>
+    void updateOrConsumeDocument(DOM::Document* pDoc)<br>
+    {<br>
+      &nbsp;&nbsp;STDemo::Document* xsdDoc = dynamic_cast&lt;STDemo::Document *&gt;(pDoc);<br>
+      &nbsp;&nbsp;// write code to update the populated-Document here<br>
+    }
+    </code>
   </div>
 
   <br><br>
-  <a name="SRC_USE_CASE"><h3>Use Cases with generated source <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+  <a name="SRC_USE_CASE"><h3>Use Cases with generated source</h3></a>
+  <hr NOSHADE SIZE=7 WIDTH=100%>
 
   One should go through XmlPlus examples to understand how an application can consume code generated from xsd2cpp tool.<br>
   Following are some use cases.
@@ -758,120 +771,100 @@
     <li><b>Creating a Document from an input-stream and writing back to an output-stream</b><br>
     <hr NOSHADE SIZE=3 WIDTH=100%>
     
-    Code snippet taken from <code>examples/simplest/main.cpp</code>. Refer to the example for full details.
+    Snippets taken from examples/simplest. Refer to the example for full details.
     <br><br>
 
-    <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;"><pre>
-  <b>//read the file into the Document</b>
-  ifstream is(inFilePath.c_str());
-  simplest::Document xsdDoc(false);
-  is &gt;&gt; xsdDoc;
-  
-  // <i>do something, eg. update the Document</i>
-  ...
-  ....
-  
-  <b>//write the Document back to a file</b>
-  xsdDoc.prettyPrint(true);
-  ofstream ofs(outFile.c_str());
-  ofs &lt;&lt; xsdDoc;
-    </pre></div>
+    <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
+    //read the file into the Document<br>
+    ifstream is(inFilePath.c_str());<br>
+    simplest::Document xsdDoc(false);<br>
+    is &gt;&gt; xsdDoc;<br>
+    <br>
+    // do something, eg. update the Document<br>
+    <br>
+    //write the Document back to a file<br>
+    xsdDoc.prettyPrint(true);<br>
+    ofstream ofs(outFile.c_str());<br>
+    ofs &lt;&lt; xsdDoc;<br>
+    </div>
 
     <br> <br> 
     
-    <li><b><a name="ELEM_THRU_PARENT_ELEM">Working on elements through parent element <hr NOSHADE SIZE=3 WIDTH=100%> </a></b>
+    <li><b><a name="ELEM_THRU_PARENT_ELEM">Working on elements through parent element</a></b>
+    <hr NOSHADE SIZE=3 WIDTH=100%>
 
-    Code snippet taken from <code>examples/simpleTypesDemo</code>. Refer to the example for full details.
+    Snippets taken from examples/simpleTypesDemo. Refer to the example for full details.
     <br><br>
 
     The XML-Schema snippet:
 
-    <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;"><pre>
-  ...
-  ....
-  &lt;xsd:element name="myComplexTypeElem" type="tns:MyComplexType"/&gt;
-  
-  &lt;xsd:complexType name="MyComplexType" mixed="true"&gt;
-    &lt;xsd:sequence&gt;
-      ...
-      ....
-      &lt;xsd:element name="aFont" type="tns:Font"/&gt;
-      &lt;xsd:element name="anotherFont" type="tns:Font"/&gt;
-      ...
-      ....
-    &lt;/xsd:sequence&gt;
-  &lt;/xsd:complexType&gt;
-  ...
-  ....
-    </pre></div>
+    <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
+    &lt;xsd:element name="myComplexTypeElem" type="tns:MyComplexType"/&gt;<br>
+    &lt;xsd:complexType name="MyComplexType" mixed="true"&gt;<br>
+    &nbsp;&nbsp;&lt;xsd:sequence&gt;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;...<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;....<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;xsd:element name="aFont" type="tns:Font"/&gt;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;xsd:element name="anotherFont" type="tns:Font"/&gt;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;...<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;....<br>
+    &nbsp;&nbsp;&lt;/xsd:sequence&gt;<br>
+    &lt;/xsd:complexType&gt;<br>
+    </div>
     <br><br>
-
-    <code>main.cpp</code> code snippet:
-    <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
-    <pre>
- ...
- ....
- STDemo::myComplexTypeElem *rootElem = docNode-&gt;element_myComplexTypeElem();
- rootElem-&gt;set_aFont("medium");
- rootElem-&gt;set_anotherFont("72");
- ...
- ....
-    </pre>
+    
+    Code snippet:
+    <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
+    STDemo::myComplexTypeElem *rootElem = docNode-&gt;element_myComplexTypeElem();<br>
+    rootElem-&gt;set_aFont("medium");<br>
+    rootElem-&gt;set_anotherFont("72");<br>
     </div>
 
-    <br><br> <br><br>
 
-    <li><b><a name="ELEM_THRU_PARENT_MG">Working on elements through parent MG eg. sequence <hr NOSHADE SIZE=3 WIDTH=100%> </a></b>
+    <br><br>
+    <br><br>
 
-    Snippet taken from examples/mails. Refer to the example for full details.
+    <li><b><a name="ELEM_THRU_PARENT_MG">Working on elements through parent MG eg. sequence</a></b>
+    <hr NOSHADE SIZE=3 WIDTH=100%>
+
+    Snippets taken from examples/mails. Refer to the example for full details.
     <br><br>
 
     The XML-Schema snippet:
 
-    <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
-    <pre>
-  ...
-  ....
-  &lt;xsd:complexType name="mailsType"&gt;
-    &lt;xsd:sequence minOccurs="1" maxOccurs="unbounded"&gt;
-      &lt;xsd:element name="mail" type="mailType"/&gt;
-    &lt;/xsd:sequence&gt;
-  &lt;/xsd:complexType&gt;
-  
-  &lt;xsd:complexType name="mailType"&gt;
-    &lt;xsd:sequence&gt;
-    &lt;xsd:element name="envelope" type="envelopeType" /&gt;
-      ...
-      ....
-    &lt;/xsd:sequence&gt;
-    &lt;xsd:attribute use="required" name="id" type="xsd:integer" /&gt;
-  &lt;/xsd:complexType&gt;
-  ...
-  ....</pre>
+    <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
+  &lt;xsd:complexType name="mailsType"&gt;<br>
+  &nbsp;&nbsp;&lt;xsd:sequence minOccurs="1" maxOccurs="unbounded"&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;xsd:element name="mail" type="mailType"/&gt;<br>
+  &nbsp;&nbsp;&lt;/xsd:sequence&gt;<br>
+  &lt;/xsd:complexType&gt;<br>
+  <br>
+  &lt;xsd:complexType name="mailType"&gt;<br>
+  &nbsp;&nbsp;&lt;xsd:sequence&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;xsd:element name="envelope" type="envelopeType" /&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    ...<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    ....<br>
+  &nbsp;&nbsp;&lt;/xsd:sequence&gt;<br>
+  &nbsp;&nbsp;&lt;xsd:attribute use="required" name="id" type="xsd:integer" /&gt;<br>
+  &lt;/xsd:complexType&gt;<br>
     </div>
     
     <br><br>
 
-    <code>main.cpp</code> code snippet:
-    <div style="border:1px dotted black; padding:0em; background-color:#E6E6FA;">
-    <pre>
-    ...
-    ....
-    pMails-&gt;set_count_sequenceList(2);
-    
-    NoNS::mails::sequenceList::sequence* pSeq =NULL;
-    NoNS::mails::mail* pMail = NULL;
-    
-    pSeq = pMails-&gt;sequence_at(0);
-    pMail= pSeq-&gt;element_mail();
-    pMail-&gt;set_attr_id(101);
-    pMail-&gt;element_envelope()-&gt;set_From("tom@mgm.com");
-    pMail-&gt;element_envelope()-&gt;set_From("tom@mgm.com");
-    pMail-&gt;element_envelope()-&gt;set_To("jerry@mgm.com");
-    pMail-&gt;element_envelope()-&gt;set_Date("1978-07-04T14:50:59Z");
-    ...
-    ....
-    </pre>
+    Code snippet:
+    <div style="border:1px dotted black; padding:1em; background-color:#E6E6FA;">
+    pMails-&gt;set_count_sequenceList(2);<br>
+    <br>
+    NoNS::mails::sequenceList::sequence* pSeq =NULL;<br>
+    NoNS::mails::mail* pMail = NULL;<br>
+    <br>
+    pSeq = pMails-&gt;sequence_at(0);<br>
+    pMail= pSeq-&gt;element_mail();<br>
+    pMail-&gt;set_attr_id(101);<br>
+    pMail-&gt;element_envelope()-&gt;set_From("tom@mgm.com");<br>
+    pMail-&gt;element_envelope()-&gt;set_From("tom@mgm.com");<br>
+    pMail-&gt;element_envelope()-&gt;set_To("jerry@mgm.com");<br>
+    pMail-&gt;element_envelope()-&gt;set_Date("1978-07-04T14:50:59Z");<br>
     </div>
 
   </ul>

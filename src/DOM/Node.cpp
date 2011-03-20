@@ -39,7 +39,6 @@ namespace DOM
       Node* prevSibling,
       Node* nextSibling
       ):
-    XPlusObject("Node"),  
     _nodeName(nodeName),
     _nodeValue(nodeValue),
     _nodeType(nodeType),
@@ -49,10 +48,8 @@ namespace DOM
     _ownerDocument(ownerDocument),
     _nsUri(nsURI),
     _nsPrefix(nsPrefix),
-    _depth(0),
-    _removedFromParentList(false)
+    _depth(0)
   { 
-    //cout << "constructing Node: nodeName:" << *_nodeName << " ptr=" << this << endl;
     if( 
         (_nodeType == ELEMENT_NODE) ||
         (_nodeType == ATTRIBUTE_NODE)
@@ -69,7 +66,6 @@ namespace DOM
       case TEXT_NODE:
       case COMMENT_NODE:
       case CDATA_SECTION_NODE:
-      case DOCUMENT_TYPE_NODE:
       case PROCESSING_INSTRUCTION_NODE:
         if(_parentNode) 
         {
@@ -105,23 +101,6 @@ namespace DOM
     }
   }
 
-/*
-  
-    //debug:
-  void Node::print()
-  {
-    cout << " nodeName:" << _nodeName
-        << " nodeValue:" << _nodeValue
-        << " parentNode: " << _parentNode
-        << " nsUri:" << _nsUri
-        << " nsPrefix:" << _nsPrefix
-        << " localName:" << _localName
-        << endl;
-    cout << "children:" << endl;
-      _childNodes.print();
-  }
-  */
-
   void Node::setParentNode(Node* parentNode)
   {
     _parentNode = parentNode;
@@ -140,15 +119,7 @@ namespace DOM
     }
   }
 
-  Node::~Node()
-  {
-    //cout << "destructing Node: nodeName:" << *_nodeName << " ptr=" << this << endl;
-    //cout << "    ";  this->printRefCnt();
-    if(this->getParentNode() && !_removedFromParentList) {
-      //this->dontFree(true);
-      this->getParentNode()->removeChild(this);  
-    }
-  }
+  Node::~Node() {}
 
   Document* Node::getOwnerDocument() {
     return _ownerDocument;
@@ -159,46 +130,38 @@ namespace DOM
   }
   
   Node* Node::insertAt(Node* newChild, unsigned int pos) {
-    newChild->setParentNode(this);
     return _childNodes.insertAt(newChild, pos);
   }
   
   Node* Node::insertFront(Node* newChild) {
-    newChild->setParentNode(this);
     return _childNodes.insertFront(newChild);
   }
   
   Node* Node::insertBack(Node* newChild) {
-    newChild->setParentNode(this);
     return _childNodes.insertBack(newChild);
   }
 
   Node* Node::insertAfter(Node* newChild, Node* refChild) {
-    newChild->setParentNode(this);
     return _childNodes.insertAfter(newChild, refChild);
   }
 
   Node* Node::insertBefore(Node* newChild, Node* refChild) {
-    newChild->setParentNode(this);
     return _childNodes.insertBefore(newChild, refChild);
   }
   
   Node* Node::insertBetween(Node* newChild, Node *prevChild, Node *nextChild) {
-    newChild->setParentNode(this);
     return _childNodes.insertBetween(newChild, prevChild, nextChild);
   }
 
   Node* Node::replaceChild(Node* newChild, Node* oldChild) {
-    newChild->setParentNode(this);
     return _childNodes.replaceNode(newChild, oldChild);
   }
 
-  void Node::removeChild(Node* oldChild) {
-    _childNodes.removeNode(oldChild);
+  Node* Node::removeChild(Node* oldChild) {
+    return _childNodes.removeNode(oldChild);
   }
 
   Node* Node::appendChild(Node* newChild) {
-    newChild->setParentNode(this);
     return _childNodes.insertBack(newChild);
   }    
 
@@ -255,13 +218,6 @@ namespace DOM
         << ( !getNodeName() ? "(NULL)" : getNodeName()->str() ) << " | "
         //<< ( !getNodeValue() ? "(NULL)" : getNodeValue()->str() ) << " | "
         << endl;
-      os << " childNodes: {";
-      _childNodes.print();
-      os << "  }"<< endl;
-      
-      os << " attributes: {";
-      _attributes.print();
-      os << "  }"<< endl;
       
     }
     if(0)
@@ -353,31 +309,6 @@ namespace DOM
     return createChildTextNode(value);
   }
 
-  CDATASection* Node::createChildCDATASection(DOMString* data)
-  {
-    if( 
-        (_nodeType == ELEMENT_NODE) ||
-        (_nodeType == ATTRIBUTE_NODE)
-      )
-    {
-      CDATASection* pCDATA = NULL;
-      if(data) {
-        pCDATA = new CDATASection(data, this->getOwnerDocument(), this);
-      }
-      if(_nodeType == ATTRIBUTE_NODE) {
-        setNodeValue(data); //attribute with CDATA:FIXME ????
-      }
-      return pCDATA;
-    }
-    else {
-      throw DOMException("CDATASection is allowed only inside ATTRIBUTE_NODE or ELEMENT_NODE");
-    }
-  }
-
-  CDATASection* Node::createCDATASection(DOMString* data)
-  {
-    return createChildCDATASection(data);
-  }
 
   TextNode* Node::createChildTextNode(DOMString* value) 
   {
@@ -386,14 +317,9 @@ namespace DOM
         (_nodeType == ATTRIBUTE_NODE)
       )
     {
-      TextNode *pText = NULL;
       if(value) {
-        pText = new TextNode(value, this->getOwnerDocument(), this);
+        return new TextNode(value, this->getOwnerDocument(), this);
       }
-      if(_nodeType == ATTRIBUTE_NODE) {
-        setNodeValue(value);
-      }
-      return pText;
     }
     else {
       throw DOMException("TextNode is allowed only inside ATTRIBUTE_NODE or ELEMENT_NODE");
@@ -419,7 +345,7 @@ namespace DOM
     }
   }
 
-  unsigned int Node::countPreviousSiblingsOfType(Node::NodeType nodeType) const
+  unsigned int Node::countPreviousSiblingsOfType(Node::NodeType nodeType)
   {
     Node *node = this->getPreviousSibling();
     unsigned int cnt=0;
@@ -432,34 +358,5 @@ namespace DOM
     }
     return cnt;
   }
-
-  unsigned int Node::countChildrenOfType(Node::NodeType nodeType) const
-  {
-    unsigned int cnt=0;
-    for(unsigned int i=0; i<_childNodes.getLength(); i++)
-    {
-      Node* node = _childNodes.item(i);
-      if(node->getNodeType() == nodeType) {
-        ++cnt;
-      }
-    }
-    return cnt;
-  }
-
-  void Node::removeChildrenOfType(Node::NodeType nodeType)
-  {
-    for(int i=0; i<(int)_childNodes.getLength(); i++)
-    {
-      Node* node = _childNodes.item(i);
-      if(node->getNodeType() == nodeType) 
-      {
-        _childNodes.removeNode(node);
-        i--;
-      }
-    }
-  }
-
-
-
 
 }

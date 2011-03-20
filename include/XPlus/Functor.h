@@ -27,55 +27,43 @@ namespace XPlus
 {
   using namespace std;
 
-  // FIXME: make XPlusObject as base
-  template <class R, class A> struct unary_function_base : public unary_function<A,R>, public XPlus::XPlusObject
+  template <class R, class A> struct unary_function_base : public unary_function<A,R>
   {
-    unary_function_base():
-      XPlusObject("unary_function_base")
-      {
-      }
+    virtual R operator()(A arg)=0;
+  };
 
-    virtual R operator()(A& arg)=0;
+  template <class R> struct noargs_function_base : public unary_function<void,R>, public XPlus::XPlusObject
+  {
+    virtual R operator()()=0;
+
   };
 
 
   //template <class R, class T, class A> class object_unary_mem_fun_t : public unary_function<A,R>
-  template <class R, class T, class A> class object_unary_mem_fun_t : public unary_function_base<R,A>
+  template <class R, class T, class A> class object_unary_mem_fun_t : public unary_function_base<A,R>
   {
     private:
       T*    _ptrObj;
-      R (T::*_ptrNoArgFunc)(A& arg);
+      R (T::*_ptrNoArgFunc)(A arg);
 
     public:
 
-      explicit object_unary_mem_fun_t(T *ptrObj, R (T::*ptrNoArgFunc)(A& arg)):
+      explicit object_unary_mem_fun_t(T *ptrObj, R (T::*ptrNoArgFunc)(A arg)):
         _ptrObj(ptrObj),
         _ptrNoArgFunc(ptrNoArgFunc)
     {
     }
 
-      R operator()(A& arg)
+      R operator()(A arg)
       {
         if(_ptrObj) {
-          return (_ptrObj->*_ptrNoArgFunc)(arg);
+          (_ptrObj->*_ptrNoArgFunc)(arg);
         }
         else {
           //TODO: throw NullPointerException
         }
       }
   };
-
-
-  template <class R> struct noargs_function_base : public unary_function<void,R>, public XPlus::XPlusObject
-  {
-    noargs_function_base():
-      XPlusObject("noargs_function_base")
-      {
-      }
-    virtual R operator()()=0;
-
-  };
-
 
   template <class R, class T> class object_noargs_mem_fun_t : public noargs_function_base<R>
   {
@@ -160,7 +148,7 @@ namespace XPlus
       }
   };
 
-  int main()
+  main()
   {
     //test1
     cout << "\n test1" << endl;
@@ -181,7 +169,6 @@ namespace XPlus
     noargs_function_base<void> *pCallback_B_foo = new object_noargs_mem_fun_t<void, B>(&b, &B::foo);
     (*pCallback_B_foo)();
 
-    return 0;
   }
 #endif
 

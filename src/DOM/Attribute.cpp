@@ -33,7 +33,6 @@ namespace DOM
                   Document* ownerDocument,
                   bool specified
                 ):
-    XPlusObject("Attribute"),            
     Node(name, Node::ATTRIBUTE_NODE, nsURI, nsPrefix, ownerDocument, value, NULL),
     _name(name),
     _specified(specified),

@@ -9,9 +9,7 @@ libxplus_la_SOURCES = \
   DateTimeUtils.cpp \
   Duration.cpp \
   Exception.cpp \
-  TextEncoding.cpp \
   FPA.cpp \
-  Namespaces.cpp \
   StringUtils.cpp \
   UString.cpp \
   ConvertUTF.c

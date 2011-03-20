@@ -17,11 +17,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "XPlus/Namespaces.h"
 #include "XSD/PrimitiveTypes.h"
 #include "XSD/xsdUtils.h"
 #include "XSD/XSDException.h"
-#include "XSD/TypeDefinitionFactory.h"
 #include "Poco/RegularExpression.h"
 
 extern "C" {
@@ -29,119 +27,51 @@ extern "C" {
 }
 
 using namespace std;
-using XPlus::Namespaces;
-
-XSD::MapWrapper  XSD::TypeDefinitionFactory::_map;
 
 namespace XMLSchema
 {
-
   template<> void ConstrainingFacet<vector<string> >::validateCFacetValueWrtParent(vector<string> val)
   { }
 
-  namespace Types 
-  {
-    map<DOMString, anyType*>   anyType::_qNameToTypeMap;
-
-    anyType::anyType(AnyTypeCreateArgs args, eAnyTypeUseCase anyTypeUseCase_):
-      XPlusObject("anyType"),
-      _anyTypeUseCase(anyTypeUseCase_),  
-      _ownerNode(args.ownerNode),
-      _ownerElem(args.ownerElem),
-      _ownerDoc(args.ownerDoc),
-      _fsm(NULL),
+  namespace Types {
+    
+    anyType::anyType(
+        NodeP ownerNode,
+        ElementP ownerElem,
+        TDocumentP ownerDoc,
+        eAnyTypeUseCase anyTypeUseCase
+        ):
+      _ownerNode(ownerNode),
+      _ownerElem(ownerElem),
+      _ownerDoc(ownerDoc),
+      //_fsmCreatedNode(NULL),
       _value(""),
-      _abstract(args.abstract),
-      _blockMask(args.blockMask),
-      _finalMask(args.finalMask),
-      _defaultValue(""),
-      _isDefaultText(false)
+      _fsm(NULL),
+      _valueNode(NULL),
+      _fixed(false)
     {
-      if(_abstract == true)
+      if(_ownerElem)
       {
-        ValidationException ex("Since the element's type-definition is declared abstract in the schema document, all instances of this element must use 'xsi:type' in the instance document, to indicate a derived type that is not abstract");
-        if(_ownerElem)
-        {
-          ex.setContext("element", *_ownerElem->getNodeName());
-          if(_ownerElem->getParentNode()) {
-            _ownerElem->getParentNode()->removeChild(_ownerElem);  
-          }
-        }
-        throw ex;
-      }
 
-      if(anyTypeUseCase() == ANY_SIMPLE_TYPE) {
-        _contentTypeVariety = CONTENT_TYPE_VARIETY_SIMPLE;
-      }
-      else {
-        _contentTypeVariety = CONTENT_TYPE_VARIETY_MIXED; // for anyType
-      }
+        // use following fsm allocation for supporting xsi 
+        /*
+        XsdFsmBasePtr fsmsAttrs[] = {
+          new XsdFSM<void *>( NSNamePairOccur(new DOMString("http://www.w3.org/2001/XMLSchema-instance"), DOMString("schemaLocation"), 0, 1), XsdFsmBase::ATTRIBUTE, NULL),
 
-      if(ownerElement())
-      {
-        XsdFsmBasePtr fsmsAttrs[] =
-        { 
-                                            // ---- xml  --- //
-          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xmlUriPtr, *Namespaces::s_xmlLangStrPtr, 0, 1),
-                                        XsdEvent::ATTRIBUTE, 
-                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXmlLang)),
-
-          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xmlUriPtr, *Namespaces::s_xmlSpaceStrPtr, 0, 1),
-                                        XsdEvent::ATTRIBUTE,
-                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXmlSpace)),
-
-          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xmlUriPtr, *Namespaces::s_xmlBaseStrPtr, 0, 1),
-                                        XsdEvent::ATTRIBUTE, 
-                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXmlBase)),
-
-          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xmlUriPtr, *Namespaces::s_xmlIdStrPtr, 0, 1),
-                                        XsdEvent::ATTRIBUTE, 
-                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXmlId)),
-
-                                            // ---- xsi  --- //
-
-          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xsiUriPtr, *Namespaces::s_xsiTypeStrPtr, 0, 1),
-                                        XsdEvent::ATTRIBUTE, 
-                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXsiType)),
-
-          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xsiUriPtr, *Namespaces::s_xsiNilStrPtr, 0, 1),
-                                        XsdEvent::ATTRIBUTE,
-                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXsiNil)),
-
-          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xsiUriPtr, *Namespaces::s_xsiSchemaLocationStrPtr, 0, 1),
-                                        XsdEvent::ATTRIBUTE, 
-                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXsiSchemaLocation)),
-
-          new XsdFSM<DOM::Attribute *>( Particle(Namespaces::s_xsiUriPtr, *Namespaces::s_xsiNoNamespaceSchemaLocationStrPtr, 0, 1),
-                                        XsdEvent::ATTRIBUTE, 
-                                        new object_unary_mem_fun_t<DOM::Attribute*, anyType, FsmCbOptions>(this, &anyType::createAttributeXsiNoNamespaceSchemaLocation)),
-
-          NULL 
+          NULL
         };
-        XsdFsmBasePtr fsmsContent[] = { NULL };
-        XsdFsmBase* contentFsm = new XsdSequenceFsmOfFSMs(fsmsContent); 
-        XsdFsmBaseP elemEndFsm = new XsdFSM<void *>(Particle( ownerElement()->getNamespaceURI(), *ownerElement()->getTagName(), 1, 1),
-                                                    XsdEvent::ELEMENT_END);
-        
-        _fsm = new AnyTypeFSM(fsmsAttrs, contentFsm, elemEndFsm);
-      }
-      else
-      {
-        XsdFsmBasePtr fsmsAttrs[] = { NULL };
-        XsdFsmBasePtr fsmsContent[] = { NULL };
-        XsdFsmBase* contentFsm = new XsdSequenceFsmOfFSMs(fsmsContent); 
-        XsdFsmBaseP elemEndFsm = new XsdFSM<void *>(Particle(NULL, "", 1, 1), XsdEvent::ELEMENT_END);
-        _fsm = new AnyTypeFSM(fsmsAttrs, contentFsm, elemEndFsm);
-      }
-    }
+        XsdFsmBasePtr fsmAttrsAll = new XsdAllFsmOfFSMs(fsmsAttrs);
+        XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(ownerElement()->getNamespaceURI(), *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
+        XsdFsmBasePtr fsms[] = { fsmAttrsAll, elemEndFsm, NULL };
+        _fsm = new XsdSequenceFsmOfFSMs(fsms);
+        */
 
-    unsigned int anyType::lengthFacet() 
-    {
-      TextEncoding::eTextEncoding docEncoding = TextEncoding::UTF_8;
-      if(this->ownerDocument()) {
-        docEncoding = ownerDocument()->encoding();
+        XsdFsmBaseP elemEndFsm = new XsdFSM<void *>(NSNamePairOccur(ownerElement()->getNamespaceURI(), 
+              *ownerElement()->getTagName(), 1, 1), XsdFsmBase::ELEMENT_END);
+        XsdFsmBasePtr ptrFsms[] = { elemEndFsm, NULL };
+        _fsm = new XsdFsmOfFSMs(ptrFsms, XsdFsmOfFSMs::SEQUENCE);
       }
-      return _value.countCodePoints(docEncoding); 
+
     }
 
     void anyType::setErrorContext(XPlus::Exception& ex)
@@ -151,67 +81,19 @@ namespace XMLSchema
       }
     }
 
-    TElement* anyType::ownerElement() 
+    TElementP anyType::ownerElement() 
     {
       return dynamic_cast<TElement *>(_ownerElem);
     }
 
-    const TElement* anyType::ownerElement() const
-    {
-      return ownerElement();
-    }
-
-
     void anyType::checkFixed(DOMString value) 
     {
-      if(ownerElement() && ownerElement()->fixed() && (value != _defaultValue)) 
-      {
+      if(fixed() & (value != _value)) {
         ValidationException ex("Fixed value of the node can not be changed");
-        ex.setContext("fixed-value", _defaultValue);
+        ex.setContext("fixed-value", _value);
         ex.setContext("supplied-value", value);
         throw ex;
       }
-    }
-
-    void anyType::checkContentType(DOMString value)
-    {
-      if( (contentTypeVariety() == CONTENT_TYPE_VARIETY_ELEMENT_ONLY) &&
-          !value.matchCharSet(UTF8FNS::isSpaceChar)
-        )
-      {
-        ostringstream err;
-        err << "Character content other than whitespace is not allowed"
-          " because the content type is 'element-only'";
-        ValidationException ex(err.str()); 
-        ex.setContext("element", *this->ownerElement()->getNodeName());
-        throw ex;
-      }
-
-      if( (contentTypeVariety() == CONTENT_TYPE_VARIETY_EMPTY) &&
-          !value.matchCharSet(UTF8FNS::isSpaceChar) // FIXME: is space allowed for empty content????
-        )
-      {
-        ostringstream err;
-        err << "Character content other than whitespace is not allowed"
-          " because the content type is 'empty'";
-        ValidationException ex(err.str()); 
-        ex.setContext("element", *this->ownerElement()->getNodeName());
-        throw ex;
-      }
-    }
-
-    void anyType::checksOnSetValue(DOMString value)
-    {
-      checkContentType(value);
-      checkFixed(value);
-    }
-
-    void anyType::normalizeValue(DOMString& value) 
-    {
-    }
-
-    void anyType::postSetValue() 
-    {
     }
 
     // 1. sets the value (in _value)
@@ -219,33 +101,11 @@ namespace XMLSchema
     //    there, else sets the value in the TextNode
     void anyType::stringValue(DOMString value) 
     {
-      _isDefaultText = false;
       try
       {
-        createTextNodeOnSetValue(value);
-        setValueFromCreatedTextNodes();
-      }
-      catch(XPlus::Exception& ex)
-      {
-        if(this->ownerElement()) 
-        {
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          if(this->ownerElement()->getNodeValue()) {
-            ex.setContext("node-value", *this->ownerElement()->getNodeValue());
-          }
-        }
-        throw ex;
-      }
-    }
-
-    /*
-    void anyType::fixedValue(DOMString value) 
-    {
-      try
-      {
-        checkContentType(value);
+        checkFixed(value);
         _value = value;
-        createTextNodeOnSetValue(value);
+        setTextNodeValue(_value);
       }
       catch(XPlus::Exception& ex)
       {
@@ -253,273 +113,58 @@ namespace XMLSchema
         throw ex;
       }
     }
-    */
 
-    //
-    // _isDefaultText is set to true only in this function
-    // should be reset to false in:
-    //
-    //  * stringValue(...)    : expected to be called by application
-    //
-    //  * createTextNode(...) : called on DOM building while reading 
-    //                          from input xml file
-    //
-    void anyType::defaultValue(DOMString value) 
+    TextNodeP anyType::setTextNodeValue(DOMString value) 
     {
-      _defaultValue = value;
-      this->stringValue(_defaultValue);
-      _isDefaultText = true;
-    }
-
-    TextNode* anyType::addTextNodeValueAtPos(DOMString text, int pos)
-    {
-      DOM::TextNode *txtNode = NULL;
-      if(!this->ownerNode()) {
-        ostringstream err;
-        err << "can not set text in an ComplexType without an owner parent-element";
-        throw LogicalError(err.str());
-      }
-
-      if(pos == -1) 
+      if(this->ownerNode()) 
       {
-        txtNode = this->ownerNode()->createChildTextNode(new DOMString(text));
-        if(!txtNode) {
-          ostringstream err;
-          err << "anyType: failed to add Text Node";
-          XSDException ex(err.str()); 
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          throw ex;
+        if(!_valueNode) {
+          _valueNode = this->ownerNode()->createChildTextNode(new DOMString(value));
         }
-        _textNodes.push_back(txtNode);
-      }
-      else 
-      {
-        txtNode = this->ownerNode()->createChildTextNodeAt(new DOMString(text), pos);
-        if(!txtNode)
+        else 
         {
-          ostringstream err;
-          err << "anyType: failed to add Text Node";
-          XSDException ex(err.str()); 
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          throw ex;
-        }
-        indexAddedTextNode(txtNode);
-      }
-      return txtNode;
-    }
-
-    // here pos is the position of this node among all children 
-    // and not just the text nodes
-    void anyType::setTextAmongChildrenAt(DOMString text, int pos)
-    {
-      this->addTextNodeValueAtPos(text, pos);
-      setValueFromCreatedTextNodes();
-    }
-
-    void anyType::setTextEnd(DOMString text)
-    {
-      this->setTextAmongChildrenAt(text, -1);
-      setValueFromCreatedTextNodes();
-    }
-
-    void anyType::setTextAfterNode(DOMString text, DOM::Node *refNode)
-    {
-      if(!this->ownerNode()) {
-        ostringstream err;
-        err << "can not set text in an ComplexType without an owner parent-node";
-        throw LogicalError(err.str());
-      }
-      DOM::TextNode *txtNode = this->ownerNode()->createChildTextNodeAfterNode(new DOMString(text), refNode);
-      if(!txtNode) {
-        ostringstream err;
-        err << "anyType: failed to add Text Node";
-        throw XSDException(err.str());
-      }
-      indexAddedTextNode(txtNode);
-      setValueFromCreatedTextNodes();
-    }
-
-    void anyType::setValueFromCreatedTextNodes()
-    {
-      DOMString value = "";
-      for(unsigned int i=0; i<_textNodes.size(); i++) {
-        value += *_textNodes.at(i)->getNodeValue();
-      }
-      try
-      {
-        normalizeValue(value);
-        checksOnSetValue(value);
-        _value = value;
-        postSetValue();
-      }
-      catch(XPlus::Exception& ex)
-      {
-        if(ownerElement()) { 
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-        }
-        throw ex;
-      }
-    }
-
-    // creates or resizes the _textNodes to make it's size exactly one.
-    // TextNode(created or existing) would have the supplied value 
-    TextNode* anyType::createTextNodeOnSetValue(DOMString value)
-    {
-      TextNode* valueNode = NULL;
-      DOMStringPtr valuePtr = new DOMString(value);
-      if(_textNodes.size() == 0) 
-      {
-        if(this->ownerNode()) {
-          valueNode = this->ownerNode()->createChildTextNode(valuePtr);
-        }
-        else {
-          // this textNode would not get added to DOM ... heppens in following cases:
-          // * SimpleTypeListTmpl::stringValue -- harmless here
-          // * ...
-          valueNode = new TextNode(valuePtr, this->ownerDocument(), NULL);
-        }
-        _textNodes.push_back(valueNode);
-      }
-      else if(_textNodes.size() == 1) 
-      {
-        valueNode = _textNodes.at(0);
-        valueNode->setNodeValue(valuePtr);
-      }
-      else // _textNodes.size() > 1
-      {
-        // TODO: should this new node be added to end of DOM children ??
-        // delete the textNodes beyond 1st from node's children(DOM), and set 
-        // the value in the 1st node
-
-        if(this->ownerNode())
-        {
-          for(unsigned int i=1; i<_textNodes.size(); i++)
-          {
-            this->ownerNode()->removeChild(_textNodes.at(i));
+          //if(append) {
+          if(0) {
+            _valueNode->appendData(new DOMString(value));
+          }
+          else {
+            _valueNode->setNodeValue(new DOMString(value));
           }
         }
-        List<AutoPtr<DOM::TextNode> >::iterator it = _textNodes.begin();
-        _textNodes.erase(++it, _textNodes.end());
-
-        valueNode = _textNodes.at(0);
-        valueNode->setNodeValue(valuePtr);
       }
-
-      return valueNode;
+      return _valueNode;
     }
 
-    //  let's take an example:
-    //  <elem>
-    //    TextNode1
-    //    <foo>...</foo>
-    //    TextNode2
-    //  </elem>
-    //  
-    // For an input-TextNode find the input-TextNode's position among node's
-    // children(DOM), and insert the input-TextNode in anyType::_textNodes
-    // at the same position.
-    // eg. if in the above example TextNode2 was to be input-TextNode then
-    // it should be inserted at position=1 in anyType::_textNodes
-    void anyType::indexAddedTextNode(TextNode *txtNode)
-    {
-      unsigned int posText = txtNode->countPreviousSiblingsOfType(DOM::Node::TEXT_NODE);
-      if(posText>_textNodes.size()) {
-        ostringstream err;
-        err << "anyType: Text Node added, though don't know where to index.";
-        throw LogicalError(err.str());
-      }
-      List<AutoPtr<DOM::TextNode> >::iterator it = _textNodes.begin();
-      for(unsigned int i=0; i<posText; ++i) {
-        ++it;
-      }
-      _textNodes.insert(it, txtNode);
-    }
 
-    TElement* anyType::createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec)
+    TElement* anyType::createElementNS(DOMString* nsUri, 
+        DOMString* nsPrefix, 
+        DOMString* localName) 
     {
-      TElement* elemNode = NULL;
       if(!localName) {
         throw XPlus::NullPointerException("createElementNS: localName is NULL");
       }
-
-      // create the element
-      XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_START);
-      FsmCbOptions& cbOptions = event.cbOptions;
-      // set the xsi context to be passed to callback functions.
-      for(unsigned int i=0; i<attrVec.size(); i++)
-      {
-        if(!attrVec[i].nsUri() || (*attrVec[i].nsUri() != Namespaces::s_xsiUri) ) {
-          continue;
-        }
-
-        if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiTypeStr) && attrVec[i].value()) 
-        {
-          cbOptions.xsiType = *attrVec[i].value();
-        }
-        else if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiNilStr) && attrVec[i].value()) 
-        {
-          cbOptions.xsiNil = *attrVec[i].value();
-        }
-        else if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiSchemaLocationStr) && attrVec[i].value()) 
-        {
-          cbOptions.xsiSchemaLocation = *attrVec[i].value();
-        }
-        else if(attrVec[i].localName() && (*attrVec[i].localName() == Namespaces::s_xsiNoNamespaceSchemaLocationStr) && attrVec[i].value()) 
-        {
-          cbOptions.xsiNoNamespaceSchemaLocation = *attrVec[i].value();
-        }
-      }
-
-
-      if(_fsm && _fsm->processEventThrow(event))
+      if(_fsm && _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ELEMENT_START))
       {
         if(_fsm->fsmCreatedNode()) 
         {
-          elemNode = dynamic_cast<TElement *>(const_cast<Node*>(_fsm->fsmCreatedNode()));
+          TElement* elem = dynamic_cast<TElement *>(const_cast<Node*>(_fsm->fsmCreatedNode()));
           _fsm->fsmCreatedNode(NULL);
+          return elem;
         }
       }
-      // shouldn't come here as the previous processEventThrow call will either
-      // go through or will throw an exception.
-      // Adding this block just to be safe.
-      else
-      {
-        ostringstream err;
-        err << "Unexpected Element: " << formatNamespaceName(XsdEvent::ELEMENT_START, nsUri, *localName);
-        throw XMLSchema::FSMException(DOMString(err.str()));
-      }
-
-  
-      // now add attributes to this element  
-      for(unsigned int i=0; i<attrVec.size(); i++)
-      {
-        AttributeInfo& attrInfo = attrVec[i];
-        elemNode->createAttributeNS(const_cast<DOMString *>(attrInfo.nsUri()),
-                                    const_cast<DOMString *>(attrInfo.nsPrefix()),
-                                    const_cast<DOMString *>(attrInfo.localName()),
-                                    const_cast<DOMString *>(attrInfo.value()) );
-      }
-
-      return elemNode;
+      ostringstream err;
+      err << "Unexpected Element: " << formatNamespaceName(XsdFsmBase::ELEMENT_START, nsUri, *localName);
+      throw XMLSchema::FSMException(DOMString(err.str()));
     }
 
 
-    Attribute* anyType::createAttributeNS(DOMString* nsUri, DOMString* nsPrefix, 
-                                          DOMString* localName, DOMString* value)
+    AttributeP anyType::createAttributeNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, DOMString* value)
     {
       if(!localName) {
         throw XPlus::NullPointerException("createAttributeNS: localName is NULL");
       }
-      
-      if(!value || (value->length() == 0) )
-      {
-        ostringstream err;
-        err << "empty value for : " << formatNamespaceName(XsdEvent::ATTRIBUTE, nsUri, *localName);
-        throw XMLSchema::ValidationException(DOMString(err.str()));
-      }
 
-      XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ATTRIBUTE);
-      if(_fsm && _fsm->processEventThrow(event))
+      if(_fsm && _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ATTRIBUTE))
       {
         if(_fsm->fsmCreatedNode()) 
         {
@@ -534,40 +179,17 @@ namespace XMLSchema
       }
 
       ostringstream err;
-      err << "Failed to create : " << formatNamespaceName(XsdEvent::ATTRIBUTE, nsUri, *localName) ;
+      err << "Unexpected : " << formatNamespaceName(XsdFsmBase::ATTRIBUTE, nsUri, *localName) ;
       throw XMLSchema::FSMException(DOMString(err.str()));
     }
 
-
-    TextNode* anyType::createTextNode(DOMString* data)
+    TextNodeP anyType::createTextNode(DOMString* data)
     {
-      if(_isDefaultText) 
-      {
-				/*
-        for(unsigned int i=0; i<_textNodes.size(); i++) {
-          this->ownerNode()->removeChild(_textNodes.at(i));
-        }
-        _textNodes.clear();
-        */
-				_isDefaultText = false;
-        
-				assert(_textNodes.size() == 1);
-				_textNodes.at(0)->setNodeValue(data);
-        return _textNodes.at(0);
+      if(data) {
+        stringValue(*data);
+        return _valueNode;
       }
-			else
-			{
-				TextNode* valueNode = this->ownerNode()->createChildTextNode(data);
-				_textNodes.push_back(valueNode);
-				return valueNode;
-			}
-    }
-        
-    CDATASection* anyType::createCDATASection(DOMString* data)
-    {
-      CDATASection* valueNode = this->ownerNode()->createChildCDATASection(data);
-      _textNodes.push_back(valueNode);
-      return valueNode;
+      return NULL;
     }
 
     void anyType::endElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)
@@ -575,16 +197,8 @@ namespace XMLSchema
       if(!localName) {
         throw XPlus::NullPointerException("endElementNS: localName is NULL");
       }
-
-      if(_fsm->attributeFsm()) {
-        _fsm->attributeFsm()->fireDefaultEvents();
-      }
-
-      setValueFromCreatedTextNodes();
-
-      XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_END);
       if(_fsm) {
-        _fsm->processEventThrow(event);
+        _fsm->processEventThrow(nsUri, *localName, XsdFsmBase::ELEMENT_END);
       }
       else 
       {
@@ -595,130 +209,24 @@ namespace XMLSchema
 
     void anyType::endDocument()
     {
-      if(_fsm)
-      {
-        XsdEvent event(NULL, NULL, "", XsdEvent::DOCUMENT_END);
-        _fsm->processEventThrow(event);  
+      if(_fsm) {
+        _fsm->processEventThrow(NULL, "", XsdFsmBase::DOCUMENT_END);  
       }
     }
 
-    DOM::Attribute* anyType::createDOMAttributeUnderCurrentElement( DOMString *attrName, 
-                                                                    DOMString *attrNsUri, 
-                                                                    DOMString *attrNsPrefix, 
-                                                                    DOMString *attrValue
-                                                                  )
-    {
-      return new DOM::Attribute( attrName, attrValue, attrNsUri, attrNsPrefix, ownerElement(), ownerDocument());
-    }
-
-    DOM::Attribute* anyType::createAttributeXmlLang(FsmCbOptions& options)
-    {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xmlLangStrPtr, Namespaces::s_xmlUriPtr, Namespaces::s_xmlStrPtr); 
-      _fsm->fsmCreatedNode(attr);
-      return attr;
-    }
-
-    DOM::Attribute* anyType::createAttributeXmlSpace(FsmCbOptions& options)
-    {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xmlSpaceStrPtr, Namespaces::s_xmlUriPtr, Namespaces::s_xmlStrPtr); 
-      _fsm->fsmCreatedNode(attr);
-      return attr;
-    }
-
-    DOM::Attribute* anyType::createAttributeXmlBase(FsmCbOptions& options)
-    {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xmlBaseStrPtr, Namespaces::s_xmlUriPtr, Namespaces::s_xmlStrPtr); 
-      _fsm->fsmCreatedNode(attr);
-      return attr;
-    }
-
-    DOM::Attribute* anyType::createAttributeXmlId(FsmCbOptions& options)
-    {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xmlIdStrPtr, Namespaces::s_xmlUriPtr, Namespaces::s_xmlStrPtr); 
-      _fsm->fsmCreatedNode(attr);
-      return attr;
-    }
-    
-    DOM::Attribute* anyType::createAttributeXsiType(FsmCbOptions& options)
-    {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiTypeStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr); 
-      _fsm->fsmCreatedNode(attr);
-      return attr;
-    }
-
-    DOM::Attribute* anyType::createAttributeXsiNil(FsmCbOptions& options)
-    {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiNilStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr);
-      _fsm->fsmCreatedNode(attr);
-      return attr;
-    }
-
-    DOM::Attribute* anyType::createAttributeXsiSchemaLocation(FsmCbOptions& options)
-    {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiSchemaLocationStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr);
-      _fsm->fsmCreatedNode(attr);
-      return attr;
-    }
-
-    DOM::Attribute* anyType::createAttributeXsiNoNamespaceSchemaLocation(FsmCbOptions& options)
-    {
-      Attribute* attr = createDOMAttributeUnderCurrentElement(Namespaces::s_xsiNoNamespaceSchemaLocationStrPtr, Namespaces::s_xsiUriPtr, Namespaces::s_xsiStrPtr);
-      _fsm->fsmCreatedNode(attr);
-      return attr;
-    }
-
-    // in following xsi attrs fns, return value of these attrs
-    const DOMString* anyType::xsiTypeValue()
-    {
-      if(ownerElement()) {
-        return ownerElement()->getAttributeNS(Namespaces::s_xsiUriPtr, Namespaces::s_xsiTypeStrPtr);
-      }
-      return NULL;
-    }
-
-    bool anyType::isXsiNil()
-    {
-      const DOMString* pNilStr = NULL;
-      if(ownerElement()) {
-        pNilStr = ownerElement()->getAttributeNS(Namespaces::s_xsiUriPtr, Namespaces::s_xsiNilStrPtr);
-      }
-      if(!pNilStr || (*pNilStr == "false") ) {
-        return false;
-      }
-      else if(*pNilStr == "true") {
-        return true; 
-      }
-      else {
-        ostringstream err;
-        err << "Valid values for attribute {} nil are : true|false. "
-          << " Got " << *pNilStr << endl;
-        throw XMLSchema::ValidationException(DOMString(err.str()));
-      }
-    }
-
-    const DOMString* anyType::xsiSchemaLocationValue()
-    {
-      if(ownerElement()) {
-        return ownerElement()->getAttributeNS(Namespaces::s_xsiUriPtr, Namespaces::s_xsiSchemaLocationStrPtr);
-      }
-      return NULL;
-    }
-
-    const DOMString* anyType::xsiNoNamespaceSchemaLocationValue()
-    {
-      if(ownerElement()) {
-        return ownerElement()->getAttributeNS(Namespaces::s_xsiUriPtr, Namespaces::s_xsiNoNamespaceSchemaLocationStrPtr);
-      }
-      return NULL;
-    }
 
 
     //                                                 //
     //                     anySimpleType               //
     //                                                 //
 
-    anySimpleType::anySimpleType(AnyTypeCreateArgs args, ePrimitiveDataType primType):
-      anyType(args, ANY_SIMPLE_TYPE),
+    anySimpleType::anySimpleType(
+        ePrimitiveDataType primType, 
+        NodeP ownerNode,
+        ElementP ownerElem,
+        TDocumentP ownerDoc
+        ):
+      anyType(ownerNode, ownerElem, ownerDoc, anyType::ANY_SIMPLE_TYPE),
       _primitiveType(primType),
       _lengthCFacet(0),
       _minLengthCFacet(XP_UINT32_MIN),
@@ -746,29 +254,20 @@ namespace XMLSchema
       _allCFacets.push_back(&_totalDigitsCFacet);
       _allCFacets.push_back(&_fractionDigitsCFacet);
       
-      _allCFacets.push_back(&_maxInclusiveCFacetDouble);
-      _allCFacets.push_back(&_maxInclusiveCFacetDuration);
-      _allCFacets.push_back(&_maxInclusiveCFacetDateTime);
-
-      _allCFacets.push_back(&_maxExclusiveCFacetDouble);
-      _allCFacets.push_back(&_maxExclusiveCFacetDuration);
-      _allCFacets.push_back(&_maxExclusiveCFacetDateTime);
-
-      _allCFacets.push_back(&_minExclusiveCFacetDouble);
-      _allCFacets.push_back(&_minExclusiveCFacetDuration);
-      _allCFacets.push_back(&_minExclusiveCFacetDateTime);
-
-      _allCFacets.push_back(&_minInclusiveCFacetDouble);
-      _allCFacets.push_back(&_minInclusiveCFacetDuration);
-      _allCFacets.push_back(&_minInclusiveCFacetDateTime);
+      /*
+      _allCFacets.push_back(&_maxInclusiveCFacet);
+      _allCFacets.push_back(&_maxExclusiveCFacet);
+      _allCFacets.push_back(&_minExclusiveCFacet);
+      _allCFacets.push_back(&_minInclusiveCFacet);
+      */
     }
 
     void anySimpleType::endElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)
     {
       anyType::endElementNS(nsUri, nsPrefix, localName);
-      if( (_textNodes.size()==0) && (_primitiveType != PD_STRING)) {
+      if(!_valueNode && (_primitiveType != PD_STRING)) {
         ostringstream err;
-        err << "empty value for : " << formatNamespaceName(XsdEvent::ELEMENT_START, nsUri, *localName);
+        err << "empty-value for element: " << formatNamespaceName(XsdFsmBase::ELEMENT_START, nsUri, *localName);
         throw XMLSchema::ValidationException(DOMString(err.str()));
       }
     }
@@ -804,35 +303,17 @@ namespace XMLSchema
       return true;
     }
 
-    void anySimpleType::normalizeValue(DOMString& value) 
-    {
-      applyWhiteSpaceCFacet(value);
-    }
-
-    void anySimpleType::postSetValue() 
-    {
-      // eg.  store integer value ie string-to-int
-      setTypedValue();
-      validateCFacets();
-      applyCFacets();
-    }
-    
-    void anySimpleType::stringValue(DOMString val) 
-    {
-      anyType::stringValue(val);
-    }
-
-/*
     void anySimpleType::stringValue(DOMString val) 
     {
       try
       {
-        normalizeValue(val);
-        checksOnSetValue(val);
+        checkFixed(val);
         _value = val;
-        postSetValue();
-
-        createTextNodeOnSetValue(_value);
+        // eg.  store integer value ie string-to-int
+        setTypedValue();
+        validateCFacets();
+        applyCFacets();
+        setTextNodeValue(_value);
       }
       catch(XPlus::Exception& ex)
       {
@@ -844,7 +325,7 @@ namespace XMLSchema
         throw ex;
       }
     }
-*/
+
     void anySimpleType::validateCFacetsApplicability()
     {
       // example:
@@ -1288,7 +769,7 @@ namespace XMLSchema
 
       //first apply whitespace facet
       if(isWhiteSpaceCFacetSet()) {
-        applyWhiteSpaceCFacet(_value);
+        applyWhiteSpaceCFacet();
       }
       if(isLengthCFacetSet()) {
         applyLengthCFacet();
@@ -1408,7 +889,7 @@ namespace XMLSchema
     //    however, the normalization behavior of ·union· types is controlled by the
     //    value of whiteSpace on that one of the ·memberTypes· against which the
     //    ·union· is successfully validated.
-    void anySimpleType::applyWhiteSpaceCFacet(DOMString& value)
+    void anySimpleType::applyWhiteSpaceCFacet()
     {
       if( (_primitiveType != PD_STRING) && (_whiteSpaceCFacet.value() != "collapse") ) {
         throwFacetViolation(CF_WHITESPACE);
@@ -1419,29 +900,29 @@ namespace XMLSchema
       }
       if(_whiteSpaceCFacet.value() == "replace") {
         //replace TAB,LF,CR with space
-        value.replaceCharsWithChar(UTF8FNS::is_TAB_LF_CR, 0x20);  
+        _value.replaceCharsWithChar(UTF8FNS::is_TAB_LF_CR, 0x20);  
       }
       if(_whiteSpaceCFacet.value() == "collapse") {
         //replace TAB,LF,CR with space
-        value.replaceCharsWithChar(UTF8FNS::is_TAB_LF_CR, 0x20);  
+        _value.replaceCharsWithChar(UTF8FNS::is_TAB_LF_CR, 0x20);  
         
         //remove contiguous spaces
-        value.removeContiguousChars(UTF8FNS::isWhiteSpaceChar);
+        _value.removeContiguousChars(UTF8FNS::isWhiteSpaceChar);
         
         // trim leading and trailing spaces 
-        value.trim(UTF8FNS::isWhiteSpaceChar);
+        _value.trim(UTF8FNS::isWhiteSpaceChar);
       }
     }
     
     void anySimpleType::applyMaxInclusiveCFacet() {
-      cout << " applyMaxInclusiveCFacet for" << _primitiveType << endl;
+      cout << "satya: applyMaxInclusiveCFacet for" << _primitiveType << endl;
     }
 
     void anySimpleType::applyMaxExclusiveCFacet() {
     }
 
     void anySimpleType::applyMinInclusiveCFacet() {
-      cout << " applyMinInclusiveCFacet for" << _primitiveType << endl;
+      cout << "satya: applyMinInclusiveCFacet for" << _primitiveType << endl;
     }
 
     void anySimpleType::applyMinExclusiveCFacet() {
@@ -1480,6 +961,124 @@ namespace XMLSchema
       }
     }
 
+
+
+    //                                                 //
+    //                     anyComplexType              //
+    //                                                 //
+
+    anyComplexType::anyComplexType(
+        NodeP ownerNode,
+        ElementP ownerElem,
+        TDocumentP ownerDoc,
+        bool mixedContent
+        ):
+      anyType(ownerNode, ownerElem, ownerDoc, anyType::ANY_COMPLEX_TYPE),
+      _mixedContent(mixedContent)
+    {
+    }
+
+    TextNode* anyComplexType::createTextNode(DOMString* data)
+    {
+      if(data) {
+        return setTextNodeValue(*data);
+      }
+      return NULL;
+    }
+    
+    TextNode* anyComplexType::setTextNodeValue(DOMString value) 
+    {
+      return this->addTextNodeValueAtPos(value, -1);
+    }
+
+    void anyComplexType::indexAddedTextNode(TextNode *txtNode)
+    {
+      unsigned int posText = txtNode->countPreviousSiblingsOfType(DOM::Node::TEXT_NODE);
+      if(posText>_textNodes.size()) {
+        ostringstream err;
+        err << "anyComplexType: Text Node added, though don't know where to index.";
+        throw LogicalError(err.str());
+      }
+      List<DOM::TextNode *>::iterator it = _textNodes.begin();
+      for(unsigned int i=0; i<posText; ++i) {
+        ++it;
+      }
+      _textNodes.insert(it, txtNode);
+    }
+
+    TextNode* anyComplexType::addTextNodeValueAtPos(DOMString text, unsigned int pos)
+    {
+      DOM::TextNode *txtNode = NULL;
+      if(!this->ownerNode()) {
+        ostringstream err;
+        err << "can not set text in an ComplexType without an owner parent-element";
+        throw LogicalError(err.str());
+      }
+
+      if(!mixedContent() && !text.matchCharSet(UTF8FNS::isSpaceChar)) {
+        ostringstream err;
+        err << "Character content other than whitespace is not allowed"
+               " because the content type is 'element-only'";
+        ValidationException ex(err.str()); 
+        ex.setContext("element", *this->ownerElement()->getNodeName());
+        throw ex;
+      }
+
+      if(pos==-1) 
+      {
+        txtNode = this->ownerNode()->createChildTextNode(new DOMString(text));
+        if(!txtNode) {
+          ostringstream err;
+          err << "anyComplexType: failed to add Text Node";
+          XSDException ex(err.str()); 
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          throw ex;
+        }
+        _textNodes.push_back(txtNode);
+      }
+      else 
+      {
+        txtNode = this->ownerNode()->createChildTextNodeAt(new DOMString(text), pos);
+        if(!txtNode)
+        {
+          ostringstream err;
+          err << "anyComplexType: failed to add Text Node";
+          XSDException ex(err.str()); 
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          throw ex;
+        }
+        indexAddedTextNode(txtNode);
+      }
+      return txtNode;
+    }
+
+    // here pos is the position of this node among all children 
+    // and not just the text nodes
+    void anyComplexType::setTextAmongChildrenAt(DOMString text, unsigned int pos)
+    {
+      this->addTextNodeValueAtPos(text, pos);
+    }
+
+    void anyComplexType::setTextEnd(DOMString text)
+    {
+      this->setTextAmongChildrenAt(text, -1);
+    }
+
+    void anyComplexType::setTextAfterNode(DOMString text, DOM::Node *refNode)
+    {
+      if(!this->ownerNode()) {
+        ostringstream err;
+        err << "can not set text in an ComplexType without an owner parent-element";
+        throw LogicalError(err.str());
+      }
+      DOM::TextNode *txtNode = this->ownerNode()->createChildTextNodeAfterNode(new DOMString(text), refNode);
+      if(!txtNode) {
+        ostringstream err;
+        err << "anyComplexType: failed to add Text Node";
+        throw XSDException(err.str());
+      }
+      indexAddedTextNode(txtNode);
+    }
         
   }// end namespace Types
 

@@ -1,32 +1,40 @@
+
 #include <iostream>
 #include <string>
 
 #include "XSD/UserOps.h"
 #include "STDemo/all-include.h"
 
-void populateDocument(STDemo::Document* xsdDoc);
-void updateOrConsumeDocument(STDemo::Document* xsdDoc);
-  
 void chooseDocumentElement(STDemo::Document* xsdDoc);
-    
 
 int main (int argc, char**argv)
 {
-  XSD::UserOps<STDemo::Document>::UserOpsCbStruct cbStruct;
-  cbStruct.cbPopulateDocument           =  populateDocument;
-  cbStruct.cbUpdateOrConsumeDocument    =  updateOrConsumeDocument;
-  
-  cbStruct.cbChooseDocumentElement    =  chooseDocumentElement;
-  
-
-  XSD::UserOps<STDemo::Document> opHandle(cbStruct);
-  opHandle.run(argc, argv);
+  XSD_USER_OPS::xsd_main(argc, argv);
 }
 
-//
-// Following functions are use case templates.
-// You need to put "code" in the respective contexts.
-//
+DOM::Document* createXsdDocument(bool buildTree)
+{
+  STDemo::Document* xsdDoc = new STDemo::Document(buildTree);
+  
+  chooseDocumentElement(xsdDoc);
+    
+  return xsdDoc;
+}
+
+DOM::Document* createXsdDocument(string inFilePath)
+{
+  ifstream is;
+  is.open(inFilePath.c_str(), ios::binary);
+
+  STDemo::Document* xsdDoc = new STDemo::Document(false);
+  
+  is >> *xsdDoc; 
+  return xsdDoc;
+}
+
+// Following functions are templates.
+// You need to put code in the context
+
 
   
 // choose the element inside Document that you want as root using
@@ -37,15 +45,21 @@ void chooseDocumentElement(STDemo::Document* xsdDoc)
   
   xsdDoc->set_root_myComplexTypeElem();
   
-  //xsdDoc->set_root_globalWaterTemp();
-    
+  //xsdDoc->set_root_intValue2();
+  
 }
     
 
 // template function to populate the Tree with values
-// write code to populate the Document here
-void populateDocument(STDemo::Document* xsdDoc)
+// A XSD Node's type can be inferred using xsd-namespace-tree, like this:
+// STDemo::Types::MyComplexType::intValue3
+// STDemo::myComplexTypeElem::intValue3
+void populateDocument(DOM::Document* pDoc)
 {
+  STDemo::Document* docNode = dynamic_cast<STDemo::Document *>(pDoc);
+  
+  // write code to populate the Document here
+  
   //
   // Noteworthy Things:
   //
@@ -59,7 +73,7 @@ void populateDocument(STDemo::Document* xsdDoc)
 
   DOM::Node* markerNode = NULL;
 
-  STDemo::myComplexTypeElem *rootElem = xsdDoc->element_myComplexTypeElem();
+  STDemo::myComplexTypeElem *rootElem = docNode->element_myComplexTypeElem();
   
   // set attributes
   rootElem->set_attr_aCommonName("abcde");
@@ -103,16 +117,19 @@ void populateDocument(STDemo::Document* xsdDoc)
   markerNode = rootElem->element_aCommonName();
   rootElem->setTextAfterNode("End of -atomic- simpleType elements\n  Following are examples of -list- simpleType elements", markerNode);
   markerNode = rootElem->element_aListOfTwoIntMax3k();
-  rootElem->setTextAfterNode("End of -list- simpleType elements\n Following are examples of -union- simpleType elements", markerNode);
+  rootElem->setTextAfterNode("End of -list- simpleType elements\n Following are examples of -union- simpleType elements",markerNode);
   rootElem->setTextEnd("End of -union- simpleType elements\nEnd of all example elements");
-
 }
-
-// write code to operate(update/consume/test etc.) on the Document, which is already
-// populated(eg. read from an input xml file)
-void updateOrConsumeDocument(STDemo::Document* xsdDoc)
-{
-
-}
-
   
+
+void updateOrConsumeDocument(DOM::Document* pDoc)
+{
+  STDemo::Document* xsdDoc = dynamic_cast<STDemo::Document *>(pDoc);
+  // write code to update the populated-Document here
+  
+  STDemo::myComplexTypeElem *rootElem = xsdDoc->element_myComplexTypeElem();
+
+}
+
+
+
