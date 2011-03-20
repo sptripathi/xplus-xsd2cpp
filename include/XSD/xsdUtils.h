@@ -153,7 +153,7 @@ namespace XMLSchema
     {
     }
 
-      virtual ~TDocument(){}
+      virtual ~TDocument();
 
       inline void buildTree(bool b) {
         _buildTree = b;

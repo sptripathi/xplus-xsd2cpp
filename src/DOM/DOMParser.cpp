@@ -187,8 +187,8 @@ void DOMParser::onNamespaceStart(void *userData,
       << endl;
 #endif
     _docNode->registerNsPrefixNsUri(nsPrefix, nsUri);
-    delete nsPrefix;
-    delete nsUri;
+    //delete nsPrefix;
+    //delete nsUri;
 } 
 
 void DOMParser::onNamespaceEnd(void *userData, 
@@ -199,7 +199,7 @@ void DOMParser::onNamespaceEnd(void *userData,
       << (nsPrefix ? nsPrefix->str().c_str() : "(null)")
       << endl;
 #endif
-  delete nsPrefix;
+  //delete nsPrefix;
 } 
 
 

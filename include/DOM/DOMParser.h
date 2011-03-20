@@ -38,7 +38,9 @@ class DOMParser : public ExpatParser
   public:
 
     DOMParser(Document* docNode=NULL):
-      _docNode(docNode)
+      _docNode(docNode),
+      _cdataBuffer(""),
+      _cdataInProgress(false)
   {
     if(_docNode)
       _docNode->stateful(true);

@@ -18,9 +18,15 @@
 //
 
 #include "XSD/xsdUtils.h"
+#include "XSD/TypeDefinitionFactory.h"
 
 namespace XMLSchema
 {
+  TDocument::~TDocument()
+  {
+    //XSD::TypeDefinitionFactory::freeMap();
+  }
+
   TElementP TDocument::currentElement() {
     return dynamic_cast<TElement *>(_currentElement);
   }

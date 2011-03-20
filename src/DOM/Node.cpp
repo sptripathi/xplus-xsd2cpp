@@ -159,10 +159,12 @@ namespace DOM
   }
   
   Node* Node::insertAt(Node* newChild, unsigned int pos) {
+    newChild->setParentNode(this);
     return _childNodes.insertAt(newChild, pos);
   }
   
   Node* Node::insertFront(Node* newChild) {
+    newChild->setParentNode(this);
     return _childNodes.insertFront(newChild);
   }
   
@@ -172,18 +174,22 @@ namespace DOM
   }
 
   Node* Node::insertAfter(Node* newChild, Node* refChild) {
+    newChild->setParentNode(this);
     return _childNodes.insertAfter(newChild, refChild);
   }
 
   Node* Node::insertBefore(Node* newChild, Node* refChild) {
+    newChild->setParentNode(this);
     return _childNodes.insertBefore(newChild, refChild);
   }
   
   Node* Node::insertBetween(Node* newChild, Node *prevChild, Node *nextChild) {
+    newChild->setParentNode(this);
     return _childNodes.insertBetween(newChild, prevChild, nextChild);
   }
 
   Node* Node::replaceChild(Node* newChild, Node* oldChild) {
+    newChild->setParentNode(this);
     return _childNodes.replaceNode(newChild, oldChild);
   }
 
@@ -192,6 +198,7 @@ namespace DOM
   }
 
   Node* Node::appendChild(Node* newChild) {
+    newChild->setParentNode(this);
     return _childNodes.insertBack(newChild);
   }    
 

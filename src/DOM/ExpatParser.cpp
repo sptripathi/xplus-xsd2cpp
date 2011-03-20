@@ -50,8 +50,14 @@ namespace ExpatCB
 
     ParserUserData *parserUserData = (ParserUserData *)userData;
     ExpatParser *parser = parserUserData->parser;
+    
+    // the callback inside DOMParser finally uses the value of the two
+    // DOMString pointers inside XmlDecl, and doesn't store the pointers 
+    // themselves(as AutoPtr or plain pointer). So we should free them here
+    // after callback. Found from valgrind. 
     parser->onXmlDecl(userData, versionStr, encodingStr, standalone); 
-
+    delete(versionStr);
+    delete(encodingStr);
     cout << endl;  
   }
 
@@ -146,8 +152,8 @@ namespace ExpatCB
     if(!userData) {
       return;
     }
-    DOM::DOMString* nsUri = ((uri) ? new DOM::DOMString(uri): NULL);
-    DOM::DOMString* nsPrefix = ((prefix) ? new DOM::DOMString(prefix): NULL);
+    DOM::DOMStringPtr nsUri = ((uri) ? new DOM::DOMString(uri): NULL);
+    DOM::DOMStringPtr nsPrefix = ((prefix) ? new DOM::DOMString(prefix): NULL);
 
     ParserUserData *parserUserData = (ParserUserData *)userData;
     ExpatParser *parser = parserUserData->parser;
@@ -160,7 +166,7 @@ namespace ExpatCB
     if(!userData) {
       return;
     }
-    DOM::DOMString* nsPrefix = ((prefix) ? new DOM::DOMString(prefix): NULL);
+    DOM::DOMStringPtr nsPrefix = ((prefix) ? new DOM::DOMString(prefix): NULL);
     ParserUserData *parserUserData = (ParserUserData *)userData;
     ExpatParser *parser = parserUserData->parser;
     parser->onNamespaceEnd(parserUserData->userData, nsPrefix); 
@@ -175,9 +181,9 @@ namespace ExpatCB
     if(!userData) {
       return;
     }
-    DOM::DOMString* doctypeNamePtr = ((doctypeName) ? new DOM::DOMString(doctypeName): NULL);
-    DOM::DOMString* sysidPtr = ((sysid) ? new DOM::DOMString(sysid): NULL);
-    DOM::DOMString* pubidPtr = ((pubid) ? new DOM::DOMString(pubid): NULL);
+    DOM::DOMStringPtr doctypeNamePtr = ((doctypeName) ? new DOM::DOMString(doctypeName): NULL);
+    DOM::DOMStringPtr sysidPtr = ((sysid) ? new DOM::DOMString(sysid): NULL);
+    DOM::DOMStringPtr pubidPtr = ((pubid) ? new DOM::DOMString(pubid): NULL);
     ParserUserData *parserUserData = (ParserUserData *)userData;
     ExpatParser *parser = parserUserData->parser;
     parser->onDocTypeStart(parserUserData->userData,doctypeNamePtr, sysidPtr, pubidPtr, has_internal_subset); 
@@ -220,8 +226,8 @@ namespace ExpatCB
     if(!userData) {
       return;
     }
-    DOM::DOMString* targetStr = ((target) ? new DOM::DOMString(target): NULL);
-    DOM::DOMString* dataStr = ((data) ? new DOM::DOMString(data): NULL);
+    DOM::DOMStringPtr targetStr = ((target) ? new DOM::DOMString(target): NULL);
+    DOM::DOMStringPtr dataStr = ((data) ? new DOM::DOMString(data): NULL);
     ParserUserData *parserUserData = (ParserUserData *)userData;
     ExpatParser *parser = parserUserData->parser;
     parser->onPI(parserUserData->userData, targetStr, dataStr); 
@@ -232,7 +238,7 @@ namespace ExpatCB
     if(!userData) {
       return;
     }
-    DOM::DOMString* charBuffStr = ((charBuff) ? new DOM::DOMString(charBuff, len): NULL);
+    DOM::DOMStringPtr charBuffStr = ((charBuff) ? new DOM::DOMString(charBuff, len): NULL);
     ParserUserData *parserUserData = (ParserUserData *)userData;
     ExpatParser *parser = parserUserData->parser;
     parser->onCharacterData(parserUserData->userData, charBuffStr);
@@ -243,7 +249,7 @@ namespace ExpatCB
     if(!userData) {
       return;
     }
-    DOM::DOMString* dataStr = ((data) ? new DOM::DOMString(data): NULL);
+    DOM::DOMStringPtr dataStr = ((data) ? new DOM::DOMString(data): NULL);
     ParserUserData *parserUserData = (ParserUserData *)userData;
     ExpatParser *parser = parserUserData->parser;
     parser->onComment(parserUserData->userData, dataStr);

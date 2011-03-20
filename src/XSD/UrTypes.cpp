@@ -31,7 +31,7 @@ extern "C" {
 using namespace std;
 using XPlus::Namespaces;
 
-XSD::TypeDefinitionFactory::map_type*  XSD::TypeDefinitionFactory::_pQNameToTypeMap = NULL;
+XSD::MapWrapper  XSD::TypeDefinitionFactory::_map;
 
 namespace XMLSchema
 {
@@ -345,7 +345,6 @@ namespace XMLSchema
       for(unsigned int i=0; i<_textNodes.size(); i++) {
         value += *_textNodes.at(i)->getNodeValue();
       }
-
       try
       {
         normalizeValue(value);
@@ -367,23 +366,24 @@ namespace XMLSchema
     TextNode* anyType::createTextNodeOnSetValue(DOMString value)
     {
       TextNode* valueNode = NULL;
+      DOMStringPtr valuePtr = new DOMString(value);
       if(_textNodes.size() == 0) 
       {
         if(this->ownerNode()) {
-          valueNode = this->ownerNode()->createChildTextNode(new DOMString(value));
+          valueNode = this->ownerNode()->createChildTextNode(valuePtr);
         }
         else {
           // this textNode would not get added to DOM ... heppens in following cases:
           // * SimpleTypeListTmpl::stringValue -- harmless here
           // * ...
-          valueNode = new TextNode(new DOMString(value), this->ownerDocument(), NULL);
+          valueNode = new TextNode(valuePtr, this->ownerDocument(), NULL);
         }
         _textNodes.push_back(valueNode);
       }
       else if(_textNodes.size() == 1) 
       {
         valueNode = _textNodes.at(0);
-        valueNode->setNodeValue(new DOMString(value));
+        valueNode->setNodeValue(valuePtr);
       }
       else // _textNodes.size() > 1
       {
@@ -398,11 +398,11 @@ namespace XMLSchema
             this->ownerNode()->removeChild(_textNodes.at(i));
           }
         }
-        List<DOM::TextNode *>::iterator it = _textNodes.begin();
+        List<AutoPtr<DOM::TextNode> >::iterator it = _textNodes.begin();
         _textNodes.erase(++it, _textNodes.end());
 
         valueNode = _textNodes.at(0);
-        valueNode->setNodeValue(new DOMString(value));
+        valueNode->setNodeValue(valuePtr);
       }
 
       return valueNode;
@@ -428,7 +428,7 @@ namespace XMLSchema
         err << "anyType: Text Node added, though don't know where to index.";
         throw LogicalError(err.str());
       }
-      List<DOM::TextNode *>::iterator it = _textNodes.begin();
+      List<AutoPtr<DOM::TextNode> >::iterator it = _textNodes.begin();
       for(unsigned int i=0; i<posText; ++i) {
         ++it;
       }
@@ -538,21 +538,29 @@ namespace XMLSchema
       throw XMLSchema::FSMException(DOMString(err.str()));
     }
 
+
     TextNode* anyType::createTextNode(DOMString* data)
     {
       if(_isDefaultText) 
       {
+				/*
         for(unsigned int i=0; i<_textNodes.size(); i++) {
           this->ownerNode()->removeChild(_textNodes.at(i));
         }
-
         _textNodes.clear();
-        _isDefaultText = false;
+        */
+				_isDefaultText = false;
+        
+				assert(_textNodes.size() == 1);
+				_textNodes.at(0)->setNodeValue(data);
+        return _textNodes.at(0);
       }
-
-      TextNode* valueNode = this->ownerNode()->createChildTextNode(data);
-      _textNodes.push_back(valueNode);
-      return valueNode;
+			else
+			{
+				TextNode* valueNode = this->ownerNode()->createChildTextNode(data);
+				_textNodes.push_back(valueNode);
+				return valueNode;
+			}
     }
         
     CDATASection* anyType::createCDATASection(DOMString* data)

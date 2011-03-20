@@ -1680,6 +1680,9 @@ namespace Types
         </xsl:choose> 
       </xsl:when>
       <xsl:when test="local-name()='attribute'">
+    if(_<xsl:value-of select="$cppNameFunction"/>) {
+      return _<xsl:value-of select="$cppNameFunction"/>;
+    }  
     XSD::StructCreateAttrThroughFsm t( myName, myNsUri, NULL, this->ownerElement(), <xsl:value-of select="$refDocument"/>, _fsm, options);
     XMARKER <xsl:value-of select="$cppTypePtrShort_nsLevel1"/> node = XSD::createAttributeTmpl&lt;<xsl:value-of select="$cppNameFunction"/>&gt;(t);
       </xsl:when>

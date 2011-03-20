@@ -106,6 +106,34 @@ namespace XSD
     //return pT;
     return pAny;
   }
+    
+  struct MapWrapper
+  {
+    typedef map<string, XMLSchema::Types::anyType*(*)(ElementCreateArgs args)> map_type;
+   
+    MapWrapper():
+     _pQNameToTypeMap(NULL)
+    {}
+
+    ~MapWrapper()
+    {
+      delete _pQNameToTypeMap;
+    }
+    
+    map_type * getMap() 
+    {
+      // FIXME: make thread safe
+      if(!_pQNameToTypeMap) {
+        _pQNameToTypeMap = new map_type; 
+      } 
+      return _pQNameToTypeMap; 
+    }
+
+    protected: 
+    map_type*  _pQNameToTypeMap;
+    
+  };
+
 
   struct TypeDefinitionFactory 
   {
@@ -131,13 +159,9 @@ namespace XSD
     protected:
 
     // use heap as the construction order is unknown(global order fiasco)
-    static map_type * getMap() 
+    static map_type* getMap() 
     {
-      // FIXME: make thread safe
-      if(!_pQNameToTypeMap) {
-        _pQNameToTypeMap = new map_type; 
-      } 
-      return _pQNameToTypeMap; 
+      return _map.getMap(); 
     }
 
     static const string createKeyForQNameToTypeMap(const string& typeName, const string& typeNsUri)
@@ -159,7 +183,7 @@ namespace XSD
     string            _nsUri;
 
     private:
-    static map_type*  _pQNameToTypeMap;
+    static MapWrapper  _map;
   };
 
   // create a templatized derivation of TypeDefinitionFactory
@@ -267,7 +291,7 @@ namespace XSD
     if(t.ownerDoc->buildTree() || ! t.fsm->fsmCreatedNode() || t.options.isDefaultCreate)
     {
       AttributeCreateArgs args(t.tagName, t.nsUri, NULL, t.ownerElem, t.ownerDoc);
-      T* node = new T(args);
+      AutoPtr<T> node = new T(args);
       t.fsm->fsmCreatedNode(node);
       return node;
     }

@@ -268,7 +268,7 @@ namespace XMLSchema
         //debug
         void printTextNodes() 
         {
-          List<TextNode *>::iterator it = _textNodes.begin();
+          List<AutoPtr<TextNode> >::iterator it = _textNodes.begin();
           unsigned int i=0;
           for(; it != _textNodes.end(); ++it, ++i) {
             cout << "text[" << i << "] = [" << *((*it)->getData()) << "]" << endl;
@@ -353,7 +353,7 @@ namespace XMLSchema
 
         DOMString                       _value;
 
-        List<TextNode* >                _textNodes; 
+        List<AutoPtr<TextNode> >        _textNodes; 
         bool                            _isDefaultText;
 
         static std::map<DOMString, anyType*>   _qNameToTypeMap;
