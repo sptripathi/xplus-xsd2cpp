@@ -3,12 +3,16 @@ AM_CFLAGS= -g -O0 -I$(top_srcdir)/include -I$(top_srcdir)/src/DOM/
 AUTOMAKE_OPTIONS = subdir-objects
 AM_LDFLAGS=
 
-SUBDIRS =  tools #Poco XPlus DOM XSD
+SUBDIRS =  #Poco XPlus DOM XSD tools
 
 
-bin_PROGRAMS=fsmTest 
+bin_PROGRAMS=fsmTest domParser 
+
 fsmTest_SOURCES=XSD/FsmTest.cpp 
 fsmTest_LDADD =libxsdall.la
+
+domParser_SOURCES=tools/DOMParse.cpp
+domParser_LDADD = $(top_srcdir)/src/libxsdall.la 
 
 
 lib_LTLIBRARIES = libxsdall.la
@@ -87,3 +91,54 @@ libxsdall_la_SOURCES = \
 
 libxsdall_la_LDFLAGS = -lpthread -lexpat
 
+
+# xsd2cpp
+dist_bin_SCRIPTS=tools/xsd2cpp
+
+nobase_dist_data_DATA = tools/resources/configure.ac \
+                       tools/resources/Makefile.am.src \
+                       tools/resources/Makefile.am.include \
+                       tools/resources/Makefile.am.top_srcdir \
+                       tools/resources/autogen.sh \
+                       tools/resources/acinclude.m4 \
+                       tools/resources/aminclude.am \
+                       tools/resources/doxygen.cfg \
+                       tools/resources/README.build.txt \
+                       tools/resources/version \
+                       \
+                       tools/xsl/xsdUtils.xsl \
+                       tools/xsl/xsd2cpp.xsl \
+                       tools/xsl/xsd2cppST.xsl \
+                       tools/xsl/complexTypeC.xsl \
+                       tools/xsl/complexTypeH.xsl \
+                       tools/xsl/xsdIncludes.xsl \
+                       tools/xsl/xsd2cppBuiltinSimple.xsl \
+                       tools/xsl/constraints.xsl \
+                       tools/xsl/resolution.xsl \
+                       tools/xsl/test.xsl \
+                       tools/xsl/xmlplusDict.xml \
+                       tools/xsl/rules.xml 
+
+
+do_subst = sed -e 's,[@]bindir[@],$(bindir),g' \
+               -e 's,[@]libdir[@],$(libdir),g' \
+               -e 's,[@]datadir[@],$(datadir),g' \
+               -e 's,[@]includedir[@],$(includedir),g'
+
+tools/xsd2cpp: tools/xsd2cpp.in tools/Makefile 
+	$(do_subst) < $(srcdir)/tools/xsd2cpp.in > tools/xsd2cpp
+	chmod +x tools/xsd2cpp
+
+tools/resources/Makefile.am.src: tools/resources/Makefile.am.src.in tools/Makefile
+	$(do_subst) < $(srcdir)/tools/resources/Makefile.am.src.in > $(srcdir)/tools/resources/Makefile.am.src
+
+tools/resources/Makefile.am.top_srcdir: tools/resources/Makefile.am.top_srcdir.in tools/Makefile
+	$(do_subst) < $(srcdir)/tools/resources/Makefile.am.top_srcdir.in > $(srcdir)/tools/resources/Makefile.am.top_srcdir
+
+# generate PrimitiveTypes .h
+nodist_libxsd_la_SOURCES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
+BUILT_SOURCES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
+CLEANFILES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
+
+$(top_srcdir)/include/XSD/PrimitiveTypes.h: $(top_srcdir)/src/tools/xsl/xsd2cppBuiltinSimple.xsl $(top_srcdir)/src/tools/xsl/xmlplusDict.xml $(top_srcdir)/resources/xsd/XMLSchema.xsd
+	cd $(top_srcdir) && xsltproc --stringparam input_doc "`pwd`/resources/xsd/XMLSchema.xsd" --stringparam CWD `pwd` --stringparam w3cXmlSchema "true" --stringparam NSALIASES_FILE none src/tools/xsl/xsd2cppBuiltinSimple.xsl resources/xsd/XMLSchema.xsd 2>/dev/null && ./src/tools/beautify include/XSD/PrimitiveTypes.h && cd -

@@ -16,6 +16,8 @@
 @SET_MAKE@
 
 
+
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -35,9 +37,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = fsmTest$(EXEEXT)
+bin_PROGRAMS = fsmTest$(EXEEXT) domParser$(EXEEXT)
 subdir = src
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(dist_bin_SCRIPTS) $(nobase_dist_data_DATA) \
+	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
@@ -70,7 +73,8 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
+	"$(DESTDIR)$(bindir)" "$(DESTDIR)$(datadir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libxsdall_la_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
@@ -103,9 +107,13 @@ libxsdall_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(libxsdall_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
+am_domParser_OBJECTS = tools/DOMParse.$(OBJEXT)
+domParser_OBJECTS = $(am_domParser_OBJECTS)
+domParser_DEPENDENCIES = $(top_srcdir)/src/libxsdall.la
 am_fsmTest_OBJECTS = XSD/FsmTest.$(OBJEXT)
 fsmTest_OBJECTS = $(am_fsmTest_OBJECTS)
 fsmTest_DEPENDENCIES = libxsdall.la
+SCRIPTS = $(dist_bin_SCRIPTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -128,8 +136,10 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libxsdall_la_SOURCES) $(fsmTest_SOURCES)
-DIST_SOURCES = $(libxsdall_la_SOURCES) $(fsmTest_SOURCES)
+SOURCES = $(libxsdall_la_SOURCES) $(domParser_SOURCES) \
+	$(fsmTest_SOURCES)
+DIST_SOURCES = $(libxsdall_la_SOURCES) $(domParser_SOURCES) \
+	$(fsmTest_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -137,6 +147,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	install-pdf-recursive install-ps-recursive install-recursive \
 	installcheck-recursive installdirs-recursive pdf-recursive \
 	ps-recursive uninstall-recursive
+DATA = $(nobase_dist_data_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
@@ -291,9 +302,11 @@ AM_CXXFLAGS = -g -O0 -I$(top_srcdir)/include
 AM_CFLAGS = -g -O0 -I$(top_srcdir)/include -I$(top_srcdir)/src/DOM/
 AUTOMAKE_OPTIONS = subdir-objects
 AM_LDFLAGS = 
-SUBDIRS = tools #Poco XPlus DOM XSD
+SUBDIRS = #Poco XPlus DOM XSD tools
 fsmTest_SOURCES = XSD/FsmTest.cpp 
 fsmTest_LDADD = libxsdall.la
+domParser_SOURCES = tools/DOMParse.cpp
+domParser_LDADD = $(top_srcdir)/src/libxsdall.la 
 lib_LTLIBRARIES = libxsdall.la
 libxsdall_la_SOURCES = \
   Poco/ASCIIEncoding.cpp \
@@ -369,7 +382,45 @@ libxsdall_la_SOURCES = \
   XSD/xsdUtils.cpp
 
 libxsdall_la_LDFLAGS = -lpthread -lexpat
-all: all-recursive
+
+# xsd2cpp
+dist_bin_SCRIPTS = tools/xsd2cpp
+nobase_dist_data_DATA = tools/resources/configure.ac \
+                       tools/resources/Makefile.am.src \
+                       tools/resources/Makefile.am.include \
+                       tools/resources/Makefile.am.top_srcdir \
+                       tools/resources/autogen.sh \
+                       tools/resources/acinclude.m4 \
+                       tools/resources/aminclude.am \
+                       tools/resources/doxygen.cfg \
+                       tools/resources/README.build.txt \
+                       tools/resources/version \
+                       \
+                       tools/xsl/xsdUtils.xsl \
+                       tools/xsl/xsd2cpp.xsl \
+                       tools/xsl/xsd2cppST.xsl \
+                       tools/xsl/complexTypeC.xsl \
+                       tools/xsl/complexTypeH.xsl \
+                       tools/xsl/xsdIncludes.xsl \
+                       tools/xsl/xsd2cppBuiltinSimple.xsl \
+                       tools/xsl/constraints.xsl \
+                       tools/xsl/resolution.xsl \
+                       tools/xsl/test.xsl \
+                       tools/xsl/xmlplusDict.xml \
+                       tools/xsl/rules.xml 
+
+do_subst = sed -e 's,[@]bindir[@],$(bindir),g' \
+               -e 's,[@]libdir[@],$(libdir),g' \
+               -e 's,[@]datadir[@],$(datadir),g' \
+               -e 's,[@]includedir[@],$(includedir),g'
+
+
+# generate PrimitiveTypes .h
+nodist_libxsd_la_SOURCES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
+BUILT_SOURCES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
+CLEANFILES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .cpp .lo .o .obj
@@ -606,11 +657,56 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+tools/$(am__dirstamp):
+	@$(MKDIR_P) tools
+	@: > tools/$(am__dirstamp)
+tools/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) tools/$(DEPDIR)
+	@: > tools/$(DEPDIR)/$(am__dirstamp)
+tools/DOMParse.$(OBJEXT): tools/$(am__dirstamp) \
+	tools/$(DEPDIR)/$(am__dirstamp)
+domParser$(EXEEXT): $(domParser_OBJECTS) $(domParser_DEPENDENCIES) 
+	@rm -f domParser$(EXEEXT)
+	$(CXXLINK) $(domParser_OBJECTS) $(domParser_LDADD) $(LIBS)
 XSD/FsmTest.$(OBJEXT): XSD/$(am__dirstamp) \
 	XSD/$(DEPDIR)/$(am__dirstamp)
 fsmTest$(EXEEXT): $(fsmTest_OBJECTS) $(fsmTest_DEPENDENCIES) 
 	@rm -f fsmTest$(EXEEXT)
 	$(CXXLINK) $(fsmTest_OBJECTS) $(fsmTest_LDADD) $(LIBS)
+install-dist_binSCRIPTS: $(dist_bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
+	@list='$(dist_bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n' \
+	    -e 'h;s|.*|.|' \
+	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
+	      if (++n[d] == $(am__install_max)) { \
+		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
+	    else { print "f", d "/" $$4, $$1 } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	     test -z "$$files" || { \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	     } \
+	; done
+
+uninstall-dist_binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	       sed -e 's,.*/,,;$(transform)'`; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -749,6 +845,7 @@ mostlyclean-compile:
 	-rm -f XSD/XSDFSM.lo
 	-rm -f XSD/xsdUtils.$(OBJEXT)
 	-rm -f XSD/xsdUtils.lo
+	-rm -f tools/DOMParse.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -821,6 +918,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/UrTypes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/XSDFSM.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/xsdUtils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/DOMParse.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -879,6 +977,29 @@ clean-libtool:
 	-rm -rf Poco/.libs Poco/_libs
 	-rm -rf XPlus/.libs XPlus/_libs
 	-rm -rf XSD/.libs XSD/_libs
+install-nobase_dist_dataDATA: $(nobase_dist_data_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(datadir)" || $(MKDIR_P) "$(DESTDIR)$(datadir)"
+	@list='$(nobase_dist_data_DATA)'; test -n "$(datadir)" || list=; \
+	$(am__nobase_list) | while read dir files; do \
+	  xfiles=; for file in $$files; do \
+	    if test -f "$$file"; then xfiles="$$xfiles $$file"; \
+	    else xfiles="$$xfiles $(srcdir)/$$file"; fi; done; \
+	  test -z "$$xfiles" || { \
+	    test "x$$dir" = x. || { \
+	      echo "$(MKDIR_P) '$(DESTDIR)$(datadir)/$$dir'"; \
+	      $(MKDIR_P) "$(DESTDIR)$(datadir)/$$dir"; }; \
+	    echo " $(INSTALL_DATA) $$xfiles '$(DESTDIR)$(datadir)/$$dir'"; \
+	    $(INSTALL_DATA) $$xfiles "$(DESTDIR)$(datadir)/$$dir" || exit $$?; }; \
+	done
+
+uninstall-nobase_dist_dataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(nobase_dist_data_DATA)'; test -n "$(datadir)" || list=; \
+	$(am__nobase_strip_setup); files=`$(am__nobase_strip)`; \
+	test -n "$$files" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(datadir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(datadir)" && rm -f $$files
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -1074,16 +1195,18 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: check-recursive
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-recursive
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(SCRIPTS) $(DATA)
 install-binPROGRAMS: install-libLTLIBRARIES
 
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(datadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-recursive
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
 uninstall: uninstall-recursive
@@ -1100,6 +1223,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -1112,17 +1236,20 @@ distclean-generic:
 	-rm -f XPlus/$(am__dirstamp)
 	-rm -f XSD/$(DEPDIR)/$(am__dirstamp)
 	-rm -f XSD/$(am__dirstamp)
+	-rm -f tools/$(DEPDIR)/$(am__dirstamp)
+	-rm -f tools/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-recursive
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
 	clean-libtool mostlyclean-am
 
 distclean: distclean-recursive
-	-rm -rf DOM/$(DEPDIR) Poco/$(DEPDIR) XPlus/$(DEPDIR) XSD/$(DEPDIR)
+	-rm -rf DOM/$(DEPDIR) Poco/$(DEPDIR) XPlus/$(DEPDIR) XSD/$(DEPDIR) tools/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1139,13 +1266,14 @@ info: info-recursive
 
 info-am:
 
-install-data-am:
+install-data-am: install-nobase_dist_dataDATA
 
 install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS install-libLTLIBRARIES
+install-exec-am: install-binPROGRAMS install-dist_binSCRIPTS \
+	install-libLTLIBRARIES
 
 install-html: install-html-recursive
 
@@ -1168,7 +1296,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
-	-rm -rf DOM/$(DEPDIR) Poco/$(DEPDIR) XPlus/$(DEPDIR) XSD/$(DEPDIR)
+	-rm -rf DOM/$(DEPDIR) Poco/$(DEPDIR) XPlus/$(DEPDIR) XSD/$(DEPDIR) tools/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -1185,10 +1313,12 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
+uninstall-am: uninstall-binPROGRAMS uninstall-dist_binSCRIPTS \
+	uninstall-libLTLIBRARIES uninstall-nobase_dist_dataDATA
 
-.MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) ctags-recursive \
-	install-am install-strip tags-recursive
+.MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) all check \
+	ctags-recursive install install-am install-strip \
+	tags-recursive
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am check check-am clean clean-binPROGRAMS \
@@ -1196,17 +1326,32 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 	ctags-recursive distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-libLTLIBRARIES \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs installdirs-am maintainer-clean \
+	install-data install-data-am install-dist_binSCRIPTS \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-libLTLIBRARIES install-man \
+	install-nobase_dist_dataDATA install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-recursive uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-libLTLIBRARIES
+	uninstall-binPROGRAMS uninstall-dist_binSCRIPTS \
+	uninstall-libLTLIBRARIES uninstall-nobase_dist_dataDATA
 
+
+tools/xsd2cpp: tools/xsd2cpp.in tools/Makefile 
+	$(do_subst) < $(srcdir)/tools/xsd2cpp.in > tools/xsd2cpp
+	chmod +x tools/xsd2cpp
+
+tools/resources/Makefile.am.src: tools/resources/Makefile.am.src.in tools/Makefile
+	$(do_subst) < $(srcdir)/tools/resources/Makefile.am.src.in > $(srcdir)/tools/resources/Makefile.am.src
+
+tools/resources/Makefile.am.top_srcdir: tools/resources/Makefile.am.top_srcdir.in tools/Makefile
+	$(do_subst) < $(srcdir)/tools/resources/Makefile.am.top_srcdir.in > $(srcdir)/tools/resources/Makefile.am.top_srcdir
+
+$(top_srcdir)/include/XSD/PrimitiveTypes.h: $(top_srcdir)/src/tools/xsl/xsd2cppBuiltinSimple.xsl $(top_srcdir)/src/tools/xsl/xmlplusDict.xml $(top_srcdir)/resources/xsd/XMLSchema.xsd
+	cd $(top_srcdir) && xsltproc --stringparam input_doc "`pwd`/resources/xsd/XMLSchema.xsd" --stringparam CWD `pwd` --stringparam w3cXmlSchema "true" --stringparam NSALIASES_FILE none src/tools/xsl/xsd2cppBuiltinSimple.xsl resources/xsd/XMLSchema.xsd 2>/dev/null && ./src/tools/beautify include/XSD/PrimitiveTypes.h && cd -
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
