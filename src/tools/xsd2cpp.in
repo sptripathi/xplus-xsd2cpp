@@ -25,7 +25,7 @@ INST_LIB_DIR=@libdir@
 INST_INCL_DIR=@includedir@
 DATA_DIR=@datadir@
 RESOURCES_DIR=@datadir@/resources
-XSD2CPP_XSL_PATH=$DATA_DIR/xsl/xsd2cpp.xsl
+XSD2CPP_XSL_PATH=$DATA_DIR/tools/xsl/xsd2cpp.xsl
 
 MKDIR=`which mkdir`
 XSLTPROC=`which xsltproc`
@@ -267,7 +267,7 @@ print_usage()
 
 print_version()
 {
-  $CAT $DATA_DIR/resources/version
+  $CAT $DATA_DIR/tools/resources/version
 }
 
 
