@@ -1340,14 +1340,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-dist_binSCRIPTS \
 	uninstall-libLTLIBRARIES uninstall-nobase_dist_dataDATA
 
 
-tools/xsd2cpp: tools/xsd2cpp.in tools/Makefile 
+tools/xsd2cpp: tools/xsd2cpp.in
 	$(do_subst) < $(srcdir)/tools/xsd2cpp.in > tools/xsd2cpp
 	chmod +x tools/xsd2cpp
 
-tools/resources/Makefile.am.src: tools/resources/Makefile.am.src.in tools/Makefile
+tools/resources/Makefile.am.src: tools/resources/Makefile.am.src.in
 	$(do_subst) < $(srcdir)/tools/resources/Makefile.am.src.in > $(srcdir)/tools/resources/Makefile.am.src
 
-tools/resources/Makefile.am.top_srcdir: tools/resources/Makefile.am.top_srcdir.in tools/Makefile
+tools/resources/Makefile.am.top_srcdir: tools/resources/Makefile.am.top_srcdir.in
 	$(do_subst) < $(srcdir)/tools/resources/Makefile.am.top_srcdir.in > $(srcdir)/tools/resources/Makefile.am.top_srcdir
 
 $(top_srcdir)/include/XSD/PrimitiveTypes.h: $(top_srcdir)/src/tools/xsl/xsd2cppBuiltinSimple.xsl $(top_srcdir)/src/tools/xsl/xmlplusDict.xml $(top_srcdir)/resources/xsd/XMLSchema.xsd

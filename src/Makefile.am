@@ -125,14 +125,14 @@ do_subst = sed -e 's,[@]bindir[@],$(bindir),g' \
                -e 's,[@]datadir[@],$(datadir),g' \
                -e 's,[@]includedir[@],$(includedir),g'
 
-tools/xsd2cpp: tools/xsd2cpp.in tools/Makefile 
+tools/xsd2cpp: tools/xsd2cpp.in
 	$(do_subst) < $(srcdir)/tools/xsd2cpp.in > tools/xsd2cpp
 	chmod +x tools/xsd2cpp
 
-tools/resources/Makefile.am.src: tools/resources/Makefile.am.src.in tools/Makefile
+tools/resources/Makefile.am.src: tools/resources/Makefile.am.src.in
 	$(do_subst) < $(srcdir)/tools/resources/Makefile.am.src.in > $(srcdir)/tools/resources/Makefile.am.src
 
-tools/resources/Makefile.am.top_srcdir: tools/resources/Makefile.am.top_srcdir.in tools/Makefile
+tools/resources/Makefile.am.top_srcdir: tools/resources/Makefile.am.top_srcdir.in
 	$(do_subst) < $(srcdir)/tools/resources/Makefile.am.top_srcdir.in > $(srcdir)/tools/resources/Makefile.am.top_srcdir
 
 # generate PrimitiveTypes .h
