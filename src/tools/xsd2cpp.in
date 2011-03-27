@@ -53,6 +53,7 @@ ABSPATH=""
 GEN_XSD_SOURCES=""
 GEN_XSD_INCLUDES=""
 NSALIASES_FILE="none"
+TERMINATE_ON_ERROR=yes
 XPLUS_META_DIR=""
 XPLUS_SCHEMAINFO_DIR=""
 DEBUG=0
@@ -147,7 +148,7 @@ gen_source_files()
 
   $MKDIR -p $XPLUS_META_DIR
   $MKDIR -p $XPLUS_SCHEMAINFO_DIR
-  XSLTPROC_OPTIONS="--stringparam input_doc $ABSXSD --stringparam CWD $CWD --stringparam w3cXmlSchema false --stringparam NSALIASES_FILE $NSALIASES_FILE "
+  XSLTPROC_OPTIONS="--stringparam input_doc $ABSXSD --stringparam CWD $CWD --stringparam w3cXmlSchema false --stringparam NSALIASES_FILE $NSALIASES_FILE --stringparam TERMINATE_ON_ERROR $TERMINATE_ON_ERROR"
   if [ $DEBUG -eq 1 ]; then
     XSLTPROC_OPTIONS="-v $XSLTPROC_OPTIONS"
   fi
@@ -253,9 +254,11 @@ print_usage()
 {
   echo "Usage:"
   echo
-  echo "1.  xsd2cpp xsd-file [outdir]"
+  echo "1.  xsd2cpp [-s] xsd-file [outdir]"
   echo "      outdir: directory to output the generated source, like foo, . , .. etc."
   echo "      (if unspecified, defaults to xsd-file-name)"
+  echo
+  echo "    -s :  do not terminate on error"
   echo
   echo "2.  xsd2cpp -v"
   echo "      prints verion"
@@ -273,7 +276,7 @@ print_version()
 
 #main
 
-args=`$GETOPT hdpv $*`
+args=`$GETOPT hdpvs $*`
 if [ $? != 0 ]; then
   print_usage
   exit 2
@@ -295,6 +298,9 @@ do
       shift;;
     -p)
       PROFILE=1
+      shift;;
+    -s)
+      TERMINATE_ON_ERROR=no
       shift;;
     --)
       shift; break;;

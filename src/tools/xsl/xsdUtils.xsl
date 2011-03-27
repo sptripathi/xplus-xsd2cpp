@@ -273,34 +273,38 @@
 </xsl:template>
 
 
-
-
 <xsl:template name="T_terminate_with_msg">
   <xsl:param name="msg" select="'Unknown Error'"/>
-  <xsl:message terminate="yes">
+  <xsl:choose>
+    <xsl:when test="$TERMINATE_ON_ERROR='yes'">
+      <xsl:message terminate="yes">
 Error: <xsl:value-of select="$msg"/>
-<!--
-<xsl:value-of select="normalize-space($msg)"/>
--->
-  </xsl:message>
+      </xsl:message>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:message terminate="no">
+Error: <xsl:value-of select="$msg"/>
+      </xsl:message>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 
 <xsl:template name="T_unsupported_usage">
   <xsl:param name="unsupportedItem"/>
-  <xsl:message terminate="yes">
+  <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
 Error:    
 ==========================================================    
 Following is currently unsupported: "<xsl:value-of select="$unsupportedItem"/>"
 It is however planned to be supported in future releases.
 ==========================================================    
-  </xsl:message>
+  </xsl:with-param></xsl:call-template>
 </xsl:template>
 
 
 <xsl:template name="T_found_a_bug">
   <xsl:param name="errorCode" select="1"/>
-  <xsl:message terminate="yes">
+  <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
 +---------------------------------------------------------------- 
 |   Unexpected Error.   ErrorCode: <xsl:value-of select="$errorCode"/>
 +----------------------------------------------------------------
@@ -314,7 +318,7 @@ It is however planned to be supported in future releases.
 |                                                                    
 | ( provide details like ErrorCode, xsd-file, usage etc. )           
 +----------------------------------------------------------------
-  </xsl:message>
+  </xsl:with-param></xsl:call-template>
 </xsl:template>
 
 
@@ -696,14 +700,10 @@ namespace <xsl:value-of select="$nsStr"/>{
       <xsl:when test="$ctNode/@mixed='false'">false</xsl:when>
 
       <xsl:when test="$ctNode/@mixed">
-        <xsl:message terminate="yes">
-          complexType/@mixed attribute's allowed values: "true|false". Got : <xsl:value-of select="$ctNode/@mixed"/>
-        </xsl:message>
+        <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">complexType/@mixed attribute's allowed values: "true|false". Got : <xsl:value-of select="$ctNode/@mixed"/></xsl:with-param></xsl:call-template>
       </xsl:when>
 
-
       <xsl:otherwise>false</xsl:otherwise>
-
     </xsl:choose>
   </xsl:variable>
   <xsl:value-of select="normalize-space($mixedContent)"/>
