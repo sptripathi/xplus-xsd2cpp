@@ -81,9 +81,28 @@ namespace XMLSchema
             anySimpleType::stringValue(val);
           }
 
-          inline DOMString stringValue() {
+          inline virtual DOMString stringValue() {
             return anySimpleType::stringValue();
           }
+
+#define SAMPLE_LIST_CNT 5
+          virtual DOMString sampleValue() 
+          {
+            AnyTypeCreateArgs args;
+            args.isSampleCreate = true; 
+            T t(args);
+
+            DOMString sampleListStr;
+            for(int i=0; i<SAMPLE_LIST_CNT; i++)
+            {
+              if(i != 0) {
+                sampleListStr += " ";
+              }
+              sampleListStr += t.sampleValue();
+            }
+            return sampleListStr;
+          }
+
 
           inline virtual unsigned int lengthFacet() {
             return _listValues.size(); 

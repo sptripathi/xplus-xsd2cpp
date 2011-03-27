@@ -1,14 +1,13 @@
 #!/bin/bash
 
-# BUILD
-xsd2cpp chineseDoc_utf8.xsd . && ./autogen.sh &&  make install
+xsd2cpp -s ccExtAny.xsd .  && ./autogen.sh &&  make install
 if [ $? -ne 0 ]; then
   echo "   failed to build in dir: `pwd`"
   exit 1
 fi
 
 # TEST
-run=./build/bin/chineseDoc_utf8run
+run=./build/bin/ccExtAnyrun
 
 $run -s 
 # check sample.xml exists
@@ -37,5 +36,4 @@ if [ ! -f valid.xml.rt.xml ]; then
   echo "  valid.xml.rt.xml doesn't exist"
   exit 1  
 fi
-
 

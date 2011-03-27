@@ -239,11 +239,11 @@ namespace XMLSchema
 
         virtual void stringValue(DOMString value); 
         void defaultValue(DOMString value);
-        virtual inline DOMString stringValue() {
+        inline virtual DOMString stringValue() {
           return _value;
         }
         
-        virtual inline DOMString sampleValue() {
+        inline virtual DOMString sampleValue() {
           return Sampler::getRandomSample(Sampler::stringSamples);
         }
         
@@ -397,7 +397,7 @@ namespace XMLSchema
         
         bool checkValue(DOMString val);
         virtual void stringValue(DOMString value); 
-        virtual inline DOMString stringValue() {
+        inline virtual DOMString stringValue() {
           return _value;
         }
         

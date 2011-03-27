@@ -44,13 +44,24 @@ void writeSample()
   cout << "writeSample:" << endl;
   string outFile = "sample.xml";
 
-  //write the Document back to a file
-  simplest::Document xsdDoc(true);
-  xsdDoc.prettyPrint(true);
-  ofstream ofs(outFile.c_str());
-  ofs << xsdDoc;
-  cout << "  => wrote file:" << outFile << " (using DOM Document)" 
-    << endl << endl;
+  try
+  {
+    //write the Document back to a file
+    simplest::Document xsdDoc(true, true);
+    xsdDoc.prettyPrint(true);
+    ofstream ofs(outFile.c_str());
+    ofs << xsdDoc;
+    cout << "  => wrote file:" << outFile << " (using DOM Document)" 
+      << endl << endl;
+  }
+  catch(XPlus::Exception& ex) {
+    cerr << "  => write failed" << endl;
+    cerr << endl << "{" << endl;
+    cerr << ex.msg();
+    cerr << endl << "}" << endl;
+    exit(1);
+  }
+
 
 }
 

@@ -1,3 +1,4 @@
+#!/bin/bash
 
 xsd2cpp including1.xsd .  && ./autogen.sh &&  make install
 if [ $? -ne 0 ]; then

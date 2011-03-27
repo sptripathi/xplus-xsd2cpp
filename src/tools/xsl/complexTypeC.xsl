@@ -1644,6 +1644,11 @@ namespace Types
       <xsl:with-param name="resolution" select="$resolution"/>  
     </xsl:call-template>
   </xsl:variable>
+  <xsl:variable name="isAnyType">
+    <xsl:call-template name="T_is_resolution_anyType">
+      <xsl:with-param name="resolution" select="$resolution"/>  
+    </xsl:call-template>
+  </xsl:variable>
   <xsl:variable name="isEmptyComplexType">
     <xsl:call-template name="T_is_resolution_a_complexTypeDefn_of_empty_variety">
       <xsl:with-param name="resolution" select="$resolution"/>  
@@ -1726,7 +1731,7 @@ namespace Types
     node->defaultValue("<xsl:value-of select="@fixed"/>");    
       </xsl:when>
     </xsl:choose>
-    <xsl:if test="$contentTypeVariety='simple' or $isSimpleType='true'">
+    <xsl:if test="$contentTypeVariety='simple' or $isSimpleType='true' or $isAnyType='true'">
     if(options.isSampleCreate &amp;&amp; (node->stringValue() == "") ) {
       node->stringValue(node->sampleValue());
     }

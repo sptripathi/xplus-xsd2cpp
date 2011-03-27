@@ -28,7 +28,7 @@ namespace XMLSchema
   {
     DOMString stringSamples[CNT_SAMPLES] = {
       "a text with     spaces,\t\ttabs,\nand\nnewlines",
-      "here goes a paragraph\n\t\t...then comes another paragraph\n\t\tand then may be another one",
+      "Some lines of text separated by newlines and tabs:\n\t\there goes a line of text\n\t\t...then comes another one\n\t\t...and then comes the last one",
       "text-sample",
       "paint your imaginations",
       "space separated string",
