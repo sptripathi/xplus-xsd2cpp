@@ -24,7 +24,7 @@ INST_BIN_DIR=@bindir@
 INST_LIB_DIR=@libdir@
 INST_INCL_DIR=@includedir@
 DATA_DIR=@datadir@
-RESOURCES_DIR=@datadir@/resources
+RESOURCES_DIR=@datadir@/tools/resources
 XSD2CPP_XSL_PATH=$DATA_DIR/tools/xsl/xsd2cpp.xsl
 
 MKDIR=`which mkdir`

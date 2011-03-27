@@ -12,7 +12,7 @@ fsmTest_SOURCES=XSD/FsmTest.cpp
 fsmTest_LDADD =libxsdall.la
 
 domParser_SOURCES=tools/DOMParse.cpp
-domParser_LDADD = $(top_srcdir)/src/libxsdall.la 
+domParser_LDADD = libxsdall.la 
 
 
 lib_LTLIBRARIES = libxsdall.la
@@ -87,7 +87,9 @@ libxsdall_la_SOURCES = \
   XSD/FSM.cpp \
   XSD/UrTypes.cpp \
   XSD/XSDFSM.cpp \
-  XSD/xsdUtils.cpp
+  XSD/xsdUtils.cpp \
+  XSD/Samplers.cpp \
+  $(top_srcdir)/include/XSD/PrimitiveTypes.h
 
 libxsdall_la_LDFLAGS = -lpthread -lexpat
 
@@ -136,9 +138,9 @@ tools/resources/Makefile.am.top_srcdir: tools/resources/Makefile.am.top_srcdir.i
 	$(do_subst) < $(srcdir)/tools/resources/Makefile.am.top_srcdir.in > $(srcdir)/tools/resources/Makefile.am.top_srcdir
 
 # generate PrimitiveTypes .h
-nodist_libxsd_la_SOURCES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
+#nodist_libxsd_la_SOURCES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
 BUILT_SOURCES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
 CLEANFILES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
 
-$(top_srcdir)/include/XSD/PrimitiveTypes.h: $(top_srcdir)/src/tools/xsl/xsd2cppBuiltinSimple.xsl $(top_srcdir)/src/tools/xsl/xmlplusDict.xml $(top_srcdir)/resources/xsd/XMLSchema.xsd
+$(top_srcdir)/include/XSD/PrimitiveTypes.h: $(top_srcdir)/src/tools/xsl/xsd2cppBuiltinSimple.xsl $(top_srcdir)/src/tools/xsl/xsd2cppST.xsl $(top_srcdir)/src/tools/xsl/xmlplusDict.xml $(top_srcdir)/resources/xsd/XMLSchema.xsd
 	cd $(top_srcdir) && xsltproc --stringparam input_doc "`pwd`/resources/xsd/XMLSchema.xsd" --stringparam CWD `pwd` --stringparam w3cXmlSchema "true" --stringparam NSALIASES_FILE none src/tools/xsl/xsd2cppBuiltinSimple.xsl resources/xsd/XMLSchema.xsd 2>/dev/null && ./src/tools/beautify include/XSD/PrimitiveTypes.h && cd -

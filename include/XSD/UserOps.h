@@ -59,9 +59,9 @@ namespace XSD
     {
     }
 
-      T* createXsdDocument(bool buildTree)
+      T* createXsdDocument(bool buildTree, bool createSample=false)
       {
-        T* xsdDoc = new T(buildTree);
+        T* xsdDoc = new T(buildTree, createSample);
         // in the cases where documentElement is obvious(just one option),
         // the cbChooseDocumentElement functioner pointer should not be set
         if(buildTree && _cbStruct.cbChooseDocumentElement)
@@ -76,9 +76,19 @@ namespace XSD
         cout << "writeSample:" << endl;
         string outFile = "sample.xml";
 
-        AutoPtr<T> xsdDoc = createXsdDocument(true);
-        xsdDoc->prettyPrint(nopretty!=1);
-        doc2xml(xsdDoc, outFile);
+        try 
+        {
+          AutoPtr<T> xsdDoc = createXsdDocument(true, true);
+          xsdDoc->prettyPrint(nopretty!=1);
+          doc2xml(xsdDoc, outFile);
+        }
+        catch(XPlus::Exception& ex) {
+          cerr << "  => write failed" << endl;
+          cerr << endl << "{" << endl;
+          cerr << ex.msg();
+          cerr << endl << "}" << endl;
+          exit(1);
+        }
       }
 
 

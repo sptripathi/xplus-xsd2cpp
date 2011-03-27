@@ -58,7 +58,8 @@ namespace XMLSchema
         public:
 
           SimpleTypeListTmpl(AnyTypeCreateArgs args):
-            anySimpleType(args, PD_STRING)
+            anySimpleType(args, PD_STRING),
+            _isSampleCreate(args.isSampleCreate)
           {
           }
 
@@ -71,6 +72,7 @@ namespace XMLSchema
             for(unsigned int i=0; i<tokens.size(); i++)
             {
               AnyTypeCreateArgs args;
+              args.isSampleCreate = _isSampleCreate; 
               T t(args);
               t.stringValue(tokens[i]);
               _listValues.push_back(t);
@@ -94,6 +96,7 @@ namespace XMLSchema
         protected:
 
           list<T>         _listValues;
+          bool            _isSampleCreate;
       };
 
   } // end namespace Types 

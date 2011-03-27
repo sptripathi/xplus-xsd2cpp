@@ -669,10 +669,27 @@ void XsdFsmOfFSMs::fireRequiredEvents(bool docBuilding)
 
 void XsdFsmOfFSMs::fireDefaultEvents(bool docBuilding)
 {
-  for(unsigned int i=0; i<_allFSMs.size(); i++)
-  {
+  for(unsigned int i=0; i<_allFSMs.size(); i++) {
     _allFSMs[i]->fireDefaultEvents(docBuilding);
   }
+}
+
+void XsdFsmOfFSMs::fireSampleEvents(bool docBuilding)
+{
+  for(unsigned int i=0; i<_allFSMs.size(); i++) {
+    _allFSMs[i]->fireSampleEvents(docBuilding);
+  }
+}
+
+void XsdChoiceFsmOfFSMs::fireSampleEvents(bool docBuilding)
+{
+  if(_allFSMs.size() == 0) {
+    return;
+  }
+
+  // for now let's have the policy that the sample would have just the
+  // first option
+  _allFSMs[0]->fireSampleEvents(docBuilding);
 }
 
 Node* XsdSequenceFsmOfFSMs::previousSiblingElementInSchemaOrder(XsdFsmBase *callerFsm)
@@ -1399,6 +1416,19 @@ void XsdFsmArray::fireRequiredEvents(bool docBuilding)
     fsmTreeNode->_data->fireRequiredEvents();
   }
   */
+}
+
+void XsdFsmArray::fireSampleEvents(bool docBuilding)
+{
+  unsigned int depth = 0;
+  // if unbounded, we wll take MAXOCCUR_SAMPLE
+  if(-1 == (int)_fsmTree._maxDepth) {
+    depth = MAXOCCUR_SAMPLE; 
+  }
+  else {
+    depth = _fsmTree._maxDepth;
+  }
+  resize(_fsmTree._minDepth, docBuilding);
 }
  
 void XsdFsmArray::fireDefaultEvents(bool docBuilding)

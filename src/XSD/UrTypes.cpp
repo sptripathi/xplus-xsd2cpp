@@ -55,6 +55,8 @@ namespace XMLSchema
       _blockMask(args.blockMask),
       _finalMask(args.finalMask),
       _defaultValue(""),
+      _isSampleCreate(args.isSampleCreate),
+      _sampleValue(""),
       _isDefaultText(false)
     {
       if(_abstract == true)
@@ -354,8 +356,12 @@ namespace XMLSchema
       }
       catch(XPlus::Exception& ex)
       {
-        if(ownerElement()) { 
+        if(ownerElement()) 
+        { 
           ex.setContext("element", *this->ownerElement()->getNodeName());
+          if(this->ownerNode() && this->ownerNode()->getNodeType()==Node::ATTRIBUTE_NODE) {
+            ex.setContext("attribute", *this->ownerNode()->getNodeName());
+          }
         }
         throw ex;
       }
@@ -811,10 +817,26 @@ namespace XMLSchema
 
     void anySimpleType::postSetValue() 
     {
-      // eg.  store integer value ie string-to-int
-      setTypedValue();
-      validateCFacets();
-      applyCFacets();
+      try
+      {
+        // eg.  store integer value ie string-to-int
+        setTypedValue();
+        if(!isSampleCreate()) {
+          validateCFacets();
+          applyCFacets();
+        }
+      }
+      catch(Exception& ex)
+      {
+        if(ownerElement()) 
+        { 
+          ex.setContext("element", *this->ownerElement()->getNodeName());
+          if(this->ownerNode() && this->ownerNode()->getNodeType()==Node::ATTRIBUTE_NODE) {
+            ex.setContext("attribute", *this->ownerNode()->getNodeName());
+          }
+        }
+        throw ex;
+      }
     }
     
     void anySimpleType::stringValue(DOMString val) 

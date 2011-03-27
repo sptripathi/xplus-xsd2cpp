@@ -307,7 +307,7 @@ class Document : public XMLSchema::TDocument
 
   public:
 
-  Document(bool buildTree=true);
+  Document(bool buildTree=true, bool createSample=false);
   virtual ~Document() {}
     
   <xsl:if test="$cntTLE>1">  
@@ -360,20 +360,22 @@ class Document : public XMLSchema::TDocument
 <xsl:call-template name="T_emit_cppNSBegin_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
 
   ///constructor for the Document node
-  Document::Document(bool buildTree_):
-    XMLSchema::TDocument(buildTree_)
+  Document::Document(bool buildTree_, bool createSample_):
+    XMLSchema::TDocument(buildTree_, createSample_)
   {
     initFSM();
     DOM::Document::attributeDefaultQualified(<xsl:value-of select="$attributeDefaultQualified"/>);
     DOM::Document::elementDefaultQualified(<xsl:value-of select="$elementDefaultQualified"/>);
-      
-
     <xsl:if test="$cntTLE=1">
-    if(buildTree()) {
+    if(buildTree()) 
+    {
       <xsl:for-each select="*[local-name()='element']">
         <xsl:variable name="cppNameDocElem"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
       DOMStringPtr nsUriPtr = <xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>;   
       XsdEvent event(nsUriPtr, NULL, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdEvent::ELEMENT_START);
+      if(this->createSample()) {
+        event.cbOptions.isSampleCreate = true;
+      }
       _fsm->processEventThrow(event); 
       </xsl:for-each>
     }

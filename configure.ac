@@ -2,12 +2,12 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([xmlplus], [0.1], [xmlplus.bugs@gmail.com])
+AC_INIT([xmlplus], [0.2], [xmlplus.bugs@gmail.com])
 AC_CONFIG_SRCDIR([src/DOM/Node.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 # do we need following two?
-AM_INIT_AUTOMAKE(xmlplus, 0.1)
+AM_INIT_AUTOMAKE(xmlplus, 0.2)
 AC_PROG_LIBTOOL
 AC_CONFIG_MACRO_DIR([m4])
 #LT_INIT([disable-static])

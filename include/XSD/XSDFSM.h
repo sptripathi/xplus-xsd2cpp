@@ -76,6 +76,9 @@ struct Particle
   }
 
   bool operator==(const Particle& pairNSName) const;
+  inline bool hasUnboundedMaxOccurence() const {
+    return (-1 == (int)maxOccurence);
+  }
 
   void print() const {
   cout << "{" << ( (nsUri)? *nsUri : "" ) << "}"
@@ -92,13 +95,15 @@ struct FsmCbOptions
   DOMString xsiNoNamespaceSchemaLocation;
 
   bool isDefaultCreate;
+  bool isSampleCreate;
   
   FsmCbOptions(DOMString xsiType="", DOMString xsiNil="", DOMString xsiSchemaLocation="", DOMString xsiNoNamespaceSchemaLocation=""):
     xsiType(""),
     xsiNil(""),
     xsiSchemaLocation(""),
     xsiNoNamespaceSchemaLocation(""),
-    isDefaultCreate(false)
+    isDefaultCreate(false),
+    isSampleCreate(false)
     {
     }
 
@@ -226,6 +231,7 @@ class XsdFsmBase : public virtual XPlus::XPlusObject
     virtual XsdFsmBasePtr currentUnitFsm()=0;
     
     virtual void fireRequiredEvents(bool docBuilding=true)=0;
+    virtual void fireSampleEvents(bool docBuilding=true)=0;
     virtual void fireDefaultEvents(bool docBuilding=true)=0;
 
     virtual void print() const =0;
@@ -450,6 +456,37 @@ class XsdFSM : public XsdFsmBase
         this->processEventOnce(event);
       }
     }
+    
+#define MAXOCCUR_SAMPLE 3
+    virtual void fireSampleEvents(bool docBuilding=true)
+    {
+      // dont have to create xml and xsi attributes in sample
+      if( nsName().nsUri && 
+          ( (*nsName().nsUri == Namespaces::s_xsiUri)  ||
+            (*nsName().nsUri == Namespaces::s_xmlUri) )
+        )
+      {
+        return;
+      }
+
+      XsdEvent event = this->toEvent();
+      event.docBuilding = docBuilding;
+      event.cbOptions.isSampleCreate = true;
+      unsigned int occur = 0;
+      
+      if(_nsName.hasUnboundedMaxOccurence() || (_nsName.maxOccurence > MAXOCCUR_SAMPLE)) {
+        occur = MAXOCCUR_SAMPLE;
+      }
+      else {
+        occur = _nsName.maxOccurence;
+      }
+
+      for(unsigned int j=0; j<occur; j++) 
+      {
+        this->processEventOnce(event);
+
+      }
+    }
 
     virtual bool processEventOnce(XsdEvent& event)
     {
@@ -643,6 +680,7 @@ class XsdFsmOfFSMs : public XsdFsmBase
   virtual list<DOMString> suggestNextEvents() const; 
   virtual XsdFsmBasePtr currentUnitFsm();
   virtual void fireRequiredEvents(bool docBuilding=true);
+  virtual void fireSampleEvents(bool docBuilding=true);
   virtual void fireDefaultEvents(bool docBuilding=true);
   virtual bool isInitFinalState() const;
   virtual Node* rightmostElement() const;
@@ -762,6 +800,8 @@ struct XsdChoiceFsmOfFSMs : public XsdFsmOfFSMs
   {
   }
   virtual ~XsdChoiceFsmOfFSMs() {}
+  
+  virtual void fireSampleEvents(bool docBuilding=true);
 
   inline void init(XsdFsmBasePtr *fsms) {
     XsdFsmOfFSMs::init(fsms, XsdFsmOfFSMs::CHOICE);
@@ -981,6 +1021,7 @@ class XsdFsmArray : public XsdFsmBase
     virtual list<DOMString> suggestNextEvents() const; 
     virtual XsdFsmBasePtr currentUnitFsm();
     virtual void fireRequiredEvents(bool docBuilding=true);
+    virtual void fireSampleEvents(bool docBuilding=true);
     virtual void fireDefaultEvents(bool docBuilding=true);
     virtual void print() const;
     virtual void finish();

@@ -34,6 +34,7 @@
 #include "XSD/XSDException.h"
 #include "XSD/XSDFSM.h"
 #include "XSD/Facets.h"
+#include "XSD/Sampler.h"
 
 using namespace std;
 using namespace XPlus;
@@ -89,6 +90,7 @@ namespace XMLSchema
       eContentTypeVariety contentTypeVariety;
       eAnyTypeUseCase anyTypeUseCase;
       bool         suppressTypeAbstract;
+      bool         isSampleCreate;
 
       AnyTypeCreateArgs(
           bool createFromElementAttr_ = false,
@@ -101,7 +103,8 @@ namespace XMLSchema
           eBlockOrFinalBits finalMask_= BOF_NONE,
           eContentTypeVariety contentTypeVariety_ = CONTENT_TYPE_VARIETY_MIXED,
           eAnyTypeUseCase anyTypeUseCase_ = ANY_TYPE,
-          bool suppressTypeAbstract_=false
+          bool suppressTypeAbstract_=false,
+          bool isSampleCreate_=false
           ):
         createFromElementAttr(createFromElementAttr_),  
         ownerNode(ownerNode_),
@@ -113,7 +116,8 @@ namespace XMLSchema
         finalMask(finalMask_),
         contentTypeVariety(contentTypeVariety_),
         anyTypeUseCase(anyTypeUseCase_),
-        suppressTypeAbstract(suppressTypeAbstract_)
+        suppressTypeAbstract(suppressTypeAbstract_),
+        isSampleCreate(isSampleCreate_)
       {
         if(suppressTypeAbstract) {
           abstract = false;
@@ -130,6 +134,7 @@ namespace XMLSchema
       Element*      ownerElem;
       TDocument*    ownerDoc;
       DOMString*    strValue;
+      bool         isSampleCreate;
 
       AttributeCreateArgs(
           DOMString*  name_       = NULL,
@@ -137,14 +142,16 @@ namespace XMLSchema
           DOMString*  nsPrefix_   = NULL,
           Element*    ownerElem_  = NULL,
           TDocument*  ownerDoc_   = NULL,
-          DOMString*  strValue_   = NULL
+          DOMString*  strValue_   = NULL,
+          bool        isSampleCreate_   = false
           ):
         name(name_),
         nsUri(nsUri_),
         nsPrefix(nsPrefix_),
         ownerElem(ownerElem_),
         ownerDoc(ownerDoc_),
-        strValue(strValue_)
+        strValue(strValue_),
+        isSampleCreate(isSampleCreate_)
       {
       }
     };
@@ -165,6 +172,7 @@ namespace XMLSchema
       bool         fixed;
       bool         suppressTypeAbstract;
       bool         childBuildsTree; 
+      bool         isSampleCreate; 
 
       ElementCreateArgs(
           DOMString*   name_,
@@ -177,7 +185,8 @@ namespace XMLSchema
           bool abstract_=false,
           bool nillable_=false,
           bool fixed_ = false,
-          bool childBuildsTree_=false
+          bool childBuildsTree_=false,
+          bool isSampleCreate_=false
           ):
         name(name_),
         nsUri(nsUri_),
@@ -190,7 +199,8 @@ namespace XMLSchema
         nillable(nillable_),
         fixed(fixed_),
         suppressTypeAbstract(false),
-        childBuildsTree(childBuildsTree_)
+        childBuildsTree(childBuildsTree_),
+        isSampleCreate(isSampleCreate_)
       {
       }
     };
@@ -233,8 +243,16 @@ namespace XMLSchema
           return _value;
         }
         
+        virtual inline DOMString sampleValue() {
+          return Sampler::getRandomSample(Sampler::stringSamples);
+        }
+        
         virtual bool typeAbstract() {
           return _abstract;
+        }
+        
+        virtual bool isSampleCreate() {
+          return _isSampleCreate;
         }
 
         inline void contentTypeVariety(eContentTypeVariety variety) {
@@ -339,6 +357,7 @@ namespace XMLSchema
         int                             _blockMask;
         int                             _finalMask;
         DOMString                       _defaultValue;
+        DOMString                       _sampleValue;
         
         // in case of anyType and derivatives ownerElement() is same
         // Node as ownerNode(). However in case of element ownerElement()
@@ -352,6 +371,7 @@ namespace XMLSchema
         AnyTypeFSMPtr                   _fsm;
 
         DOMString                       _value;
+        bool                            _isSampleCreate;
 
         List<AutoPtr<TextNode> >        _textNodes; 
         bool                            _isDefaultText;

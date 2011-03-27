@@ -23,6 +23,8 @@
 
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:exsl="http://exslt.org/common"
+extension-element-prefixes="exsl"
 targetNamespace="http://www.w3.org/2001/XMLSchema"
 >
 
@@ -785,7 +787,12 @@ namespace Types
     <xsl:choose><xsl:when test="local-name(..)!='element'">if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree() &amp;&amp; !args.childBuildsTree)</xsl:when>
       <xsl:otherwise>if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree())</xsl:otherwise></xsl:choose>
     {
-      _fsm->fireRequiredEvents();
+      if(args.ownerDoc->createSample()) {
+        _fsm->fireSampleEvents();
+      }
+      else {
+        _fsm->fireRequiredEvents();
+      }
     }
   }
     
@@ -903,7 +910,12 @@ namespace Types
       </xsl:otherwise>
     </xsl:choose>
     {
-      _fsm->fireRequiredEvents();
+      if(args.ownerDoc->createSample()) {
+        _fsm->fireSampleEvents();
+      }
+      else {
+        _fsm->fireRequiredEvents();
+      }
     }
   }
 
@@ -1103,7 +1115,12 @@ namespace Types
       <xsl:otherwise>if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree())</xsl:otherwise>
     </xsl:choose>
     {
-      _fsm->fireRequiredEvents();
+      if(args.ownerDoc->createSample()) {
+        _fsm->fireSampleEvents();
+      }
+      else {
+        _fsm->fireRequiredEvents();
+      }
     }
   }
 
@@ -1632,6 +1649,11 @@ namespace Types
       <xsl:with-param name="resolution" select="$resolution"/>  
     </xsl:call-template>
   </xsl:variable>
+  <xsl:variable name="contentTypeVariety">
+    <xsl:call-template name="T_get_contentType_variety_from_resolution">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>  
+  </xsl:variable>
   <xsl:variable name="atomicSimpleTypeImpl">
     <xsl:call-template name="T_get_simpleType_impl_from_resolution">
       <xsl:with-param name="resolution" select="$resolution"/>
@@ -1704,6 +1726,12 @@ namespace Types
     node->defaultValue("<xsl:value-of select="@fixed"/>");    
       </xsl:when>
     </xsl:choose>
+    <xsl:if test="$contentTypeVariety='simple' or $isSimpleType='true'">
+    if(options.isSampleCreate &amp;&amp; (node->stringValue() == "") ) {
+      node->stringValue(node->sampleValue());
+    }
+    </xsl:if>
+
     <xsl:choose>
       <xsl:when test="$maxOccurGT1Node='true' or $isUnderSingularMgNesting='false'">
     XMARKER <xsl:value-of select="$cppNameDeclPlural"/>.push_back(node);

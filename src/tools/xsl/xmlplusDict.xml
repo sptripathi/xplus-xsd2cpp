@@ -24,33 +24,33 @@
 <xmlplusDict>
 
   <primitiveTypes>
-    <type name="anyType">>
+    <type name="anyType">
       <impl implType="XMLSchema::Types::anyType" adt="true">
       </impl>  
     </type>
-    <type name="anySimpleType">>
+    <type name="anySimpleType">
       <impl implType="XMLSchema::Types::anySimpleType" adt="true">
       </impl>  
     </type>
 
-    <type name="string">>
+    <type name="string">
       <impl implType="DOM::DOMString" adt="false">
       </impl>  
     </type>
     <type name="boolean">
-      <impl implType="bool" default="false" adt="false">
+      <impl implType="bool" adt="false">
       </impl>  
     </type>
     <type name="decimal">
-      <impl implType="double" default="0" adt="false">
+      <impl implType="double" adt="false">
       </impl>  
     </type>
     <type name="float">
-      <impl implType="float" default="0" adt="false">
+      <impl implType="float" adt="false">
       </impl>  
     </type>
     <type name="double">
-      <impl implType="double" default="0" adt="false">
+      <impl implType="double" adt="false">
       </impl>  
     </type>
     <type name="time">
