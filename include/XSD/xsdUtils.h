@@ -93,7 +93,10 @@ namespace XMLSchema
 
       XmlAttribute(AttributeCreateArgs args):
         DOM::Attribute(args.name, args.strValue, args.nsUri, args.nsPrefix, args.ownerElem, args.ownerDoc),
-        T(AnyTypeCreateArgs(true, this, args.ownerElem, args.ownerDoc))
+        T(AnyTypeCreateArgs(true, this, args.ownerElem, args.ownerDoc, false,false,
+                            BOF_NONE, BOF_NONE, CONTENT_TYPE_VARIETY_MIXED, ANY_TYPE,
+                            false, args.isSampleCreate)
+        )
       { 
         if(args.strValue) {
           T::stringValue(*args.strValue);
@@ -140,14 +143,16 @@ namespace XMLSchema
   {
     protected:
       bool _buildTree;
+      bool _createSample;
       XsdFsmBasePtr  _fsm;
       
       //scratchPad variables
       //Node*           _fsmCreatedNode;
 
     public:
-      TDocument(bool buildTree=true):
+      TDocument(bool buildTree=true, bool createSample=false):
         _buildTree(buildTree),
+        _createSample(createSample),
         _fsm(NULL)
         //, _fsmCreatedNode(NULL)
     {
@@ -160,6 +165,13 @@ namespace XMLSchema
       }
       inline bool buildTree() const {
         return _buildTree;
+      }
+      
+      inline void createSample(bool b) {
+        _createSample = b;
+      }
+      inline bool createSample() const {
+        return _createSample;
       }
 
       inline TElementP currentElement();
@@ -251,7 +263,7 @@ namespace XMLSchema
           TElement(args),
           T(AnyTypeCreateArgs(true, this, this, args.ownerDoc, args.childBuildsTree, false, 
                               Types::BOF_NONE, Types::BOF_NONE, Types::CONTENT_TYPE_VARIETY_MIXED, 
-                              Types::ANY_TYPE, args.suppressTypeAbstract)
+                              Types::ANY_TYPE, args.suppressTypeAbstract, args.isSampleCreate)
            )
     { 
     }

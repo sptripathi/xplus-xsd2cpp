@@ -101,7 +101,7 @@ am_libxsdall_la_OBJECTS = Poco/ASCIIEncoding.lo Poco/AtomicCounter.lo \
 	DOM/Element.lo DOM/ExpatParser.lo DOM/NamedNodeMap.lo \
 	DOM/Node.lo DOM/Stream.lo DOM/TextNode.lo DOM/XmlDecl.lo \
 	XSD/Enums.lo XSD/FSM.lo XSD/UrTypes.lo XSD/XSDFSM.lo \
-	XSD/xsdUtils.lo
+	XSD/xsdUtils.lo XSD/Samplers.lo
 libxsdall_la_OBJECTS = $(am_libxsdall_la_OBJECTS)
 libxsdall_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -109,7 +109,7 @@ libxsdall_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 PROGRAMS = $(bin_PROGRAMS)
 am_domParser_OBJECTS = tools/DOMParse.$(OBJEXT)
 domParser_OBJECTS = $(am_domParser_OBJECTS)
-domParser_DEPENDENCIES = $(top_srcdir)/src/libxsdall.la
+domParser_DEPENDENCIES = libxsdall.la
 am_fsmTest_OBJECTS = XSD/FsmTest.$(OBJEXT)
 fsmTest_OBJECTS = $(am_fsmTest_OBJECTS)
 fsmTest_DEPENDENCIES = libxsdall.la
@@ -306,7 +306,7 @@ SUBDIRS = #Poco XPlus DOM XSD tools
 fsmTest_SOURCES = XSD/FsmTest.cpp 
 fsmTest_LDADD = libxsdall.la
 domParser_SOURCES = tools/DOMParse.cpp
-domParser_LDADD = $(top_srcdir)/src/libxsdall.la 
+domParser_LDADD = libxsdall.la 
 lib_LTLIBRARIES = libxsdall.la
 libxsdall_la_SOURCES = \
   Poco/ASCIIEncoding.cpp \
@@ -379,7 +379,9 @@ libxsdall_la_SOURCES = \
   XSD/FSM.cpp \
   XSD/UrTypes.cpp \
   XSD/XSDFSM.cpp \
-  XSD/xsdUtils.cpp
+  XSD/xsdUtils.cpp \
+  XSD/Samplers.cpp \
+  $(top_srcdir)/include/XSD/PrimitiveTypes.h
 
 libxsdall_la_LDFLAGS = -lpthread -lexpat
 
@@ -416,7 +418,7 @@ do_subst = sed -e 's,[@]bindir[@],$(bindir),g' \
 
 
 # generate PrimitiveTypes .h
-nodist_libxsd_la_SOURCES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
+#nodist_libxsd_la_SOURCES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
 BUILT_SOURCES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
 CLEANFILES = $(top_srcdir)/include/XSD/PrimitiveTypes.h
 all: $(BUILT_SOURCES)
@@ -612,6 +614,7 @@ XSD/FSM.lo: XSD/$(am__dirstamp) XSD/$(DEPDIR)/$(am__dirstamp)
 XSD/UrTypes.lo: XSD/$(am__dirstamp) XSD/$(DEPDIR)/$(am__dirstamp)
 XSD/XSDFSM.lo: XSD/$(am__dirstamp) XSD/$(DEPDIR)/$(am__dirstamp)
 XSD/xsdUtils.lo: XSD/$(am__dirstamp) XSD/$(DEPDIR)/$(am__dirstamp)
+XSD/Samplers.lo: XSD/$(am__dirstamp) XSD/$(DEPDIR)/$(am__dirstamp)
 libxsdall.la: $(libxsdall_la_OBJECTS) $(libxsdall_la_DEPENDENCIES) 
 	$(libxsdall_la_LINK) -rpath $(libdir) $(libxsdall_la_OBJECTS) $(libxsdall_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
@@ -839,6 +842,8 @@ mostlyclean-compile:
 	-rm -f XSD/FSM.$(OBJEXT)
 	-rm -f XSD/FSM.lo
 	-rm -f XSD/FsmTest.$(OBJEXT)
+	-rm -f XSD/Samplers.$(OBJEXT)
+	-rm -f XSD/Samplers.lo
 	-rm -f XSD/UrTypes.$(OBJEXT)
 	-rm -f XSD/UrTypes.lo
 	-rm -f XSD/XSDFSM.$(OBJEXT)
@@ -915,6 +920,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/Enums.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/FSM.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/FsmTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/Samplers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/UrTypes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/XSDFSM.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/xsdUtils.Plo@am__quote@
@@ -1350,7 +1356,7 @@ tools/resources/Makefile.am.src: tools/resources/Makefile.am.src.in
 tools/resources/Makefile.am.top_srcdir: tools/resources/Makefile.am.top_srcdir.in
 	$(do_subst) < $(srcdir)/tools/resources/Makefile.am.top_srcdir.in > $(srcdir)/tools/resources/Makefile.am.top_srcdir
 
-$(top_srcdir)/include/XSD/PrimitiveTypes.h: $(top_srcdir)/src/tools/xsl/xsd2cppBuiltinSimple.xsl $(top_srcdir)/src/tools/xsl/xmlplusDict.xml $(top_srcdir)/resources/xsd/XMLSchema.xsd
+$(top_srcdir)/include/XSD/PrimitiveTypes.h: $(top_srcdir)/src/tools/xsl/xsd2cppBuiltinSimple.xsl $(top_srcdir)/src/tools/xsl/xsd2cppST.xsl $(top_srcdir)/src/tools/xsl/xmlplusDict.xml $(top_srcdir)/resources/xsd/XMLSchema.xsd
 	cd $(top_srcdir) && xsltproc --stringparam input_doc "`pwd`/resources/xsd/XMLSchema.xsd" --stringparam CWD `pwd` --stringparam w3cXmlSchema "true" --stringparam NSALIASES_FILE none src/tools/xsl/xsd2cppBuiltinSimple.xsl resources/xsd/XMLSchema.xsd 2>/dev/null && ./src/tools/beautify include/XSD/PrimitiveTypes.h && cd -
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

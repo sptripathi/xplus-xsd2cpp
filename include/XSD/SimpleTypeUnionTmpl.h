@@ -52,59 +52,27 @@ namespace XMLSchema
 
   namespace Types 
   {
-    template<class T>
-      class SimpleTypeUnionTmpl : public XMLSchema::Types::anySimpleType 
+    template<class T> class SimpleTypeUnionTmpl : public XMLSchema::Types::anySimpleType 
+    {
+      public:
+
+        SimpleTypeUnionTmpl(
+            NodeP ownerNode,
+            ElementP ownerElem,
+            TDocumentP ownerDoc
+            ):
+          anySimpleType(PD_STRING, ownerNode, ownerElem, ownerDoc)
       {
-        public:
+      }
 
-          SimpleTypeUnionTmpl(
-              NodeP ownerNode,
-              ElementP ownerElem,
-              TDocumentP ownerDoc
-              ):
-            anySimpleType(PD_STRING, ownerNode, ownerElem, ownerDoc)
-          {
-          }
+        virtual ~SimpleTypeUnionTmpl() {}
 
-          virtual ~SimpleTypeUnionTmpl() {}
+        inline DOMString value() {
+          return anySimpleType::value();
+        }
 
-          void value(DOMString val)
-          {
-
-            //_value = val;
-
-            //TODO: how facets would be applied. eg whiteSpace facet
-            vector<XPlus::UString> tokens;
-            val.tokenize(' ', tokens);
-            for(unsigned int i=0; i<tokens.size(); i++)
-            {
-              T t;
-              t.value(tokens[i]);
-              _listValues.push_back(t);
-            }
-            //setTextNodeValue(_value);
-            
-            anySimpleType::value(val);
-          }
-
-          // TODO: why this functions is needed
-          inline DOMString value() {
-            return anySimpleType::value();
-          }
-
-          inline virtual unsigned int lengthFacet() {
-            return _listValues.size(); 
-          }
-
-          list<T> listValues() {
-            return _listValues;
-          }
-
-
-        protected:
-
-          list<T>         _listValues;
-      };
+      protected:
+    };
 
   } // end namespace Types 
 } // end namespace XMLSchema

@@ -307,7 +307,7 @@ class Document : public XMLSchema::TDocument
 
   public:
 
-  Document(bool buildTree=true);
+  Document(bool buildTree=true, bool createSample=false);
   virtual ~Document() {}
     
   <xsl:if test="$cntTLE>1">  
@@ -360,20 +360,22 @@ class Document : public XMLSchema::TDocument
 <xsl:call-template name="T_emit_cppNSBegin_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
 
   ///constructor for the Document node
-  Document::Document(bool buildTree_):
-    XMLSchema::TDocument(buildTree_)
+  Document::Document(bool buildTree_, bool createSample_):
+    XMLSchema::TDocument(buildTree_, createSample_)
   {
     initFSM();
     DOM::Document::attributeDefaultQualified(<xsl:value-of select="$attributeDefaultQualified"/>);
     DOM::Document::elementDefaultQualified(<xsl:value-of select="$elementDefaultQualified"/>);
-      
-
     <xsl:if test="$cntTLE=1">
-    if(buildTree()) {
+    if(buildTree()) 
+    {
       <xsl:for-each select="*[local-name()='element']">
         <xsl:variable name="cppNameDocElem"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
       DOMStringPtr nsUriPtr = <xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>;   
       XsdEvent event(nsUriPtr, NULL, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdEvent::ELEMENT_START);
+      if(this->createSample()) {
+        event.cbOptions.isSampleCreate = true;
+      }
       _fsm->processEventThrow(event); 
       </xsl:for-each>
     }
@@ -795,26 +797,6 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
     </xsl:call-template>
   </xsl:variable>
 
-  <!--
-  <xsl:variable name="isComplexType">
-    <xsl:call-template name="T_is_resolution_complexType">
-      <xsl:with-param name="resolution" select="$baseResolution" />
-    </xsl:call-template>
-  </xsl:variable>
-  <xsl:variable name="contentTypeVariety">
-    <xsl:call-template name="T_get_contentType_variety_from_resolution">
-      <xsl:with-param name="resolution" select="$xmlBaseTypeDefinition"/>
-    </xsl:call-template>
-  </xsl:variable>
-
-  <xsl:if test="$isComplexType='true' and $contentTypeVariety!='simple'">
-    <xsl:message terminate="yes">
-     Error: A "Complex-Type-Definition" with simple content Schema Component, having derivation method as "extension" should have base attribute resolving to either i) a Simple-Type-Definition or ii) a Complex-Type-Definition with content-type as Simple-Type-Definition.
-     Violated in the context of schema component: <xsl:value-of select="$schemaComponentName"/>
-    </xsl:message>
-  </xsl:if>
-  -->
-
   <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName"/></xsl:variable>
 
   <xsl:for-each select="*[local-name()='complexType']">
@@ -907,13 +889,6 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
            TODO: {content type} is mixed and a particle which is ·emptiable·
         -->
         <xsl:when test="$isComplexType='true'">
-          <!--
-          <xsl:if test="not(*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType'])">
-            <xsl:message terminate="yes">
-             Error: A "Complex-Type-Definition" with simple content Schema Component, having derivation method as "restriction", whose base attribute resolves to a complex-type-definition, must have a &lt;simpleType&gt; present among the [children] of &lt;restriction&gt;
-            </xsl:message>
-          </xsl:if>
-          -->
           <xsl:for-each select="*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType']">
             <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="concat('_', $elemName)"/></xsl:call-template>
           </xsl:for-each>
@@ -954,9 +929,9 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
 
   <xsl:variable name="cntSimpleTypes" select="count(*[local-name()='simpleType'])"/>
   <xsl:if test="$cntSimpleTypes > 1">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
      Error: Unknown ElemInfoItem : <xsl:value-of select="local-name()"/>
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
   
   <xsl:for-each select="*[local-name()='simpleType']">

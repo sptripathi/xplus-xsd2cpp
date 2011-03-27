@@ -390,6 +390,7 @@ namespace Types
 
 <xsl:template name="ON_SIMPLETYPE_WITH_UNION">
   <xsl:param name="simpleTypeName"/>
+  <xsl:variable name="isBuiltinType"><xsl:call-template name="T_is_builtin_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
   
   <xsl:for-each select="*[local-name()='union']">
   /// class for simpleType of variety union
@@ -458,6 +459,8 @@ namespace Types
     virtual void stringValue(DOMString val)
     {
       bool set=false;
+      if(!isSampleCreate())
+      {
    <xsl:if test="@memberTypes">
      <xsl:call-template name="ITERATE_SIMPLETYPE_UNION_MEMBERTYPES">
        <xsl:with-param name="memberTypes" select="@memberTypes"/>
@@ -472,20 +475,51 @@ namespace Types
           <xsl:with-param name="pos" select="position()"/>
         </xsl:call-template>
       </xsl:variable>
-      if(!set) {  
-        set = _<xsl:value-of select="$cppItemTypeInferred"/>_val.checkValue(val);
-      }  
+        if(!set) {  
+          set = _<xsl:value-of select="$cppItemTypeInferred"/>_val.checkValue(val);
+        }
     </xsl:for-each>
-      if(set) {
-        anySimpleType::stringValue(val);
-      }
+        if(set) {
+          anySimpleType::stringValue(val);
+        }
+        else 
+        {
+          ValidationException ex("The supplied value not valid for any of the union members");
+          setErrorContext(ex);
+          throw ex;
+        }
+      } 
       else 
       {
-        ValidationException ex("The supplied value not valid for any of the union members");
-        setErrorContext(ex);
-        throw ex;
+   <xsl:if test="@memberTypes">
+     <xsl:call-template name="ITERATE_SIMPLETYPE_UNION_MEMBERTYPES">
+       <xsl:with-param name="memberTypes" select="@memberTypes"/>
+       <xsl:with-param name="mode" select="'setSampleValue_member'"/>
+     </xsl:call-template>
+   </xsl:if>
+    <xsl:for-each select="*[local-name()='simpleType']">
+      <xsl:if test="position()=1">
+        <xsl:variable name="cppItemTypeInferred">
+          <xsl:call-template name="T_get_cppType_anonymousSimpleType">
+            <xsl:with-param name="stNode" select="."/>
+            <xsl:with-param name="pos" select="position()"/>
+          </xsl:call-template>
+        </xsl:variable>
+        if(!set) {
+          DOMString sampleUnionVal = _<xsl:value-of select="$cppItemTypeInferred"/>_val.sampleValue();
+          anySimpleType::stringValue(sampleUnionVal);
+          set = true;
+        }
+      </xsl:if>
+    </xsl:for-each>
+        
       }
     }
+    <xsl:if test="$isBuiltinType='true'">
+    virtual inline DOMString sampleValue() {
+      return Sampler::getRandomSample(Sampler::<xsl:value-of select="$simpleTypeName"/>Samples);
+    }
+    </xsl:if>
 
   protected:
 
@@ -561,6 +595,11 @@ namespace Types
         <xsl:with-param name="token" select="$memberType"/>
       </xsl:call-template>
     </xsl:when>
+    <xsl:when test="$mode='setSampleValue_member'">
+      <xsl:call-template name="SETSAMPLEVALUE_MEMBERTYPE_INSIDE_UNION">
+        <xsl:with-param name="token" select="$memberType"/>
+      </xsl:call-template>
+    </xsl:when>
     <xsl:when test="$mode='get_simpletype_def'">
       <xsl:variable name="nodeSimpleTypeDef">
         <xsl:call-template name="T_resolve_typeQName">
@@ -608,11 +647,21 @@ namespace Types
 <xsl:template name="SETVAL_MEMBERTYPE_INSIDE_UNION">
   <xsl:param name="token"/>
   <xsl:variable name="localPartToken"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="$token"/></xsl:call-template></xsl:variable>
-      if(!set) {  
-        set = _<xsl:value-of select="$localPartToken"/>_val.checkValue(val);
-      }
+        if(!set) {  
+          set = _<xsl:value-of select="$localPartToken"/>_val.checkValue(val);
+        }
 </xsl:template>
 
+
+<xsl:template name="SETSAMPLEVALUE_MEMBERTYPE_INSIDE_UNION">
+  <xsl:param name="token"/>
+  <xsl:variable name="localPartToken"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="$token"/></xsl:call-template></xsl:variable>
+        if(!set) {  
+          DOMString sampleUnionVal = _<xsl:value-of select="$localPartToken"/>_val.sampleValue();
+          anySimpleType::stringValue(sampleUnionVal);
+          set = true;
+        }
+</xsl:template>
 
 
 <xsl:template name="ON_SIMPLETYPE_WITH_RESTRICTION">
@@ -740,9 +789,13 @@ namespace Types
     }
       </xsl:if>
     </xsl:if>
-
+    
+    <xsl:if test="$isBuiltinType='true'">
+    virtual inline DOMString sampleValue() {
+      return Sampler::getRandomSample(Sampler::<xsl:value-of select="$simpleTypeName"/>Samples);
+    }
+    </xsl:if>
     <xsl:call-template name="T_bring_impl_code"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template>
-
   protected:
     <xsl:if test="$isBuiltinPrimType='true'">
       <xsl:variable name="hasBoundFacetSuffix">
@@ -881,6 +934,7 @@ namespace Types
 <xsl:template name="ON_SIMPLETYPE_WITH_RESTRICTION_ON_SIMPLETYPE">
   <xsl:param name="simpleTypeName"/>
   
+  <xsl:variable name="isBuiltinType"><xsl:call-template name="T_is_builtin_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
   <xsl:variable name="anonymousSTChildNode" select="*[local-name()='restriction']/*[local-name()='simpleType']"/>
   <xsl:variable name="cppBaseTypeInferred">
     <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="$anonymousSTChildNode"/></xsl:call-template>
@@ -905,6 +959,11 @@ namespace Types
       </xsl:call-template>
       this->appliedCFacets( appliedCFacets() <xsl:for-each select="*[local-name()='restriction']/*[local-name() != 'simpleType' and local-name() != 'annotation']">| <xsl:call-template name="T_get_enumType_CFacet"><xsl:with-param name="facet" select="local-name(.)"/></xsl:call-template> </xsl:for-each> );
     }
+    <xsl:if test="$isBuiltinType='true'">
+    virtual inline DOMString sampleValue() {
+      return Sampler::getRandomSample(Sampler::<xsl:value-of select="$simpleTypeName"/>Samples);
+    }
+    </xsl:if>
   };
 
 </xsl:template>

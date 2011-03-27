@@ -78,5 +78,6 @@ nobase_include_HEADERS = \
   XSD/XSDFSM.h \
   XSD/xsdUtils.h \
   XSD/TypeDefinitionFactory.h \
-  XSD/UserOps.h
+  XSD/UserOps.h \
+  XSD/Sampler.h
 

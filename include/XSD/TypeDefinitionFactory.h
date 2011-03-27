@@ -1,3 +1,22 @@
+// This file is part of XmlPlus package
+// 
+// Copyright (C)   2010   Satya Prakash Tripathi
+//
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #ifndef __XSD_TYPEDEFINITIONFACTORY_H__ 
 #define __XSD_TYPEDEFINITIONFACTORY_H__
 
@@ -215,7 +234,7 @@ namespace XSD
         }
       }
       
-      ElementCreateArgs args(t.tagName, t.nsUri, t.nsPrefix, t.ownerDoc, t.parentNode, prevSibl, nextSibl, t.abstract, t.nillable, t.fixed);
+      ElementCreateArgs args(t.tagName, t.nsUri, t.nsPrefix, t.ownerDoc, t.parentNode, prevSibl, nextSibl, t.abstract, t.nillable, t.fixed, false, t.options.isSampleCreate);
       E* node = NULL;
 
       // if element's type is specified in instance document using xsi:type
@@ -290,7 +309,7 @@ namespace XSD
   {
     if(t.ownerDoc->buildTree() || ! t.fsm->fsmCreatedNode() || t.options.isDefaultCreate)
     {
-      AttributeCreateArgs args(t.tagName, t.nsUri, NULL, t.ownerElem, t.ownerDoc);
+      AttributeCreateArgs args(t.tagName, t.nsUri, NULL, t.ownerElem, t.ownerDoc, NULL, t.options.isSampleCreate);
       AutoPtr<T> node = new T(args);
       t.fsm->fsmCreatedNode(node);
       return node;

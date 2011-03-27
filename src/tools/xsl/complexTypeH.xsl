@@ -225,9 +225,9 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyType
       -->
       <xsl:when test="$isComplexType='true'">
         <xsl:if test="not(*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType'])">
-          <xsl:message terminate="yes">
+          <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
            Error: A "Complex-Type-Definition" with simple content Schema Component, having derivation method as "restriction", whose base attribute resolves to a complex-type-definition, must have a &lt;simpleType&gt; present among the [children] of &lt;restriction&gt;
-          </xsl:message>
+          </xsl:with-param></xsl:call-template>
         </xsl:if>
         <xsl:for-each select="*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType']">
           <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="concat('_', $schemaComponentName)"/></xsl:call-template>
@@ -278,27 +278,6 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$baseCppT
     </xsl:call-template>
   </xsl:variable>
    
-  <!-- 
-  <xsl:variable name="isComplexType">
-    <xsl:call-template name="T_is_resolution_complexType">
-      <xsl:with-param name="resolution" select="$baseResolution" />
-    </xsl:call-template>
-  </xsl:variable>
-  <xsl:variable name="contentTypeVariety">
-    <xsl:call-template name="T_get_contentType_variety_from_resolution">
-      <xsl:with-param name="resolution" select="$baseResolution"/>
-    </xsl:call-template>
-  </xsl:variable>
-
-
-  <xsl:if test="$isComplexType='true' and $contentTypeVariety!='simple'">
-    <xsl:message terminate="yes">
-     Error: A "Complex-Type-Definition" with simple content Schema Component, having derivation method as "extension" should have base attribute resolving to either i) a Simple-Type-Definition or ii) a Complex-Type-Definition with content-type as Simple-Type-Definition.
-     Violated in the context of schema component: <xsl:value-of select="$schemaComponentName"/>
-    </xsl:message>
-  </xsl:if>
-  -->
-
   <xsl:variable name="baseCppType">
     <xsl:call-template name="T_get_cppType_complexType_base"/>
   </xsl:variable>
@@ -883,14 +862,14 @@ public:
   <xsl:param name="cntAll"/>
 
   <xsl:if test="not($pos=$cntAll)">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected position(anyAttribute)=last(<xsl:value-of select="$cntAll"/>), got position(anyAttribute)=<xsl:value-of select="$pos"/> 
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
   <xsl:if test="not($cnt='1')">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected count(anyAttribute)=1, got count(anyAttribute)=<xsl:value-of select="$cnt"/> 
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
 </xsl:template>
 
@@ -904,14 +883,14 @@ public:
   <xsl:param name="cnt" select="'1'"/>
 
   <xsl:if test="not($pos='1')">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected position(annotation)=1, got position(annotation)=<xsl:value-of select="$pos"/> 
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
   <xsl:if test="not($cnt='1')">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected count(annotation)=1, got count(annotation)=<xsl:value-of select="$cnt"/> 
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
 
   //annotation: <xsl:value-of select="."/>           

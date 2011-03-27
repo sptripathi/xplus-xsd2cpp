@@ -23,6 +23,8 @@
 
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:exsl="http://exslt.org/common"
+extension-element-prefixes="exsl"
 targetNamespace="http://www.w3.org/2001/XMLSchema"
 >
 
@@ -102,9 +104,9 @@ complexType Content:
         </xsl:call-template>  
       </xsl:when>
       <xsl:otherwise>
-        <xsl:message terminate="yes">
+        <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
          Error: Unknown ElemInfoItem  : <xsl:value-of select="local-name()"/>
-        </xsl:message>
+        </xsl:with-param></xsl:call-template>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:for-each>
@@ -141,9 +143,9 @@ complexType Content:
   <xsl:param name="pos" select="'1'"/>
 
   <xsl:if test="not($cnt='1')">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected count(choice|sequence)=1, got count(choice|sequence)=<xsl:value-of select="$cnt"/> 
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
 
   <xsl:variable name="cntAnnotation" select="count(*[local-name()='annotation'])"/>
@@ -189,9 +191,9 @@ complexType Content:
         <xsl:call-template name="ON_COMPLEXTYPE_ANY_H"/>
       </xsl:when>  
       <xsl:otherwise>  
-        <xsl:message terminate="yes">
+  			<xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
         Error: expected (annotation?, (element | group | choice | sequence | any)*), got <xsl:value-of select="$localName"/> 
-        </xsl:message>
+  			</xsl:with-param></xsl:call-template>
       </xsl:otherwise>  
     </xsl:choose>
   </xsl:for-each>
@@ -363,14 +365,14 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
   <xsl:param name="pos" select="'1'"/>
   <xsl:param name="cnt" select="'1'"/>
   <xsl:if test="not($pos='1') and not($pos='2')">
-    <xsl:message terminate="yes">
+  		<xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected position(compositors)=1|2, got position(compositors)=<xsl:value-of select="$pos"/> 
-    </xsl:message>
+  		</xsl:with-param></xsl:call-template>
   </xsl:if>
   <xsl:if test="not($cnt='1')">
-    <xsl:message terminate="yes">
+  		<xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected count(compositors)=1, got count(compositors)=<xsl:value-of select="$cnt"/> 
-    </xsl:message>
+  		</xsl:with-param></xsl:call-template>
   </xsl:if>
   
  <xsl:variable name="localName" select="local-name()"/>
@@ -404,9 +406,9 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
      </xsl:call-template>  
    </xsl:when>
    <xsl:otherwise>  
-    <xsl:message terminate="yes">
+  		<xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
      Error: expected (group | all | choice | sequence)?, got <xsl:value-of select="$localName"/> 
-    </xsl:message>
+  		</xsl:with-param></xsl:call-template>
    </xsl:otherwise>  
  </xsl:choose>
 
@@ -438,9 +440,9 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
   <xsl:variable name="cntChoiceOrSeq" select="count(*[local-name()='choice' or local-name()='sequence'])"/>
     
   <xsl:if test="not($cnt='1')">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected count(group)=1, got count(group)=<xsl:value-of select="$cnt"/> 
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
 
   <xsl:for-each select="*">
@@ -468,9 +470,9 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
         </xsl:call-template>  
       </xsl:when>  
       <xsl:otherwise>  
-        <xsl:message terminate="yes">
+       <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
         Error: expected (annotation?, (all | choice | sequence)?), got <xsl:value-of select="$localName"/> 
-        </xsl:message>
+       </xsl:with-param></xsl:call-template>
       </xsl:otherwise>  
     </xsl:choose>
   </xsl:for-each>
@@ -496,9 +498,9 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
   <xsl:variable name="cntAnnotation" select="count(*[local-name()='annotation'])"/>
     
   <xsl:if test="not($cnt='1')">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected count(all)=1, got count(all)=<xsl:value-of select="$cnt"/> 
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
 
   <xsl:for-each select="*">
@@ -518,9 +520,9 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
         </xsl:call-template>  
       </xsl:when>  
       <xsl:otherwise>  
-        <xsl:message terminate="yes">
+        <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
         Error: expected (annotation?, element*), got <xsl:value-of select="$localName"/> 
-        </xsl:message>
+        </xsl:with-param></xsl:call-template>
       </xsl:otherwise>  
     </xsl:choose>
   </xsl:for-each>
@@ -537,15 +539,15 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
   <xsl:param name="cnt" select="'1'"/>
         
   <xsl:if test="not($pos='1') and not($pos='2')">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected position(simpleContent)=1|2, got position(simpleContent)=<xsl:value-of select="$pos"/> 
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
 
   <xsl:if test="not($cnt='1')">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected count(simpleContent)=1, got count(simpleContent)=<xsl:value-of select="$cnt"/> 
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
 
   <xsl:variable name="cntAnnotation" select="count(*[local-name()='annotation'])"/>
@@ -590,15 +592,15 @@ ModelGroupDefinition + ModelGroup :   (group | all | choice | sequence)?
   <xsl:param name="cnt" select="'1'"/>
         
   <xsl:if test="not($pos='1') and not($pos='2')">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected position(complexContent)=1|2, got position(complexContent)=<xsl:value-of select="$pos"/> 
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
 
   <xsl:if test="not($cnt='1')">
-    <xsl:message terminate="yes">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
     Error: expected count(complexContent)=1, got count(complexContent)=<xsl:value-of select="$cnt"/> 
-    </xsl:message>
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
 
   <xsl:variable name="cntAnnotation" select="count(*[local-name()='annotation'])"/>
@@ -785,7 +787,12 @@ namespace Types
     <xsl:choose><xsl:when test="local-name(..)!='element'">if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree() &amp;&amp; !args.childBuildsTree)</xsl:when>
       <xsl:otherwise>if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree())</xsl:otherwise></xsl:choose>
     {
-      _fsm->fireRequiredEvents();
+      if(args.ownerDoc->createSample()) {
+        _fsm->fireSampleEvents();
+      }
+      else {
+        _fsm->fireRequiredEvents();
+      }
     }
   }
     
@@ -903,7 +910,12 @@ namespace Types
       </xsl:otherwise>
     </xsl:choose>
     {
-      _fsm->fireRequiredEvents();
+      if(args.ownerDoc->createSample()) {
+        _fsm->fireSampleEvents();
+      }
+      else {
+        _fsm->fireRequiredEvents();
+      }
     }
   }
 
@@ -1103,7 +1115,12 @@ namespace Types
       <xsl:otherwise>if(args.ownerDoc &amp;&amp; args.ownerDoc->buildTree())</xsl:otherwise>
     </xsl:choose>
     {
-      _fsm->fireRequiredEvents();
+      if(args.ownerDoc->createSample()) {
+        _fsm->fireSampleEvents();
+      }
+      else {
+        _fsm->fireRequiredEvents();
+      }
     }
   }
 
@@ -1627,10 +1644,20 @@ namespace Types
       <xsl:with-param name="resolution" select="$resolution"/>  
     </xsl:call-template>
   </xsl:variable>
+  <xsl:variable name="isAnyType">
+    <xsl:call-template name="T_is_resolution_anyType">
+      <xsl:with-param name="resolution" select="$resolution"/>  
+    </xsl:call-template>
+  </xsl:variable>
   <xsl:variable name="isEmptyComplexType">
     <xsl:call-template name="T_is_resolution_a_complexTypeDefn_of_empty_variety">
       <xsl:with-param name="resolution" select="$resolution"/>  
     </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="contentTypeVariety">
+    <xsl:call-template name="T_get_contentType_variety_from_resolution">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template>  
   </xsl:variable>
   <xsl:variable name="atomicSimpleTypeImpl">
     <xsl:call-template name="T_get_simpleType_impl_from_resolution">
@@ -1704,6 +1731,12 @@ namespace Types
     node->defaultValue("<xsl:value-of select="@fixed"/>");    
       </xsl:when>
     </xsl:choose>
+    <xsl:if test="$contentTypeVariety='simple' or $isSimpleType='true' or $isAnyType='true'">
+    if(options.isSampleCreate &amp;&amp; (node->stringValue() == "") ) {
+      node->stringValue(node->sampleValue());
+    }
+    </xsl:if>
+
     <xsl:choose>
       <xsl:when test="$maxOccurGT1Node='true' or $isUnderSingularMgNesting='false'">
     XMARKER <xsl:value-of select="$cppNameDeclPlural"/>.push_back(node);

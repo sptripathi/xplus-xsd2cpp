@@ -1928,6 +1928,25 @@ Schema Component: Simple Type Definition, a kind of Type Definition
 </xsl:template>
 
 
+<xsl:template name="T_is_resolution_anyType">
+  <xsl:param name="resolution"/>
+
+  <xsl:variable name="xmlTypeDefinition">
+    <xsl:call-template name="T_get_resolution_typeDefinition_contents">
+      <xsl:with-param name="resolution" select="$resolution"/>
+    </xsl:call-template> 
+  </xsl:variable>
+  <xsl:variable name="nodeXmlTypeDefinition" select="exsl:node-set($xmlTypeDefinition)/*"/>
+  <xsl:variable name="isAnyType">
+    <xsl:choose>
+      <xsl:when test="name($nodeXmlTypeDefinition)='complexTypeDefinition' and normalize-space($nodeXmlTypeDefinition/name)='anyType'">true</xsl:when>
+      <xsl:otherwise>false</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>  
+  <xsl:value-of select="normalize-space($isAnyType)"/>
+</xsl:template>
+
+
 <xsl:template name="T_get_abstract_from_resolution_element">
   <xsl:param name="resolution"/>
   <xsl:variable name="resolutionNode" select="exsl:node-set($resolution)"/>
