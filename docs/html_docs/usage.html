@@ -8,15 +8,12 @@
 
   <body>
     <form>
-
       <ul>
         <li><a href="#ABOUT_XSD2CPP">About xsd2pp</a>
         <li><a href="#XSD2CPP_RUN">Running the xsd2cpp tool</a>
         <li><a href="#BUILD_GEN_SOURCE">Building the generated source</a>
         <li><a href="#USE_BUILD">Using the build</a>
       </ul>
-
-      <br>
       <a name="ABOUT_XSD2CPP"><h3>About <code>xsd2cpp</code><hr NOSHADE SIZE=7 WIDTH=100%></h3></a>
         <code>XmlPlus</code> build has a binary called <code>xsd2cpp</code>.
         This binary when invoked on a XML-Schema file, generates:
@@ -53,6 +50,8 @@
         outdir: directory to output the generated source to
         (if unspecified, defaults to xsd-file-name)
 
+        -s :  do not terminate on error
+
   2.  xsd2cpp -v
         prints verion
 
@@ -63,22 +62,27 @@
       The xsd2cpp when run on a XML-Schema file, generates the C++ source/header files along with the make related files.<br>
       An example follows: 
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
-        <code>
-        $ xsd2cpp simpleTypesDemo.xsd .<br>
-        output path: .<br>
-        =&gt;  Generating source files...<br>
-        =&gt;  Generating automake/autoconf files ...<br>
-        </code>
+      <pre>
+  $ xsd2cpp simpleTypesDemo.xsd .
+  output path: .
+  =&gt;  Generating source files...
+  =&gt;  Generating automake/autoconf files ...
+  =&gt;  Generating README.build.txt file ...</pre>
       <hr NOSHADE SIZE=1 WIDTH=50% align=left>
       <br>
-      <b>Note:</b> If there is a main.cpp file already present in output directory, then it is not overridden on invocation of xsd2cpp, instead a file named <code>main.cpp.template</code>, is made available under the same output directory. This is so to preserve any user edits inside main.cpp over it's generated copy. The important thing to remember is that if an edit is made to the XML-Schema file, the main.cpp may need to get updated with  changes like renamed classes, new includes, choice of documentElement etc. A "make" in this case may fail on main.cpp. So please make sure to do following in such cases:
-<ul>
-	<li>apply user edits(if any) from current main.cpp to main.cpp.template
- 	<li>rename main.cpp.template to main.cpp
- 	<li>then run "make"
-</ul>
+      <b>Note that:</b> 
+      <ul>
+        <li> the <b>-s</b> option suppresses any error reported on xml schema by xsd2cpp tool.While processing the input XML Schema, if the xsd2cpp tool finds some invalidity, it aborts the code generation and reports the error. However, if you think that the error itself is invalid, and want to proceed with code generation, use this option. Please note that, the code generated with -s option, is not guranteed to compile or run in a sane manner. This is an experimental option and will be deprecated later.<br>
+        Whenever you suspect the xsd2cpp to be wrongly reporting an error on input XML Schema, you are requested to report it to us: <a href="support.html">Report Bugs</a><br><br> 
+        <li>If there is a main.cpp file already present in output directory, then it is not overridden on invocation of xsd2cpp, instead a file named <code>main.cpp.template</code>, is made available under the same output directory. This is so to preserve any user edits inside main.cpp over it's generated copy. The important thing to remember is that if an edit is made to the XML-Schema file, the main.cpp may need to get updated with  changes like renamed classes, new includes, choice of documentElement etc. A "make" in this case may fail on main.cpp. So please make sure to do following in such cases:
+        <ul>
+	        <li>apply user edits(if any) from current main.cpp to main.cpp.template
+ 	        <li>rename main.cpp.template to main.cpp
+ 	        <li>then run "make"
+        </ul>
+      </ul>
+      <br>
 
-      <br><br>
       <a name="BUILD_GEN_SOURCE"><h3>Building the generated source<hr NOSHADE SIZE=7 WIDTH=100%></h3></a>
         Steps to build the generated source:
         <hr NOSHADE SIZE=1 WIDTH=50% align=left>
@@ -137,93 +141,140 @@
           <li> there is a binary built with name &lt;name&gt;run
         </ul>
 
-      <br>
-      <a name="USE_BUILD"><h3>Using the build<hr NOSHADE SIZE=7 WIDTH=100%></h3></a>
-      <p>
-        The built library alongwith the generated headers for user supplied XML-Schema, can be consumed by user applications in their builds.<br>
+  <br>
+  <a name="USE_BUILD"><h3>Using the build<hr NOSHADE SIZE=7 WIDTH=100%></h3></a>
+  <ul>
+    <li><a href="#BUILD_LOOK">Look of the build</a>
+    <li><a href="#CHOOSE_DOCELEMENT">Change needed prior to use of <b>-s</b> and <b>-w</b> options: choose the document element</a>
+    <li><a href="#RUN_OPTIONS">Run Options explained</a>
+  </ul>
+    
+  <a name="BUILD_LOOK"><h4>Look of the build<hr NOSHADE SIZE=5 WIDTH=100%></h4></a>
+  <p>
+  The built library alongwith the generated headers for user supplied XML-Schema, can be consumed by user applications in their builds.<br>
+  One example of how to consume the built library/headers, comes alongwith the generated sources viz. main.cpp. The main.cpp includes the generated headers and links to the built library, and makes a binary named &lt;name&gt;run. This &lt;name&gt;run binary demostrates all the use cases around the XML-Schema, that XmlPlus supports. So in that sense main.cpp serves as an example user application, showing how to consume the C++ library built for a XML-Schema file.<br>
+  </p>
+  Once the generated source(using xsd2cpp on XML Schema) is built, we should check out the build in the installed path. Taking the examples/simpleTypesDemo as an example, it should look like this:
+ <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+ <code>
+ <b>$ pwd</b><br>
+   /Users/goofy/xmlplus/examples/simpleTypesDemo<br><br>
+ <b>$ find build -type d</b><br>
+   build/<br>
+   build/bin/<br>
+   build/lib/<br>
+   build/include/<br>
+   <br>
+ <b>$ find build -type f</b><br>
+   build/bin/simpleTypesDemorun<br>
+   build/lib/libsimpleTypesDemo.0.dylib<br>
+   build/lib/libsimpleTypesDemo.a<br>
+   build/lib/libsimpleTypesDemo.la<br>
+ </code>
+ <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+ <br> 
+ Each &lt;name&gt;run comes with a set of options. The options provided are aimed at covering most of the use cases in relation to XML-Schema and xml documents. You should use one &lt;name&gt;run built for the XML-Schema of your choice, to undertand all the use cases.<br>
+ An example of &lt;name&gt;run options: 
+ <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+ <pre>
+ $ ./build/bin/simpleTypesDemorun --help 
+ Usage: ./build/bin/simpleTypesDemorun [options] [XMLfile] 
+ Options:
+  -s, --sample
+    create a schema-driven sample xml-file
+  -w, --write
+    write a xml-file using populated Document
+    Note: populateDocument() function in main.cpp template,
+    must be used to populate the Document
+  -v, --validate
+    validate input xml-file(against compiled schema)
+  -r, --roundtrip
+    roundtrip (read-&gt;write) input xml-file
+  -u, --row
+    perform read-&gt;operate-&gt;write operations on input xml-file
+  -h, --help
+    print help
+ </pre>         
+ <hr NOSHADE SIZE=1 WIDTH=50% align=left> <br>
 
-        One example of how to consume the built library/headers, comes alongwith the generated sources viz. main.cpp. The main.cpp includes the generated headers and links to the built library, and makes a binary named &lt;name&gt;run. This &lt;name&gt;run binary demostrates all the use cases around the XML-Schema, that XmlPlus supports. So in that sense main.cpp serves as an example user application, showing how to consume the C++ library built for a XML-Schema file.<br>
-      </p>
+  <a name="CHOOSE_DOCELEMENT"><h4>main.cpp edit needed prior to use of <b>-s</b> and <b>-w</b> run options: <u>choose the document element</u><hr NOSHADE SIZE=5 WIDTH=100%></h4></a>
+  If the input XML Schema has just one choice of document-element then that element is automatically chosen as document element by Document class, and no edit in main.cpp is required. In this case, the generated main.cpp would not have a callback named <code>chooseDocumentElement(...)</code>.<br> However, if the input XML Schema has more than one choice of document-element then the generated <code>main.cpp</code> would have a calback function viz. <code>chooseDocumentElement(...)</code>, wherein you would need to uncomment the appropriate choice of document element(root of xml document).<br>Here is an example:
+  <pre>
+  void chooseDocumentElement(NoNS::Document* xsdDoc)
+  {
+    // uncomment one of folowing to choose root
+    xsdDoc-&gt;set_root_mails();
+    //xsdDoc-&gt;set_root_header();
+    //xsdDoc-&gt;set_root_Date();
+  }
+  </pre>
+  
+  <a name="RUN_OPTIONS"><h4>Run Options explained<hr NOSHADE SIZE=5 WIDTH=100%></h4></a>
+  The <code>&lt;name&gt;run</code> options are mostly self-explanatory. Here follows some more details on these options:<br><br>
 
-        <br>
-        Now let us check out the build in the installed path. Taking the examples/simpleTypesDemo as an example, it should look like this:
-        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
-        <code>
-        <b>$ pwd</b><br>
-          /Users/goofy/xmlplus/examples/simpleTypesDemo<br><br>
-        <b>$ find build -type d</b><br>
-          build/<br>
-          build/bin/<br>
-          build/lib/<br>
-          build/include/<br>
-          <br>
-        <b>$ find build -type f</b><br>
-          build/bin/simpleTypesDemorun<br>
-          build/lib/libsimpleTypesDemo.0.dylib<br>
-          build/lib/libsimpleTypesDemo.a<br>
-          build/lib/libsimpleTypesDemo.la<br>
-        </code>
-        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
-        
-        <br>
-        Each &lt;name&gt;run comes with a set of options. The options provided are aimed at covering most of the use cases in relation to XML-Schema and xml documents. You should use one &lt;name&gt;run built for the XML-Schema of your choice, to undertand all the use cases.<br>
-        An example of &lt;name&gt;run options: 
-        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
-          <code>
-        $ ./build/bin/simpleTypesDemorun --help <br>
-        Usage: ./build/bin/simpleTypesDemorun [options] [XMLfile] <br>
-        Options:<br>
-        &nbsp;-s, --sample<br>
-        &nbsp;&nbsp; create a schema-driven sample xml-file<br>
-        &nbsp;&nbsp; Note: optional fields are omitted<br>
-        &nbsp;-w, --write<br>
-        &nbsp;&nbsp; write a xml-file using populated Document<br>
-        &nbsp;&nbsp; Note: populateDocument() function in main.cpp template,<br>
-        &nbsp;&nbsp; must be used to populate the Document<br>
-        &nbsp;-v, --validate<br>
-        &nbsp;&nbsp; validate input xml-file(against compiled schema)<br>
-        &nbsp;-r, --roundtrip<br>
-        &nbsp;&nbsp; roundtrip (read-&gt;write) input xml-file<br>
-        &nbsp;-u, --row<br>
-        &nbsp;&nbsp; perform read-&gt;operate-&gt;write operations on input xml-file<br>
-        &nbsp;-h, --help<br>
-        &nbsp;&nbsp; print help<br>
-          </code>         
-        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+  <ol>
+    <li><b><u>write sample xml file(<i>-s option</i>)</u></b><br>
+  This options results in writing of a schema driven sample xml file namely <code>sample.xml</code>.
+  <br>Following points are noteworthy in this regard:<br>
+  <ul>
+    <li> If XML Schema has more than one choice of document element, then <a href="#CHOOSE_DOCELEMENT">choose the document element</a> in the generated main.cpp file.
+    <li> This <code>sample.xml</code> file is just one of many possible instance documents for the XML Schema in question, and not necessarily the only possible layout.<br>
+    <li> This <code>sample.xml</code> is not necessarily a valid instance document. Though, the order of elements and attributes in the <code>sample.xml</code> file is a valid order, the values of elements and attributes are not necessarily valid with respect to the XML Schema in question.
+  </ul><br><br>
 
-      <br><br>
-      These options are self-explanatory. However, folllowing example is provided to demonstrate one such use case(validation of xml file):<br>
-      For a XML-Schema named simpleTypesDemo.xsd, we have a simpleTypesDemorun test utility built.<br>
-      Now, let us assume that you have one st.xml file which is a well-formed xml document, but is invalid against the XML-Schema.
+    <li><b><u>write a xml file using populated Document(<i>-w option</i>)</u></b><br>
+    This option shows the use case of writing xml file, by serializing the populated XML-Objects. The serialization is done through Document class.
+    <br>Following points are noteworthy in this regard:<br>
+  <ul>
+    <li> If XML Schema has more than one choice of document element, then <a href="#CHOOSE_DOCELEMENT">choose the document element</a> in the generated main.cpp file.
+    <li> The callback function <code>populateDocument(...)</code> should be filled with appropriate code to populate the XML Objects under Document.
 
-      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
-      <code>
-      $ ./build/bin/simpleTypesDemorun -v st.xml<br>
-      validating file:st.xml<br>
-      &nbsp;&nbsp;=&gt; validation failed<br>
+  </ul><br><br>
 
-      Error: {<br>
-      &nbsp;&nbsp;Expected:<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;=&gt; Element '{http://www.example.com/STDemo} anIntMax5k'<br>
-      &nbsp;&nbsp;Got:<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;=&gt; Element '{http://www.example.com/STDemo} anIntMax10'<br>
-      <br>
-      &nbsp;&nbsp;element: myComplexTypeElem<br>
-      &nbsp;&nbsp;file: st.xml<br>
-      &nbsp;&nbsp;line,column: 43, 2<br>
-      }<br>
-      <//code>
-      <hr NOSHADE SIZE=1 WIDTH=50% align=left>
-      
-      <br>
-      On fixing the error in st.xml, when the validation is done again, it should look like this: 
-        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
-      <code>
-      $ ./build/bin/simpleTypesDemorun -v st.xml<br>
-      validating file:st.xml<br>
-      &nbsp;&nbsp; =&gt; validated successfully<br>
-      </code>
-        <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+
+    <li><b><u>validate input xml file(<i>-v option</i>)</u></b><br><br>
+  This option is used to validate the input xml-file(against compiled schema).<br>
+  For instance, for a XML-Schema named simpleTypesDemo.xsd, we would have a <code>simpleTypesDemorun</code> test utility built.<br>
+  Now, let us assume that you have one st.xml file which is a well-formed xml document, but is invalid against the XML-Schema.
+
+  <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+  <pre>
+  $ ./build/bin/simpleTypesDemorun -v st.xml
+  validating file:st.xml
+    =&gt; validation failed
+
+  Error: {
+    Expected:
+      =&gt; Element '{http://www.example.com/STDemo} anIntMax5k'
+    Got:
+      =&gt; Element '{http://www.example.com/STDemo} anIntMax10'
+  
+    element: myComplexTypeElem
+    file: st.xml
+    line,column: 43, 2
+  }</pre>
+  <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+  <br>
+  On fixing the error in st.xml, when the validation is done again, it should look like this: 
+    <hr NOSHADE SIZE=1 WIDTH=50% align=left>
+  <pre>
+  $ ./build/bin/simpleTypesDemorun -v st.xml
+  validating file:st.xml
+     =&gt; validated successfully</pre>
+  <hr NOSHADE SIZE=1 WIDTH=50% align=left><br><br>
+
+    <li><b><u>roundtrip a xml file(<i>-r option</i>)</u></b><br>
+    This option shows the use case of roundtripping(read-&gt;write) an input xml file, ie. deserializing an input xml file into XML-Objects and then serializing them back to a xml file. This option can be used to test if the roundtrip causes any loss of xml entities or data. XmlPlus claims to retain comments and processing-instructions in addition to elements and attributes.<br><br>
+    
+    <li><b><u>roundtrip with a callback(<i>-u option</i>)</u></b><br><br>
+    This options shows the use case where:
+    <ul>
+      <li> a xml file is read(deserialized) into Document(along with the XML Objects under the Document)
+      <li> then the Document is updated using callback function named <code>updateOrConsumeDocument(...)</code>. The callback function <code>updateOrConsumeDocument(...)</code> should be filled with appropriate code to update the Document. Alternatively, this callback function can be used to test the correctness of XML Objects' values.
+      <li> then the Document is written(serialized) back to output xml file 
+    </ul><br>
+    Note that, if the <code>updateOrConsumeDocument(...)</code> is left empty, the <b>-u</b> option is as good as <b>-r</b> option.
+  </ol>
 
 
     </form>

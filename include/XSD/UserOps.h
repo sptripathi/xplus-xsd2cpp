@@ -309,7 +309,6 @@ namespace XSD
         cout << "Options:" << endl;  
         cout << " -s, --sample\n"
           << "            create a schema-driven sample xml-file\n" 
-          << "            Note: optional fields are omitted"
           << endl;
         cout << " -w, --write\n"
           << "            write a xml-file using populated Document\n" 
