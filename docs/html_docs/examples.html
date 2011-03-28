@@ -85,8 +85,8 @@
     For building the source in the outdir:
     <hr NOSHADE SIZE=1 WIDTH=50% align=left>
     $ ./autogen.sh<br>
-    $ make 	<br>
-    $ make install 	<br>
+    $ make   <br>
+    $ make install   <br>
     $ make doxygen-doc<br>
       </code>
     <hr NOSHADE SIZE=1 WIDTH=50% align=left>
@@ -135,7 +135,7 @@ $ runTests.sh  [-c | -t]
   <hr NOSHADE SIZE=1 WIDTH=50% align=left>
   The options are self-explanatory. When run with -t option, this script iteratively builds and tests all examples and Tests directories(though it takes long to finish).<br>
   If you want save the effort of building all examples(and Tests directories) one by one, before you could experiment with the respective builds, running <b>"runTests.sh -t"</b> may be a good idea.<br>
-  Please be informed that with both "-c" and "-t" options, this script cleans up all the directories of files that it thinks are temporary files(it does warn you about about the same and requests your permission before proceeding). If you have important changes in those directories, those changes should be backed up before proceeding with this script.
+  Please be informed that with both "-c" and "-t" options, this script cleans up the <code>Tests</code> and <code>examples</code> directories <b>recursively</b>, of files that it thinks are temporary files(it does warn you about about the same and requests your permission before proceeding). If you have important changes in those directories, those changes should be backed up before proceeding with this script.
 
     <br><br>
     <a name="EX_BY_TAGS"><h3>Examples by tags <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
@@ -215,7 +215,7 @@ $ runTests.sh  [-c | -t]
         <br><b>Facets:</b>
           pattern
         </td>
-      <tr>
+      </tr>
       <tr>
         <td><a href="browse_examples.html#examples_mails">mails</a></td>
         <td>
@@ -231,7 +231,7 @@ $ runTests.sh  [-c | -t]
         <br><b>Other Tags:</b>
           Model Group 'sequence' with maxOccurs="unbounded"
         </td>
-      <tr>
+      </tr>
       <tr>
         <td><a href="browse_examples.html#examples_includeDemo">includeDemo</a></td>
         <td>
@@ -241,7 +241,7 @@ $ runTests.sh  [-c | -t]
         <br><b>Schema controlled Attributes:</b>
           minOccurs, maxOccurs
         </td>
-      <tr>
+      </tr>
       <tr>
         <td><a href="browse_examples.html#examples_org">organization</a></td>
         <td>
@@ -254,14 +254,19 @@ $ runTests.sh  [-c | -t]
           <br><b>Other Tags:</b>
           targetNamespace, nested imports
         </td>
+      </tr>
+      
       <tr>
+        <td> many more examples...</td>
+        <td>Please check out yourself under <code>examples</code> directory. You could also browse examples and Tests using links below.</td>
+      </tr>
     </table>
 
   <a name="BROWSE_EXTESTS"><h3>Browse Examples and Tests <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-	<ul>
-		<li> <a href="browse_examples.html">Browse Example directories</a>
+  <ul>
+    <li> <a href="browse_examples.html">Browse Example directories</a>
     <li> <a href="browse_tests.html">Browse Test directories</a>
-	</ul>
+  </ul>
 
   </form>
 </body>

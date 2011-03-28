@@ -72,7 +72,7 @@
       <br>
       <b>Note that:</b> 
       <ul>
-        <li> the <b>-s</b> option suppresses any error reported on xml schema by xsd2cpp tool.While processing the input XML Schema, if the xsd2cpp tool finds some invalidity, it aborts the code generation and reports the error. However, if you think that the error itself is invalid, and want to proceed with code generation, use this option. Please note that, the code generated with -s option, is not guranteed to compile or run in a sane manner. This is an experimental option and will be deprecated later.<br>
+        <li> the <b>-s</b> option suppresses any error reported on xml schema by xsd2cpp tool.While processing the input XML Schema, if the xsd2cpp tool finds some invalidity with the schema, it aborts the code generation and reports the error. However, if you think that the error itself is invalid, and want to proceed with code generation, use this option. Please note that, the code generated with -s option, is not guranteed to compile or run in a sane manner. This is an experimental option and will be deprecated later.<br>
         Whenever you suspect the xsd2cpp to be wrongly reporting an error on input XML Schema, you are requested to report it to us: <a href="support.html">Report Bugs</a><br><br> 
         <li>If there is a main.cpp file already present in output directory, then it is not overridden on invocation of xsd2cpp, instead a file named <code>main.cpp.template</code>, is made available under the same output directory. This is so to preserve any user edits inside main.cpp over it's generated copy. The important thing to remember is that if an edit is made to the XML-Schema file, the main.cpp may need to get updated with  changes like renamed classes, new includes, choice of documentElement etc. A "make" in this case may fail on main.cpp. So please make sure to do following in such cases:
         <ul>
@@ -214,7 +214,7 @@
 
   <ol>
     <li><b><u>write sample xml file(<i>-s option</i>)</u></b><br>
-  This options results in writing of a schema driven sample xml file namely <code>sample.xml</code>.
+  This option results in writing of a schema driven sample xml file namely <code>sample.xml</code>.
   <br>Following points are noteworthy in this regard:<br>
   <ul>
     <li> If XML Schema has more than one choice of document element, then <a href="#CHOOSE_DOCELEMENT">choose the document element</a> in the generated main.cpp file.
@@ -267,7 +267,7 @@
     This option shows the use case of roundtripping(read-&gt;write) an input xml file, ie. deserializing an input xml file into XML-Objects and then serializing them back to a xml file. This option can be used to test if the roundtrip causes any loss of xml entities or data. XmlPlus claims to retain comments and processing-instructions in addition to elements and attributes.<br><br>
     
     <li><b><u>roundtrip with a callback(<i>-u option</i>)</u></b><br><br>
-    This options shows the use case where:
+    This option shows the use case where:
     <ul>
       <li> a xml file is read(deserialized) into Document(along with the XML Objects under the Document)
       <li> then the Document is updated using callback function named <code>updateOrConsumeDocument(...)</code>. The callback function <code>updateOrConsumeDocument(...)</code> should be filled with appropriate code to update the Document. Alternatively, this callback function can be used to test the correctness of XML Objects' values.
