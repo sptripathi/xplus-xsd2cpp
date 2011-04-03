@@ -350,7 +350,9 @@ namespace XMLSchema
       try
       {
         normalizeValue(value);
-        checksOnSetValue(value);
+        if(!isSampleCreate()) {
+          checksOnSetValue(value);
+        }
         _value = value;
         postSetValue();
       }
