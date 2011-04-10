@@ -23,6 +23,7 @@
 #include "Poco/Types.h"
 #include <limits>
 
+#define ABS(x) ( ((x) < 0) ? -(x) : (x))
 
 namespace XPlus {
 

@@ -67,10 +67,10 @@ namespace XMLSchema
       inline eConstrainingFacets type() {
         return _type;
       }
-      virtual inline string stringValue() const {
+      virtual inline DOMString stringValue() const {
         return "";
       }
-      virtual void stringValue(string strVal){
+      virtual void stringValue(DOMString strVal){
       };
 
       inline bool isInError() {
@@ -91,7 +91,7 @@ namespace XMLSchema
         return _fixed;
       }
 
-      vector<string>& errors() {
+      vector<DOMString>& errors() {
         return _errors;
       }
 
@@ -100,7 +100,7 @@ namespace XMLSchema
       eConstrainingFacets    _type;
       bool                   _fixed;
       bool                   _isSet;
-      vector<string>         _errors;
+      vector<DOMString>         _errors;
 
   };
 
@@ -124,14 +124,14 @@ namespace XMLSchema
       virtual void validateCFacetValueWrtParent(T val)
       {
 
-        string currFacetValStr = this->stringValue();
+        DOMString currFacetValStr = this->stringValue();
         
         // seting the value of self with new value, to get string of new value
         // and resetting it back
-        //string newFacetValStr = facetToStringValue(type(), val);
+        //DOMString newFacetValStr = facetToStringValue(type(), val);
         T tmpVal = _value; 
         _value = val;
-        string newFacetValStr = this->stringValue();
+        DOMString newFacetValStr = this->stringValue();
         _value = tmpVal;
 
         //NB: throwing exception in constructor causes some strange issues.
@@ -189,7 +189,7 @@ namespace XMLSchema
         return _value;
       }
 
-      static string facetToStringValue(eConstrainingFacets facet, T val) 
+      static DOMString facetToStringValue(eConstrainingFacets facet, T val) 
       {
         ConstrainingFacet<T> dummy(facet, val);
         return dummy.stringValue();
@@ -283,12 +283,12 @@ namespace XMLSchema
     {
     }
 
-    virtual void stringValue(string strVal) {
+    virtual void stringValue(DOMString strVal) {
       T val = fromString<T>(strVal); 
       value(val);
     }
 
-    virtual string stringValue()  const{
+    virtual DOMString stringValue()  const{
       return toString<T>(ConstrainingFacet<T>::_value);
     }
   };
@@ -302,12 +302,12 @@ namespace XMLSchema
     {
     }
 
-    virtual void stringValue(string strVal) {
+    virtual void stringValue(DOMString strVal) {
       T val = fromString<T>(strVal); 
       value(val);
     }
 
-    virtual string stringValue() const {
+    virtual DOMString stringValue() const {
       return toString<T>(ConstrainingFacet<T>::_value);
     }
   };
@@ -322,15 +322,15 @@ namespace XMLSchema
       _primitiveType(primType)
     { }
 
-    virtual void stringValue(string strVal) 
+    virtual void stringValue(DOMString strVal) 
     {
       //FIXME: need to accomodate patterns of all: dateTime/date/year/month.... etc
       /*
-      static string dateTimePattern = "\\-?\\d{4,}\\-(0[1-9]|10|11|12)\\-((0[1-9])|([1-2][0-9])|(3[0-1]))T(([0-1][0-9])|(2[0-4])):[0-5][0-9]:[0-5][0-9](\\.\\d+)?(Z|([+\\-]\\d\\d:\\d\\d))?";
+      static DOMString dateTimePattern = "\\-?\\d{4,}\\-(0[1-9]|10|11|12)\\-((0[1-9])|([1-2][0-9])|(3[0-1]))T(([0-1][0-9])|(2[0-4])):[0-5][0-9]:[0-5][0-9](\\.\\d+)?(Z|([+\\-]\\d\\d:\\d\\d))?";
       static RegularExpression re(dateTimePattern);
       if(!re.match(strVal)) 
       {
-        ValidationException ex(string("dateTime facet value violated pattern:")+dateTimePattern);
+        ValidationException ex(DOMString("dateTime facet value violated pattern:")+dateTimePattern);
         ex.setContext("facet-value",  strVal);
         throw ex;
       }
@@ -340,7 +340,7 @@ namespace XMLSchema
       value(dtTime);
     }
 
-    virtual string stringValue() const 
+    virtual DOMString stringValue() const 
     {
       switch(_primitiveType)
       {
@@ -380,13 +380,13 @@ namespace XMLSchema
       OrderableCFacet<XPlus::Duration>(facetType, facetValue, fixed)
     { }
 
-    virtual void stringValue(string strVal) 
+    virtual void stringValue(DOMString strVal) 
     {
       XPlus::Duration dur = DateTimeUtils::parseXsdDuration(strVal);
       value(dur);
     }
 
-    virtual string stringValue() const {
+    virtual DOMString stringValue() const {
       return DateTimeUtils::formatXsdDuration(_value); 
     }
 
@@ -420,20 +420,20 @@ namespace XMLSchema
     }
   };
 
-  struct PatternCFacet : public NativeTypeCFacet<string>
+  struct PatternCFacet : public NativeTypeCFacet<DOMString>
   {
-    PatternCFacet(string pattern, bool fixed=false):
+    PatternCFacet(DOMString pattern, bool fixed=false):
       ConstrainingFacetBase(CF_PATTERN, fixed),
-      NativeTypeCFacet<string>(CF_PATTERN, pattern, fixed)
+      NativeTypeCFacet<DOMString>(CF_PATTERN, pattern, fixed)
     {
     }
   };
 
-  struct WhiteSpaceCFacet : public NativeTypeCFacet<string>
+  struct WhiteSpaceCFacet : public NativeTypeCFacet<DOMString>
   {
-    WhiteSpaceCFacet(string strVal, bool fixed=false):
+    WhiteSpaceCFacet(DOMString strVal, bool fixed=false):
       ConstrainingFacetBase(CF_WHITESPACE, fixed),
-      NativeTypeCFacet<string>(CF_WHITESPACE, strVal, fixed)
+      NativeTypeCFacet<DOMString>(CF_WHITESPACE, strVal, fixed)
     {
     }
   };
@@ -457,21 +457,21 @@ namespace XMLSchema
   };
 
 
-  struct EnumerationCFacet : public ConstrainingFacet<vector<string> >
+  struct EnumerationCFacet : public ConstrainingFacet<vector<DOMString> >
   {
-    EnumerationCFacet(vector<string> enums):
+    EnumerationCFacet(vector<DOMString> enums):
       ConstrainingFacetBase(CF_ENUMERATION),
-      ConstrainingFacet<vector<string> >(CF_ENUMERATION, enums)
+      ConstrainingFacet<vector<DOMString> >(CF_ENUMERATION, enums)
     {
     }
 
     EnumerationCFacet():
       ConstrainingFacetBase(CF_ENUMERATION),
-      ConstrainingFacet<vector<string> >(CF_ENUMERATION)
+      ConstrainingFacet<vector<DOMString> >(CF_ENUMERATION)
     {
     }
 
-    virtual string stringValue() const 
+    virtual DOMString stringValue() const 
     {
       ostringstream oss;
       oss << " enum (";

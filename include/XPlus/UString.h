@@ -46,6 +46,7 @@ namespace UTF8FNS {
   bool isSpaceChar(UChar ch);
   bool is_TAB_LF_CR(UChar ch);
   bool is_TAB_SPACE(UChar ch);
+  bool isEqualChar(UChar ch);
 }
 
 // TODO: change the iterations on string using at() to rather use

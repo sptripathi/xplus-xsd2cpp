@@ -6,10 +6,13 @@ AM_LDFLAGS=
 SUBDIRS =  #Poco XPlus DOM XSD tools
 
 
-bin_PROGRAMS=fsmTest domParser 
+bin_PROGRAMS=fsmTest regTest domParser 
 
 fsmTest_SOURCES=XSD/FsmTest.cpp 
 fsmTest_LDADD =libxsdall.la
+
+regTest_SOURCES=tools/RegTest.cpp 
+regTest_LDADD =libxsdall.la
 
 domParser_SOURCES=tools/DOMParse.cpp
 domParser_LDADD = libxsdall.la 

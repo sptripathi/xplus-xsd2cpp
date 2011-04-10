@@ -43,6 +43,10 @@ namespace UTF8FNS
   bool isSpaceChar(UChar ch) {
     return ( (ch == 0x20) || (ch == 0x09) || (ch == 0x0A) || (ch == 0x0D) );
   }
+  
+  bool isEqualChar(UChar ch) {
+    return (ch == '=');
+  }
 }
 
 namespace XPlus

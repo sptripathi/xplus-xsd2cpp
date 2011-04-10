@@ -37,7 +37,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = fsmTest$(EXEEXT) domParser$(EXEEXT)
+bin_PROGRAMS = fsmTest$(EXEEXT) regTest$(EXEEXT) domParser$(EXEEXT)
 subdir = src
 DIST_COMMON = $(dist_bin_SCRIPTS) $(nobase_dist_data_DATA) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -113,6 +113,9 @@ domParser_DEPENDENCIES = libxsdall.la
 am_fsmTest_OBJECTS = XSD/FsmTest.$(OBJEXT)
 fsmTest_OBJECTS = $(am_fsmTest_OBJECTS)
 fsmTest_DEPENDENCIES = libxsdall.la
+am_regTest_OBJECTS = tools/RegTest.$(OBJEXT)
+regTest_OBJECTS = $(am_regTest_OBJECTS)
+regTest_DEPENDENCIES = libxsdall.la
 SCRIPTS = $(dist_bin_SCRIPTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -137,9 +140,9 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libxsdall_la_SOURCES) $(domParser_SOURCES) \
-	$(fsmTest_SOURCES)
+	$(fsmTest_SOURCES) $(regTest_SOURCES)
 DIST_SOURCES = $(libxsdall_la_SOURCES) $(domParser_SOURCES) \
-	$(fsmTest_SOURCES)
+	$(fsmTest_SOURCES) $(regTest_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -305,6 +308,8 @@ AM_LDFLAGS =
 SUBDIRS = #Poco XPlus DOM XSD tools
 fsmTest_SOURCES = XSD/FsmTest.cpp 
 fsmTest_LDADD = libxsdall.la
+regTest_SOURCES = tools/RegTest.cpp 
+regTest_LDADD = libxsdall.la
 domParser_SOURCES = tools/DOMParse.cpp
 domParser_LDADD = libxsdall.la 
 lib_LTLIBRARIES = libxsdall.la
@@ -676,6 +681,11 @@ XSD/FsmTest.$(OBJEXT): XSD/$(am__dirstamp) \
 fsmTest$(EXEEXT): $(fsmTest_OBJECTS) $(fsmTest_DEPENDENCIES) 
 	@rm -f fsmTest$(EXEEXT)
 	$(CXXLINK) $(fsmTest_OBJECTS) $(fsmTest_LDADD) $(LIBS)
+tools/RegTest.$(OBJEXT): tools/$(am__dirstamp) \
+	tools/$(DEPDIR)/$(am__dirstamp)
+regTest$(EXEEXT): $(regTest_OBJECTS) $(regTest_DEPENDENCIES) 
+	@rm -f regTest$(EXEEXT)
+	$(CXXLINK) $(regTest_OBJECTS) $(regTest_LDADD) $(LIBS)
 install-dist_binSCRIPTS: $(dist_bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
@@ -851,6 +861,7 @@ mostlyclean-compile:
 	-rm -f XSD/xsdUtils.$(OBJEXT)
 	-rm -f XSD/xsdUtils.lo
 	-rm -f tools/DOMParse.$(OBJEXT)
+	-rm -f tools/RegTest.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -925,6 +936,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/XSDFSM.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/xsdUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/DOMParse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/RegTest.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

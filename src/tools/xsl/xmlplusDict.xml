@@ -182,10 +182,39 @@
     </type>
     <type name="hexBinary">
       <impl implType="DOM::DOMString" adt="false">
+        <code>
+    virtual unsigned int lengthFacet() {
+      return ceil(stringValue().length()/2);
+    }
+        </code>
       </impl>  
     </type>
     <type name="base64Binary" adt="false">
       <impl implType="DOM::DOMString">
+        <code>
+    // pseudocode from w3c XSD1.1 spec    
+    //    lex2   := killwhitespace(lexform)  
+    //    lex3   := strip_equals(lex2)
+    //    length := floor (length(lex3) * 3 / 4)  
+    virtual unsigned int lengthFacet() 
+    {
+      DOMString lex = stringValue();
+      lex.removeChars(UTF8FNS::isWhiteSpaceChar);
+      
+#if 0 
+      // FIXME: this concept is yet to be resolved.
+      // Following up with W3C dev forum.
+      // length of non-whitespace chars should be multiple of 4
+      assert(lex.length()%4 == 0);
+      lex.trimRight(UTF8FNS::isEqualChar);
+#endif      
+
+      unsigned int len = Sampler::base64LexLenToOctetLen(lex.length());
+      // len should be multiple of 3
+      assert(len%3 == 0);
+      return len;
+    }
+        </code>
       </impl>  
     </type>
     <type name="anyURI">

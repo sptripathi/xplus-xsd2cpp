@@ -215,7 +215,6 @@ namespace XMLSchema
     {
       public:
 
- 
         anyType(AnyTypeCreateArgs args, eAnyTypeUseCase anyTypeUseCase_ = ANY_TYPE);
 
         virtual ~anyType() {}
@@ -326,12 +325,21 @@ namespace XMLSchema
         virtual void postSetValue();
         void setErrorContext(XPlus::Exception& ex);
         virtual TextNodeP createTextNodeOnSetValue(DOMString value); 
-        void setValueFromCreatedTextNodes();
+        virtual void setValueFromCreatedTextNodes();
         void indexAddedTextNode(TextNode *txtNode);
         TextNode* addTextNodeValueAtPos(DOMString value, int pos);
         void checksOnSetValue(DOMString value);
         void checkFixed(DOMString value);
         void checkContentType(DOMString value);
+        
+        // different from stringValue in the sense that it doesnt create
+        // textNodes for the supplied value. This is a helper "virtual"
+        // function which could be overridden in derived classes for different
+        // behaviour eg in SimpleTypeUnionTmpl or SimpleTypeListTmpl
+        virtual inline void setValue(DOMString val) {
+          _value = val;
+        }
+        
 
         DOM::Attribute* createDOMAttributeUnderCurrentElement(DOMString *attrName, DOMString *attrNsUri=NULL, DOMString *attrNsPrefix=NULL, DOMString *attrValue=NULL);
 
@@ -395,7 +403,7 @@ namespace XMLSchema
 
         virtual ~anySimpleType() {}
         
-        bool checkValue(DOMString val);
+        virtual bool checkValue(DOMString val);
         virtual void stringValue(DOMString value); 
         inline virtual DOMString stringValue() {
           return _value;
@@ -489,9 +497,9 @@ namespace XMLSchema
         OrderableCFacetAbstraction& minExclusiveCFacet();
         OrderableCFacetAbstraction& minInclusiveCFacet();
 
-
       protected:
-        
+
+        virtual DOMString generateSample(DOMString *arrSamples);
         virtual void normalizeValue(DOMString& value);
         virtual void postSetValue();
         virtual void endElementNS(DOMString* nsURI, DOMString* nsPrefix, DOMString* localName);
@@ -503,7 +511,8 @@ namespace XMLSchema
 
         virtual void applyCFacets();
         ConstrainingFacetBase& getCFacet(eConstrainingFacets facetType);
-        void throwFacetViolation(eConstrainingFacets facetType, string msg="");
+        void throwFacetViolation(eConstrainingFacets facetType,
+          DOMString foundFacetValue="", DOMString msg="");
         
         ePrimitiveDataType   _primitiveType;
 
@@ -556,6 +565,8 @@ namespace XMLSchema
         // bitmasks of eConstrainingFacets
         unsigned int         _allowedCFacets;
         unsigned int         _appliedCFacets; 
+
+        friend class SimpleTypeUnionTmpl;
 
     };
 

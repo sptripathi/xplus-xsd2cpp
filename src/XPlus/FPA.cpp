@@ -43,10 +43,10 @@ namespace XPlus
     millis = fraction*1000;
     micros = fraction*1000000 - millis*1000; 
     
-    cout << "integral:" << integral 
-      << " millis:" <<  millis 
-      << " micros:" <<  micros 
-      << endl;
+    //cout << "integral:" << integral 
+    //  << " millis:" <<  millis 
+    //  << " micros:" <<  micros 
+    //  << endl;
 
   }
 
@@ -81,7 +81,6 @@ namespace XPlus
         }
         else {
           throw Exception("parseDecimal: found unexpected '.'");
-          cout << "A" << endl;
         }
       }
       // dont expect anything else except digits and a dot
@@ -89,7 +88,6 @@ namespace XPlus
       {
         ostringstream oss;
         oss << "parseDecimal: found unexpected '" << *it << "'";
-          cout << "B" << endl;
         throw Exception(oss.str());
       }
     }

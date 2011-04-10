@@ -338,12 +338,12 @@ class XsdFSM : public XsdFsmBase
             int unboundedMaxOccur =(int)_nsName.maxOccurence;
             if(unboundedMaxOccur == -1)
             {
-              nextStateId = stateId;
               for(unsigned int j=0; j<_nsName.minOccurence; j++)
               {
                 nextStateId = stateId +1;
                 FSM::ActionEdge edge(stateId, eventId, nextStateId);
                 transitions.push_back(edge);
+                stateId = nextStateId;
               }
 
               FSM::ActionEdge edge(nextStateId, eventId, nextStateId);
@@ -380,7 +380,7 @@ class XsdFSM : public XsdFsmBase
       if( (_fsmType == XsdEvent::ELEMENT_START) && (_nodeList.size()>0) )
       {
         //NB: revisit
-        // dynamic_cast fails below, so using static_cast with check for famType 
+        // dynamic_cast fails below, so using static_cast with check for fsmType 
         // being ELEMENT_START, because there are templates of XsdFSM<void *>
         // and void* fails to dynamic_cast to a class* eg Node*
         //Node* pNode = static_cast<Node *>(const_cast<void *>(_nodeList.back()));
@@ -472,12 +472,8 @@ class XsdFSM : public XsdFsmBase
       XsdEvent event = this->toEvent();
       event.docBuilding = docBuilding;
       event.cbOptions.isSampleCreate = true;
-      unsigned int occur = 0;
-      
-      if(_nsName.hasUnboundedMaxOccurence() || (_nsName.maxOccurence > MAXOCCUR_SAMPLE)) {
-        occur = MAXOCCUR_SAMPLE;
-      }
-      else {
+      unsigned int occur = ((_nsName.minOccurence > MAXOCCUR_SAMPLE) ? _nsName.minOccurence : MAXOCCUR_SAMPLE);
+      if(!_nsName.hasUnboundedMaxOccurence() && (_nsName.maxOccurence < occur)) {
         occur = _nsName.maxOccurence;
       }
 
@@ -968,7 +964,6 @@ struct BinaryFsmTree : public BinaryTree<XsdFsmBasePtr>
 
     void assignBT(const TreeNodePtr& node)
     {
-      //cout << "assignBT callled" << endl;
       if(node.isNull()) {
         return;
       }

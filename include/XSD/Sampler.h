@@ -21,16 +21,23 @@
 #define __SAMPLER_H__
 
 #include "DOM/DOMAllInc.h"
+#include "XPlus/Types.h"
 
 #define CNT_SAMPLES 10
 
 using namespace std;
 using namespace DOM;
+using namespace XPlus;
     
 namespace XMLSchema
 {
   namespace Sampler
   {
+    const extern DOMString alphabets;
+    const extern DOMString hexCharSet;
+    const extern DOMString hexBinaryCharSet;
+    const extern DOMString base64BinaryCharSet;
+
     extern DOMString stringSamples[CNT_SAMPLES];
     extern DOMString booleanSamples[CNT_SAMPLES];
     extern DOMString normalizedStringSamples[CNT_SAMPLES];
@@ -76,7 +83,26 @@ namespace XMLSchema
     extern DOMString languageSamples[CNT_SAMPLES];
     extern DOMString tokenSamples[CNT_SAMPLES];
 
-    DOMString getRandomSample(DOMString *arrSamples);
+    DOMString getRandomSampleStringOfLengthRange(int minLength, int maxLength, DOMString charSet=alphabets);
+    DOMString getRandomSampleStringOfMinLength(int minLength, DOMString charSet=alphabets);
+    DOMString getRandomSampleStringOfMaxLength(int maxLength, DOMString charSet=alphabets);
+    DOMString getRandomSampleStringOfLength(int length, DOMString charSet=alphabets);
+
+    int base64OctetLenToLexLen(int octetLen);
+    int base64LexLenToOctetLen(int lexLen);
+    DOMString getRandomSampleBase64StringOfLexLength(int lexLen);
+    DOMString getRandomSampleBase64StringOfLength(int length);
+    DOMString getRandomSampleBase64StringOfLengthRange(int minLength, int maxLength);
+    DOMString getRandomSampleBase64StringOfMinLength(int minLength);
+    DOMString getRandomSampleBase64StringOfMaxLength(int maxLength);
+
+    DOMString getRandomSampleLong(Int64 minIncl, Int64 maxIncl);
+    DOMString getRandomSampleDouble(double minIncl, double maxIncl);
+    DOMString getRandomSample(vector<DOMString> samples);
+    DOMString getRandomSample(DOMString *arrSamples, int lenSamples=CNT_SAMPLES);
+
+    UInt64 nonnegativeIntegerRandom(UInt64 maxExcl);
+    Int64 integerRandomInRange(Int64 minIncl, Int64 maxExcl);
   }
 }
 
