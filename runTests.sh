@@ -171,21 +171,13 @@ cleanup()
 }
   
 
-#  2 testcases
 test_valid()
 {
   if [ $TEST_FAILED = 'true' ]; then
     return
   fi
 
-  validXmlFiles=`ls valid*.xml` 2>/dev/null
-  # check valid.xml exists
-  if [ -z "$validXmlFiles" ]; then
-    echo "  No valid xml file(s) available to validate against"
-    fail_test
-    return
-  fi
-
+  validXmlFiles=`ls valid*.xml 2>/dev/null`
   # validate valid.xml
   for xmlValid in $validXmlFiles
   do
@@ -206,6 +198,27 @@ test_valid()
  #  fi
  #fi
 }
+
+test_invalid()
+{
+  if [ $TEST_FAILED = 'true' ]; then
+    return
+  fi
+
+  invalidXmlFiles=`ls invalid*.xml 2>/dev/null`
+  # invalidate invalid[N].xml
+  for xmlInvalid in $invalidXmlFiles
+  do
+    ./build/bin/$run -v $xmlInvalid >> tests.log 2>&1
+    if [ $? -eq 0 ]; then
+      echo "   failed to invalidate invalid xml file: $xmlInvalid"
+      fail_test
+      return
+    fi
+  done
+}
+
+
 
 #  1 testcase
 test_build()
@@ -235,7 +248,14 @@ test_sample()
   
   # check sample.xml exists
   if [ ! -f sample.xml ]; then
-    echo "   sample.xml doesn't exist"
+    echo "   failed to write sample.xml"
+    fail_test
+    return
+  fi
+
+  ./build/bin/$run -v sample.xml >> tests.log 2>&1
+  if [ $? -ne 0 ]; then
+    echo "   failed to validate file: sample.xml"
     fail_test
     return
   fi
@@ -254,7 +274,7 @@ test_write()
   
   # check t.xml exists
   if [ ! -f t.xml ]; then
-    echo "   t.xml doesn't exist"
+    echo "   failed to write t.xml"
     fail_test
     return
   fi
@@ -282,7 +302,7 @@ test_roundtrip()
     ./build/bin/$run -r $xmlValid >> tests.log 2>&1
     # check xyz.xml.rt.xml exists
     if [ ! -f $xmlValid.rt.xml ]; then
-      echo "   $xmlValid.rt.xml doesn't exist"
+      echo "   failed to roundtrip input file [$xmlValid] to write roundtripped file [$xmlValid.rt.xml]"
       fail_test
       return
     fi
@@ -314,8 +334,9 @@ neg_test_dir()
   cd - >/dev/null 2>&1
 }
 
-# several testcases(8) are run in each test directory
-# this functions does all the tests to be done, inside a particular test directory
+# several testcases are run in each test directory
+# this functions does all the tests to be done, inside
+# a particular test directory
 test_dir()
 {
   echo
@@ -337,6 +358,7 @@ test_dir()
     TEST_FAILED=false
     test_build
     test_valid
+    test_invalid
     test_sample
     test_write
     test_roundtrip

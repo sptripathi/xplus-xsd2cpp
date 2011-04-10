@@ -360,7 +360,7 @@
     </xs:annotation>
     <xs:restriction base="xs:anySimpleType">
       <xs:whiteSpace fixed="true" value="collapse" id="hexBinary.whiteSpace"/>
-      <xs:pattern value="[0-9a-fA-F]+"/>
+      <xs:pattern value="([0-9a-fA-F]{2})*"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="base64Binary" id="base64Binary">
@@ -381,7 +381,7 @@
     </xs:annotation>
     <xs:restriction base="xs:anySimpleType">
       <xs:whiteSpace fixed="true" value="collapse" id="base64Binary.whiteSpace"/>
-      <xs:pattern value="[A-Za-z0-9=+/]+"/>
+      <xs:pattern value="((([A-Za-z0-9+/]\s?){4})*(([A-Za-z0-9+/]\s?){3}[A-Za-z0-9+/]|([A-Za-z0-9+/]\s?){2}[AEIMQUYcgkosw048]\s?=|[A-Za-z0-9+/]\s?[AQgw]\s?=\s?=))?"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="anyURI" id="anyURI">
