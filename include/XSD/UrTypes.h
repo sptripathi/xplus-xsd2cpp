@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011 Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -498,6 +498,11 @@ namespace XMLSchema
         OrderableCFacetAbstraction& minInclusiveCFacet();
 
       protected:
+
+        DOMString generateSampleHexBinary(DOMString *arrSamples);
+        DOMString generateSampleBase64Binary(DOMString *arrSamples);
+        DOMString generateSampleString(DOMString *arrSamples);
+        DOMString generateSampleDecimal(DOMString *arrSamples);
 
         virtual DOMString generateSample(DOMString *arrSamples);
         virtual void normalizeValue(DOMString& value);

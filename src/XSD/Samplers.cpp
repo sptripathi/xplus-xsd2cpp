@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,8 @@ namespace XMLSchema
     // so as to increase the chances of them appearing in radom
     // string sample generated from such a charset(eg. chars[+/=] in
     // base64BinarySamples)
-    const DOMString alphabets = "abcdefghijklmnopqrstuvwxyz";
+    const DOMString alphaCharSet = "abcdefghijklmnopqrstuvwxyz";
+    const DOMString alphaNumCharSet = "abcdefghijklmnopqrstuvwxyz0123456789";
     const DOMString hexBinaryCharSet = "0A1B2C3D4E5F6A7B8C9D";
 
     DOMString stringSamples[CNT_SAMPLES] = {
@@ -149,22 +150,16 @@ namespace XMLSchema
     };
 
     DOMString base64BinarySamples[CNT_SAMPLES] = {
-      "PSB3y5nmYi0rq7gT8lsf4xRgPgUldiI="                            ,
-      "RgPgUlRdiU2rek4dQ6UKt3GxZEm7XVlY5mh43dNZ0Vl48SgObVjNXw=="    ,
-      "4dQ6UKt3GxZEm7XVlY5mh43dNZ0Vl48SgObVjNMXltjZUxxG0VPSB3y5n"
-      "mYi0rq7gT8lsf4xRgPgUlRdiU2rek4dQ6UKt3GxZEm7XVlY5mh43dNZ0V"
-      "l48SgObVjNMXltjZUxxG0VPSB3y5nmYi0rq7gT8lsf4xRggUlR"          ,
-      "UKt3GxZEm7XVlY5mh43dNZ0Vl48SgObVjNMXltjZUxxG0VPSB3y5nmYi0"
-      "rq7gT8lsf4xRgPgUlRdiU2rek4dQ6UKt3GxZEm7XVlY5mh43dNZ0Vl4Sgo=" ,
-      "VjNMXltjZUxxG0VPSB3y5nmYi0rq7gT8lsf4xRgPgUlRdiU2rek4dQ6UKt3"
-      "GxZEm7XVlY5mh43dNZ0Vl48SgObVjNMXltjZUxxG0PA=="               ,
-      "3Tiz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5vxF7"                ,
-      "T6Fe5avx7t03"                                                ,
-      "hnfReX4WnEec3LV6Vng="                                        ,
-      "6Fe5avxF7t03Tiz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5avxF7t0"
-      "3Tiz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5avxF7t03Tiz23vhq62"  ,
-      "iz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5avxF7t03Tiz23vyhq62f"
-      "Oe0jccZ4bNmQkg3w60Zw=="
+      "MJ854s7FwL0X8WGe0HLacMK5G09gTb1MJg==",
+      "PSB3y5nmYi0rq7gT8lsf4xRgPgUldiI=",
+      "6Fe5avxF7t03Tiz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5avxF7t03Tiz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5avxF7t03Tiz23vhq62",
+      "5G09gTb1MJ854s7FwL0X8WGe0HLacMK5G09gTb1MJ854s7FwLA==",
+      "tMmmUQ5X2trgPnZfp5gCZktMmmUQ5X2trgPnZfp5gCZktMmmUQc=",
+      "ktMmmUQ5X2trgPnZfp5gCZktMmmUQ5X2trgPnZfp5gCZ",
+      "iz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5avxF7t03Tiz23vyhq62fOe0jccZ4bNmQkg3w60Zw==",
+      "Q5X2trgPnZfp5gCZktMmmUQ5X2trgPnZfp5gCZktMmmUQ5X2trgPnZ0=",
+      "3Tiz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5vxF7",
+      "Zfp5gCZktMmmUA=="
     };
 
     DOMString anyURISamples[CNT_SAMPLES] = {
@@ -186,11 +181,10 @@ namespace XMLSchema
       "xs:boolean"         , "ns2:aFont"
     };
 
-    //FIXME: need to revisit to get good samples
     DOMString NOTATIONSamples[CNT_SAMPLES] = {
-      "xsi:schemaLocation" , "ds:KeyInfoType"  , "xsd:hexBinary" , "xsl:choose",
-      "anElementName"      , "anAttributeName" , "xsl:when"      , "ns1:xInt"  ,
-      "xs:boolean"         , "ns2:aFont"
+      "audio:wav"  , "audio:mp4"  , "audio:flv"  , "video:mp4"  ,
+      "video:flv"  , "video:avi"  , "video:rm"   , "image:tiff" ,
+      "image:jpg"  , "image:png"
     };
 
     DOMString  normalizedStringSamples[CNT_SAMPLES] = {
@@ -204,8 +198,8 @@ namespace XMLSchema
     DOMString  tokenSamples[CNT_SAMPLES] = {
       "electronic mailing list"    , "the great wall of china" , "Isaac Newton"    ,
       "a thick forest"             , "James Bond"              , "Albert Einstein" ,
-      "frequently asked questions" , "xml schema"              , "abstract domain" ,
-      "errata"
+      "frequently asked questions" , "xml schema"              , "I was written on"
+      " two lines" , " path of installation "
     };
 
     DOMString  languageSamples[CNT_SAMPLES] = {
@@ -214,8 +208,8 @@ namespace XMLSchema
     };
 
     DOMString  NMTOKENSamples[CNT_SAMPLES] = {
-      "9216735"   , ":tabe"     , "-path"        , ".dirstamp" , "_filename",
-      "gregorian" , "1-10-2011" , "_anotherPath" , ".vimrc"    , "options"
+      "007"   , "1000_000"     , "  starts_with_a_space"   , "electronic_mailing_list" , "_aFileName",
+      "gregorian" , "1-10-2011" , "path_of_installation" , ".vimrc"    , "xml-schema"
     };
 
     DOMString  NMTOKENSSamples[CNT_SAMPLES] = {
@@ -228,17 +222,17 @@ namespace XMLSchema
       ":e :tabe"                             ,
       ". common.sh"                          ,
       "options: --help --version"            , 
-      "979005545  979005546 979005547"
+      "1000  1000_000 1000_000_000"
     };
 
     DOMString  NameSamples[CNT_SAMPLES] = {
-      ":colonName"  , "noColonName"  , "name1" , "name2" , "name3" ,
-      ":colonName2" , "noColonName2" , "name4" , "name5" , "name6"
+      ":colonName"  , "ns2:attr1"  , "foo.bar" , "ns2:attr2" , "bar-baz" ,
+      ":colonName2" , "ns1:elem1" , "noNumChar_AlphaNumChar" , "foo.bar.baz" , "ns1:elem2"
     };
     
     DOMString  NCNameSamples[CNT_SAMPLES] = {
-      "noColonName" , "noColonName2", "name1", "name2", "name3",
-      "noColonName3", "noColonName4", "name4", "name5", "name6"
+      "colon-name" , "ns_colon_localName", "_a.name", "foo", "foo_bar.baz",
+      "ns2.colon.localName2", "noColonName4", "colon_name", "noColon_noSpace_name", "aName"
     };
 
     DOMString  IDSamples[CNT_SAMPLES] = {
@@ -388,81 +382,34 @@ namespace XMLSchema
       return getRandomSampleStringOfLength(length, charSet);
     }
 
-/*
-  base64Binary : analysis of parts of the regex:
-    ((([A-Za-z0-9+/]\\s?){4})*(([A-Za-z0-9+/]\\s?){3}[A-Za-z0-9+/]|([A-Za-z0-9+/]\\s?){2}[AEIMQUYcgkosw048]\\s?=|[A-Za-z0-9+/]\\s?[AQgw]\\s?=\\s?=))?           
 
-  1) Prefix with occurence as series : 0, 4, 8, 12, ...
-      pattern :  ([A-Za-z0-9+/]\s?){4})*
-      example :  bn10
 
-  2) Suffix with fixed length = 4, with 3 options of regexes
+  /***************************************************
 
-    a) option 1 
-      pattern : ([A-Za-z0-9+/]\s?){3}[A-Za-z0-9+/]
-      example : "asd9", "a sd9", "a s d9", "a s d 9"
+    base64Binary - analysis of parts of the regex :
+    ===============================================
+ 
+    Regex: ((([A-Za-z0-9+/]\\s?){4})*(([A-Za-z0-9+/]\\s?){3}[A-Za-z0-9+/]|([A-Za-z0-9+/]\\s?){2}[AEIMQUYcgkosw048]\\s?=|[A-Za-z0-9+/]\\s?[AQgw]\\s?=\\s?=))?           
 
-    b) option 2 
-      pattern : ([A-Za-z0-9+/]\s?){2}[AEIMQUYcgkosw048]\s?=
-      example : "asw=", "a s w =" 
+    1) Prefix with occurence as series : 0, 4, 8, 12, ...
+        pattern :  ([A-Za-z0-9+/]\s?){4})*
+        example :  bn10
 
-    c) option 3
-      pattern : [A-Za-z0-9+/]\s?[AQgw]\s?=\s?=
-      example : "aw==", "a w = ="
-*/
-    // each base64Binary char is a 6 bits block
-    // 3 octets = 4 base64Binary chars
-    DOMString getRandomSampleBase64StringOfLexLength(int lexLen)
-    {
-      // first 4 chars of base64BinaryCharSet that are optional 
-      // if lexLen <= 4
-      static  DOMString base64Optional4CharSet = "abcdefghijklmnopqrstuvwxyz"
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789+/";
-      // lexical length should be a multiple of 4
-      assert(lexLen%4 == 0);
-      
-      int factor = lexLen/4;
-      DOMString prefix="", suffix="";
+    2) Suffix with fixed length = 4, with 3 options of regexes
 
-      // keep 4 base64 chars from the fixed 3 options as suffix
-      // rest chars come from optional-unbounded prefix regex
-      int prefixLen = ((factor >= 1) ? (factor-1)*4 : 0);
-      if(prefixLen > 0) {
-        prefix = getRandomSampleStringOfLength(prefixLen, base64Optional4CharSet);
-      }
+      a) option 1 
+        pattern : ([A-Za-z0-9+/]\s?){3}[A-Za-z0-9+/]
+        example : "asd9", "a sd9", "a s d9", "a s d 9"
 
-      // generate random suffix
-      int idxSuffixOption = nonnegativeIntegerRandom(3);
-      switch(idxSuffixOption)
-      {
-        case 0:
-        {
-          suffix = getRandomSampleStringOfLength(4, base64Optional4CharSet);
-        }
-        break;
+      b) option 2 
+        pattern : ([A-Za-z0-9+/]\s?){2}[AEIMQUYcgkosw048]\s?=
+        example : "asw=", "a s w =" 
 
-        case 1:
-        {
-          static DOMString suffixCharSet2b = "AEIMQUYcgkosw048";
-          DOMString suffix1 = getRandomSampleStringOfLength(2, base64Optional4CharSet);
-          DOMString suffix2 = getRandomSampleStringOfLength(1, suffixCharSet2b);
-          suffix = suffix1 + suffix2 + "=";
-        }
-        break;
+      c) option 3
+        pattern : [A-Za-z0-9+/]\s?[AQgw]\s?=\s?=
+        example : "aw==", "a w = ="
 
-        case 2:
-        default:
-        {
-          static DOMString suffixCharSet2c = "AQgw";
-          DOMString suffix1 = getRandomSampleStringOfLength(1, base64Optional4CharSet);
-          DOMString suffix2 = getRandomSampleStringOfLength(1, suffixCharSet2c);
-          suffix = suffix1 + suffix2 + "==";
-        }
-        break;
-      }
-      
-      return prefix+suffix;
-    }
+  *****************************************************/
 
     int base64OctetLenToLexLen(int octetLen)
     {
@@ -470,6 +417,7 @@ namespace XMLSchema
     }
     
     // length := floor (length(lex3) * 3 / 4)  
+    // lexLen should have whitespace stripped and padding removed
     int base64LexLenToOctetLen(int lexLen)
     {
       return floor(lexLen/4)*3;
@@ -477,38 +425,68 @@ namespace XMLSchema
 
     DOMString getRandomSampleBase64StringOfLength(int octetLen)
     {
-      int lexLen = base64OctetLenToLexLen(octetLen);
-      assert(lexLen%4 == 0);
-      return getRandomSampleBase64StringOfLexLength(lexLen);
+      // first 4 chars of base64BinaryCharSet that are optional 
+      // if lexLen <= 4
+      static  DOMString base64Optional4CharSet = "abcdefghijklmnopqrstuvwxyz"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789+/";
+
+      DOMString prefix="", suffix="";
+      int lastGroupOctets = octetLen%3;
+      int prefixLen = (octetLen - lastGroupOctets)*4/3;  
+      if(prefixLen > 0) {
+        prefix = getRandomSampleStringOfLength(prefixLen, base64Optional4CharSet);
+      }
+
+      switch(lastGroupOctets)
+      {
+        case 0:
+            suffix = "";
+          break;
+
+        case 2:
+          {
+            static DOMString suffixCharSet2b = "AEIMQUYcgkosw048";
+            DOMString suffix1 = getRandomSampleStringOfLength(2, base64Optional4CharSet);
+            DOMString suffix2 = getRandomSampleStringOfLength(1, suffixCharSet2b);
+            suffix = suffix1 + suffix2 + "=";
+          }
+          break;
+
+        case 1:
+          {
+            static DOMString suffixCharSet2c = "AQgw";
+            DOMString suffix1 = getRandomSampleStringOfLength(1, base64Optional4CharSet);
+            DOMString suffix2 = getRandomSampleStringOfLength(1, suffixCharSet2c);
+            suffix = suffix1 + suffix2 + "==";
+          }
+          break;
+        
+        default:
+          suffix="";
+          break;
+      }
+      return prefix+suffix;
     }
     
     DOMString getRandomSampleBase64StringOfLengthRange(int minOctetLen, int maxOctetLen)
     {
-      // example: 
-      // minLength=3   maxLength=9
-      // minLexLen=4   maxLexLen=12 
-      int minFactor = ceil(minOctetLen/3);
-      int maxFactor = ceil(maxOctetLen/3);
-      int randFactor = integerRandomInRange(minFactor, maxFactor+1);
-      return getRandomSampleBase64StringOfLexLength(randFactor*4);
+      int randLen = integerRandomInRange(minOctetLen, maxOctetLen+1);
+      return getRandomSampleBase64StringOfLength(randLen);
     }
 
     DOMString getRandomSampleBase64StringOfMinLength(int minOctetLen)
     {
-      int minFactor = ceil(minOctetLen/3);
-      //lets take unbounded maxFactor as minFactor + some-constant
-      int maxFactor = minFactor + 40;
-      int randFactor = integerRandomInRange(minFactor, maxFactor+1);
-      return getRandomSampleBase64StringOfLexLength(randFactor*4);
+      //lets take unbounded maxOctetLen as minOctetLen + some-constant
+      int maxOctetLength = minOctetLen + 40;
+      int randLen = integerRandomInRange(minOctetLen, maxOctetLength+1);
+      return getRandomSampleBase64StringOfLength(randLen);
     }
     
     DOMString getRandomSampleBase64StringOfMaxLength(int maxOctetLen)
     {
-      //lets take unbounded maxFactor as minFactor+6
-      int maxFactor = ceil(maxOctetLen/3);
-      int minFactor = 0;
-      int randFactor = integerRandomInRange(minFactor, maxFactor+1);
-      return getRandomSampleBase64StringOfLexLength(randFactor*4);
+      int minOctetLen = 0;
+      int randLen = integerRandomInRange(minOctetLen, maxOctetLen+1);
+      return getRandomSampleBase64StringOfLength(randLen);
     }
 
     DOMString getRandomSampleDouble(double minIncl, double maxIncl)

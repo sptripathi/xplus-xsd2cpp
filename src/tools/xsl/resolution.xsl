@@ -1,3 +1,25 @@
+
+<!--
+// This file is part of XmlPlus package
+// 
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
+//
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+-->
+
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:exsl="http://exslt.org/common"
@@ -289,26 +311,8 @@ Schema Component: Element Declaration, a kind of Term
   </xsl:variable>
 
 
-  <!--
-  <xsl:message>
-  |resolvedType=<xsl:value-of select="$resolvedType"/>|localName=<xsl:value-of select="local-name($node)"/>|name=<xsl:value-of select="$node/@name"/>|type=<xsl:value-of select="$node/@type"/>|ref=<xsl:value-of select="$node/@ref"/>|
-  </xsl:message>
-  -->
-
-
   <!-- assert that resolvedType is one of false, simpleType, complexType -->
   <xsl:if test="$resolvedType!='simpleTypeDefinition' and $resolvedType!='complexTypeDefinition' and $resolvedType!='false'">
-
-    <!-- TODO: remove later
-    <xsl:call-template name="print_xml_variable">
-      <xsl:with-param name="xmlVar" select="$typeDefinition"/>
-      <xsl:with-param name="filePath" select="'/tmp/error0.xml'"/>
-    </xsl:call-template>
-    <xsl:call-template name="print_xml_variable">
-      <xsl:with-param name="xmlVar" select="$elemAttrResolution"/>
-      <xsl:with-param name="filePath" select="'/tmp/error.xml'"/>
-    </xsl:call-template>
-    -->
 
     <xsl:call-template name="T_found_a_bug">
       <xsl:with-param name="errorCode" select="1001"/>
@@ -371,8 +375,6 @@ Schema Component: Element Declaration, a kind of Term
 
 
 
-
-
 <!--
     returns resolution:
     (structure varies for simpleType and complexType)
@@ -387,12 +389,6 @@ Schema Component: Element Declaration, a kind of Term
   <xsl:variable name="resolution"> 
     <xsl:choose>
       <xsl:when test="$documentName!=''">
-      <!--
- <xsl:message>   
- // CASE1 <xsl:value-of select="$documentName"/> 
- </xsl:message>   
- -->
-
         <xsl:apply-templates select="document($documentName)" mode="RESOLVE_TYPELOCALPART_TYPENSURI">
           <xsl:with-param name="typeLocalPart" select="$typeLocalPart"/>
           <xsl:with-param name="typeNsUri" select="$typeNsUri"/>
@@ -1773,7 +1769,16 @@ Schema Component: Simple Type Definition, a kind of Type Definition
                 </xsl:call-template>
               </final>
               <baseTypeDef><xsl:copy-of select="$nodeBaseTypeDefinition"/></baseTypeDef>
-              <primTypeDef><xsl:copy-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/primTypeDef/*"/></primTypeDef>
+              <primTypeDef>
+                <xsl:choose>
+                  <xsl:when test="$nodeBaseTypeDefinition/simpleTypeDefinition/primTypeDef/self">
+                    <xsl:copy-of select="$nodeBaseTypeDefinition/*"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:copy-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/primTypeDef/*"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </primTypeDef>
               <facets>TODO</facets>
               <fundamentalFacets>TODO</fundamentalFacets>
               <implType><xsl:value-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/implType"/></implType>
@@ -1809,7 +1814,16 @@ Schema Component: Simple Type Definition, a kind of Type Definition
                     </xsl:call-template>
                   </final>
                   <baseTypeDef><xsl:copy-of select="$inlineSimpleTypeDef"/></baseTypeDef>
-                  <primTypeDef><xsl:copy-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/primTypeDef/*"/></primTypeDef>
+                  <primTypeDef>
+                    <xsl:choose>
+                      <xsl:when test="$nodeBaseTypeDefinition/simpleTypeDefinition/primTypeDef/self">
+                        <xsl:copy-of select="$nodeBaseTypeDefinition/*"/>
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <xsl:copy-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/primTypeDef/*"/>
+                      </xsl:otherwise>
+                    </xsl:choose>
+                  </primTypeDef>
                   <facets>TODO</facets>
                   <fundamentalFacets>TODO</fundamentalFacets>
                   <implType><xsl:value-of select="$nodeBaseTypeDefinition/simpleTypeDefinition/implType"/></implType>

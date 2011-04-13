@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011 Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -33,10 +33,9 @@ namespace XMLSchema
 {
   namespace Sampler
   {
-    const extern DOMString alphabets;
-    const extern DOMString hexCharSet;
+    const extern DOMString alphaCharSet;
+    const extern DOMString alphaNumCharSet;
     const extern DOMString hexBinaryCharSet;
-    const extern DOMString base64BinaryCharSet;
 
     extern DOMString stringSamples[CNT_SAMPLES];
     extern DOMString booleanSamples[CNT_SAMPLES];
@@ -83,14 +82,13 @@ namespace XMLSchema
     extern DOMString languageSamples[CNT_SAMPLES];
     extern DOMString tokenSamples[CNT_SAMPLES];
 
-    DOMString getRandomSampleStringOfLengthRange(int minLength, int maxLength, DOMString charSet=alphabets);
-    DOMString getRandomSampleStringOfMinLength(int minLength, DOMString charSet=alphabets);
-    DOMString getRandomSampleStringOfMaxLength(int maxLength, DOMString charSet=alphabets);
-    DOMString getRandomSampleStringOfLength(int length, DOMString charSet=alphabets);
+    DOMString getRandomSampleStringOfLengthRange(int minLength, int maxLength, DOMString charSet=alphaCharSet);
+    DOMString getRandomSampleStringOfMinLength(int minLength, DOMString charSet=alphaCharSet);
+    DOMString getRandomSampleStringOfMaxLength(int maxLength, DOMString charSet=alphaCharSet);
+    DOMString getRandomSampleStringOfLength(int length, DOMString charSet=alphaCharSet);
 
     int base64OctetLenToLexLen(int octetLen);
     int base64LexLenToOctetLen(int lexLen);
-    DOMString getRandomSampleBase64StringOfLexLength(int lexLen);
     DOMString getRandomSampleBase64StringOfLength(int length);
     DOMString getRandomSampleBase64StringOfLengthRange(int minLength, int maxLength);
     DOMString getRandomSampleBase64StringOfMinLength(int minLength);

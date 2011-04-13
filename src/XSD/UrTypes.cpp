@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -190,7 +190,8 @@ namespace XMLSchema
       }
 
       if( (contentTypeVariety() == CONTENT_TYPE_VARIETY_EMPTY) &&
-          !value.matchCharSet(UTF8FNS::isSpaceChar) // FIXME: is space allowed for empty content????
+          !value.matchCharSet(UTF8FNS::isSpaceChar) 
+          // FIXME: is space allowed for empty content????
         )
       {
         ostringstream err;
@@ -239,23 +240,6 @@ namespace XMLSchema
         throw ex;
       }
     }
-
-    /*
-    void anyType::fixedValue(DOMString value) 
-    {
-      try
-      {
-        checkContentType(value);
-        _value = value;
-        createTextNodeOnSetValue(value);
-      }
-      catch(XPlus::Exception& ex)
-      {
-        ex.setContext("element", *this->ownerElement()->getNodeName());
-        throw ex;
-      }
-    }
-    */
 
     //
     // _isDefaultText is set to true only in this function
@@ -382,8 +366,8 @@ namespace XMLSchema
         }
         else {
           // this textNode would not get added to DOM ... heppens in following cases:
-          // * SimpleTypeListTmpl::stringValue -- harmless here
-          // * ...
+          // - SimpleTypeListTmpl::stringValue -- harmless here
+          // - ...
           valueNode = new TextNode(valuePtr, this->ownerDocument(), NULL);
         }
         _textNodes.push_back(valueNode);
@@ -593,11 +577,6 @@ namespace XMLSchema
       XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_END);
       if(_fsm) {
         _fsm->processEventThrow(event);
-      }
-      else 
-      {
-        //FIXME
-        //throw XMLSchema::FSMException("Found end-of-Element of a child-element while no child-element expected");
       }
     }
 
@@ -1277,7 +1256,6 @@ namespace XMLSchema
       ValidationException ex("node value violates the facet. ");
       ex.appendMsg(msg);
       ex.setContext("facet", enumToStringCFacet(facetType));
-      ex.setContext("facet", enumToStringCFacet(facetType));
       ex.setContext("primitive-type",  g_primitivesStr[_primitiveType]);
       ex.setContext("expected facet-value",  getCFacet(facetType).stringValue());
       if(foundFacetValue != "") {
@@ -1486,7 +1464,94 @@ namespace XMLSchema
         throwFacetViolation(CF_FRACTIONDIGITS, toString<unsigned int>(cntFractionDigits));
       }
     }
-        
+    
+    DOMString anySimpleType::generateSampleHexBinary(DOMString *arrSamples)
+    {
+      if(isLengthCFacetSet()) {
+        DOMString sample = Sampler::getRandomSampleStringOfLength(_lengthCFacet.value(),
+            Sampler::hexBinaryCharSet);  
+        sample += sample;
+        return sample;
+      }
+      if(isMinLengthCFacetSet() && isMaxLengthCFacetSet()) {
+        DOMString sample = Sampler::getRandomSampleStringOfLengthRange(_minLengthCFacet.value(),
+            _maxLengthCFacet.value(),
+            Sampler::hexBinaryCharSet);  
+        sample += sample;
+        return sample;
+      }
+      else if(isMinLengthCFacetSet()) {
+        DOMString sample = Sampler::getRandomSampleStringOfMinLength(_minLengthCFacet.value(),
+            Sampler::hexBinaryCharSet);  
+        sample += sample;
+        return sample;
+      }
+      else if(isMaxLengthCFacetSet()) {
+        DOMString sample = Sampler::getRandomSampleStringOfMaxLength(_maxLengthCFacet.value(),
+            Sampler::hexBinaryCharSet);  
+        sample += sample;
+        return sample;
+      }
+      return Sampler::getRandomSample(arrSamples);
+    }
+
+
+    DOMString anySimpleType::generateSampleBase64Binary(DOMString *arrSamples)
+    {
+      if(isLengthCFacetSet()) {
+        return Sampler::getRandomSampleBase64StringOfLength(_lengthCFacet.value());
+      }
+      if(isMinLengthCFacetSet() && isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleBase64StringOfLengthRange(_minLengthCFacet.value(), _maxLengthCFacet.value());
+      }
+      else if(isMinLengthCFacetSet()) {
+        return Sampler::getRandomSampleBase64StringOfMinLength(_minLengthCFacet.value());
+      }
+      else if(isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleBase64StringOfMaxLength(_maxLengthCFacet.value());
+      }
+      return Sampler::getRandomSample(arrSamples);
+    }
+
+    DOMString anySimpleType::generateSampleString(DOMString *arrSamples)
+    {
+      if(isLengthCFacetSet()) {
+        return Sampler::getRandomSampleStringOfLength(_lengthCFacet.value());
+      }
+      if(isMinLengthCFacetSet() && isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleStringOfLengthRange(_minLengthCFacet.value(), _maxLengthCFacet.value());
+      }
+      else if(isMinLengthCFacetSet()) {
+        return Sampler::getRandomSampleStringOfMinLength(_minLengthCFacet.value());
+      }
+      else if(isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleStringOfMaxLength(_maxLengthCFacet.value());
+      }
+      return Sampler::getRandomSample(arrSamples);
+    }
+
+    DOMString anySimpleType::generateSampleDecimal(DOMString *arrSamples)
+    {
+      long long maxIncl = 1000000;
+      long long minIncl = -100000;
+
+      if(isMaxExclusiveCFacetSet()) {
+        maxIncl = static_cast<long long>(_maxExclusiveCFacetDouble.value()-1); 
+      }
+      else if(isMaxInclusiveCFacetSet()) {
+        maxIncl = static_cast<long long>(_maxInclusiveCFacetDouble.value());
+      }
+
+      if(isMinExclusiveCFacetSet()) {
+        minIncl = static_cast<long long>(_minExclusiveCFacetDouble.value()+1); 
+      }
+      else if(isMinInclusiveCFacetSet()) {
+        minIncl = static_cast<long long>(_minInclusiveCFacetDouble.value()); 
+      }
+      return Sampler::getRandomSampleLong(minIncl, maxIncl);
+      //return Sampler::getRandomSample(arrSamples);
+    }
+
     DOMString anySimpleType::generateSample(DOMString *arrSamples)
     {
       if(isEnumerationCFacetSet())
@@ -1495,76 +1560,23 @@ namespace XMLSchema
         return Sampler::getRandomSample(enumStrings);
       }
       
-      if(_primitiveType == PD_HEXBINARY)
+      switch(_primitiveType)
       {
-        if(isLengthCFacetSet()) {
-          DOMString sample = Sampler::getRandomSampleStringOfLength(_lengthCFacet.value(),
-                                                        Sampler::hexBinaryCharSet);  
-          sample += sample;
-          return sample;
-        }
-        if(isMinLengthCFacetSet() && isMaxLengthCFacetSet()) {
-          DOMString sample = Sampler::getRandomSampleStringOfLengthRange(_minLengthCFacet.value(),
-                                                    _maxLengthCFacet.value(),
-                                                    Sampler::hexBinaryCharSet);  
-          sample += sample;
-          return sample;
-        }
-        else if(isMinLengthCFacetSet()) {
-          DOMString sample = Sampler::getRandomSampleStringOfMinLength(_minLengthCFacet.value(),
-                                                  Sampler::hexBinaryCharSet);  
-          sample += sample;
-          return sample;
-        }
-        else if(isMaxLengthCFacetSet()) {
-          DOMString sample = Sampler::getRandomSampleStringOfMaxLength(_maxLengthCFacet.value(),
-                                                  Sampler::hexBinaryCharSet);  
-          sample += sample;
-          return sample;
-        }
+        case PD_STRING:
+          return generateSampleString(arrSamples);
+
+        case PD_DECIMAL:
+          return generateSampleDecimal(arrSamples);
+
+        case PD_HEXBINARY:
+          return generateSampleHexBinary(arrSamples);
+
+        case PD_BASE64BINARY:
+          return generateSampleBase64Binary(arrSamples);
+
+        default:
+          return Sampler::getRandomSample(arrSamples);
       }
-
-      if(_primitiveType == PD_BASE64BINARY)
-      {
-        if(isLengthCFacetSet()) {
-          return Sampler::getRandomSampleBase64StringOfLength(_lengthCFacet.value());
-        }
-        if(isMinLengthCFacetSet() && isMaxLengthCFacetSet()) {
-          return Sampler::getRandomSampleBase64StringOfLengthRange(_minLengthCFacet.value(), _maxLengthCFacet.value());
-        }
-        else if(isMinLengthCFacetSet()) {
-          return Sampler::getRandomSampleBase64StringOfMinLength(_minLengthCFacet.value());
-        }
-        else if(isMaxLengthCFacetSet()) {
-          return Sampler::getRandomSampleBase64StringOfMaxLength(_maxLengthCFacet.value());
-        }
-      }
-
-
-      if(_primitiveType == PD_DECIMAL)
-      {
-        long long maxIncl = 1000000;
-        long long minIncl = -100000;
-
-        if(isMaxExclusiveCFacetSet()) {
-          maxIncl = static_cast<long long>(_maxExclusiveCFacetDouble.value()-1); 
-        }
-        else if(isMaxInclusiveCFacetSet()) {
-          maxIncl = static_cast<long long>(_maxInclusiveCFacetDouble.value());
-        }
-        
-        if(isMinExclusiveCFacetSet()) {
-          minIncl = static_cast<long long>(_minExclusiveCFacetDouble.value()+1); 
-        }
-        else if(isMinInclusiveCFacetSet()) {
-          minIncl = static_cast<long long>(_minInclusiveCFacetDouble.value()); 
-        }
-
-        return Sampler::getRandomSampleLong(minIncl, maxIncl);
-      }
-
-      // default
-      return Sampler::getRandomSample(arrSamples);
     }
 
         

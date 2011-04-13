@@ -391,7 +391,7 @@ libxsdall_la_SOURCES = \
 libxsdall_la_LDFLAGS = -lpthread -lexpat
 
 # xsd2cpp
-dist_bin_SCRIPTS = tools/xsd2cpp
+dist_bin_SCRIPTS = tools/xsd2cpp tools/checkForUpgrades-xmlplus
 nobase_dist_data_DATA = tools/resources/configure.ac \
                        tools/resources/Makefile.am.src \
                        tools/resources/Makefile.am.include \
