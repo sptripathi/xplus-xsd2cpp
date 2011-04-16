@@ -753,7 +753,13 @@ namespace XMLSchema
     void anySimpleType::endElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)
     {
       anyType::endElementNS(nsUri, nsPrefix, localName);
-      if( (_textNodes.size()==0) && (_primitiveType != PD_STRING) && (_primitiveType != PD_BASE64BINARY) && (_primitiveType != PD_HEXBINARY) ) 
+      if( (_textNodes.size()==0) 
+          && (_primitiveType != PD_STRING)
+          && (_primitiveType != PD_BASE64BINARY) 
+          && (_primitiveType != PD_HEXBINARY) 
+          && (_primitiveType != PD_ANYURI) 
+          && (_primitiveType != PD_QNAME) 
+        ) 
       {
         ostringstream err;
         err << "empty value for : " << formatNamespaceName(XsdEvent::ELEMENT_START, nsUri, *localName);
@@ -1549,7 +1555,24 @@ namespace XMLSchema
         minIncl = static_cast<long long>(_minInclusiveCFacetDouble.value()); 
       }
       return Sampler::getRandomSampleLong(minIncl, maxIncl);
-      //return Sampler::getRandomSample(arrSamples);
+    }
+
+
+    DOMString anySimpleType::generateSampleAnyURI(DOMString *arrSamples)
+    {
+      if(isLengthCFacetSet()) {
+        return Sampler::getRandomSampleAnyURIOfLength(_lengthCFacet.value());
+      }
+      if(isMinLengthCFacetSet() && isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleAnyURIOfLengthRange(_minLengthCFacet.value(), _maxLengthCFacet.value());
+      }
+      else if(isMinLengthCFacetSet()) {
+        return Sampler::getRandomSampleAnyURIOfMinLength(_minLengthCFacet.value());
+      }
+      else if(isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleAnyURIOfMaxLength(_maxLengthCFacet.value());
+      }
+      return Sampler::getRandomSample(arrSamples);
     }
 
     DOMString anySimpleType::generateSample(DOMString *arrSamples)
@@ -1559,6 +1582,8 @@ namespace XMLSchema
         vector<DOMString> enumStrings = _enumerationCFacet.value();
         return Sampler::getRandomSample(enumStrings);
       }
+
+      //FIXME: if fixed used fixed value
       
       switch(_primitiveType)
       {
@@ -1573,6 +1598,9 @@ namespace XMLSchema
 
         case PD_BASE64BINARY:
           return generateSampleBase64Binary(arrSamples);
+
+        case PD_ANYURI:
+          return generateSampleAnyURI(arrSamples);
 
         default:
           return Sampler::getRandomSample(arrSamples);

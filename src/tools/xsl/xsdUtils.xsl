@@ -1518,7 +1518,14 @@ namespace <xsl:value-of select="$nsStr"/>{
           </xsl:call-template>
         </xsl:variable>
         <xsl:if test="normalize-space($resolution)='false'"> 
-          <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">Could not resolve "<xsl:if test="$typeNsUri!=''">{<xsl:value-of select="$typeNsUri"/>}</xsl:if><xsl:value-of select="$typeLocalPart"/>" to any type-definition in either the schema-document or in any imported/included schema-documents</xsl:with-param></xsl:call-template>
+          <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">Could not resolve "<xsl:if test="$typeNsUri!=''">{<xsl:value-of select="$typeNsUri"/>}</xsl:if><xsl:value-of select="$typeLocalPart"/>" to any type-definition in either the schema-document or in any imported/included schema-documents
+
+   Check following:
+   * have you missed a namespace-prefix in the qualified-name (eg. using 'localName' instead of ns1:localName) ?
+   * did you forget to include or import a schema document in which the above definition is found ?
+   * have you checked the target-namespace uri of the schema documents involved ?
+   * have you misspelt the qualified-name ?
+          </xsl:with-param></xsl:call-template>
         </xsl:if>
         <xsl:if test="local-name()='element'">XMLSchema::XmlElement</xsl:if><xsl:if test="local-name()='attribute'">XMLSchema::XmlAttribute</xsl:if>&lt;<xsl:value-of select="$typeCppNS"/>::Types::<xsl:value-of select="$cppTypeLocalPart"/>&gt;
       </xsl:when>
@@ -1533,7 +1540,14 @@ namespace <xsl:value-of select="$nsStr"/>{
           </xsl:call-template>
         </xsl:variable>
         <xsl:if test="normalize-space($resolution)='false'"> 
-          <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">Could not resolve "<xsl:if test="$typeNsUri!=''">{<xsl:value-of select="$typeNsUri"/>}</xsl:if><xsl:value-of select="$typeLocalPart"/>" to any "<xsl:value-of select="local-name()"/>" definition in either the schema-document or in any imported/included schema-documents</xsl:with-param></xsl:call-template>
+          <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">Could not resolve "<xsl:if test="$typeNsUri!=''">{<xsl:value-of select="$typeNsUri"/>}</xsl:if><xsl:value-of select="$typeLocalPart"/>" to any "<xsl:value-of select="local-name()"/>" definition in either the schema-document or in any imported/included schema-documents.
+
+    Check following:
+    * have you missed a namespace-prefix in the qualified-name (eg. using 'localName' instead of ns1:localName) ?
+    * did you forget to include or import a schema document in which the above definition is found ?
+    * have you checked the target-namespace uri of the schema documents involved ?
+    * have you misspelt the qualified-name ?
+          </xsl:with-param></xsl:call-template>
         </xsl:if>
         <xsl:value-of select="$typeCppNS"/>::<xsl:value-of select="$cppName"/>
       </xsl:when>
@@ -1570,6 +1584,12 @@ namespace <xsl:value-of select="$nsStr"/>{
             <xsl:call-template name="T_terminate_with_msg">
               <xsl:with-param name="msg">
  Could not resolve type-definition of <xsl:value-of select="local-name()"/> "<xsl:value-of select="$expandedQName"/>" 
+
+    Check following:
+    * have you missed a namespace-prefix in the qualified-name (eg. using 'localName' instead of ns1:localName) ?
+    * did you forget to include or import a schema document in which the above definition is found ?
+    * have you checked the target-namespace uri of the schema documents involved ?
+    * have you misspelt the qualified-name ?
             </xsl:with-param>
             </xsl:call-template>
           </xsl:otherwise>
@@ -2267,7 +2287,14 @@ namespace <xsl:value-of select="$nsStr"/>{
     </xsl:call-template>
   </xsl:variable>
   <xsl:if test="normalize-space($resolvedType)='false'"> 
-    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">Could not resolve "<xsl:if test="$typeNsUri!=''">{<xsl:value-of select="$typeNsUri"/>}</xsl:if><xsl:value-of select="$typeLocalPart"/>" to any simple-type-definition in either the schema-document or in any imported/included schema-documents</xsl:with-param></xsl:call-template>
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">Could not resolve "<xsl:if test="$typeNsUri!=''">{<xsl:value-of select="$typeNsUri"/>}</xsl:if><xsl:value-of select="$typeLocalPart"/>" to any simple-type-definition in either the schema-document or in any imported/included schema-documents
+
+    Check following:
+    * have you missed a namespace-prefix in the qualified-name (eg. using 'localName' instead of ns1:localName) ?
+    * did you forget to include or import a schema document in which the above definition is found ?
+    * have you checked the target-namespace uri of the schema documents involved ?
+    * have you misspelt the qualified-name ?
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
   <xsl:variable name="cppType"><xsl:call-template name="T_get_cppType_simpleType"><xsl:with-param name="stName" select="$stName"/></xsl:call-template></xsl:variable>
   <xsl:value-of select="normalize-space($cppType)"/>
@@ -2314,7 +2341,14 @@ namespace <xsl:value-of select="$nsStr"/>{
     </xsl:call-template>
   </xsl:variable>
   <xsl:if test="normalize-space($resolution)='false'"> 
-    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">Could not resolve "<xsl:if test="$typeNsUri!=''">{<xsl:value-of select="$typeNsUri"/>}</xsl:if><xsl:value-of select="$typeLocalPart"/>" to any simple-type-definition or complex-type-definition in either the schema-document or in any imported/included schema-documents</xsl:with-param></xsl:call-template>
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">Could not resolve "<xsl:if test="$typeNsUri!=''">{<xsl:value-of select="$typeNsUri"/>}</xsl:if><xsl:value-of select="$typeLocalPart"/>" to any simple-type-definition or complex-type-definition in either the schema-document or in any imported/included schema-documents
+
+   Check following:
+   * have you missed a namespace-prefix in the qualified-name (eg. using 'localName' instead of ns1:localName) ?
+   * did you forget to include or import a schema document in which the above definition is found ?
+   * have you checked the target-namespace uri of the schema documents involved ?
+   * have you misspelt the qualified-name ?
+    </xsl:with-param></xsl:call-template>
   </xsl:if>
   
   <xsl:variable name="resolution_type">

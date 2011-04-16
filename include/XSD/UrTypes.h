@@ -503,6 +503,7 @@ namespace XMLSchema
         DOMString generateSampleBase64Binary(DOMString *arrSamples);
         DOMString generateSampleString(DOMString *arrSamples);
         DOMString generateSampleDecimal(DOMString *arrSamples);
+        DOMString generateSampleAnyURI(DOMString *arrSamples);
 
         virtual DOMString generateSample(DOMString *arrSamples);
         virtual void normalizeValue(DOMString& value);

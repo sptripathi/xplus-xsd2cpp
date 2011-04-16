@@ -87,12 +87,17 @@ namespace XMLSchema
     DOMString getRandomSampleStringOfMaxLength(int maxLength, DOMString charSet=alphaCharSet);
     DOMString getRandomSampleStringOfLength(int length, DOMString charSet=alphaCharSet);
 
-    int base64OctetLenToLexLen(int octetLen);
-    int base64LexLenToOctetLen(int lexLen);
     DOMString getRandomSampleBase64StringOfLength(int length);
     DOMString getRandomSampleBase64StringOfLengthRange(int minLength, int maxLength);
     DOMString getRandomSampleBase64StringOfMinLength(int minLength);
     DOMString getRandomSampleBase64StringOfMaxLength(int maxLength);
+    
+    DOMString getUrlSchemeSample(int len);
+    DOMString getUrnSchemeSample(int len);
+    DOMString getRandomSampleAnyURIOfLength(int len);
+    DOMString getRandomSampleAnyURIOfLengthRange(int minLen, int maxLen);
+    DOMString getRandomSampleAnyURIOfMinLength(int minLen);
+    DOMString getRandomSampleAnyURIOfMaxLength(int maxLen);
 
     DOMString getRandomSampleLong(Int64 minIncl, Int64 maxIncl);
     DOMString getRandomSampleDouble(double minIncl, double maxIncl);

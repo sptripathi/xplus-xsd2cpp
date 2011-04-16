@@ -336,6 +336,7 @@ namespace XMLSchema
       "55"  , "10" , "26"  , "10"  , "54"
     };
    
+    //~~~~~~~~~~~~~~  generic string  samplers  ~~~~~~~~~~~~
 
     DOMString getRandomSample(vector<DOMString> samples)
     {
@@ -382,6 +383,7 @@ namespace XMLSchema
       return getRandomSampleStringOfLength(length, charSet);
     }
 
+    //~~~~~~~~~~~~~~  base64Binary  ~~~~~~~~~~~~
 
 
   /***************************************************
@@ -411,6 +413,7 @@ namespace XMLSchema
 
   *****************************************************/
 
+/*
     int base64OctetLenToLexLen(int octetLen)
     {
       return ceil(octetLen/3)*4;
@@ -422,7 +425,7 @@ namespace XMLSchema
     {
       return floor(lexLen/4)*3;
     }
-
+*/
     DOMString getRandomSampleBase64StringOfLength(int octetLen)
     {
       // first 4 chars of base64BinaryCharSet that are optional 
@@ -488,7 +491,107 @@ namespace XMLSchema
       int randLen = integerRandomInRange(minOctetLen, maxOctetLen+1);
       return getRandomSampleBase64StringOfLength(randLen);
     }
+    
+    //~~~~~~~~~~~~~~  anyURI  ~~~~~~~~~~~~
 
+    // For anyURI, length is measured in units of characters (as for string).
+    // Such a character does not always map to one octet.
+
+    // "http://example.com"           : 18
+    // "http://example.com/"          : 19
+    // "http://www.example.com"       : 22
+    // "http://www.example.com/"      : 23
+    DOMString getUrlSchemeSample(int len)
+    {
+      // len 18
+      static DOMString example_urls[] = {
+        "http://example.com",
+        "http://example.org",
+        "http://example.net"
+      };
+
+      // len 22
+      static DOMString www_example_urls[] = {
+        "http://www.example.com",
+        "http://www.example.org",
+        "http://www.example.net"
+      };
+
+      assert(len>=18);
+      int toss = nonnegativeIntegerRandom(3);
+
+      if(len == 18)
+      {
+        return example_urls[toss];
+      }
+      else if(len < 22) 
+      {
+        int suffixLen = len -19;
+        DOMString suffix = getRandomSampleStringOfLength(suffixLen, alphaCharSet); 
+        return example_urls[toss] + "/" + suffix;        
+      }
+      else if(len == 22)
+      {
+        return www_example_urls[toss];
+      }
+      else
+      {
+        int suffixLen = len - 23;
+        DOMString suffix = getRandomSampleStringOfLength(suffixLen, alphaCharSet); 
+        return www_example_urls[toss] + "/" + suffix;        
+      }
+    }
+
+    // "urn:"   : 4
+    DOMString getUrnSchemeSample(int len)
+    {
+      assert(len > 4);
+      return DOMString("urn:") + getRandomSampleStringOfLength(len-4, alphaCharSet);
+    }
+
+    DOMString getRandomSampleAnyURIOfLength(int len)
+    {
+      if(len >= 18) {
+        return getUrlSchemeSample(len);
+      }
+      else if(len > 4) {
+        return getUrnSchemeSample(len);
+      }
+      // len:[0,4] : generate a relative uri
+      else
+      {
+        if(len > 2) {
+          return DOMString("./") + getRandomSampleStringOfLength(len-2, alphaCharSet);
+        }
+        else {
+          return getRandomSampleStringOfLength(len, alphaCharSet);
+        }
+      }
+    }
+
+    DOMString getRandomSampleAnyURIOfLengthRange(int minLen, int maxLen)
+    {
+      int randLen = integerRandomInRange(minLen, maxLen+1);
+      return getRandomSampleAnyURIOfLength(randLen);
+    }
+
+    DOMString getRandomSampleAnyURIOfMinLength(int minLen)
+    {
+      //lets take unbounded maxLen as minLen + some-constant
+      int maxLen = minLen + 30;
+      int randLen = integerRandomInRange(minLen, maxLen+1);
+      return getRandomSampleAnyURIOfLength(randLen);
+    }
+    
+    DOMString getRandomSampleAnyURIOfMaxLength(int maxLen)
+    {
+      int minLen = 0;
+      int randLen = integerRandomInRange(minLen, maxLen+1);
+      return getRandomSampleAnyURIOfLength(randLen);
+    }
+
+
+    //~~~~~~~~~~~~~~  double  ~~~~~~~~~~~~
     DOMString getRandomSampleDouble(double minIncl, double maxIncl)
     {
       unsigned long long numSamples = static_cast<unsigned long long>(ABS(maxIncl - minIncl +1));
@@ -498,6 +601,7 @@ namespace XMLSchema
       return toString<double>(minIncl + doubleStep);
     }
 
+    //~~~~~~~~~~~~~~  long  ~~~~~~~~~~~~
     DOMString getRandomSampleLong(Int64 minIncl, Int64 maxIncl)
     {
       assert(minIncl <= maxIncl);
@@ -505,6 +609,8 @@ namespace XMLSchema
       UInt64 step = nonnegativeIntegerRandom(numSamples);
       return toString<Int64>(minIncl + step);
     }
+
+    //~~~~~~~~~~~~~~  random generators  ~~~~~~~~~~~~
 
     // produces nonnegativeInteger in range [0, maxExcl-1]
     UInt64 nonnegativeIntegerRandom(UInt64 maxExcl)
