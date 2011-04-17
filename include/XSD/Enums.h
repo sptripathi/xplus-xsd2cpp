@@ -62,6 +62,37 @@ namespace XMLSchema
     };
 #define COUNT_PRIMITIVES  19
 
+    enum eBuiltinDerivedType
+    {
+      BD_NONE      =0,
+      BD_NORMALIZEDSTRING,
+      BD_TOKEN,
+      BD_LANGUAGE,
+      BD_NMTOKEN,
+      BD_NMTOKENS,
+      BD_NAME,
+      BD_NCNAME,
+      BD_ID,
+      BD_IDREF,
+      BD_IDREFS,
+      BD_ENTITY,
+      BD_ENTITIES,
+      BD_INTEGER,
+      BD_NONPOSITIVEINTEGER,
+      BD_NEGATIVEINTEGER,
+      BD_LONG,
+      BD_INT,
+      BD_SHORT,
+      BD_BYTE,
+      BD_NONNEGATIVEINTEGER,
+      BD_UNSIGNEDLONG,
+      BD_UNSIGNEDINT,
+      BD_UNSIGNEDSHORT,
+      BD_UNSIGNEDBYTE,
+      BD_POSITIVEINTEGER
+    };
+
+
     extern const char* g_primitivesStr[COUNT_PRIMITIVES];
 
 

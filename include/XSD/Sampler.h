@@ -100,7 +100,12 @@ namespace XMLSchema
     DOMString getRandomSampleAnyURIOfMaxLength(int maxLen);
 
     DOMString getRandomSampleLong(Int64 minIncl, Int64 maxIncl);
+    DOMString getRandomSampleLongOfLength(int len);
+    
     DOMString getRandomSampleDouble(double minIncl, double maxIncl);
+    // -1 in totalDigits/fractionDigits digits means those are unset
+    DOMString getRandomSampleDoubleOfDigits(int totalDigits=-1, int fractionDigits=-1);
+
     DOMString getRandomSample(vector<DOMString> samples);
     DOMString getRandomSample(DOMString *arrSamples, int lenSamples=CNT_SAMPLES);
 

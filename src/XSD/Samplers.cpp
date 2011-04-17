@@ -25,6 +25,7 @@ extern "C" {
 }
 #include <sstream>
 
+#include "XPlus/FPA.h"
 #include "XSD/Sampler.h"
 #include "XPlus/StringUtils.h"
 
@@ -594,14 +595,94 @@ namespace XMLSchema
     //~~~~~~~~~~~~~~  double  ~~~~~~~~~~~~
     DOMString getRandomSampleDouble(double minIncl, double maxIncl)
     {
-      unsigned long long numSamples = static_cast<unsigned long long>(ABS(maxIncl - minIncl +1));
-      unsigned long long step = nonnegativeIntegerRandom(numSamples);
-      //drand48 generates random in range [0,1]
-      double doubleStep = step - (drand48()/10);
-      return toString<double>(minIncl + doubleStep);
+      double doubleStep = 0;
+      double diff = maxIncl - minIncl;
+      if(diff <10 ) {
+        doubleStep = (diff / 100) * nonnegativeIntegerRandom(95);
+      }
+      else
+      {
+        UInt64 intDiff = static_cast<UInt64>(ABS(maxIncl - minIncl));
+        unsigned long long step = integerRandomInRange(1, intDiff);
+        //drand48 generates random in range [0,1]
+        doubleStep = step - drand48();
+      }
+      
+      double outDouble = minIncl + doubleStep;
+#if 0
+      // if the generated double doesn't comply to totalDigits/fractionDigits
+      // constraints then some warning to user is the best we could do for now
+      unsigned int myIntegralDigits = 0, myFractionalDigits = 0;
+      XPlus::FPA::countIntegralAndFractionDigits( outDouble, myIntegralDigits, myFractionalDigits);
+      int maxTotalDigits = (totalDigits != -1) ? totalDigits : 1000; 
+      int maxFractionalDigits = (fractionDigits != -1) ? fractionDigits : 100; 
+      if( 
+          (myFractionalDigits > maxFractionalDigits) ||
+          ( (myIntegralDigits+ myFractionalDigits) > maxTotalDigits)
+        )  
+      {
+        cerr << "While generating a sample value for double, failed to"
+          " guess a sample value that satisfies totalDigits/fractionDigits constraints."
+          " Using an invalid sample value anyway."
+          << endl;
+      }
+#endif      
+      return toString<double>(outDouble);
     }
 
+    DOMString getRandomSampleDoubleOfDigits(int totalDigits, int fractionDigits)
+    {
+      // moderate the values to avoid overflow, in case the schema specifies 
+      // too large a number for totalDigits and/or fractionDigits
+      int modestIntegralDigits =0, modestFractionDigits =0;
+      if( (totalDigits != -1) && (fractionDigits != -1) )
+      {
+        modestFractionDigits = (fractionDigits > 4) ? 4 : fractionDigits;
+        int integralDigits = totalDigits - modestFractionDigits;
+        modestIntegralDigits = (integralDigits > 8) ? 8 : integralDigits;
+      }
+      else if(totalDigits != -1)
+      {
+        // let's assume some modest value for fractionDigits
+        modestFractionDigits = 3;
+        int integralDigits = totalDigits - modestFractionDigits;
+        modestIntegralDigits = (integralDigits > 8) ? 8 : integralDigits;
+      }
+      else if(fractionDigits != -1)
+      {
+        modestFractionDigits = (fractionDigits > 4) ? 4 : fractionDigits;
+        // let's assume some modest value for integralDigits
+        modestIntegralDigits = 7;
+      }
+
+      DOMString integralStr = "", fractionStr = "", outStr = "";
+      int randFractionDigits = nonnegativeIntegerRandom(modestFractionDigits+1);
+      int randIntegralDigits = nonnegativeIntegerRandom(modestIntegralDigits+1);
+      integralStr = getRandomSampleLongOfLength( nonnegativeIntegerRandom(randIntegralDigits+1) );
+      fractionStr = getRandomSampleLongOfLength( nonnegativeIntegerRandom(randFractionDigits+1) );
+      outStr = integralStr + ( (fractionStr.length() > 0) ? 
+                             (DOMString(".") + fractionStr) : "" );
+      
+      // handle the case when both random randFractionDigits and randIntegralDigits are 0
+      if(outStr.length() == 0) {
+        outStr = "0"; 
+      }
+      return outStr;
+    }
+
+
     //~~~~~~~~~~~~~~  long  ~~~~~~~~~~~~
+    DOMString getRandomSampleLongOfLength(int len)
+    {
+      ostringstream oss;
+      for(int i=0; i<len; i++)
+      {
+        int digit = integerRandomInRange(1,10);
+        oss << digit;
+      }
+      return oss.str();
+    }
+
     DOMString getRandomSampleLong(Int64 minIncl, Int64 maxIncl)
     {
       assert(minIncl <= maxIncl);
@@ -626,6 +707,7 @@ namespace XMLSchema
     {
       return (nonnegativeIntegerRandom(maxExcl-minIncl) + minIncl);
     }
+
 
   }// end namespace Sampler
 

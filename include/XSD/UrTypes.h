@@ -491,6 +491,9 @@ namespace XMLSchema
           return _appliedCFacets;
         }
         void appliedCFacets(unsigned int x);
+        inline eBuiltinDerivedType derivedType() {
+          return _builtinDerivedType;
+        }
 
         OrderableCFacetAbstraction& maxExclusiveCFacet();
         OrderableCFacetAbstraction& maxInclusiveCFacet();
@@ -502,6 +505,7 @@ namespace XMLSchema
         DOMString generateSampleHexBinary(DOMString *arrSamples);
         DOMString generateSampleBase64Binary(DOMString *arrSamples);
         DOMString generateSampleString(DOMString *arrSamples);
+        DOMString generateSampleInteger(DOMString *arrSamples);
         DOMString generateSampleDecimal(DOMString *arrSamples);
         DOMString generateSampleAnyURI(DOMString *arrSamples);
 
@@ -520,7 +524,8 @@ namespace XMLSchema
         void throwFacetViolation(eConstrainingFacets facetType,
           DOMString foundFacetValue="", DOMString msg="");
         
-        ePrimitiveDataType   _primitiveType;
+        ePrimitiveDataType    _primitiveType;
+        eBuiltinDerivedType   _builtinDerivedType;
 
         //
         //   Constraining Facets, applicable in derivations depending on

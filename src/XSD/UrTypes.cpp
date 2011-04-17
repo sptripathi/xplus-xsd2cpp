@@ -18,6 +18,7 @@
 //
 
 #include "XPlus/Namespaces.h"
+#include "XPlus/FPA.h"
 #include "XSD/PrimitiveTypes.h"
 #include "XSD/xsdUtils.h"
 #include "XSD/XSDException.h"
@@ -707,6 +708,7 @@ namespace XMLSchema
     anySimpleType::anySimpleType(AnyTypeCreateArgs args, ePrimitiveDataType primType):
       anyType(args, ANY_SIMPLE_TYPE),
       _primitiveType(primType),
+      _builtinDerivedType(BD_NONE),
       _lengthCFacet(0),
       _minLengthCFacet(XP_UINT32_MIN),
       _maxLengthCFacet(XP_UINT32_MAX),
@@ -1440,13 +1442,7 @@ namespace XMLSchema
 
     void anySimpleType::applyTotalDigitsCFacet() 
     {
-      unsigned int cntTotalDigits=0;
-      for(unsigned int i=0; i<_value.length(); i++)
-      {
-        if(isdigit(_value[i])) {
-          cntTotalDigits++;
-        }
-      }
+      unsigned int cntTotalDigits = XPlus::FPA::countTotalDigits(_value);
       if(cntTotalDigits > _totalDigitsCFacet.value() ) {
         throwFacetViolation(CF_TOTALDIGITS, toString<unsigned int>(cntTotalDigits));
       }
@@ -1454,18 +1450,7 @@ namespace XMLSchema
 
     void anySimpleType::applyFractionDigitsCFacet() 
     {
-      DOMString::size_type pos = _value.find('.');
-      if(pos == DOMString::npos) {
-        return;
-      }
-      
-      unsigned int cntFractionDigits=0;
-      for(unsigned int i=pos; i<_value.length(); i++)
-      {
-        if(isdigit(_value[i])) {
-          cntFractionDigits++;
-        }
-      }
+      unsigned int cntFractionDigits = XPlus::FPA::countFractionDigits(_value);
       if(cntFractionDigits > _fractionDigitsCFacet.value() ) {
         throwFacetViolation(CF_FRACTIONDIGITS, toString<unsigned int>(cntFractionDigits));
       }
@@ -1535,28 +1520,119 @@ namespace XMLSchema
       }
       return Sampler::getRandomSample(arrSamples);
     }
-
-    DOMString anySimpleType::generateSampleDecimal(DOMString *arrSamples)
+    
+    DOMString anySimpleType::generateSampleInteger(DOMString *arrSamples)
     {
-      long long maxIncl = 1000000;
-      long long minIncl = -100000;
+      Int64 maxIncl = 1000000;
+      Int64 minIncl = -100000;
+      bool maxInclSet = false, minInclSet = false;
 
       if(isMaxExclusiveCFacetSet()) {
-        maxIncl = static_cast<long long>(_maxExclusiveCFacetDouble.value()-1); 
+        maxInclSet = true;
+        maxIncl = static_cast<Int64>(_maxExclusiveCFacetDouble.value()-1); 
       }
       else if(isMaxInclusiveCFacetSet()) {
-        maxIncl = static_cast<long long>(_maxInclusiveCFacetDouble.value());
+        maxInclSet = true;
+        maxIncl = static_cast<Int64>(_maxInclusiveCFacetDouble.value());
       }
 
       if(isMinExclusiveCFacetSet()) {
-        minIncl = static_cast<long long>(_minExclusiveCFacetDouble.value()+1); 
+        minInclSet = true;
+        minIncl = static_cast<Int64>(_minExclusiveCFacetDouble.value()+1); 
       }
       else if(isMinInclusiveCFacetSet()) {
-        minIncl = static_cast<long long>(_minInclusiveCFacetDouble.value()); 
+        minInclSet = true;
+        minIncl = static_cast<Int64>(_minInclusiveCFacetDouble.value()); 
       }
+
+      if(maxInclSet && !minInclSet) {
+        minIncl = XPlus::XSD_LONG_MININCL;
+      }
+      if(!maxInclSet && minInclSet) {
+        maxIncl = XPlus::XSD_LONG_MAXINCL; 
+      }
+
       return Sampler::getRandomSampleLong(minIncl, maxIncl);
     }
 
+    DOMString anySimpleType::generateSampleDecimal(DOMString *arrSamples)
+    {
+      // if the builtin-derivedType is one of integer, long, unsignedLong etc.
+      if(derivedType() != BD_NONE) {
+        return generateSampleInteger(arrSamples);
+      }
+
+      double maxIncl = 1000000;
+      double minIncl = -100000;
+      bool maxInclSet = false, minInclSet = false;
+
+      if(isMaxInclusiveCFacetSet()) 
+      {
+        maxInclSet = true;
+        maxIncl = _maxInclusiveCFacetDouble.value();
+      }
+      else if(isMaxExclusiveCFacetSet()) 
+      {
+        maxInclSet = true;
+        if(isMinInclusiveCFacetSet() || isMinExclusiveCFacetSet())
+        {
+          double minInclOrExcl = isMinInclusiveCFacetSet() ? 
+            _minInclusiveCFacetDouble.value() : _minExclusiveCFacetDouble.value(); 
+
+          double diff = _maxExclusiveCFacetDouble.value() - minInclOrExcl;  
+          double offset = 1;
+          // appromimation to get inclusive bounds when exclusive bounds 
+          // are specified:
+          // - if min and max constraints on the decimal are very close then
+          //   use decimal offset(< 1) to set an approx. inclusive bound
+          // - else use offset of 1
+          if( diff < 10 ) {
+            offset = diff / 100; 
+          }
+          maxIncl = _maxExclusiveCFacetDouble.value() - offset;
+          if(!isMinInclusiveCFacetSet() && isMinExclusiveCFacetSet()) {
+            minIncl = _minExclusiveCFacetDouble.value() + offset;
+            minInclSet = true;
+          }
+        }
+        else
+        {
+          maxIncl = _maxExclusiveCFacetDouble.value()-1; 
+        }
+      }
+
+      if(isMinInclusiveCFacetSet()) {
+        minInclSet = true;
+        minIncl = _minInclusiveCFacetDouble.value(); 
+      }
+      else if(isMinExclusiveCFacetSet()) 
+      {
+        minInclSet = true;
+        // this case is taken care of in above case of isMaxExclusiveCFacetSet()
+      }
+
+      // if min/max value bounds are *not* set rather digits bounds are set
+      if( (!minInclSet && !maxInclSet) &&
+          (isTotalDigitsCFacetSet() || isFractionDigitsCFacetSet())
+        )  
+      {
+        int totalDigits = isTotalDigitsCFacetSet() ? _totalDigitsCFacet.value() : -1;
+        int fractionDigits = isFractionDigitsCFacetSet() ? _fractionDigitsCFacet.value() : -1;
+        return Sampler::getRandomSampleDoubleOfDigits(totalDigits, fractionDigits);
+      }
+      // if digits bounds are *not* set; the min/max value bounds may or
+      // may not be set
+      else
+      {
+        if(!minInclSet) {
+          minIncl = XPlus::XSD_LONG_MININCL;
+        }
+        if(!maxInclSet) {
+          maxIncl = XPlus::XSD_LONG_MAXINCL; 
+        }
+        return Sampler::getRandomSampleDouble(minIncl, maxIncl);
+      }
+    }
 
     DOMString anySimpleType::generateSampleAnyURI(DOMString *arrSamples)
     {

@@ -396,6 +396,7 @@ namespace Types
 <xsl:template name="ON_SIMPLETYPE_WITH_UNION">
   <xsl:param name="simpleTypeName"/>
   <xsl:variable name="isBuiltinType"><xsl:call-template name="T_is_builtin_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
+  <xsl:variable name="isBuiltinDerivedType"><xsl:call-template name="T_is_builtin_derived_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
   
   <xsl:for-each select="*[local-name()='union']">
   /// class for simpleType of variety union
@@ -434,6 +435,9 @@ namespace Types
     <xsl:value-of select="$myCppType"/>(AnyTypeCreateArgs args):
       XMLSchema::Types::SimpleTypeUnionTmpl(args)
     {
+      <xsl:if test="$isBuiltinDerivedType='true'">
+      _builtinDerivedType = XMLSchema::BD_<xsl:call-template name="T_capitalize_all"><xsl:with-param name="subjStr" select="$simpleTypeName"/></xsl:call-template>;  
+      </xsl:if>
       <!--
       <xsl:call-template name="SET_CFACET_VALUES_IN_SIMPLETYPE_CTOR"/>
       this->appliedCFacets( appliedCFacets() <xsl:for-each select="*[local-name()='restriction']/*[local-name() != 'simpleType' and local-name() != 'annotation']">| <xsl:call-template name="T_get_enumType_CFacet"><xsl:with-param name="facet" select="local-name(.)"/></xsl:call-template> </xsl:for-each> );
@@ -687,6 +691,7 @@ namespace Types
   <xsl:variable name="isBuiltinType"><xsl:call-template name="T_is_builtin_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
 
   <xsl:variable name="isBuiltinPrimType"><xsl:call-template name="T_is_builtin_primitive_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
+  <xsl:variable name="isBuiltinDerivedType"><xsl:call-template name="T_is_builtin_derived_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
 
   <xsl:variable name="defVal"><xsl:call-template name="T_get_defaultvalue_for_builtin_primitive"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
   <xsl:variable name="tnsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
@@ -731,11 +736,14 @@ namespace Types
       </xsl:otherwise>
     </xsl:choose>
     {
+    <xsl:if test="$isBuiltinDerivedType='true'">
+      _builtinDerivedType = XMLSchema::BD_<xsl:call-template name="T_capitalize_all"><xsl:with-param name="subjStr" select="$simpleTypeName"/></xsl:call-template>;  
+    </xsl:if>
     <!-- value() should be set before setting the bitmasks, because this function checks the same masks in parent to validate the CFacets  against that of the parent -->
       <xsl:call-template name="SET_CFACET_VALUES_IN_SIMPLETYPE_CTOR">
         <xsl:with-param name="simpleTypeName" select="$simpleTypeName"/>
       </xsl:call-template>
-
+    
     <xsl:if test="$isBuiltinPrimType='true'">
       this->allowedCFacets( CF_NONE <xsl:for-each select="*[local-name()='annotation']/*[local-name()='appinfo']/*[local-name()='hasFacet']"> | <xsl:call-template name="T_get_enumType_CFacet"><xsl:with-param name="facet" select="@name"/></xsl:call-template> </xsl:for-each> );
     </xsl:if>
@@ -906,6 +914,7 @@ namespace Types
   <xsl:param name="simpleTypeName"/>
   
   <xsl:variable name="isBuiltinType"><xsl:call-template name="T_is_builtin_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
+  <xsl:variable name="isBuiltinDerivedType"><xsl:call-template name="T_is_builtin_derived_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
   <xsl:variable name="anonymousSTChildNode" select="*[local-name()='restriction']/*[local-name()='simpleType']"/>
   <xsl:variable name="cppBaseTypeInferred">
     <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="$anonymousSTChildNode"/></xsl:call-template>
@@ -925,6 +934,9 @@ namespace Types
     <xsl:value-of select="$myCppType"/>(AnyTypeCreateArgs args):
       <xsl:value-of select="$cppBaseTypeInferred"/>(args)
     {
+      <xsl:if test="$isBuiltinDerivedType='true'">
+      _builtinDerivedType = XMLSchema::BD_<xsl:call-template name="T_capitalize_all"><xsl:with-param name="subjStr" select="$simpleTypeName"/></xsl:call-template>;  
+      </xsl:if>
       <xsl:call-template name="SET_CFACET_VALUES_IN_SIMPLETYPE_CTOR">
         <xsl:with-param name="simpleTypeName" select="$simpleTypeName"/>
       </xsl:call-template>

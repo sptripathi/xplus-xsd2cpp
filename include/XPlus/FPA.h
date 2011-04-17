@@ -20,25 +20,46 @@
 #ifndef __XPLUS_FPA_H__
 #define __XPLUS_FPA_H__
 
-#define ABS(X) ( ((X)<0)? -(X) : (X) )
+#include "string"
+#include "XPlus/Types.h"
+
+using namespace std;
 
 namespace XPlus
 {
-  struct FPA
+  namespace FPA
   {
-    static void parseDecimal(const std::string& str,
+    void parseDecimal(const std::string& str,
         std::string::const_iterator& it,
         std::string::const_iterator& it_end,
         double& significand,
         int& exponent
         );
-    static void interpretDecimal(double significand, 
+
+    void interpretDecimal(double significand, 
         double exponent,
         int & integral,
         int& millis,
         int& micros
         );
-  };
+
+    unsigned int countFractionDigits(const double& d);
+    unsigned int countFractionDigits(const string& doubleStr);
+
+    unsigned int countIntegralDigits(const double& d);
+    unsigned int countIntegralDigits(const string& doubleStr);
+
+    void countIntegralAndFractionDigits(const double& d, 
+                                        unsigned int& integralDigits, 
+                                        unsigned int& fractionalDigits);
+    void countIntegralAndFractionDigits(const string& doubleStr, 
+                                        unsigned int& integralDigits, 
+                                        unsigned int& fractionalDigits);
+
+    unsigned int countTotalDigits(const double& d);
+    unsigned int countTotalDigits(const string& doubleStr);
+
+  }
 }
 
 #endif
