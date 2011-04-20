@@ -14,8 +14,8 @@ TITLE=""
 
 ascertain_input_dirs()
 {
-  #EX_DIRS="examples/helloWorld examples/simplest examples/org"
-  EX_DIRS="examples/org"
+  EX_DIRS="examples/helloWorld examples/simplest examples/org examples/netEnabled"
+  #EX_DIRS="examples/org"
 }
 
 
@@ -48,6 +48,18 @@ output_file()
 link_files()
 {
   echo "<ul>" >> $HTML_NAME
+
+  if [ ! -z "$README_FILES" ]; then
+    echo " <li> <b>README files</b>" >> $HTML_NAME
+    echo "  <ul>" >> $HTML_NAME
+    for FILE in $README_FILES
+    do
+      ESC_FILE=`echo $FILE | sed -e 's/\//_/g'`
+       echo "   <li> <a href=\"#$ESC_FILE\">$FILE</a>" >> $HTML_NAME
+    done
+    echo "  </ul>" >> $HTML_NAME
+    echo "<br><br>" >> $HTML_NAME
+  fi  
 
   echo " <li> <b>XML Schema Files</b>" >> $HTML_NAME
   echo "  <ul>" >> $HTML_NAME
@@ -97,7 +109,7 @@ link_files()
   done
   echo "  </ul>" >> $HTML_NAME
   
-  echo "  <ul>" >> $HTML_NAME # end generated files
+  echo "  </ul>" >> $HTML_NAME # end generated files
   echo "<br><br>" >> $HTML_NAME
   
   echo "</ul>" >> $HTML_NAME
@@ -126,11 +138,12 @@ output_dir()
 {
   ESC_DIR=`echo $DIR | sed -e 's/\//_/g'`
   get_INPUT_XSD
-  XSD_FILES=`ls -1 $DIR/*.xsd org/*.xs 2>/dev/null`
-  XML_FILES=`ls -1 $DIR/*.xml org/*.xs 2>/dev/null`
+  README_FILES=`ls -1 $DIR/README* | grep -v build.txt 2>/dev/null`
+  XSD_FILES=`ls -1 $DIR/*.xsd $DIR/*.xs 2>/dev/null`
+  XML_FILES=`ls -1 $DIR/*.xml 2>/dev/null`
   CPP_FILES=`find $DIR -name "*.cpp" `
   H_FILES=`find $DIR -name "*.h"`
-  ALL_FILES="$XSD_FILES $XML_FILES $MAIN_CPP $H_FILES $CPP_FILES"  
+  ALL_FILES="$README_FILES $XSD_FILES $XML_FILES $MAIN_CPP $H_FILES $CPP_FILES"  
   echo "<h2><a name=\"$ESC_DIR\">$DIR</a></h2>"  >> $HTML_NAME 
   echo "<hr NOSHADE SIZE=2 WIDTH=100%>" >> $HTML_NAME
 
@@ -158,6 +171,7 @@ link_dirs()
 output_dir_html()
 {
   output_form_begin
+  echo "$DESCR" >> $HTML_NAME
   link_dirs
   echo "<br><br>" >> $HTML_NAME
   for DIR in $DIRS
@@ -173,7 +187,9 @@ output_all_dirs_html()
   ascertain_input_dirs
   DIRS=$EX_DIRS
   HTML_NAME=examples_complete.html
-  TITLE="Examples"
+  TITLE="Examples with Generated Source"
+  VERSION=`xsd2cpp -v | grep XmlPlus`
+  DESCR="The examples and generated files as of <u><i>$VERSION</i></u> .<br> Many examples have been ommited to avoid verbosity. <br>(code generator:</b> <i>xsd2cpp</i>)"
   > $HTML_NAME
   output_dir_html
 }
