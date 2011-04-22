@@ -37,7 +37,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = fsmTest$(EXEEXT) regTest$(EXEEXT) domParser$(EXEEXT)
+bin_PROGRAMS = regTest$(EXEEXT) base64Test$(EXEEXT) domParser$(EXEEXT)
+noinst_PROGRAMS = fsmTest$(EXEEXT)
 subdir = src
 DIST_COMMON = $(dist_bin_SCRIPTS) $(nobase_dist_data_DATA) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -92,21 +93,24 @@ am_libxsdall_la_OBJECTS = Poco/ASCIIEncoding.lo Poco/AtomicCounter.lo \
 	Poco/pcre_newline.lo Poco/pcre_ord2utf8.lo Poco/pcre_study.lo \
 	Poco/pcre_tables.lo Poco/pcre_try_flipped.lo Poco/pcre_ucd.lo \
 	Poco/pcre_valid_utf8.lo Poco/pcre_xclass.lo \
-	XPlus/ConvertUTF.lo XPlus/DateAlgo.lo XPlus/DateTime.lo \
-	XPlus/DateTimeUtils.lo XPlus/Duration.lo XPlus/Exception.lo \
-	XPlus/FPA.lo XPlus/Namespaces.lo XPlus/StringUtils.lo \
-	XPlus/TextEncoding.lo XPlus/UString.lo DOM/Attribute.lo \
-	DOM/CDATASection.lo DOM/CharacterData.lo DOM/Comment.lo \
-	DOM/Document.lo DOM/DocumentType.lo DOM/DOMParser.lo \
-	DOM/Element.lo DOM/ExpatParser.lo DOM/NamedNodeMap.lo \
-	DOM/Node.lo DOM/Stream.lo DOM/TextNode.lo DOM/XmlDecl.lo \
-	XSD/Enums.lo XSD/FSM.lo XSD/UrTypes.lo XSD/XSDFSM.lo \
-	XSD/xsdUtils.lo XSD/Samplers.lo
+	XPlus/Base64Codec.lo XPlus/ConvertUTF.lo XPlus/DateAlgo.lo \
+	XPlus/DateTime.lo XPlus/DateTimeUtils.lo XPlus/Duration.lo \
+	XPlus/Exception.lo XPlus/FPA.lo XPlus/Namespaces.lo \
+	XPlus/StringUtils.lo XPlus/TextEncoding.lo XPlus/UString.lo \
+	DOM/Attribute.lo DOM/CDATASection.lo DOM/CharacterData.lo \
+	DOM/Comment.lo DOM/Document.lo DOM/DocumentType.lo \
+	DOM/DOMParser.lo DOM/Element.lo DOM/ExpatParser.lo \
+	DOM/NamedNodeMap.lo DOM/Node.lo DOM/Stream.lo DOM/TextNode.lo \
+	DOM/XmlDecl.lo XSD/Enums.lo XSD/FSM.lo XSD/UrTypes.lo \
+	XSD/XSDFSM.lo XSD/xsdUtils.lo XSD/Samplers.lo
 libxsdall_la_OBJECTS = $(am_libxsdall_la_OBJECTS)
 libxsdall_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(libxsdall_la_LDFLAGS) $(LDFLAGS) -o $@
-PROGRAMS = $(bin_PROGRAMS)
+PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
+am_base64Test_OBJECTS = tools/Base64Test.$(OBJEXT)
+base64Test_OBJECTS = $(am_base64Test_OBJECTS)
+base64Test_DEPENDENCIES = libxsdall.la
 am_domParser_OBJECTS = tools/DOMParse.$(OBJEXT)
 domParser_OBJECTS = $(am_domParser_OBJECTS)
 domParser_DEPENDENCIES = libxsdall.la
@@ -139,10 +143,10 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libxsdall_la_SOURCES) $(domParser_SOURCES) \
-	$(fsmTest_SOURCES) $(regTest_SOURCES)
-DIST_SOURCES = $(libxsdall_la_SOURCES) $(domParser_SOURCES) \
-	$(fsmTest_SOURCES) $(regTest_SOURCES)
+SOURCES = $(libxsdall_la_SOURCES) $(base64Test_SOURCES) \
+	$(domParser_SOURCES) $(fsmTest_SOURCES) $(regTest_SOURCES)
+DIST_SOURCES = $(libxsdall_la_SOURCES) $(base64Test_SOURCES) \
+	$(domParser_SOURCES) $(fsmTest_SOURCES) $(regTest_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -310,6 +314,8 @@ fsmTest_SOURCES = XSD/FsmTest.cpp
 fsmTest_LDADD = libxsdall.la
 regTest_SOURCES = tools/RegTest.cpp 
 regTest_LDADD = libxsdall.la
+base64Test_SOURCES = tools/Base64Test.cpp 
+base64Test_LDADD = libxsdall.la
 domParser_SOURCES = tools/DOMParse.cpp
 domParser_LDADD = libxsdall.la 
 lib_LTLIBRARIES = libxsdall.la
@@ -353,6 +359,7 @@ libxsdall_la_SOURCES = \
   Poco/pcre_valid_utf8.c \
   Poco/pcre_xclass.c \
  \
+  XPlus/Base64Codec.cpp \
   XPlus/ConvertUTF.c \
   XPlus/DateAlgo.cpp \
   XPlus/DateTime.cpp \
@@ -566,6 +573,8 @@ XPlus/$(am__dirstamp):
 XPlus/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) XPlus/$(DEPDIR)
 	@: > XPlus/$(DEPDIR)/$(am__dirstamp)
+XPlus/Base64Codec.lo: XPlus/$(am__dirstamp) \
+	XPlus/$(DEPDIR)/$(am__dirstamp)
 XPlus/ConvertUTF.lo: XPlus/$(am__dirstamp) \
 	XPlus/$(DEPDIR)/$(am__dirstamp)
 XPlus/DateAlgo.lo: XPlus/$(am__dirstamp) \
@@ -665,12 +674,26 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 tools/$(am__dirstamp):
 	@$(MKDIR_P) tools
 	@: > tools/$(am__dirstamp)
 tools/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) tools/$(DEPDIR)
 	@: > tools/$(DEPDIR)/$(am__dirstamp)
+tools/Base64Test.$(OBJEXT): tools/$(am__dirstamp) \
+	tools/$(DEPDIR)/$(am__dirstamp)
+base64Test$(EXEEXT): $(base64Test_OBJECTS) $(base64Test_DEPENDENCIES) 
+	@rm -f base64Test$(EXEEXT)
+	$(CXXLINK) $(base64Test_OBJECTS) $(base64Test_LDADD) $(LIBS)
 tools/DOMParse.$(OBJEXT): tools/$(am__dirstamp) \
 	tools/$(DEPDIR)/$(am__dirstamp)
 domParser$(EXEEXT): $(domParser_OBJECTS) $(domParser_DEPENDENCIES) 
@@ -825,6 +848,8 @@ mostlyclean-compile:
 	-rm -f Poco/pcre_valid_utf8.lo
 	-rm -f Poco/pcre_xclass.$(OBJEXT)
 	-rm -f Poco/pcre_xclass.lo
+	-rm -f XPlus/Base64Codec.$(OBJEXT)
+	-rm -f XPlus/Base64Codec.lo
 	-rm -f XPlus/ConvertUTF.$(OBJEXT)
 	-rm -f XPlus/ConvertUTF.lo
 	-rm -f XPlus/DateAlgo.$(OBJEXT)
@@ -860,6 +885,7 @@ mostlyclean-compile:
 	-rm -f XSD/XSDFSM.lo
 	-rm -f XSD/xsdUtils.$(OBJEXT)
 	-rm -f XSD/xsdUtils.lo
+	-rm -f tools/Base64Test.$(OBJEXT)
 	-rm -f tools/DOMParse.$(OBJEXT)
 	-rm -f tools/RegTest.$(OBJEXT)
 
@@ -917,6 +943,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@Poco/$(DEPDIR)/pcre_ucd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Poco/$(DEPDIR)/pcre_valid_utf8.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Poco/$(DEPDIR)/pcre_xclass.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@XPlus/$(DEPDIR)/Base64Codec.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XPlus/$(DEPDIR)/ConvertUTF.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XPlus/$(DEPDIR)/DateAlgo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XPlus/$(DEPDIR)/DateTime.Plo@am__quote@
@@ -935,6 +962,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/UrTypes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/XSDFSM.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@XSD/$(DEPDIR)/xsdUtils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/Base64Test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/DOMParse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/RegTest.Po@am__quote@
 
@@ -1264,7 +1292,7 @@ maintainer-clean-generic:
 clean: clean-recursive
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
-	clean-libtool mostlyclean-am
+	clean-libtool clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -rf DOM/$(DEPDIR) Poco/$(DEPDIR) XPlus/$(DEPDIR) XSD/$(DEPDIR) tools/$(DEPDIR)
@@ -1340,13 +1368,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-dist_binSCRIPTS \
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libLTLIBRARIES clean-libtool ctags \
-	ctags-recursive distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dist_binSCRIPTS \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
+	clean-generic clean-libLTLIBRARIES clean-libtool \
+	clean-noinstPROGRAMS ctags ctags-recursive distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-binPROGRAMS install-data \
+	install-data-am install-dist_binSCRIPTS install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
 	install-libLTLIBRARIES install-man \
 	install-nobase_dist_dataDATA install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \

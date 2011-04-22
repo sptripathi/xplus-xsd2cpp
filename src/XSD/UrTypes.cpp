@@ -19,6 +19,7 @@
 
 #include "XPlus/Namespaces.h"
 #include "XPlus/FPA.h"
+#include "XSD/Sampler.h"
 #include "XSD/PrimitiveTypes.h"
 #include "XSD/xsdUtils.h"
 #include "XSD/XSDException.h"
@@ -517,10 +518,11 @@ namespace XMLSchema
         if(_fsm->fsmCreatedNode()) 
         {
           AttributeP attr = dynamic_cast<AttributeP>(const_cast<Node*>(_fsm->fsmCreatedNode()));
+          anySimpleType* pST = dynamic_cast<anySimpleType *>(const_cast<Node*>(_fsm->fsmCreatedNode()));
           _fsm->fsmCreatedNode(NULL);
-          if(attr) {
-            //attr->createChildTextNode(value);
-            attr->createTextNode(value);
+          if(attr && value) {
+            //attr->createTextNode(value);
+            pST->stringValue(*value);
             return attr;
           }
         }
@@ -712,7 +714,6 @@ namespace XMLSchema
       _lengthCFacet(0),
       _minLengthCFacet(XP_UINT32_MIN),
       _maxLengthCFacet(XP_UINT32_MAX),
-      _patternCFacet(".*"),
       _whiteSpaceCFacet("collapse"),
       _totalDigitsCFacet(0),
       _fractionDigitsCFacet(0),
@@ -1356,10 +1357,15 @@ namespace XMLSchema
 
     void anySimpleType::applyPatternCFacet()
     {
-      Poco::RegularExpression re(_patternCFacet.value());
-      if(! re.match(_value, 0, 0) ) {
-        throwFacetViolation(CF_PATTERN);
+      vector<DOMString> patterns = _patternCFacet.value();
+      for(unsigned int i=0; i < patterns.size(); i++)
+      {
+        Poco::RegularExpression re(patterns[i]);
+        if(re.match(_value, 0, 0) ) {
+          return;
+        }
       }
+      throwFacetViolation(CF_PATTERN, _value);
     }
 
     void anySimpleType::applyEnumerationCFacet()
@@ -1558,7 +1564,7 @@ namespace XMLSchema
     DOMString anySimpleType::generateSampleDecimal(DOMString *arrSamples)
     {
       // if the builtin-derivedType is one of integer, long, unsignedLong etc.
-      if(derivedType() != BD_NONE) {
+      if( (primitiveType() == PD_DECIMAL) && (derivedType() != BD_NONE)) {
         return generateSampleInteger(arrSamples);
       }
 
@@ -1622,7 +1628,7 @@ namespace XMLSchema
       }
       // if digits bounds are *not* set; the min/max value bounds may or
       // may not be set
-      else
+      else if( minInclSet || maxInclSet)
       {
         if(!minInclSet) {
           minIncl = XPlus::XSD_LONG_MININCL;
@@ -1631,6 +1637,10 @@ namespace XMLSchema
           maxIncl = XPlus::XSD_LONG_MAXINCL; 
         }
         return Sampler::getRandomSampleDouble(minIncl, maxIncl);
+      }
+      else
+      {
+        return Sampler::getRandomSample(arrSamples);
       }
     }
 
@@ -1650,6 +1660,29 @@ namespace XMLSchema
       }
       return Sampler::getRandomSample(arrSamples);
     }
+          
+    DOMString anySimpleType::generateSampleGDay(DOMString *arrSamples)
+    {
+      Int64 maxIncl = 31, minIncl = 1;
+      if(isMaxExclusiveCFacetSet()) {
+        maxIncl = static_cast<Int64>(_maxExclusiveCFacetDateTime.value().day()-1); 
+      }
+      else if(isMaxInclusiveCFacetSet()) {
+        maxIncl = static_cast<Int64>(_maxInclusiveCFacetDateTime.value().day());
+      }
+
+      if(isMinExclusiveCFacetSet()) {
+        minIncl = static_cast<Int64>(_minExclusiveCFacetDateTime.value().day()+1); 
+      }
+      else if(isMinInclusiveCFacetSet()) {
+        minIncl = static_cast<Int64>(_minInclusiveCFacetDateTime.value().day()); 
+      }
+
+      int randDay = Sampler::integerRandomInRange(minIncl, maxIncl);
+      char buffer[8]; 
+      snprintf(buffer, 8, "%02d", randDay);
+      return DOMString(buffer);
+    }
 
     DOMString anySimpleType::generateSample(DOMString *arrSamples)
     {
@@ -1666,6 +1699,8 @@ namespace XMLSchema
         case PD_STRING:
           return generateSampleString(arrSamples);
 
+        case PD_FLOAT:
+        case PD_DOUBLE:
         case PD_DECIMAL:
           return generateSampleDecimal(arrSamples);
 
@@ -1677,6 +1712,9 @@ namespace XMLSchema
 
         case PD_ANYURI:
           return generateSampleAnyURI(arrSamples);
+        
+        case PD_GDAY:
+          return generateSampleGDay(arrSamples);
 
         default:
           return Sampler::getRandomSample(arrSamples);

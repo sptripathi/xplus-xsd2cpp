@@ -696,6 +696,7 @@ namespace XMLSchema
     // produces nonnegativeInteger in range [0, maxExcl-1]
     UInt64 nonnegativeIntegerRandom(UInt64 maxExcl)
     {
+      assert(maxExcl > 0);
       srand48( time(NULL)%10001 + lrand48()%10001 );
       long int r = lrand48()%(maxExcl);
       return r;
@@ -705,6 +706,7 @@ namespace XMLSchema
     // ie [0, maxExcl-1-minIncl] + minIncl
     Int64 integerRandomInRange(Int64 minIncl, Int64 maxExcl)
     {
+      assert(maxExcl > minIncl);
       return (nonnegativeIntegerRandom(maxExcl-minIncl) + minIncl);
     }
 

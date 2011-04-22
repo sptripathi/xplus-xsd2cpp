@@ -706,7 +706,7 @@ public:
     ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
     ///  \n Chooses the element from the choice and sizes-up the "list of the element
     ///  nodes" with the supplied size
-    ///  @param size the request size(unsigned int) of the list
+    ///  @param size the requested size(unsigned int) of the list
     ///  @return the list of "pointer-to-element-node"
     MEMBER_FN <xsl:value-of select="$returnType"/> choose_list_<xsl:value-of select="$cppNameFunction"/>(unsigned int size);
 

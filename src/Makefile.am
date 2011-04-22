@@ -6,13 +6,18 @@ AM_LDFLAGS=
 SUBDIRS =  #Poco XPlus DOM XSD tools
 
 
-bin_PROGRAMS=fsmTest regTest domParser 
+bin_PROGRAMS=regTest base64Test domParser 
+
+noinst_PROGRAMS=fsmTest
 
 fsmTest_SOURCES=XSD/FsmTest.cpp 
 fsmTest_LDADD =libxsdall.la
 
 regTest_SOURCES=tools/RegTest.cpp 
 regTest_LDADD =libxsdall.la
+
+base64Test_SOURCES=tools/Base64Test.cpp 
+base64Test_LDADD =libxsdall.la
 
 domParser_SOURCES=tools/DOMParse.cpp
 domParser_LDADD = libxsdall.la 
@@ -59,6 +64,7 @@ libxsdall_la_SOURCES = \
   Poco/pcre_valid_utf8.c \
   Poco/pcre_xclass.c \
  \
+  XPlus/Base64Codec.cpp \
   XPlus/ConvertUTF.c \
   XPlus/DateAlgo.cpp \
   XPlus/DateTime.cpp \

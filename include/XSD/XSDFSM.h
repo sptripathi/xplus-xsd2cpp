@@ -34,6 +34,7 @@
 #include "DOM/DOMAllInc.h"
 #include "XSD/XSDException.h"
 #include "XSD/FSM.h"
+#include "XSD/Sampler.h"
 
 #define EVT_TYPE_ATTRIBUTE       "Attribute"
 #define EVT_TYPE_ELEMENT         "Element"
@@ -472,9 +473,12 @@ class XsdFSM : public XsdFsmBase
       XsdEvent event = this->toEvent();
       event.docBuilding = docBuilding;
       event.cbOptions.isSampleCreate = true;
-      unsigned int occur = ((_nsName.minOccurence > MAXOCCUR_SAMPLE) ? _nsName.minOccurence : MAXOCCUR_SAMPLE);
-      if(!_nsName.hasUnboundedMaxOccurence() && (_nsName.maxOccurence < occur)) {
-        occur = _nsName.maxOccurence;
+      unsigned int occur = 0;
+      if(_nsName.hasUnboundedMaxOccurence()) {
+        occur = XMLSchema::Sampler::integerRandomInRange(_nsName.minOccurence, _nsName.minOccurence+5);
+      }
+      else {
+        occur = XMLSchema::Sampler::integerRandomInRange(_nsName.minOccurence, _nsName.maxOccurence+1);
       }
 
       for(unsigned int j=0; j<occur; j++) 

@@ -491,8 +491,12 @@ namespace XMLSchema
           return _appliedCFacets;
         }
         void appliedCFacets(unsigned int x);
+
         inline eBuiltinDerivedType derivedType() {
           return _builtinDerivedType;
+        }
+        inline ePrimitiveDataType primitiveType() {
+          return _primitiveType;
         }
 
         OrderableCFacetAbstraction& maxExclusiveCFacet();
@@ -508,6 +512,7 @@ namespace XMLSchema
         DOMString generateSampleInteger(DOMString *arrSamples);
         DOMString generateSampleDecimal(DOMString *arrSamples);
         DOMString generateSampleAnyURI(DOMString *arrSamples);
+        DOMString generateSampleGDay(DOMString *arrSamples);
 
         virtual DOMString generateSample(DOMString *arrSamples);
         virtual void normalizeValue(DOMString& value);

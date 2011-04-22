@@ -16,6 +16,7 @@ nobase_include_HEADERS = \
   Poco/Types.h \
   \
   XPlus/AutoPtr.h \
+  XPlus/Base64Codec.h \
   XPlus/BinaryTree.h \
   XPlus/ConvertUTF.h \
   XPlus/DateAlgo.h \

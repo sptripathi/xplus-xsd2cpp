@@ -964,25 +964,39 @@ namespace Types
     <xsl:call-template name="T_builtin_type_has_adt_impl"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template>
   </xsl:variable>
   
-  <xsl:if test="count(*[local-name()='restriction']/*[local-name(.)='enumeration']) > 0">
-      vector&lt;DOMString&gt; enums;
-    <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)='enumeration']">
-      enums.push_back("<xsl:value-of select="@value"/>");
+
+  <xsl:if test="count(*[local-name()='restriction']/*[local-name(.)='enumeration' or local-name(.)='pattern']) > 0">
+
+      vector&lt;DOMString&gt; values;
+    <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)='enumeration' or local-name(.)='pattern']">
+      <xsl:variable name="facetValue" select="@value"/>
+      <xsl:variable name="processedValue">
+        <xsl:choose>
+          <xsl:when test="local-name(.)='pattern'">
+            <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$facetValue"/><xsl:with-param name="search-string" select="'\'"/><xsl:with-param name="replace-string" select="'\\'"/></xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise><xsl:value-of select="@value"/></xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      values.push_back("<xsl:value-of select="$processedValue"/>");
     </xsl:for-each>
-      _enumerationCFacet.value(enums);
+    <xsl:choose>
+      <xsl:when test="*[local-name()='restriction']/*[local-name(.)='enumeration']">
+      _enumerationCFacet.value(values);
+      </xsl:when>
+      <xsl:when test="*[local-name()='restriction']/*[local-name(.)='pattern']">
+      _patternCFacet.value(values);
+      </xsl:when>
+    </xsl:choose>
   </xsl:if>
 
   <!--
     attribute is not expected inside simpleType, though this template is also callled from complexType/simpleContent where attribute is expected inside restriction, which should not be interpreted as a facet
   -->
-  <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)!='simpleType' and local-name(.)!='annotation' and local-name(.)!='enumeration' and local-name(.)!='attribute']">
+  <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)!='simpleType' and local-name(.)!='annotation' and local-name(.)!='enumeration' and local-name(.)!='pattern' and local-name(.)!='attribute']">
     <xsl:variable name="facet" select="local-name(.)"/>
     <xsl:variable name="facetValue" select="@value"/>
     <xsl:choose>  
-      <xsl:when test="$facet='pattern'">
-        <xsl:variable name="newValue"><xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$facetValue"/><xsl:with-param name="search-string" select="'\'"/><xsl:with-param name="replace-string" select="'\\'"/></xsl:call-template></xsl:variable>
-      _<xsl:value-of select="$facet"/>CFacet.value("<xsl:value-of select="$newValue"/>");
-      </xsl:when>
       <!-- FIXME -->
       <xsl:when test="$facet='maxInclusive' or $facet='maxExclusive' or $facet='minInclusive' or $facet='minExclusive'">
         <xsl:choose>

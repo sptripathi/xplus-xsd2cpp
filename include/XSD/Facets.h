@@ -336,8 +336,21 @@ namespace XMLSchema
       }
       */
 
-      XPlus::DateTime dtTime = DateTimeUtils::parseISO8601DateTime(strVal);
-      value(dtTime);
+      switch(_primitiveType)
+      {
+        case PD_GDAY:
+        {
+          XPlus::Day aDay = DateTimeUtils::parseXsdDay(strVal);
+          XPlus::DateTime dtTime = DateTime(DateTime::UNSPECIFIED, DateTime::UNSPECIFIED, aDay.day(), DateTime::UNSPECIFIED, DateTime::UNSPECIFIED, DateTime::UNSPECIFIED);
+          value(dtTime);
+        }
+          break;
+        default:
+        {
+          XPlus::DateTime dtTime = DateTimeUtils::parseISO8601DateTime(strVal);
+          value(dtTime);
+        }
+      }
     }
 
     virtual DOMString stringValue() const 
@@ -420,6 +433,7 @@ namespace XMLSchema
     }
   };
 
+/*
   struct PatternCFacet : public NativeTypeCFacet<DOMString>
   {
     PatternCFacet(DOMString pattern, bool fixed=false):
@@ -428,6 +442,7 @@ namespace XMLSchema
     {
     }
   };
+*/
 
   struct WhiteSpaceCFacet : public NativeTypeCFacet<DOMString>
   {
@@ -474,13 +489,38 @@ namespace XMLSchema
     virtual DOMString stringValue() const 
     {
       ostringstream oss;
-      oss << " enum (";
+      oss << " one of the enums (";
       for (unsigned int i=0; i < _value.size(); i++)   oss << " " << _value[i];
       oss << " )";
       return oss.str();
     }
   };
 
+
+  struct PatternCFacet : public ConstrainingFacet<vector<DOMString> >
+  {
+     PatternCFacet(vector<DOMString> patterns):
+      ConstrainingFacetBase(CF_PATTERN),
+      ConstrainingFacet<vector<DOMString> >(CF_PATTERN, patterns)
+    {
+    }
+
+    PatternCFacet():
+      ConstrainingFacetBase(CF_PATTERN),
+      ConstrainingFacet<vector<DOMString> >(CF_PATTERN)
+    {
+    }
+
+    virtual DOMString stringValue() const 
+    {
+      ostringstream oss;
+      oss << " one of the patterns (";
+      for (unsigned int i=0; i < _value.size(); i++)   
+        oss << " \"" << _value[i] << "\"";
+      oss << " )";
+      return oss.str();
+    }
+  };
 
 
   //
