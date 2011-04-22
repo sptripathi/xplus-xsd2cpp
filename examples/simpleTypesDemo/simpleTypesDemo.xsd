@@ -130,7 +130,6 @@ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 
   <xsd:simpleType name="CelciusWaterTemp">
    <xsd:restriction base="xsd:decimal">
-    <xsd:fractionDigits value="2"/>
     <xsd:minExclusive value="0.00"/>
     <xsd:maxExclusive value="100.00"/>
    </xsd:restriction>
