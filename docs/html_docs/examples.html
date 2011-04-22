@@ -9,6 +9,13 @@
     <meta name="Language" content="English">
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>XmlPlus Examples</title>
+  <STYLE TYPE="text/css">
+  <!-- BODY
+   {
+   font-family:sans-serif;
+   }
+    -->
+  </STYLE>  
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -38,14 +45,16 @@
     </ul>
 
     <a name="HOWTO_EXAMPLES"><h3>How to try examples <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-    
-    Please read the topic <a href="usage.html">Tool Usage</a>, to learn about xsd2cpp-usage, building generated source, and running the executables.<br><br> 
+
+<p>
+The examples in the source package, come clean of generated code or makefile. Upon xsd2cpp invocation on the input schema file, the source and makefiles are generated. Please read the topic <a href="usage.html">Tool Usage</a>, to learn about xsd2cpp-usage, building generated source, and running the executables.
+</p>    
 
     Each example directory, comes with following files:
     <ol>
       <li> one or more XML-Schema file(s)
       <li> a valid.xml file(a valid XML file for reference)
-      <li> a main.cpp file ( with populateDocument template function populated)
+      <li> a main.cpp file 
     </ol>
     
     As mentioned earlier, xsd2cpp usage is:<br>
@@ -287,17 +296,16 @@ $ runTests.sh  [-c | -t]
 <p>
 The examples in the source package, come clean i.e. they don't have the generated source with themselves already. Upon xsd2cpp invocation on the input schema file, the source and makefiles are generated. It is not practical to list out generated source for all examples, as it gets very verbose and long. <p>
  Please follow this link, to view a few examples with generated source: 
-   <a href="examples_complete.html">Examples + Generated Source</a>
+   <a href="examples_complete.html">Samples of Generated Source</a>
   
   <a name="BROWSE_EXTESTS"><h3>Browse Examples and Tests <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-The complete list of examples and tests for browsing. 
+The complete list of examples and tests(excluding generated source) for browsing. 
   <ul>
     <li> <a href="browse_examples.html">Browse Examples</a>
     <li> <a href="browse_tests.html">Browse Tests</a>
   </ul>
 
-  <br><br><br>
-
+  <br><br>
   </form>
 </body>
 

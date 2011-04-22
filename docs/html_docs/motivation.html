@@ -9,6 +9,13 @@
     <meta name="Language" content="English">
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">  
     <title>Motivation</title>
+  <STYLE TYPE="text/css">
+  <!-- BODY
+   {
+   font-family:sans-serif;
+   }
+    -->
+  </STYLE>    
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -104,10 +111,16 @@
       <li> XmlPlus provides a code generator viz. xsd2cpp. The xsd2cpp tool generates C++ Data Binding code(XML-Objects) for the supplied schema.
       <li> XmlPlus provides <i>"simple to use"</i> C++ XML data binding.
       <li> XmlPlus generated code when built into a <b>[input]run</b> binary, can be used to generate good sample xml documents, validate xml documents,  xml I/O ie. serialization/deserialization etc. 
+      <li> XmlPlus is a <i>nework-enabled processor</i>.
       <li> XmlPlus <i>Deserialization</i> has <i>in-built</i> validation.
       <li> XmlPlus  retains not just elements and attributes but also processing-instructions and comments, across roundtrips. Here roundtrip refers to the typical tests of reading a xml document into data-binding objects(in memory) and then writing them back to a xml document.
     </ul>
-    Please read other sections on XmlPlus documentation, to learn more about it.
+
+
+<p>
+    The xsd2cpp tool is a C++ code generator. The xsd2cpp tool when invoked on an input XML Schema, generates C++ classes(headers) mapped to the input XML Schema components. Alongside, wherever needed, it generates implementation files(.cpp) for the generated C++ classes. Also, a sample application(main.cpp) is generated to show how an application could consume the generated C++ source files.
+</p>    
+  Please read other sections of XmlPlus documentation, to learn more about it.
 
     <br><br>
     Currently Supported Platforms(OS):
