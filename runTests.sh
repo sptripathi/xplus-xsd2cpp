@@ -99,7 +99,7 @@ cleanup_dir()
   log_clean_dir
   change_dir_abort
   find . | grep -v svn | grep -v README | grep -v xsd | grep -v xml | grep -v testme | grep -v "main.cpp"  | xargs rm -rf 2>/dev/null 
-  rm -f *.template *.bak t.xml* *.xml.rt.xml sample.xml *.save README.build.txt 
+  rm -f *.template *.bak t.xml* *.xml.rt.xml *.xml.row.xml sample.xml *.save README.build.txt 
   cd - > /dev/null 2>&1
   echo "   [ CLEANED ]"  
 }
@@ -253,12 +253,12 @@ test_sample()
     return
   fi
 
-  ./build/bin/$run -v sample.xml >> tests.log 2>&1
-  if [ $? -ne 0 ]; then
-    echo "   failed to validate file: sample.xml"
-    fail_test
-    return
-  fi
+  #./build/bin/$run -v sample.xml >> tests.log 2>&1
+  #if [ $? -ne 0 ]; then
+  #  echo "   failed to validate file: sample.xml"
+  #  fail_test
+  #  return
+  #fi
 }
 
 
@@ -303,6 +303,18 @@ test_roundtrip()
     # check xyz.xml.rt.xml exists
     if [ ! -f $xmlValid.rt.xml ]; then
       echo "   failed to roundtrip input file [$xmlValid] to write roundtripped file [$xmlValid.rt.xml]"
+      fail_test
+      return
+    fi
+  done
+
+  # ROW: rountrip with callback
+  for xmlValid in $validXmlFiles
+  do
+    ./build/bin/$run -u $xmlValid >> tests.log 2>&1
+    # check xyz.xml.row.xml exists
+    if [ ! -f $xmlValid.row.xml ]; then
+      echo "   failed to roundtrip input file [$xmlValid] to write roundtripped file [$xmlValid.row.xml]"
       fail_test
       return
     fi
@@ -359,7 +371,7 @@ test_dir()
     test_build
     test_valid
     test_invalid
-    test_sample
+    #test_sample
     test_write
     test_roundtrip
   fi
