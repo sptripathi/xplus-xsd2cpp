@@ -455,7 +455,7 @@ namespace Types
           <xsl:with-param name="pos" select="position()"/>
         </xsl:call-template>
       </xsl:variable>
-      _unionMembers.push_back(new <xsl:value-of select="$cppItemTypeInferred"/>(AnyTypeCreateArgs()));
+      _unionMembers.push_back( new <xsl:value-of select="$cppItemTypeInferred"/>(args) );
     </xsl:for-each>
     }
 

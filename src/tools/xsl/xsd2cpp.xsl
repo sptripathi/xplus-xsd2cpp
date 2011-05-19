@@ -425,6 +425,9 @@ class Document : public XMLSchema::TDocument
     <xsl:variable name="cppNameUseCase"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'declaration'"/></xsl:call-template></xsl:variable>
       if(!<xsl:value-of select="$cppNameUseCase"/>) {
         XsdEvent event(<xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>, NULL, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdEvent::ELEMENT_START);
+        if(this-&gt;createSample()) {
+          event.cbOptions.isSampleCreate = true;
+        }
         _fsm->processEventThrow(event); 
       }
     }

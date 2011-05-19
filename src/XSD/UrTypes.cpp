@@ -336,9 +336,7 @@ namespace XMLSchema
       try
       {
         normalizeValue(value);
-        if(!isSampleCreate()) {
-          checksOnSetValue(value);
-        }
+        checksOnSetValue(value);
         setValue(value);
         postSetValue();
       }
@@ -521,8 +519,14 @@ namespace XMLSchema
           anySimpleType* pST = dynamic_cast<anySimpleType *>(const_cast<Node*>(_fsm->fsmCreatedNode()));
           _fsm->fsmCreatedNode(NULL);
           if(attr && value) {
-            //attr->createTextNode(value);
-            pST->stringValue(*value);
+            // this can happen ie when an attribute is not a anySimpleType,
+            // when attribute is not coming from schema, eg. xsi:* attributes
+            if(pST) {
+              pST->stringValue(*value);
+            }
+            else {
+              attr->createTextNode(value);
+            }
             return attr;
           }
         }
@@ -796,6 +800,7 @@ namespace XMLSchema
         this->stringValue(val);
       }
       catch(XPlus::Exception& ex) {
+        //cerr << "checkValue failed with err:" << ex.msg() << endl;
         return false;
       }
       return true;
@@ -812,10 +817,8 @@ namespace XMLSchema
       {
         // eg.  store integer value ie string-to-int
         setTypedValue();
-        if(!isSampleCreate()) {
-          validateCFacets();
-          applyCFacets();
-        }
+        validateCFacets();
+        applyCFacets();
       }
       catch(Exception& ex)
       {
@@ -1357,6 +1360,11 @@ namespace XMLSchema
 
     void anySimpleType::applyPatternCFacet()
     {
+      // dont apply pattern facet while creating sample xml document
+      if(isSampleCreate()) {
+        return;
+      }
+
       vector<DOMString> patterns = _patternCFacet.value();
       for(unsigned int i=0; i < patterns.size(); i++)
       {

@@ -147,7 +147,7 @@
 
         <br>
         <li><code>$ make &amp;&amp; make install</code> <br>
-        This will build and install the build in the sepecified installation path.
+        This will build and install the build in the specified installation path.
       </ol>
     	
 			<a name="BUILD_LATER"><h5>Rebuilding the source later(probably with different options) <hr NOSHADE SIZE=5 WIDTH=100%> </h5></a>
@@ -158,21 +158,21 @@
         This step generates relevant Makefiles.<br>
 
         <br>
-        Alternatively, if you want the build to be installed in user defined path <br>
+        Alternatively, if you want the build to be installed in user defined path: <br>
         <code>$ ./configure --prefix=/path/of/installation </code><br>
         For example:<br>
         <code>$ ./configure --prefix=$HOME/xplusbuild </code><br>
 
         <br>
         <li><code>$ make &amp;&amp; make install</code> <br>
-        This will build and install the build in the sepecified installation path.
+        This will build and install the build in the specified installation path.
       </ol>
 
 
       <br>
 
       <a name="UPDATE_ENV"><h3>Updating the environment with the installation path <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-      If you chose custom path of instalation in previous steps, you would need to update your working environment with those paths. (typically done by exporting these variables in .bashrc or .profile files in Linux or Mac-OS machines).<br><br>
+      If you chose custom path of instalation in previous steps, you would need to update your working environment with those paths. (typically done by exporting these variables in ".bashrc" or ".profile" files in Linux or Mac-OS machines).<br><br>
       <code>
         $ export PATH=$PATH:/path/of/installation/bin <br>  
         $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/of/installation/lib

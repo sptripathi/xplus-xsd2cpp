@@ -309,6 +309,11 @@ done
 
 if [ $# -ge 1 ]; then
   XSD=$1
+  if [ ! -f $XSD ]; then
+    echo "xsd2cpp: $XSD: No such file or directory"
+    echo "xsd2cpp: no input file"
+    exit 1
+  fi
   if [ $# -eq 2 ]; then
     OUTDIR=$2
   fi
