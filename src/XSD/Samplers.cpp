@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -17,15 +17,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+extern "C" {
 #include <stdlib.h>
 #include <time.h>
+#include <assert.h>
+#include <math.h>
+}
+#include <sstream>
 
+#include "XPlus/FPA.h"
 #include "XSD/Sampler.h"
+#include "XPlus/StringUtils.h"
 
 namespace XMLSchema
 {
   namespace Sampler
   {
+    // some characters in the charset may be repeated intentionally
+    // so as to increase the chances of them appearing in radom
+    // string sample generated from such a charset(eg. chars[+/=] in
+    // base64BinarySamples)
+    const DOMString alphaCharSet = "abcdefghijklmnopqrstuvwxyz";
+    const DOMString alphaNumCharSet = "abcdefghijklmnopqrstuvwxyz0123456789";
+    const DOMString hexBinaryCharSet = "0A1B2C3D4E5F6A7B8C9D";
+
     DOMString stringSamples[CNT_SAMPLES] = {
       "a text with     spaces,\t\ttabs,\nand\nnewlines",
       "Some lines of text separated by newlines and"
@@ -39,7 +54,8 @@ namespace XMLSchema
       "tab\t\tseparated\tstring"                       ,
       "la dame noire sur la rue"                       ,
       "newline\nseparated\nstring"                     ,
-      "ginger running countryside"
+      "a dog is a man's best friend but my best"
+      " friend happens to be a canary"
     };
 
     DOMString booleanSamples[CNT_SAMPLES] = {
@@ -124,27 +140,27 @@ namespace XMLSchema
     DOMString hexBinarySamples[CNT_SAMPLES] = {
       "FEFF0B9C1B3C7D2B5FA9B3CB7F03C7D2B5FA9BA9B3CB7F03C7D2"  ,
       "A0B9C1D8B3CB7F03C7D2B5FA9BA9D2B5FA9B3CB7F03C7D2B"      ,
-      "FA9DB3CB7F03C7D2B5FA9BA9D2B5F5FA9B3CB7F03C703C7D2"     ,
-      "05BF3C7D2B5FA9BA9D2B7F03C7D2B5FA9BA9D2B59B3CB7F03C7"   , 
-      "B7F07D2B5FA9BA9D2B7F03C7D25FA9B3CB7F3CB7F03C7D2B5FA"   ,
-      "FFFE2B7F03C7D25F7F03C7D25FA9BA9D2B5F03C7D2B52B5F"      , 
-      "A9B3C7DAC7D25FA9BA9D2B5C7D2B5FA9BA9D2B7BA9D2B7F03C"    , 
+      "FA9DB3CB7F03C7D2B5FA9BA9D2B5F5FA9B3CB7F03C703C7D"      ,
+      "05BF3C7D2B5FA9BA9D2B7F03C7D2B5FA9BA9D2B59B3CB7F03C"    , 
+      "B7F07D2B5FA9BA9D2B7F03C7D25FA9B3CB7F3CB7F03C7D2B"      ,
+      "FFFE2B7F03C7D25F7F03C7D25FA9BA9D2B5F03C7D2B52B5FCE"    , 
+      "A9B3C7DAC7D25FA9BA9D2B5C7D2B5FA9BA9D2B7BA9D2B7F03B"    , 
       "7AFD3CB7F03C7D2B5FA9C7D2B5FA9BA9B37F2B5FA0B9C1D8"      ,
-      "2B5FB5FA9BA9B37F2B5FA0B9C105BF3C7D2B5FA97AFD3CB7F"     , 
+      "2B5FB5FA9BA9B37F2B5FA0B9C105BF3C7D2B5FA97AFD3CB7"      , 
       "B37F2B5FB5FA9BB7F07D2B5FA0B9C1D8BB7F07D2B5FA9B"
     };
 
     DOMString base64BinarySamples[CNT_SAMPLES] = {
-      "60NvZvtdTB+7UnlLp/H24p7h4bs="                              ,
-      "qUADDMHZkyebvRdLs+6Dv7RvgMLRlUaDB4Q9yn9XoJA79a2882ffTg=="  ,
-      "0NZvTB+7Lp/H24h4bs="                                       ,
-      "qUADZkybvRdLs+6D2882ffTg=="                                ,
-      "Lp/H24h4bs="                                               ,
-      "vRdLs+6D2882ff"                                            ,
-      "DZkyb0NZvTB+7Lp/H24h"                                      ,
-      "Ls+6D2qUADZkybvRdLs+6D2882f"                               ,
-      "D2882Lp/H24h4bs"                                           ,
-      "24h4bvRdLs+6D2882"
+      "MJ854s7FwL0X8WGe0HLacMK5G09gTb1MJg==",
+      "PSB3y5nmYi0rq7gT8lsf4xRgPgUldiI=",
+      "6Fe5avxF7t03Tiz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5avxF7t03Tiz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5avxF7t03Tiz23vhq62",
+      "5G09gTb1MJ854s7FwL0X8WGe0HLacMK5G09gTb1MJ854s7FwLA==",
+      "tMmmUQ5X2trgPnZfp5gCZktMmmUQ5X2trgPnZfp5gCZktMmmUQc=",
+      "ktMmmUQ5X2trgPnZfp5gCZktMmmUQ5X2trgPnZfp5gCZ",
+      "iz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5avxF7t03Tiz23vyhq62fOe0jccZ4bNmQkg3w60Zw==",
+      "Q5X2trgPnZfp5gCZktMmmUQ5X2trgPnZfp5gCZktMmmUQ5X2trgPnZ0=",
+      "3Tiz23vyhq62fOe0jccZ4bNmQkg3w60wZX1T6Fe5vxF7",
+      "Zfp5gCZktMmmUA=="
     };
 
     DOMString anyURISamples[CNT_SAMPLES] = {
@@ -166,11 +182,10 @@ namespace XMLSchema
       "xs:boolean"         , "ns2:aFont"
     };
 
-    //FIXME: need to revisit to get good samples
     DOMString NOTATIONSamples[CNT_SAMPLES] = {
-      "xsi:schemaLocation" , "ds:KeyInfoType"  , "xsd:hexBinary" , "xsl:choose",
-      "anElementName"      , "anAttributeName" , "xsl:when"      , "ns1:xInt"  ,
-      "xs:boolean"         , "ns2:aFont"
+      "audio:wav"  , "audio:mp4"  , "audio:flv"  , "video:mp4"  ,
+      "video:flv"  , "video:avi"  , "video:rm"   , "image:tiff" ,
+      "image:jpg"  , "image:png"
     };
 
     DOMString  normalizedStringSamples[CNT_SAMPLES] = {
@@ -184,8 +199,8 @@ namespace XMLSchema
     DOMString  tokenSamples[CNT_SAMPLES] = {
       "electronic mailing list"    , "the great wall of china" , "Isaac Newton"    ,
       "a thick forest"             , "James Bond"              , "Albert Einstein" ,
-      "frequently asked questions" , "xml schema"              , "abstract domain" ,
-      "errata"
+      "frequently asked questions" , "xml schema"              , "I was written on"
+      " two lines" , " path of installation "
     };
 
     DOMString  languageSamples[CNT_SAMPLES] = {
@@ -194,8 +209,8 @@ namespace XMLSchema
     };
 
     DOMString  NMTOKENSamples[CNT_SAMPLES] = {
-      "9216735"   , ":tabe"     , "-path"        , ".dirstamp" , "_filename",
-      "gregorian" , "1-10-2011" , "_anotherPath" , ".vimrc"    , "options"
+      "007"   , "1000_000"     , "  starts_with_a_space"   , "electronic_mailing_list" , "_aFileName",
+      "gregorian" , "1-10-2011" , "path_of_installation" , ".vimrc"    , "xml-schema"
     };
 
     DOMString  NMTOKENSSamples[CNT_SAMPLES] = {
@@ -208,17 +223,17 @@ namespace XMLSchema
       ":e :tabe"                             ,
       ". common.sh"                          ,
       "options: --help --version"            , 
-      "979005545  979005546 979005547"
+      "1000  1000_000 1000_000_000"
     };
 
     DOMString  NameSamples[CNT_SAMPLES] = {
-      ":colonName"  , "noColonName"  , "name1" , "name2" , "name3" ,
-      ":colonName2" , "noColonName2" , "name4" , "name5" , "name6"
+      ":colonName"  , "ns2:attr1"  , "foo.bar" , "ns2:attr2" , "bar-baz" ,
+      ":colonName2" , "ns1:elem1" , "noNumChar_AlphaNumChar" , "foo.bar.baz" , "ns1:elem2"
     };
     
     DOMString  NCNameSamples[CNT_SAMPLES] = {
-      "noColonName" , "noColonName2", "name1", "name2", "name3",
-      "noColonName3", "noColonName4", "name4", "name5", "name6"
+      "colon-name" , "ns_colon_localName", "_a.name", "foo", "foo_bar.baz",
+      "ns2.colon.localName2", "noColonName4", "colon_name", "noColon_noSpace_name", "aName"
     };
 
     DOMString  IDSamples[CNT_SAMPLES] = {
@@ -321,17 +336,380 @@ namespace XMLSchema
       "255" , "0"  , "126" , "100" , "254" ,
       "55"  , "10" , "26"  , "10"  , "54"
     };
+   
+    //~~~~~~~~~~~~~~  generic string  samplers  ~~~~~~~~~~~~
 
-
-
-    DOMString getRandomSample(DOMString *arrSamples)
+    DOMString getRandomSample(vector<DOMString> samples)
     {
-      //unsigned int seed = static_cast<int>(time(NULL));
-      //srand48(seed);
-      // idx: 0-9
-      int idx = (static_cast<int>(drand48()*100))%CNT_SAMPLES;
+      unsigned int len = samples.size();
+      int idx = nonnegativeIntegerRandom(len);
+      return samples[idx];
+    }
+
+    DOMString getRandomSample(DOMString *arrSamples, int lenSamples)
+    {
+      int idx = nonnegativeIntegerRandom(lenSamples);
       return arrSamples[idx];
     }
+    
+    DOMString getRandomSampleStringOfLength(int length, DOMString charSet)
+    {
+      ostringstream oss;
+      int idx=0;
+      int charSetLen = charSet.length(); 
+      for(unsigned int i=0; i<length; i++)
+      {
+        idx = nonnegativeIntegerRandom(charSetLen);
+        oss << charSet[idx];
+      }
+      return oss.str();
+    }
+    
+    DOMString getRandomSampleStringOfLengthRange(int minLength, int maxLength, DOMString charSet)
+    {
+      int randLen = integerRandomInRange(minLength, maxLength+1); 
+      return getRandomSampleStringOfLength(randLen, charSet);
+    }
+    
+#define MAXLEN_STRING_SAMPLE 100
+    DOMString getRandomSampleStringOfMinLength(int minLength, DOMString charSet)
+    {
+      int randAddlLen = nonnegativeIntegerRandom(MAXLEN_STRING_SAMPLE); 
+      return getRandomSampleStringOfLength(minLength+randAddlLen, charSet);
+    }
+    
+    DOMString getRandomSampleStringOfMaxLength(int maxLength, DOMString charSet)
+    {
+      int length = nonnegativeIntegerRandom(maxLength);
+      return getRandomSampleStringOfLength(length, charSet);
+    }
+
+    //~~~~~~~~~~~~~~  base64Binary  ~~~~~~~~~~~~
+
+
+  /***************************************************
+
+    base64Binary - analysis of parts of the regex :
+    ===============================================
+ 
+    Regex: ((([A-Za-z0-9+/]\\s?){4})*(([A-Za-z0-9+/]\\s?){3}[A-Za-z0-9+/]|([A-Za-z0-9+/]\\s?){2}[AEIMQUYcgkosw048]\\s?=|[A-Za-z0-9+/]\\s?[AQgw]\\s?=\\s?=))?           
+
+    1) Prefix with occurence as series : 0, 4, 8, 12, ...
+        pattern :  ([A-Za-z0-9+/]\s?){4})*
+        example :  bn10
+
+    2) Suffix with fixed length = 4, with 3 options of regexes
+
+      a) option 1 
+        pattern : ([A-Za-z0-9+/]\s?){3}[A-Za-z0-9+/]
+        example : "asd9", "a sd9", "a s d9", "a s d 9"
+
+      b) option 2 
+        pattern : ([A-Za-z0-9+/]\s?){2}[AEIMQUYcgkosw048]\s?=
+        example : "asw=", "a s w =" 
+
+      c) option 3
+        pattern : [A-Za-z0-9+/]\s?[AQgw]\s?=\s?=
+        example : "aw==", "a w = ="
+
+  *****************************************************/
+
+/*
+    int base64OctetLenToLexLen(int octetLen)
+    {
+      return ceil(octetLen/3)*4;
+    }
+    
+    // length := floor (length(lex3) * 3 / 4)  
+    // lexLen should have whitespace stripped and padding removed
+    int base64LexLenToOctetLen(int lexLen)
+    {
+      return floor(lexLen/4)*3;
+    }
+*/
+    DOMString getRandomSampleBase64StringOfLength(int octetLen)
+    {
+      // first 4 chars of base64BinaryCharSet that are optional 
+      // if lexLen <= 4
+      static  DOMString base64Optional4CharSet = "abcdefghijklmnopqrstuvwxyz"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789+/";
+
+      DOMString prefix="", suffix="";
+      int lastGroupOctets = octetLen%3;
+      int prefixLen = (octetLen - lastGroupOctets)*4/3;  
+      if(prefixLen > 0) {
+        prefix = getRandomSampleStringOfLength(prefixLen, base64Optional4CharSet);
+      }
+
+      switch(lastGroupOctets)
+      {
+        case 0:
+            suffix = "";
+          break;
+
+        case 2:
+          {
+            static DOMString suffixCharSet2b = "AEIMQUYcgkosw048";
+            DOMString suffix1 = getRandomSampleStringOfLength(2, base64Optional4CharSet);
+            DOMString suffix2 = getRandomSampleStringOfLength(1, suffixCharSet2b);
+            suffix = suffix1 + suffix2 + "=";
+          }
+          break;
+
+        case 1:
+          {
+            static DOMString suffixCharSet2c = "AQgw";
+            DOMString suffix1 = getRandomSampleStringOfLength(1, base64Optional4CharSet);
+            DOMString suffix2 = getRandomSampleStringOfLength(1, suffixCharSet2c);
+            suffix = suffix1 + suffix2 + "==";
+          }
+          break;
+        
+        default:
+          suffix="";
+          break;
+      }
+      return prefix+suffix;
+    }
+    
+    DOMString getRandomSampleBase64StringOfLengthRange(int minOctetLen, int maxOctetLen)
+    {
+      int randLen = integerRandomInRange(minOctetLen, maxOctetLen+1);
+      return getRandomSampleBase64StringOfLength(randLen);
+    }
+
+    DOMString getRandomSampleBase64StringOfMinLength(int minOctetLen)
+    {
+      //lets take unbounded maxOctetLen as minOctetLen + some-constant
+      int maxOctetLength = minOctetLen + 40;
+      int randLen = integerRandomInRange(minOctetLen, maxOctetLength+1);
+      return getRandomSampleBase64StringOfLength(randLen);
+    }
+    
+    DOMString getRandomSampleBase64StringOfMaxLength(int maxOctetLen)
+    {
+      int minOctetLen = 0;
+      int randLen = integerRandomInRange(minOctetLen, maxOctetLen+1);
+      return getRandomSampleBase64StringOfLength(randLen);
+    }
+    
+    //~~~~~~~~~~~~~~  anyURI  ~~~~~~~~~~~~
+
+    // For anyURI, length is measured in units of characters (as for string).
+    // Such a character does not always map to one octet.
+
+    // "http://example.com"           : 18
+    // "http://example.com/"          : 19
+    // "http://www.example.com"       : 22
+    // "http://www.example.com/"      : 23
+    DOMString getUrlSchemeSample(int len)
+    {
+      // len 18
+      static DOMString example_urls[] = {
+        "http://example.com",
+        "http://example.org",
+        "http://example.net"
+      };
+
+      // len 22
+      static DOMString www_example_urls[] = {
+        "http://www.example.com",
+        "http://www.example.org",
+        "http://www.example.net"
+      };
+
+      assert(len>=18);
+      int toss = nonnegativeIntegerRandom(3);
+
+      if(len == 18)
+      {
+        return example_urls[toss];
+      }
+      else if(len < 22) 
+      {
+        int suffixLen = len -19;
+        DOMString suffix = getRandomSampleStringOfLength(suffixLen, alphaCharSet); 
+        return example_urls[toss] + "/" + suffix;        
+      }
+      else if(len == 22)
+      {
+        return www_example_urls[toss];
+      }
+      else
+      {
+        int suffixLen = len - 23;
+        DOMString suffix = getRandomSampleStringOfLength(suffixLen, alphaCharSet); 
+        return www_example_urls[toss] + "/" + suffix;        
+      }
+    }
+
+    // "urn:"   : 4
+    DOMString getUrnSchemeSample(int len)
+    {
+      assert(len > 4);
+      return DOMString("urn:") + getRandomSampleStringOfLength(len-4, alphaCharSet);
+    }
+
+    DOMString getRandomSampleAnyURIOfLength(int len)
+    {
+      if(len >= 18) {
+        return getUrlSchemeSample(len);
+      }
+      else if(len > 4) {
+        return getUrnSchemeSample(len);
+      }
+      // len:[0,4] : generate a relative uri
+      else
+      {
+        if(len > 2) {
+          return DOMString("./") + getRandomSampleStringOfLength(len-2, alphaCharSet);
+        }
+        else {
+          return getRandomSampleStringOfLength(len, alphaCharSet);
+        }
+      }
+    }
+
+    DOMString getRandomSampleAnyURIOfLengthRange(int minLen, int maxLen)
+    {
+      int randLen = integerRandomInRange(minLen, maxLen+1);
+      return getRandomSampleAnyURIOfLength(randLen);
+    }
+
+    DOMString getRandomSampleAnyURIOfMinLength(int minLen)
+    {
+      //lets take unbounded maxLen as minLen + some-constant
+      int maxLen = minLen + 30;
+      int randLen = integerRandomInRange(minLen, maxLen+1);
+      return getRandomSampleAnyURIOfLength(randLen);
+    }
+    
+    DOMString getRandomSampleAnyURIOfMaxLength(int maxLen)
+    {
+      int minLen = 0;
+      int randLen = integerRandomInRange(minLen, maxLen+1);
+      return getRandomSampleAnyURIOfLength(randLen);
+    }
+
+
+    //~~~~~~~~~~~~~~  double  ~~~~~~~~~~~~
+    DOMString getRandomSampleDouble(double minIncl, double maxIncl)
+    {
+      double doubleStep = 0;
+      double diff = maxIncl - minIncl;
+      if(diff <10 ) {
+        doubleStep = (diff / 100) * nonnegativeIntegerRandom(95);
+      }
+      else
+      {
+        UInt64 intDiff = static_cast<UInt64>(ABS(maxIncl - minIncl));
+        unsigned long long step = integerRandomInRange(1, intDiff);
+        //drand48 generates random in range [0,1]
+        doubleStep = step - drand48();
+      }
+      
+      double outDouble = minIncl + doubleStep;
+#if 0
+      // if the generated double doesn't comply to totalDigits/fractionDigits
+      // constraints then some warning to user is the best we could do for now
+      unsigned int myIntegralDigits = 0, myFractionalDigits = 0;
+      XPlus::FPA::countIntegralAndFractionDigits( outDouble, myIntegralDigits, myFractionalDigits);
+      int maxTotalDigits = (totalDigits != -1) ? totalDigits : 1000; 
+      int maxFractionalDigits = (fractionDigits != -1) ? fractionDigits : 100; 
+      if( 
+          (myFractionalDigits > maxFractionalDigits) ||
+          ( (myIntegralDigits+ myFractionalDigits) > maxTotalDigits)
+        )  
+      {
+        cerr << "While generating a sample value for double, failed to"
+          " guess a sample value that satisfies totalDigits/fractionDigits constraints."
+          " Using an invalid sample value anyway."
+          << endl;
+      }
+#endif      
+      return toString<double>(outDouble);
+    }
+
+    DOMString getRandomSampleDoubleOfDigits(int totalDigits, int fractionDigits)
+    {
+      // moderate the values to avoid overflow, in case the schema specifies 
+      // too large a number for totalDigits and/or fractionDigits
+      int modestIntegralDigits =0, modestFractionDigits =0;
+      if( (totalDigits != -1) && (fractionDigits != -1) )
+      {
+        modestFractionDigits = (fractionDigits > 4) ? 4 : fractionDigits;
+        int integralDigits = totalDigits - modestFractionDigits;
+        modestIntegralDigits = (integralDigits > 8) ? 8 : integralDigits;
+      }
+      else if(totalDigits != -1)
+      {
+        // let's assume some modest value for fractionDigits
+        modestFractionDigits = 3;
+        int integralDigits = totalDigits - modestFractionDigits;
+        modestIntegralDigits = (integralDigits > 8) ? 8 : integralDigits;
+      }
+      else if(fractionDigits != -1)
+      {
+        modestFractionDigits = (fractionDigits > 4) ? 4 : fractionDigits;
+        // let's assume some modest value for integralDigits
+        modestIntegralDigits = 7;
+      }
+
+      DOMString integralStr = "", fractionStr = "", outStr = "";
+      int randFractionDigits = nonnegativeIntegerRandom(modestFractionDigits+1);
+      int randIntegralDigits = nonnegativeIntegerRandom(modestIntegralDigits+1);
+      integralStr = getRandomSampleLongOfLength( nonnegativeIntegerRandom(randIntegralDigits+1) );
+      fractionStr = getRandomSampleLongOfLength( nonnegativeIntegerRandom(randFractionDigits+1) );
+      outStr = integralStr + ( (fractionStr.length() > 0) ? 
+                             (DOMString(".") + fractionStr) : "" );
+      
+      // handle the case when both random randFractionDigits and randIntegralDigits are 0
+      if(outStr.length() == 0) {
+        outStr = "0"; 
+      }
+      return outStr;
+    }
+
+
+    //~~~~~~~~~~~~~~  long  ~~~~~~~~~~~~
+    DOMString getRandomSampleLongOfLength(int len)
+    {
+      ostringstream oss;
+      for(int i=0; i<len; i++)
+      {
+        int digit = integerRandomInRange(1,10);
+        oss << digit;
+      }
+      return oss.str();
+    }
+
+    DOMString getRandomSampleLong(Int64 minIncl, Int64 maxIncl)
+    {
+      assert(minIncl <= maxIncl);
+      UInt64 numSamples = static_cast<unsigned long long>(ABS(maxIncl - minIncl +1));
+      UInt64 step = nonnegativeIntegerRandom(numSamples);
+      return toString<Int64>(minIncl + step);
+    }
+
+    //~~~~~~~~~~~~~~  random generators  ~~~~~~~~~~~~
+
+    // produces nonnegativeInteger in range [0, maxExcl-1]
+    UInt64 nonnegativeIntegerRandom(UInt64 maxExcl)
+    {
+      assert(maxExcl > 0);
+      srand48( time(NULL)%10001 + lrand48()%10001 );
+      long int r = lrand48()%(maxExcl);
+      return r;
+    }
+    
+    // need random integer in range [minIncl, maxExcl-1]
+    // ie [0, maxExcl-1-minIncl] + minIncl
+    Int64 integerRandomInRange(Int64 minIncl, Int64 maxExcl)
+    {
+      assert(maxExcl > minIncl);
+      return (nonnegativeIntegerRandom(maxExcl-minIncl) + minIncl);
+    }
+
 
   }// end namespace Sampler
 

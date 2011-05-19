@@ -4,59 +4,25 @@ using namespace DOM;
 using namespace FSM;
 
 
-void create_fsm2()
+void create_fsm1(XsdFsmBasePtr& testFsm)
 {
-
-  /*
- XsdFsmOfFSMs* ptr = new XsdFsmOfFSMs((XsdFsmBasePtr [] ) {
-                          new XsdFSM<void>( Particle(NULL,  DOMString("address"), 1, 1), XsdEvent::ELEMENT_START),
-                          new XsdFSM<void>( Particle(NULL,  DOMString("postalAddress"), 1, 1), XsdEvent::ELEMENT_START),
-                          NULL
-                          }, XsdFsmOfFSMs::CHOICE);
-
-   XsdFsmBasePtr fofElem = new XsdFsmOfFSMs((XsdFsmBasePtr [] ) {
-      new XsdFSM<void>( Particle(NULL,  DOMString("index"), 1, 1), XsdEvent::ELEMENT_START),
-      new XsdFSM<void>( Particle(NULL,  DOMString("name"), 1, 1), XsdEvent::ELEMENT_START),
-      new XsdFSM<void>( Particle(NULL,  DOMString("officeRecord"), 1, 1), XsdEvent::ELEMENT_START),
-      ptr,
-      new XsdFSM<void>( Particle(NULL,  DOMString("personalInfo"), 1, 1), XsdEvent::ELEMENT_START),
-      NULL
-    } , 
-    XsdFsmOfFSMs::SEQUENCE);
-
-  XsdFsmBasePtr elemEndFsm = new XsdFSM<void>(Particle(NULL, "elem", 1, 1), XsdEvent::ELEMENT_END);
-  //XsdFsmBasePtr ptrFsms[] = { fofElem, elemEndFsm, NULL };
-  XsdFsmBasePtr ptrFsms[] = { ptr, NULL };
-  XsdFsmBasePtr testFsm = new XsdFsmOfFSMs( ptrFsms, XsdFsmOfFSMs::SEQUENCE);
-  testFsm->print();
-  */
-  
-  /*
- XsdFsmOfFSMs* ptr = new XsdSequenceFsmOfFSMs((XsdFsmBasePtr [] ) 
-     {
-     new XsdFSM<void>( Particle(NULL, DOMString("a"), 0, 1), XsdEvent::ELEMENT_START),
-     new XsdFSM<void>( Particle(NULL, DOMString("b"), 1, 2), XsdEvent::ELEMENT_START),
-     NULL 
-     });
-     */
-
-    /*
-  XsdFsmOfFSMs* ptr2 = 
-      new XsdChoiceFsmOfFSMs((XsdFsmBasePtr [] ) {
-        new XsdFSM<void *>( Particle(NULL, DOMString("c"), 1, 1), XsdEvent::ELEMENT_START),
-        new XsdFSM<void *>( Particle(NULL, DOMString("d"), 1, 1), XsdEvent::ELEMENT_START),
-        NULL
-        } ) ;
-  XsdFsmOfFSMs* ptr = new XsdSequenceFsmOfFSMs((XsdFsmBasePtr [] ) 
-     {
-     new XsdFSM<void *>( Particle(NULL, DOMString("a"), 0, 1), XsdEvent::ELEMENT_START),
-     new XsdFSM<void *>( Particle(NULL, DOMString("b"), 1, 2), XsdEvent::ELEMENT_START),
-     new XsdFsmArray(ptr2, 2, 3),
-     NULL
-     }
-     );
-  */
+  XsdFsmBasePtr fsmArray[] = {
+    new XsdFSM<void *>( Particle(NULL, DOMString("x"), 1, 1), XsdEvent::ELEMENT_START),
+    new XsdFSM<void *>( Particle(NULL, DOMString("y"), 1, 1), XsdEvent::ELEMENT_START),
+    NULL 
+  } ;
+  XsdFsmBasePtr seq1 = new XsdSequenceFsmOfFSMs(fsmArray);
+  XsdFsmBasePtr fsmArray2[] = {
+      new XsdFsmArray(seq1, 0, 1),
+      new XsdFSM<void *>( Particle(NULL, DOMString("c"), 0, 1), XsdEvent::ELEMENT_START),
+      NULL 
+    } ;
+  XsdFsmBasePtr seq2 = new XsdSequenceFsmOfFSMs(fsmArray2);
+  XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(Particle(NULL, "elem", 1, 1), XsdEvent::ELEMENT_END);
+  XsdFsmBasePtr ptrFsms[] = { seq2,  elemEndFsm, NULL };
+  testFsm = new XsdSequenceFsmOfFSMs(ptrFsms);
 }
+
 
 void create_fsm2(XsdFsmBasePtr& testFsm)
 {
@@ -80,28 +46,8 @@ void create_fsm2(XsdFsmBasePtr& testFsm)
   XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(Particle(NULL, "elem", 1, 1), XsdEvent::ELEMENT_END);
   XsdFsmBasePtr ptrFsms[] = { seq2,  elemEndFsm, NULL };
   testFsm = new XsdSequenceFsmOfFSMs(ptrFsms);
-
 }
 
-
-void create_fsm1(XsdFsmBasePtr& testFsm)
-{
-  XsdFsmBasePtr fsmArray[] = {
-    new XsdFSM<void *>( Particle(NULL, DOMString("x"), 1, 1), XsdEvent::ELEMENT_START),
-    new XsdFSM<void *>( Particle(NULL, DOMString("y"), 1, 1), XsdEvent::ELEMENT_START),
-    NULL 
-  } ;
-  XsdFsmBasePtr seq1 = new XsdSequenceFsmOfFSMs(fsmArray);
-  XsdFsmBasePtr fsmArray2[] = {
-      new XsdFsmArray(seq1, 0, 1),
-      new XsdFSM<void *>( Particle(NULL, DOMString("c"), 0, 1), XsdEvent::ELEMENT_START),
-      NULL 
-    } ;
-  XsdFsmBasePtr seq2 = new XsdSequenceFsmOfFSMs(fsmArray2);
-  XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(Particle(NULL, "elem", 1, 1), XsdEvent::ELEMENT_END);
-  XsdFsmBasePtr ptrFsms[] = { seq2,  elemEndFsm, NULL };
-  testFsm = new XsdSequenceFsmOfFSMs(ptrFsms);
-}
 
 void create_fsm3(XsdFsmBasePtr& testFsm)
 {
@@ -120,8 +66,6 @@ void create_fsm3(XsdFsmBasePtr& testFsm)
   XsdFsmBasePtr elemEndFsm = new XsdFSM<void *>(Particle(NULL, "elem", 1, 1), XsdEvent::ELEMENT_END);
   XsdFsmBasePtr fsms[] = { _fsmAttrs, choiceList, elemEndFsm, NULL };
   testFsm = new XsdSequenceFsmOfFSMs(fsms);
-
-
 }
 
 void test1()

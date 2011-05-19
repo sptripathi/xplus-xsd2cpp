@@ -3,7 +3,7 @@
 <!--
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 // All rights reserved.
 //
 -->
@@ -57,7 +57,7 @@ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
       <xsd:element name="xUnsignedShort" type="xsd:unsignedShort" default="65535"/>
       <xsd:element name="xUnsignedByte" type="xsd:unsignedByte" default="255"/>
       <xsd:element name="xHexBinary" type="xsd:hexBinary" default="FEFF"/>
-      <xsd:element name="xBase64Binary" type="xsd:base64Binary" default="ZXF+NAQF/d"/>
+      <xsd:element name="xBase64Binary" type="xsd:base64Binary" default="aGVsbG8gd29ybGQ="/>
       <xsd:element name="xUri" type="xsd:anyURI" default="http://www.example.com/xmlplus"/>
       <xsd:element name="xNormalizedString" type="xsd:normalizedString" default="no CR LF TAB"/>
       <xsd:element name="xToken" type="xsd:token" default=" xs:hexBinary "/>
@@ -130,7 +130,6 @@ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 
   <xsd:simpleType name="CelciusWaterTemp">
    <xsd:restriction base="xsd:decimal">
-    <xsd:fractionDigits value="2"/>
     <xsd:minExclusive value="0.00"/>
     <xsd:maxExclusive value="100.00"/>
    </xsd:restriction>

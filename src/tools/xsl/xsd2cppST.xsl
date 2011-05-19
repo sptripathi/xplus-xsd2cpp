@@ -3,7 +3,7 @@
 <!--
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -55,6 +55,10 @@ targetNamespace="http://www.w3.org/2001/XMLSchema"
 #ifndef __XSD_PRIMITIVETYPES_H__ 
 #define __XSD_PRIMITIVETYPES_H__
 
+extern "C" {
+#include &lt;math.h&gt;
+#include &lt;assert.h&gt;
+}
 #include &lt;string&gt;
 #include &lt;list&gt;
 
@@ -144,6 +148,7 @@ namespace Types
     </xsl:when>
 
     <xsl:when test="*[local-name()='union']"> 
+#include "XSD/SimpleTypeUnionTmpl.h"      
       <xsl:if test="*[local-name()='union']/@memberTypes">
         <xsl:call-template name="ITERATE_SIMPLETYPE_UNION_MEMBERTYPES">
           <xsl:with-param name="memberTypes" select="*[local-name()='union']/@memberTypes"/>
@@ -391,13 +396,13 @@ namespace Types
 <xsl:template name="ON_SIMPLETYPE_WITH_UNION">
   <xsl:param name="simpleTypeName"/>
   <xsl:variable name="isBuiltinType"><xsl:call-template name="T_is_builtin_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
+  <xsl:variable name="isBuiltinDerivedType"><xsl:call-template name="T_is_builtin_derived_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
   
   <xsl:for-each select="*[local-name()='union']">
   /// class for simpleType of variety union
   <xsl:variable name="myCppType"><xsl:call-template name="T_get_cppType_simpleType"><xsl:with-param name="stName" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
 
-  //class <xsl:value-of select="$simpleTypeName"/> : public XMLSchema::Types::anySimpleType
-  class <xsl:value-of select="$myCppType"/> : public XMLSchema::Types::anySimpleType
+  class <xsl:value-of select="$myCppType"/> : public XMLSchema::Types::SimpleTypeUnionTmpl
   {
   public:
     <xsl:variable name="cntAnnotation" select="count(*[local-name()='annotation'])"/>
@@ -428,28 +433,30 @@ namespace Types
 
     /// constructor  
     <xsl:value-of select="$myCppType"/>(AnyTypeCreateArgs args):
-      XMLSchema::Types::anySimpleType(args, XMLSchema::PD_STRING)
-    <xsl:for-each select="*[local-name()='simpleType']">
-      <xsl:variable name="pos" select="position()"/>
-      <xsl:variable name="cppItemTypeInferred">
-        <xsl:call-template name="T_get_cppType_anonymousSimpleType">
-          <xsl:with-param name="stNode" select="."/>
-          <xsl:with-param name="pos" select="$pos"/>
-        </xsl:call-template>
-      </xsl:variable>
-        ,_<xsl:value-of select="$cppItemTypeInferred"/>_val(AnyTypeCreateArgs())
-    </xsl:for-each>
-    <xsl:if test="@memberTypes">
-      <xsl:call-template name="ITERATE_SIMPLETYPE_UNION_MEMBERTYPES">
-        <xsl:with-param name="memberTypes" select="@memberTypes"/>
-        <xsl:with-param name="mode" select="'constr_param_initialization'"/>
-      </xsl:call-template>
-    </xsl:if>
+      XMLSchema::Types::SimpleTypeUnionTmpl(args)
     {
+      <xsl:if test="$isBuiltinDerivedType='true'">
+      _builtinDerivedType = XMLSchema::BD_<xsl:call-template name="T_capitalize_all"><xsl:with-param name="subjStr" select="$simpleTypeName"/></xsl:call-template>;  
+      </xsl:if>
       <!--
       <xsl:call-template name="SET_CFACET_VALUES_IN_SIMPLETYPE_CTOR"/>
       this->appliedCFacets( appliedCFacets() <xsl:for-each select="*[local-name()='restriction']/*[local-name() != 'simpleType' and local-name() != 'annotation']">| <xsl:call-template name="T_get_enumType_CFacet"><xsl:with-param name="facet" select="local-name(.)"/></xsl:call-template> </xsl:for-each> );
       -->
+    <xsl:if test="@memberTypes">
+      <xsl:call-template name="ITERATE_SIMPLETYPE_UNION_MEMBERTYPES">
+        <xsl:with-param name="memberTypes" select="@memberTypes"/>
+        <xsl:with-param name="mode" select="'set_as_union_member'"/>
+      </xsl:call-template>
+    </xsl:if>
+    <xsl:for-each select="*[local-name()='simpleType']">
+      <xsl:variable name="cppItemTypeInferred">
+        <xsl:call-template name="T_get_cppType_anonymousSimpleType">
+          <xsl:with-param name="stNode" select="."/>
+          <xsl:with-param name="pos" select="position()"/>
+        </xsl:call-template>
+      </xsl:variable>
+      _unionMembers.push_back( new <xsl:value-of select="$cppItemTypeInferred"/>(args) );
+    </xsl:for-each>
     }
 
     virtual DOMString stringValue() {
@@ -458,71 +465,17 @@ namespace Types
 
     virtual void stringValue(DOMString val)
     {
-      bool set=false;
-      if(!isSampleCreate())
-      {
-   <xsl:if test="@memberTypes">
-     <xsl:call-template name="ITERATE_SIMPLETYPE_UNION_MEMBERTYPES">
-       <xsl:with-param name="memberTypes" select="@memberTypes"/>
-       <xsl:with-param name="mode" select="'setval_member'"/>
-     </xsl:call-template>
-   </xsl:if>
+      SimpleTypeUnionTmpl::stringValue(val);
+    }
 
-    <xsl:for-each select="*[local-name()='simpleType']">
-      <xsl:variable name="cppItemTypeInferred">
-        <xsl:call-template name="T_get_cppType_anonymousSimpleType">
-          <xsl:with-param name="stNode" select="."/>
-          <xsl:with-param name="pos" select="position()"/>
-        </xsl:call-template>
-      </xsl:variable>
-        if(!set) {  
-          set = _<xsl:value-of select="$cppItemTypeInferred"/>_val.checkValue(val);
-        }
-    </xsl:for-each>
-        if(set) {
-          anySimpleType::stringValue(val);
-        }
-        else 
-        {
-          ValidationException ex("The supplied value not valid for any of the union members");
-          setErrorContext(ex);
-          throw ex;
-        }
-      } 
-      else 
-      {
-   <xsl:if test="@memberTypes">
-     <xsl:call-template name="ITERATE_SIMPLETYPE_UNION_MEMBERTYPES">
-       <xsl:with-param name="memberTypes" select="@memberTypes"/>
-       <xsl:with-param name="mode" select="'setSampleValue_member'"/>
-     </xsl:call-template>
-   </xsl:if>
-    <xsl:for-each select="*[local-name()='simpleType']">
-      <xsl:if test="position()=1">
-        <xsl:variable name="cppItemTypeInferred">
-          <xsl:call-template name="T_get_cppType_anonymousSimpleType">
-            <xsl:with-param name="stNode" select="."/>
-            <xsl:with-param name="pos" select="position()"/>
-          </xsl:call-template>
-        </xsl:variable>
-        if(!set) {
-          DOMString sampleUnionVal = _<xsl:value-of select="$cppItemTypeInferred"/>_val.sampleValue();
-          anySimpleType::stringValue(sampleUnionVal);
-          set = true;
-        }
-      </xsl:if>
-    </xsl:for-each>
-        
-      }
+    virtual inline DOMString sampleValue() 
+    {
+      return SimpleTypeUnionTmpl::sampleValue();
     }
-    <xsl:if test="$isBuiltinType='true'">
-    virtual inline DOMString sampleValue() {
-      return Sampler::getRandomSample(Sampler::<xsl:value-of select="$simpleTypeName"/>Samples);
-    }
-    </xsl:if>
 
   protected:
 
+    <!---
     <xsl:if test="@memberTypes">
       <xsl:call-template name="ITERATE_SIMPLETYPE_UNION_MEMBERTYPES">
         <xsl:with-param name="memberTypes" select="@memberTypes"/>
@@ -538,6 +491,7 @@ namespace Types
       </xsl:variable>
     MEMBER_VAR <xsl:value-of select="$cppItemTypeInferred"/> _<xsl:value-of select="$cppItemTypeInferred"/>_val;
     </xsl:for-each>
+    -->
   };
   </xsl:for-each>
 
@@ -595,6 +549,11 @@ namespace Types
         <xsl:with-param name="token" select="$memberType"/>
       </xsl:call-template>
     </xsl:when>
+    <xsl:when test="$mode='set_as_union_member'">
+      <xsl:call-template name="SET_AS_UNION_MEMBER">
+        <xsl:with-param name="token" select="$memberType"/>
+      </xsl:call-template>
+    </xsl:when>
     <xsl:when test="$mode='setSampleValue_member'">
       <xsl:call-template name="SETSAMPLEVALUE_MEMBERTYPE_INSIDE_UNION">
         <xsl:with-param name="token" select="$memberType"/>
@@ -637,8 +596,7 @@ namespace Types
       <xsl:with-param name="stName" select="$token"/>
     </xsl:call-template>
   </xsl:variable>
-
-  <xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$cppType"/> _<xsl:value-of select="$localPartToken"/>_val;
+  MEMBER_VAR <xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$cppType"/> _<xsl:value-of select="$localPartToken"/>_val;
 </xsl:template>
 
 
@@ -650,6 +608,23 @@ namespace Types
         if(!set) {  
           set = _<xsl:value-of select="$localPartToken"/>_val.checkValue(val);
         }
+</xsl:template>
+
+
+<xsl:template name="SET_AS_UNION_MEMBER">
+  <xsl:param name="token"/>
+  <xsl:variable name="localPartToken"><xsl:call-template name="T_get_localPart_of_QName"><xsl:with-param name="qName" select="$token"/></xsl:call-template></xsl:variable>
+  <xsl:variable name="cppNSDeref">
+    <xsl:call-template name="T_get_cppNSDeref_for_QName">
+      <xsl:with-param name="typeQName" select="$token"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="cppType">
+    <xsl:call-template name="T_get_cppType_for_typeRef_from_simpleType">
+      <xsl:with-param name="stName" select="$token"/>
+    </xsl:call-template>
+  </xsl:variable>
+       _unionMembers.push_back(new <xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$cppType"/>(AnyTypeCreateArgs()));
 </xsl:template>
 
 
@@ -716,6 +691,7 @@ namespace Types
   <xsl:variable name="isBuiltinType"><xsl:call-template name="T_is_builtin_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
 
   <xsl:variable name="isBuiltinPrimType"><xsl:call-template name="T_is_builtin_primitive_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
+  <xsl:variable name="isBuiltinDerivedType"><xsl:call-template name="T_is_builtin_derived_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
 
   <xsl:variable name="defVal"><xsl:call-template name="T_get_defaultvalue_for_builtin_primitive"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
   <xsl:variable name="tnsUri"><xsl:call-template name="T_get_targetNsUri"/></xsl:variable>
@@ -760,11 +736,14 @@ namespace Types
       </xsl:otherwise>
     </xsl:choose>
     {
+    <xsl:if test="$isBuiltinDerivedType='true'">
+      _builtinDerivedType = XMLSchema::BD_<xsl:call-template name="T_capitalize_all"><xsl:with-param name="subjStr" select="$simpleTypeName"/></xsl:call-template>;  
+    </xsl:if>
     <!-- value() should be set before setting the bitmasks, because this function checks the same masks in parent to validate the CFacets  against that of the parent -->
       <xsl:call-template name="SET_CFACET_VALUES_IN_SIMPLETYPE_CTOR">
         <xsl:with-param name="simpleTypeName" select="$simpleTypeName"/>
       </xsl:call-template>
-
+    
     <xsl:if test="$isBuiltinPrimType='true'">
       this->allowedCFacets( CF_NONE <xsl:for-each select="*[local-name()='annotation']/*[local-name()='appinfo']/*[local-name()='hasFacet']"> | <xsl:call-template name="T_get_enumType_CFacet"><xsl:with-param name="facet" select="@name"/></xsl:call-template> </xsl:for-each> );
     </xsl:if>
@@ -792,7 +771,7 @@ namespace Types
     
     <xsl:if test="$isBuiltinType='true'">
     virtual inline DOMString sampleValue() {
-      return Sampler::getRandomSample(Sampler::<xsl:value-of select="$simpleTypeName"/>Samples);
+      return anySimpleType::generateSample(Sampler::<xsl:value-of select="$simpleTypeName"/>Samples);
     }
     </xsl:if>
     <xsl:call-template name="T_bring_impl_code"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template>
@@ -935,6 +914,7 @@ namespace Types
   <xsl:param name="simpleTypeName"/>
   
   <xsl:variable name="isBuiltinType"><xsl:call-template name="T_is_builtin_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
+  <xsl:variable name="isBuiltinDerivedType"><xsl:call-template name="T_is_builtin_derived_type"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template></xsl:variable>
   <xsl:variable name="anonymousSTChildNode" select="*[local-name()='restriction']/*[local-name()='simpleType']"/>
   <xsl:variable name="cppBaseTypeInferred">
     <xsl:call-template name="T_get_cppType_anonymousSimpleType"><xsl:with-param name="stNode" select="$anonymousSTChildNode"/></xsl:call-template>
@@ -954,6 +934,9 @@ namespace Types
     <xsl:value-of select="$myCppType"/>(AnyTypeCreateArgs args):
       <xsl:value-of select="$cppBaseTypeInferred"/>(args)
     {
+      <xsl:if test="$isBuiltinDerivedType='true'">
+      _builtinDerivedType = XMLSchema::BD_<xsl:call-template name="T_capitalize_all"><xsl:with-param name="subjStr" select="$simpleTypeName"/></xsl:call-template>;  
+      </xsl:if>
       <xsl:call-template name="SET_CFACET_VALUES_IN_SIMPLETYPE_CTOR">
         <xsl:with-param name="simpleTypeName" select="$simpleTypeName"/>
       </xsl:call-template>
@@ -961,7 +944,7 @@ namespace Types
     }
     <xsl:if test="$isBuiltinType='true'">
     virtual inline DOMString sampleValue() {
-      return Sampler::getRandomSample(Sampler::<xsl:value-of select="$simpleTypeName"/>Samples);
+      return anySimpleType::generateSample(Sampler::<xsl:value-of select="$simpleTypeName"/>Samples);
     }
     </xsl:if>
   };
@@ -981,25 +964,39 @@ namespace Types
     <xsl:call-template name="T_builtin_type_has_adt_impl"><xsl:with-param name="typeStr" select="$simpleTypeName"/></xsl:call-template>
   </xsl:variable>
   
-  <xsl:if test="count(*[local-name()='restriction']/*[local-name(.)='enumeration']) > 0">
-      vector&lt;string&gt; enums;
-    <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)='enumeration']">
-      enums.push_back("<xsl:value-of select="@value"/>");
+
+  <xsl:if test="count(*[local-name()='restriction']/*[local-name(.)='enumeration' or local-name(.)='pattern']) > 0">
+
+      vector&lt;DOMString&gt; values;
+    <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)='enumeration' or local-name(.)='pattern']">
+      <xsl:variable name="facetValue" select="@value"/>
+      <xsl:variable name="processedValue">
+        <xsl:choose>
+          <xsl:when test="local-name(.)='pattern'">
+            <xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$facetValue"/><xsl:with-param name="search-string" select="'\'"/><xsl:with-param name="replace-string" select="'\\'"/></xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise><xsl:value-of select="@value"/></xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      values.push_back("<xsl:value-of select="$processedValue"/>");
     </xsl:for-each>
-      _enumerationCFacet.value(enums);
+    <xsl:choose>
+      <xsl:when test="*[local-name()='restriction']/*[local-name(.)='enumeration']">
+      _enumerationCFacet.value(values);
+      </xsl:when>
+      <xsl:when test="*[local-name()='restriction']/*[local-name(.)='pattern']">
+      _patternCFacet.value(values);
+      </xsl:when>
+    </xsl:choose>
   </xsl:if>
 
   <!--
     attribute is not expected inside simpleType, though this template is also callled from complexType/simpleContent where attribute is expected inside restriction, which should not be interpreted as a facet
   -->
-  <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)!='simpleType' and local-name(.)!='annotation' and local-name(.)!='enumeration' and local-name(.)!='attribute']">
+  <xsl:for-each select="*[local-name()='restriction']/*[local-name(.)!='simpleType' and local-name(.)!='annotation' and local-name(.)!='enumeration' and local-name(.)!='pattern' and local-name(.)!='attribute']">
     <xsl:variable name="facet" select="local-name(.)"/>
     <xsl:variable name="facetValue" select="@value"/>
     <xsl:choose>  
-      <xsl:when test="$facet='pattern'">
-        <xsl:variable name="newValue"><xsl:call-template name="T_search_and_replace"><xsl:with-param name="input" select="$facetValue"/><xsl:with-param name="search-string" select="'\'"/><xsl:with-param name="replace-string" select="'\\'"/></xsl:call-template></xsl:variable>
-      _<xsl:value-of select="$facet"/>CFacet.value("<xsl:value-of select="$newValue"/>");
-      </xsl:when>
       <!-- FIXME -->
       <xsl:when test="$facet='maxInclusive' or $facet='maxExclusive' or $facet='minInclusive' or $facet='minExclusive'">
         <xsl:choose>

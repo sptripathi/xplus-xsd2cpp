@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 
 #include <cctype>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <math.h>
 
@@ -27,74 +28,167 @@
 
 using  namespace std;
 
+#define PRECISION 10
+
 namespace XPlus
 {
-  // 0.123456789
-  void FPA::interpretDecimal(double significand, 
-      double exponent,
-      int & integral,
-      int& millis,
-      int& micros
-      )
+  namespace FPA
   {
-    double fpn = significand*pow(10, exponent); 
-    integral = fpn;
-    double fraction = fpn - integral;
-    millis = fraction*1000;
-    micros = fraction*1000000 - millis*1000; 
-    
-    cout << "integral:" << integral 
-      << " millis:" <<  millis 
-      << " micros:" <<  micros 
-      << endl;
-
-  }
-
-   void FPA::parseDecimal(const std::string& str, 
-      std::string::const_iterator& it,
-      std::string::const_iterator& it_end,
-      double& significand,
-      int& exponent
-      )
-  {
-    char sign = 1;
-    double var = 0;
-    bool foundDot = false;
-    exponent = 0;
-
-    if(*it == '-') {
-      sign = -1;
-      ++it;
-    }
-
-    for (; it != it_end; ++it) 
+    // 0.123456789
+    void interpretDecimal(double significand, 
+        double exponent,
+        int & integral,
+        int& millis,
+        int& micros
+        )
     {
-      if(std::isdigit(*it)) 
-      {
-        if(foundDot) exponent--;
-        var = var*10 + (*it - '0');
-      }
-      else if(*it == '.') 
-      {
-        if(!foundDot) {
-          foundDot = true;
-        }
-        else {
-          throw Exception("parseDecimal: found unexpected '.'");
-          cout << "A" << endl;
-        }
-      }
-      // dont expect anything else except digits and a dot
-      else 
-      {
-        ostringstream oss;
-        oss << "parseDecimal: found unexpected '" << *it << "'";
-          cout << "B" << endl;
-        throw Exception(oss.str());
-      }
+      double fpn = significand*pow(10, exponent); 
+      integral = fpn;
+      double fraction = fpn - integral;
+      millis = fraction*1000;
+      micros = fraction*1000000 - millis*1000; 
+
+      //cout << "integral:" << integral 
+      //  << " millis:" <<  millis 
+      //  << " micros:" <<  micros 
+      //  << endl;
+
     }
 
-    significand =  sign*var;
+    void parseDecimal(const std::string& str, 
+        std::string::const_iterator& it,
+        std::string::const_iterator& it_end,
+        double& significand,
+        int& exponent
+        )
+    {
+      char sign = 1;
+      double var = 0;
+      bool foundDot = false;
+      exponent = 0;
+
+      if(*it == '-') {
+        sign = -1;
+        ++it;
+      }
+
+      for (; it != it_end; ++it) 
+      {
+        if(std::isdigit(*it)) 
+        {
+          if(foundDot) exponent--;
+          var = var*10 + (*it - '0');
+        }
+        else if(*it == '.') 
+        {
+          if(!foundDot) {
+            foundDot = true;
+          }
+          else {
+            throw Exception("parseDecimal: found unexpected '.'");
+          }
+        }
+        // dont expect anything else except digits and a dot
+        else 
+        {
+          ostringstream oss;
+          oss << "parseDecimal: found unexpected '" << *it << "'";
+          throw Exception(oss.str());
+        }
+      }
+
+      significand =  sign*var;
+    }
+
+    unsigned int countFractionDigits(const double& d)
+    {
+      string doubleStr;
+      string fracDigitsStr;
+      stringstream ss;
+      ss << setprecision(PRECISION) << ABS(d);
+      doubleStr = ss.str();
+
+      fracDigitsStr = doubleStr.substr(doubleStr.find(".")+1);
+      return fracDigitsStr.length();
+    }
+    
+    unsigned int countFractionDigits(const string& doubleStr)
+    {
+      unsigned int cntFractionDigits = 0;
+      string::size_type pos = doubleStr.find('.');
+      if(pos == string::npos) {
+        return 0;
+      }
+      for(unsigned int i=pos; i<doubleStr.length(); i++)
+      {
+        if(isdigit(doubleStr[i])) {
+          cntFractionDigits++;
+        }
+      }
+      return cntFractionDigits;
+    }
+
+    unsigned int countIntegralDigits(const double& d)
+    {
+      Int64 integralValue = static_cast<Int64>(ABS(d));
+      string integralStr;
+      stringstream ss;
+      ss << integralValue;
+      integralStr = ss.str();
+      return integralStr.length();
+    }
+
+    unsigned int countIntegralDigits(const string& doubleStr)
+    {
+      unsigned int cntIntegralDigits = 0;
+      string::size_type pos = doubleStr.find('.');
+      if(pos == string::npos) {
+        return countTotalDigits(doubleStr);
+      }
+      for(unsigned int i=0; i<pos; i++)
+      {
+        if(isdigit(doubleStr[i])) {
+          cntIntegralDigits++;
+        }
+      }
+      return cntIntegralDigits;
+    }
+
+    void countIntegralAndFractionDigits(const double& d, 
+        unsigned int& integralDigits, 
+        unsigned int& fractionalDigits)
+    {
+      integralDigits = countIntegralDigits(d);
+      fractionalDigits = countFractionDigits(d);
+    }
+
+    void countIntegralAndFractionDigits(const string& doubleStr, 
+        unsigned int& integralDigits, 
+        unsigned int& fractionalDigits)
+    {
+      integralDigits = countIntegralDigits(doubleStr);
+      fractionalDigits = countFractionDigits(doubleStr);
+    }
+
+    unsigned int countTotalDigits(const double& d)
+    {
+      unsigned int integralDigits, fractionalDigits;
+      countIntegralAndFractionDigits(d, integralDigits, fractionalDigits);
+      return (integralDigits + fractionalDigits);
+    }
+    
+    unsigned int countTotalDigits(const string& doubleStr)
+    {
+      unsigned int cntTotalDigits=0;
+      for(unsigned int i=0; i<doubleStr.length(); i++)
+      {
+        if(isdigit(doubleStr[i])) {
+          cntTotalDigits++;
+        }
+      }
+      return cntTotalDigits;
+    }
+
   }
 }
 

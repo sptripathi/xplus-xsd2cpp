@@ -17,33 +17,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __DOM_IMPLEMENTATION_H__
-#define __DOM_IMPLEMENTATION_H__
+#ifndef __XPLUS_BASE64CODEC_H__
+#define __XPLUS_BASE64CODEC_H__
 
-#include "DOM/DOMCommonInc.h"
+#include <string>
 #include "XPlus/XPlusObject.h"
 
-namespace DOM
+using namespace std;
+
+namespace XPlus
 {
-  class DOMImplementation : public XPlus::XPlusObject 
+  class Base64Codec
   {
     public:
-      DOMImplementation():
-      XPlusObject("DOMImplementation")
-      {
-      }
+      Base64Codec();
 
-      virtual ~DOMImplementation() {}
-      virtual bool hasFeature(DOMString* feature, DOMString* version);
+      string encode(string inputBuffer);
+      string decode(const string& input);
 
-      // Introduced in DOM Level 2:
-      virtual DocumentType* createDocumentType(DOMString* qualifiedName,
-          DOMString* publicId,
-          DOMString* systemId);
-      virtual Document* createDocument(DOMString* namespaceURI,
-          DOMString* qualifiedName,
-          DocumentType* doctype); // throws();
+    private:
+
+      //Lookup table for encoding
+      //If you want to use an alternate alphabet, change the characters here
+      string _encodeLookup;
+
+      const static char _padChar;
   };
-}	
+
+}
 
 #endif

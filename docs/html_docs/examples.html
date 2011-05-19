@@ -1,7 +1,34 @@
 <html>
 
 <head>
+    <meta name="Title" content="documentation">
+    <meta name="Author" content="Satya Prakash Tripathi">
+    <meta name="Subject" content="XmlPlus Documentation">
+    <meta name="Description" content="XmlPlus Documentation">
+    <meta name="Keywords" content="XmlPlus examples, xml schema examples">
+    <meta name="Language" content="English">
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>XmlPlus Examples</title>
+  <STYLE TYPE="text/css">
+  <!-- BODY
+   {
+   font-family:sans-serif;
+   }
+    -->
+  </STYLE>  
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-18904337-3']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>  
 </head>
 
 <h2>XmlPlus Examples<hr NOSHADE SIZE=10 WIDTH=100%> </h2>
@@ -13,18 +40,21 @@
       <li><a href="#HOWTO_EXAMPLES">How to try examples</a>
       <li><a href="#RUNTESTS">Build and test all of examples/ and Tests/ directories</a>
       <li><a href="#EX_BY_TAGS">Examples by tags</a>
+      <li><a href="#EX_WITH_GENSRC">Browse Examples with Generated Source</a>
       <li><a href="#BROWSE_EXTESTS">Browse Examples and Tests</a>
     </ul>
 
     <a name="HOWTO_EXAMPLES"><h3>How to try examples <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-    
-    Please read the topic <a href="usage.html">Tool Usage</a>, to learn about xsd2cpp-usage, building generated source, and running the executables.<br><br> 
+
+<p>
+The examples in the source package, come clean of generated code or makefile. Upon xsd2cpp invocation on the input schema file, the source and makefiles are generated. Please read the topic <a href="usage.html">Tool Usage</a>, to learn about xsd2cpp-usage, building generated source, and running the executables.
+</p>    
 
     Each example directory, comes with following files:
     <ol>
       <li> one or more XML-Schema file(s)
       <li> a valid.xml file(a valid XML file for reference)
-      <li> a main.cpp file ( with populateDocument template function populated)
+      <li> a main.cpp file 
     </ol>
     
     As mentioned earlier, xsd2cpp usage is:<br>
@@ -262,12 +292,20 @@ $ runTests.sh  [-c | -t]
       </tr>
     </table>
 
+  <a name="EX_WITH_GENSRC"><h3>Browse Examples With Generated Source<hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+<p>
+The examples in the source package, come clean i.e. they don't have the generated source with themselves already. Upon xsd2cpp invocation on the input schema file, the source and makefiles are generated. It is not practical to list out generated source for all examples, as it gets very verbose and long. <p>
+ Please follow this link, to view a few examples with generated source: 
+   <a href="examples_complete.html">Samples of Generated Source</a>
+  
   <a name="BROWSE_EXTESTS"><h3>Browse Examples and Tests <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+The complete list of examples and tests(excluding generated source) for browsing. 
   <ul>
-    <li> <a href="browse_examples.html">Browse Example directories</a>
-    <li> <a href="browse_tests.html">Browse Test directories</a>
+    <li> <a href="browse_examples.html">Browse Examples</a>
+    <li> <a href="browse_tests.html">Browse Tests</a>
   </ul>
 
+  <br><br>
   </form>
 </body>
 

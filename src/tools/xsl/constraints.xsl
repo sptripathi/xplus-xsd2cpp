@@ -3,7 +3,7 @@
 <!--
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -788,9 +788,15 @@ In addition to the conditions imposed on <complexType> element information items
 </xsl:template>
 
 
-
 <xsl:template name="T_checks_on_element_declaration">
   <xsl:param name="node" select="."/>
+  
+  <xsl:if test="$node/@type">
+    <xsl:call-template name="T_checks_on_elemAttr_node_with_type">
+     <xsl:with-param name="node" select="."/>
+    </xsl:call-template>    
+  </xsl:if>
+  
 
   <xsl:call-template name="T_ElementDeclarationRepresentationOK">
     <xsl:with-param name="node" select="$node"/>
@@ -802,6 +808,12 @@ In addition to the conditions imposed on <complexType> element information items
 
 <xsl:template name="T_checks_on_attribute_declaration">
   <xsl:param name="node" select="."/>
+  
+  <xsl:if test="$node/@type">
+    <xsl:call-template name="T_checks_on_elemAttr_node_with_type">
+     <xsl:with-param name="node" select="."/>
+    </xsl:call-template>    
+  </xsl:if>
   
   <xsl:call-template name="T_AttributeDeclarationRepresentationOK">
     <xsl:with-param name="node" select="$node"/>
@@ -830,7 +842,7 @@ In addition to the conditions imposed on <complexType> element information items
 
 <xsl:template name="T_checks_on_simpleType_definition">
   <xsl:param name="node" select="."/>
-  
+
   <xsl:call-template name="T_SimpleTypeDefinition_XMLRepresentation_OK">
     <xsl:with-param name="node" select="$node"/>
   </xsl:call-template>
@@ -842,7 +854,49 @@ In addition to the conditions imposed on <complexType> element information items
   <xsl:call-template name="T_SimpleTypeDefinition_DerivationValid">
     <xsl:with-param name="node" select="$node"/>
   </xsl:call-template>
+
+  <xsl:call-template name="T_SimpleTypeDefinition_assert_NOTATION_is_Enumeration">
+    <xsl:with-param name="node" select="$node"/>
+  </xsl:call-template>
 </xsl:template>
+
+
+
+<xsl:template name="T_SimpleTypeDefinition_assert_NOTATION_is_Enumeration">
+  <xsl:param name="node" select="."/>
+
+  <xsl:variable name="TXml">
+    <xsl:call-template name="T_get_simpleType_definition">
+      <xsl:with-param name="stNode" select="$node"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="T" select="exsl:node-set($TXml)/*[local-name()='simpleTypeDefinition']"/>
+  <xsl:variable name="primType">
+    <xsl:choose>
+      <xsl:when test="$T/primTypeDef/simpleTypeDefinition"><xsl:value-of select="$T/primTypeDef/simpleTypeDefinition/name"/></xsl:when>
+      <xsl:otherwise></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>  
+  <xsl:variable name="nodeContext">
+    <xsl:call-template name="T_get_node_context">
+      <xsl:with-param name="node" select="$node"/>
+    </xsl:call-template>  
+  </xsl:variable>
+
+  <xsl:if test="$primType='NOTATION'">
+    <xsl:if test="not($node/*[local-name()='restriction']/*[local-name()='enumeration'])">
+      <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg"> 
+      The datatypes ·derived· from NOTATION can only use 'enumeration' as constrianing facet.
+      Violated in following context: <xsl:value-of select="$nodeContext"/>
+      </xsl:with-param></xsl:call-template>
+    </xsl:if>
+  </xsl:if>
+
+
+</xsl:template>
+
+
 
 
 <!--
@@ -958,8 +1012,6 @@ All of the following must be true:
       <xsl:with-param name="xmlVar" select="$D"/>
       <xsl:with-param name="filePath" select="'/tmp/D.xml'"/>
   </xsl:call-template>
-<!--
--->
 
   <xsl:if test="not($D/baseTypeDef/*[local-name()='simpleTypeDefinition'])">
     <xsl:call-template name="T_rule_violated">
@@ -1144,6 +1196,48 @@ All of the following must be true:
 </xsl:template>
 
 
+<xsl:template name="T_checks_on_elemAttr_node_with_type">
+  <xsl:param name="node" select="."/>
+  
+  <xsl:variable name="typeQName" select="$node/@type"/>
+
+  <xsl:variable name="typeLocalPart">
+    <xsl:call-template name="T_get_localPart_of_QName">
+      <xsl:with-param name="qName" select="$typeQName"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="typeNsPrefix">
+    <xsl:call-template name="T_get_nsPrefix_from_QName">
+      <xsl:with-param name="qName" select="$typeQName"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="typeNsUri">
+    <xsl:call-template name="T_get_nsUri_for_nsPrefix_inDoc">
+      <xsl:with-param name="nsPrefix" select="$typeNsPrefix"/>
+    </xsl:call-template>
+  </xsl:variable>
+  
+  <xsl:variable name="nodeContext">
+    <xsl:call-template name="T_get_node_context">
+      <xsl:with-param name="node" select="$node"/>
+    </xsl:call-template>  
+  </xsl:variable>
+
+  <xsl:if test="$typeNsUri=$xmlSchemaNSUri and ($typeLocalPart='NOTATION' or $typeLocalPart='NMTOKEN' or $typeLocalPart='NMTOKENS' or $typeLocalPart='ID' or $typeLocalPart='IDREF' or $typeLocalPart='IDREFS' or $typeLocalPart='ENTITY' or $typeLocalPart='ENTITIES')">
+    <xsl:if test="local-name($node) != 'attribute'">
+      <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg"><xsl:value-of select="$typeLocalPart"/> should only be used on attributes. 
+  Violated in following context: <xsl:value-of select="$nodeContext"/>
+  </xsl:with-param></xsl:call-template>
+    </xsl:if>
+  </xsl:if>
+
+  <xsl:if test="$typeLocalPart = 'NOTATION'">
+    <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">It is an ·error· for NOTATION to be used directly in a schema. Only datatypes that are ·derived· from NOTATION by specifying a value for ·enumeration· can be used in a schema.
+  Violated in following context: <xsl:value-of select="$nodeContext"/>
+    </xsl:with-param></xsl:call-template>
+  </xsl:if>
+</xsl:template>
+
 
 <xsl:template name="T_checks_on_schema_component">
   <xsl:param name="node" select="."/>
@@ -1171,6 +1265,9 @@ All of the following must be true:
     </xsl:when>
   </xsl:choose>
 </xsl:template>
+
+
+
 
 
 </xsl:stylesheet>

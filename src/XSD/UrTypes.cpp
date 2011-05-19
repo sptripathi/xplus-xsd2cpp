@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,8 @@
 //
 
 #include "XPlus/Namespaces.h"
+#include "XPlus/FPA.h"
+#include "XSD/Sampler.h"
 #include "XSD/PrimitiveTypes.h"
 #include "XSD/xsdUtils.h"
 #include "XSD/XSDException.h"
@@ -190,7 +192,8 @@ namespace XMLSchema
       }
 
       if( (contentTypeVariety() == CONTENT_TYPE_VARIETY_EMPTY) &&
-          !value.matchCharSet(UTF8FNS::isSpaceChar) // FIXME: is space allowed for empty content????
+          !value.matchCharSet(UTF8FNS::isSpaceChar) 
+          // FIXME: is space allowed for empty content????
         )
       {
         ostringstream err;
@@ -239,23 +242,6 @@ namespace XMLSchema
         throw ex;
       }
     }
-
-    /*
-    void anyType::fixedValue(DOMString value) 
-    {
-      try
-      {
-        checkContentType(value);
-        _value = value;
-        createTextNodeOnSetValue(value);
-      }
-      catch(XPlus::Exception& ex)
-      {
-        ex.setContext("element", *this->ownerElement()->getNodeName());
-        throw ex;
-      }
-    }
-    */
 
     //
     // _isDefaultText is set to true only in this function
@@ -350,10 +336,8 @@ namespace XMLSchema
       try
       {
         normalizeValue(value);
-        if(!isSampleCreate()) {
-          checksOnSetValue(value);
-        }
-        _value = value;
+        checksOnSetValue(value);
+        setValue(value);
         postSetValue();
       }
       catch(XPlus::Exception& ex)
@@ -382,8 +366,8 @@ namespace XMLSchema
         }
         else {
           // this textNode would not get added to DOM ... heppens in following cases:
-          // * SimpleTypeListTmpl::stringValue -- harmless here
-          // * ...
+          // - SimpleTypeListTmpl::stringValue -- harmless here
+          // - ...
           valueNode = new TextNode(valuePtr, this->ownerDocument(), NULL);
         }
         _textNodes.push_back(valueNode);
@@ -532,10 +516,17 @@ namespace XMLSchema
         if(_fsm->fsmCreatedNode()) 
         {
           AttributeP attr = dynamic_cast<AttributeP>(const_cast<Node*>(_fsm->fsmCreatedNode()));
+          anySimpleType* pST = dynamic_cast<anySimpleType *>(const_cast<Node*>(_fsm->fsmCreatedNode()));
           _fsm->fsmCreatedNode(NULL);
-          if(attr) {
-            //attr->createChildTextNode(value);
-            attr->createTextNode(value);
+          if(attr && value) {
+            // this can happen ie when an attribute is not a anySimpleType,
+            // when attribute is not coming from schema, eg. xsi:* attributes
+            if(pST) {
+              pST->stringValue(*value);
+            }
+            else {
+              attr->createTextNode(value);
+            }
             return attr;
           }
         }
@@ -593,11 +584,6 @@ namespace XMLSchema
       XsdEvent event(nsUri, nsPrefix, *localName, XsdEvent::ELEMENT_END);
       if(_fsm) {
         _fsm->processEventThrow(event);
-      }
-      else 
-      {
-        //FIXME
-        //throw XMLSchema::FSMException("Found end-of-Element of a child-element while no child-element expected");
       }
     }
 
@@ -728,10 +714,10 @@ namespace XMLSchema
     anySimpleType::anySimpleType(AnyTypeCreateArgs args, ePrimitiveDataType primType):
       anyType(args, ANY_SIMPLE_TYPE),
       _primitiveType(primType),
+      _builtinDerivedType(BD_NONE),
       _lengthCFacet(0),
       _minLengthCFacet(XP_UINT32_MIN),
       _maxLengthCFacet(XP_UINT32_MAX),
-      _patternCFacet(".*"),
       _whiteSpaceCFacet("collapse"),
       _totalDigitsCFacet(0),
       _fractionDigitsCFacet(0),
@@ -774,7 +760,14 @@ namespace XMLSchema
     void anySimpleType::endElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)
     {
       anyType::endElementNS(nsUri, nsPrefix, localName);
-      if( (_textNodes.size()==0) && (_primitiveType != PD_STRING)) {
+      if( (_textNodes.size()==0) 
+          && (_primitiveType != PD_STRING)
+          && (_primitiveType != PD_BASE64BINARY) 
+          && (_primitiveType != PD_HEXBINARY) 
+          && (_primitiveType != PD_ANYURI) 
+          && (_primitiveType != PD_QNAME) 
+        ) 
+      {
         ostringstream err;
         err << "empty value for : " << formatNamespaceName(XsdEvent::ELEMENT_START, nsUri, *localName);
         throw XMLSchema::ValidationException(DOMString(err.str()));
@@ -807,6 +800,7 @@ namespace XMLSchema
         this->stringValue(val);
       }
       catch(XPlus::Exception& ex) {
+        //cerr << "checkValue failed with err:" << ex.msg() << endl;
         return false;
       }
       return true;
@@ -823,10 +817,8 @@ namespace XMLSchema
       {
         // eg.  store integer value ie string-to-int
         setTypedValue();
-        if(!isSampleCreate()) {
-          validateCFacets();
-          applyCFacets();
-        }
+        validateCFacets();
+        applyCFacets();
       }
       catch(Exception& ex)
       {
@@ -846,29 +838,6 @@ namespace XMLSchema
       anyType::stringValue(val);
     }
 
-/*
-    void anySimpleType::stringValue(DOMString val) 
-    {
-      try
-      {
-        normalizeValue(val);
-        checksOnSetValue(val);
-        _value = val;
-        postSetValue();
-
-        createTextNodeOnSetValue(_value);
-      }
-      catch(XPlus::Exception& ex)
-      {
-        if(this->ownerElement()) {
-          ex.setContext("element", *this->ownerElement()->getNodeName());
-          if(this->ownerElement()->getNodeValue())
-            ex.setContext("node-value", *this->ownerElement()->getNodeValue());
-        }
-        throw ex;
-      }
-    }
-*/
     void anySimpleType::validateCFacetsApplicability()
     {
       // example:
@@ -1293,13 +1262,17 @@ namespace XMLSchema
     }
 
 
-    void anySimpleType::throwFacetViolation(eConstrainingFacets facetType, string msg)
+    void anySimpleType::throwFacetViolation(eConstrainingFacets facetType,
+          DOMString foundFacetValue, DOMString msg)
     {
       ValidationException ex("node value violates the facet. ");
       ex.appendMsg(msg);
       ex.setContext("facet", enumToStringCFacet(facetType));
       ex.setContext("primitive-type",  g_primitivesStr[_primitiveType]);
-      ex.setContext("facet-value",  getCFacet(facetType).stringValue());
+      ex.setContext("expected facet-value",  getCFacet(facetType).stringValue());
+      if(foundFacetValue != "") {
+        ex.setContext("found facet-value",  foundFacetValue);
+      }
       ex.setContext("node-value",  _value);
       throw ex;
     }
@@ -1357,7 +1330,7 @@ namespace XMLSchema
         return;
       }
       if(this->lengthFacet() != _lengthCFacet.value() ) {
-        throwFacetViolation(CF_LENGTH);
+        throwFacetViolation(CF_LENGTH, toString<long>(this->lengthFacet()));
       }
     }
     
@@ -1369,7 +1342,7 @@ namespace XMLSchema
         return;
       }
       if(this->lengthFacet() < _minLengthCFacet.value() ) {
-        throwFacetViolation(CF_MINLENGTH);
+        throwFacetViolation(CF_MINLENGTH, toString<long>(this->lengthFacet()));
       }
     }
     
@@ -1381,27 +1354,37 @@ namespace XMLSchema
         return;
       }
       if(this->lengthFacet() > _maxLengthCFacet.value() ) {
-        throwFacetViolation(CF_MAXLENGTH);
+        throwFacetViolation(CF_MAXLENGTH, toString<long>(this->lengthFacet()));
       }
     }
 
     void anySimpleType::applyPatternCFacet()
     {
-      Poco::RegularExpression re(_patternCFacet.value());
-      if(! re.match(_value) ) {
-        throwFacetViolation(CF_PATTERN);
+      // dont apply pattern facet while creating sample xml document
+      if(isSampleCreate()) {
+        return;
       }
+
+      vector<DOMString> patterns = _patternCFacet.value();
+      for(unsigned int i=0; i < patterns.size(); i++)
+      {
+        Poco::RegularExpression re(patterns[i]);
+        if(re.match(_value, 0, 0) ) {
+          return;
+        }
+      }
+      throwFacetViolation(CF_PATTERN, _value);
     }
 
     void anySimpleType::applyEnumerationCFacet()
     {
-      vector<string> enums = _enumerationCFacet.value();
+      vector<DOMString> enums = _enumerationCFacet.value();
       for(unsigned int i=0; i < enums.size(); i++) {
         if(enums[i] ==  _value) {
           return;
         }
       }
-      throwFacetViolation(CF_ENUMERATION);
+      throwFacetViolation(CF_ENUMERATION, _value);
     }
 
     //
@@ -1473,34 +1456,276 @@ namespace XMLSchema
 
     void anySimpleType::applyTotalDigitsCFacet() 
     {
-      unsigned int cntTotalDigits=0;
-      for(unsigned int i=0; i<_value.length(); i++)
-      {
-        if(isdigit(_value[i])) {
-          cntTotalDigits++;
-        }
-      }
+      unsigned int cntTotalDigits = XPlus::FPA::countTotalDigits(_value);
       if(cntTotalDigits > _totalDigitsCFacet.value() ) {
-        throwFacetViolation(CF_TOTALDIGITS);
+        throwFacetViolation(CF_TOTALDIGITS, toString<unsigned int>(cntTotalDigits));
       }
     }
 
     void anySimpleType::applyFractionDigitsCFacet() 
     {
-      DOMString::size_type pos = _value.find('.');
-      if(pos == DOMString::npos) {
-        return;
+      unsigned int cntFractionDigits = XPlus::FPA::countFractionDigits(_value);
+      if(cntFractionDigits > _fractionDigitsCFacet.value() ) {
+        throwFacetViolation(CF_FRACTIONDIGITS, toString<unsigned int>(cntFractionDigits));
       }
-      
-      unsigned int cntFractionDigits=0;
-      for(unsigned int i=pos; i<_value.length(); i++)
+    }
+    
+    DOMString anySimpleType::generateSampleHexBinary(DOMString *arrSamples)
+    {
+      if(isLengthCFacetSet()) {
+        DOMString sample = Sampler::getRandomSampleStringOfLength(_lengthCFacet.value(),
+            Sampler::hexBinaryCharSet);  
+        sample += sample;
+        return sample;
+      }
+      if(isMinLengthCFacetSet() && isMaxLengthCFacetSet()) {
+        DOMString sample = Sampler::getRandomSampleStringOfLengthRange(_minLengthCFacet.value(),
+            _maxLengthCFacet.value(),
+            Sampler::hexBinaryCharSet);  
+        sample += sample;
+        return sample;
+      }
+      else if(isMinLengthCFacetSet()) {
+        DOMString sample = Sampler::getRandomSampleStringOfMinLength(_minLengthCFacet.value(),
+            Sampler::hexBinaryCharSet);  
+        sample += sample;
+        return sample;
+      }
+      else if(isMaxLengthCFacetSet()) {
+        DOMString sample = Sampler::getRandomSampleStringOfMaxLength(_maxLengthCFacet.value(),
+            Sampler::hexBinaryCharSet);  
+        sample += sample;
+        return sample;
+      }
+      return Sampler::getRandomSample(arrSamples);
+    }
+
+
+    DOMString anySimpleType::generateSampleBase64Binary(DOMString *arrSamples)
+    {
+      if(isLengthCFacetSet()) {
+        return Sampler::getRandomSampleBase64StringOfLength(_lengthCFacet.value());
+      }
+      if(isMinLengthCFacetSet() && isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleBase64StringOfLengthRange(_minLengthCFacet.value(), _maxLengthCFacet.value());
+      }
+      else if(isMinLengthCFacetSet()) {
+        return Sampler::getRandomSampleBase64StringOfMinLength(_minLengthCFacet.value());
+      }
+      else if(isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleBase64StringOfMaxLength(_maxLengthCFacet.value());
+      }
+      return Sampler::getRandomSample(arrSamples);
+    }
+
+    DOMString anySimpleType::generateSampleString(DOMString *arrSamples)
+    {
+      if(isLengthCFacetSet()) {
+        return Sampler::getRandomSampleStringOfLength(_lengthCFacet.value());
+      }
+      if(isMinLengthCFacetSet() && isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleStringOfLengthRange(_minLengthCFacet.value(), _maxLengthCFacet.value());
+      }
+      else if(isMinLengthCFacetSet()) {
+        return Sampler::getRandomSampleStringOfMinLength(_minLengthCFacet.value());
+      }
+      else if(isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleStringOfMaxLength(_maxLengthCFacet.value());
+      }
+      return Sampler::getRandomSample(arrSamples);
+    }
+    
+    DOMString anySimpleType::generateSampleInteger(DOMString *arrSamples)
+    {
+      Int64 maxIncl = 1000000;
+      Int64 minIncl = -100000;
+      bool maxInclSet = false, minInclSet = false;
+
+      if(isMaxExclusiveCFacetSet()) {
+        maxInclSet = true;
+        maxIncl = static_cast<Int64>(_maxExclusiveCFacetDouble.value()-1); 
+      }
+      else if(isMaxInclusiveCFacetSet()) {
+        maxInclSet = true;
+        maxIncl = static_cast<Int64>(_maxInclusiveCFacetDouble.value());
+      }
+
+      if(isMinExclusiveCFacetSet()) {
+        minInclSet = true;
+        minIncl = static_cast<Int64>(_minExclusiveCFacetDouble.value()+1); 
+      }
+      else if(isMinInclusiveCFacetSet()) {
+        minInclSet = true;
+        minIncl = static_cast<Int64>(_minInclusiveCFacetDouble.value()); 
+      }
+
+      if(maxInclSet && !minInclSet) {
+        minIncl = XPlus::XSD_LONG_MININCL;
+      }
+      if(!maxInclSet && minInclSet) {
+        maxIncl = XPlus::XSD_LONG_MAXINCL; 
+      }
+
+      return Sampler::getRandomSampleLong(minIncl, maxIncl);
+    }
+
+    DOMString anySimpleType::generateSampleDecimal(DOMString *arrSamples)
+    {
+      // if the builtin-derivedType is one of integer, long, unsignedLong etc.
+      if( (primitiveType() == PD_DECIMAL) && (derivedType() != BD_NONE)) {
+        return generateSampleInteger(arrSamples);
+      }
+
+      double maxIncl = 1000000;
+      double minIncl = -100000;
+      bool maxInclSet = false, minInclSet = false;
+
+      if(isMaxInclusiveCFacetSet()) 
       {
-        if(isdigit(_value[i])) {
-          cntFractionDigits++;
+        maxInclSet = true;
+        maxIncl = _maxInclusiveCFacetDouble.value();
+      }
+      else if(isMaxExclusiveCFacetSet()) 
+      {
+        maxInclSet = true;
+        if(isMinInclusiveCFacetSet() || isMinExclusiveCFacetSet())
+        {
+          double minInclOrExcl = isMinInclusiveCFacetSet() ? 
+            _minInclusiveCFacetDouble.value() : _minExclusiveCFacetDouble.value(); 
+
+          double diff = _maxExclusiveCFacetDouble.value() - minInclOrExcl;  
+          double offset = 1;
+          // appromimation to get inclusive bounds when exclusive bounds 
+          // are specified:
+          // - if min and max constraints on the decimal are very close then
+          //   use decimal offset(< 1) to set an approx. inclusive bound
+          // - else use offset of 1
+          if( diff < 10 ) {
+            offset = diff / 100; 
+          }
+          maxIncl = _maxExclusiveCFacetDouble.value() - offset;
+          if(!isMinInclusiveCFacetSet() && isMinExclusiveCFacetSet()) {
+            minIncl = _minExclusiveCFacetDouble.value() + offset;
+            minInclSet = true;
+          }
+        }
+        else
+        {
+          maxIncl = _maxExclusiveCFacetDouble.value()-1; 
         }
       }
-      if(cntFractionDigits > _fractionDigitsCFacet.value() ) {
-        throwFacetViolation(CF_FRACTIONDIGITS);
+
+      if(isMinInclusiveCFacetSet()) {
+        minInclSet = true;
+        minIncl = _minInclusiveCFacetDouble.value(); 
+      }
+      else if(isMinExclusiveCFacetSet()) 
+      {
+        minInclSet = true;
+        // this case is taken care of in above case of isMaxExclusiveCFacetSet()
+      }
+
+      // if min/max value bounds are *not* set rather digits bounds are set
+      if( (!minInclSet && !maxInclSet) &&
+          (isTotalDigitsCFacetSet() || isFractionDigitsCFacetSet())
+        )  
+      {
+        int totalDigits = isTotalDigitsCFacetSet() ? _totalDigitsCFacet.value() : -1;
+        int fractionDigits = isFractionDigitsCFacetSet() ? _fractionDigitsCFacet.value() : -1;
+        return Sampler::getRandomSampleDoubleOfDigits(totalDigits, fractionDigits);
+      }
+      // if digits bounds are *not* set; the min/max value bounds may or
+      // may not be set
+      else if( minInclSet || maxInclSet)
+      {
+        if(!minInclSet) {
+          minIncl = XPlus::XSD_LONG_MININCL;
+        }
+        if(!maxInclSet) {
+          maxIncl = XPlus::XSD_LONG_MAXINCL; 
+        }
+        return Sampler::getRandomSampleDouble(minIncl, maxIncl);
+      }
+      else
+      {
+        return Sampler::getRandomSample(arrSamples);
+      }
+    }
+
+    DOMString anySimpleType::generateSampleAnyURI(DOMString *arrSamples)
+    {
+      if(isLengthCFacetSet()) {
+        return Sampler::getRandomSampleAnyURIOfLength(_lengthCFacet.value());
+      }
+      if(isMinLengthCFacetSet() && isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleAnyURIOfLengthRange(_minLengthCFacet.value(), _maxLengthCFacet.value());
+      }
+      else if(isMinLengthCFacetSet()) {
+        return Sampler::getRandomSampleAnyURIOfMinLength(_minLengthCFacet.value());
+      }
+      else if(isMaxLengthCFacetSet()) {
+        return Sampler::getRandomSampleAnyURIOfMaxLength(_maxLengthCFacet.value());
+      }
+      return Sampler::getRandomSample(arrSamples);
+    }
+          
+    DOMString anySimpleType::generateSampleGDay(DOMString *arrSamples)
+    {
+      Int64 maxIncl = 31, minIncl = 1;
+      if(isMaxExclusiveCFacetSet()) {
+        maxIncl = static_cast<Int64>(_maxExclusiveCFacetDateTime.value().day()-1); 
+      }
+      else if(isMaxInclusiveCFacetSet()) {
+        maxIncl = static_cast<Int64>(_maxInclusiveCFacetDateTime.value().day());
+      }
+
+      if(isMinExclusiveCFacetSet()) {
+        minIncl = static_cast<Int64>(_minExclusiveCFacetDateTime.value().day()+1); 
+      }
+      else if(isMinInclusiveCFacetSet()) {
+        minIncl = static_cast<Int64>(_minInclusiveCFacetDateTime.value().day()); 
+      }
+
+      int randDay = Sampler::integerRandomInRange(minIncl, maxIncl);
+      char buffer[8]; 
+      snprintf(buffer, 8, "%02d", randDay);
+      return DOMString(buffer);
+    }
+
+    DOMString anySimpleType::generateSample(DOMString *arrSamples)
+    {
+      if(isEnumerationCFacetSet())
+      {
+        vector<DOMString> enumStrings = _enumerationCFacet.value();
+        return Sampler::getRandomSample(enumStrings);
+      }
+
+      //FIXME: if fixed used fixed value
+      
+      switch(_primitiveType)
+      {
+        case PD_STRING:
+          return generateSampleString(arrSamples);
+
+        case PD_FLOAT:
+        case PD_DOUBLE:
+        case PD_DECIMAL:
+          return generateSampleDecimal(arrSamples);
+
+        case PD_HEXBINARY:
+          return generateSampleHexBinary(arrSamples);
+
+        case PD_BASE64BINARY:
+          return generateSampleBase64Binary(arrSamples);
+
+        case PD_ANYURI:
+          return generateSampleAnyURI(arrSamples);
+        
+        case PD_GDAY:
+          return generateSampleGDay(arrSamples);
+
+        default:
+          return Sampler::getRandomSample(arrSamples);
       }
     }
 

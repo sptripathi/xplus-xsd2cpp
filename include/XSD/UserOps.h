@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011 Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -73,9 +73,8 @@ namespace XSD
 
       void writeSample()
       {
-        cout << "writeSample:" << endl;
+        cout << "Going to write sample file..." << endl;
         string outFile = "sample.xml";
-
         try 
         {
           AutoPtr<T> xsdDoc = createXsdDocument(true, true);

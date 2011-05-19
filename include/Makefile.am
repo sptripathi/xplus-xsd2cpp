@@ -16,6 +16,7 @@ nobase_include_HEADERS = \
   Poco/Types.h \
   \
   XPlus/AutoPtr.h \
+  XPlus/Base64Codec.h \
   XPlus/BinaryTree.h \
   XPlus/ConvertUTF.h \
   XPlus/DateAlgo.h \
@@ -73,6 +74,7 @@ nobase_include_HEADERS = \
   XSD/FSM.h \
   XSD/PrimitiveTypes.h \
   XSD/SimpleTypeListTmpl.h \
+  XSD/SimpleTypeUnionTmpl.h \
   XSD/UrTypes.h \
   XSD/XSDException.h \
   XSD/XSDFSM.h \

@@ -3,7 +3,7 @@
 <!--
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -182,10 +182,32 @@
     </type>
     <type name="hexBinary">
       <impl implType="DOM::DOMString" adt="false">
+        <code>
+    virtual unsigned int lengthFacet() {
+      return ceil(stringValue().length()/2);
+    }
+        </code>
       </impl>  
     </type>
     <type name="base64Binary" adt="false">
       <impl implType="DOM::DOMString">
+        <code>
+    // pseudocode from w3c XSD1.1 spec    
+    //    lex2   := killwhitespace(lexform)  
+    //    lex3   := strip_equals(lex2)
+    //    length := floor (length(lex3) * 3 / 4)  
+    virtual unsigned int lengthFacet() 
+    {
+      DOMString lex = stringValue();
+      lex.removeChars(UTF8FNS::isWhiteSpaceChar);
+      
+      // length of non-whitespace chars should be multiple of 4
+      assert(lex.length()%4 == 0);
+      lex.trimRight(UTF8FNS::isEqualChar);
+
+      return floor(lex.length()*3/4);
+    }
+        </code>
       </impl>  
     </type>
     <type name="anyURI">

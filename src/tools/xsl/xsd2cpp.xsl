@@ -3,7 +3,7 @@
 <!--
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -304,6 +304,8 @@ class Document : public XMLSchema::TDocument
   <xsl:call-template name="ITERATE_SCHEMA_INCLUDES">
     <xsl:with-param name="mode" select="'TLE_decl_pvt_functions_doc_h'"/>
   </xsl:call-template>  
+  
+  void initFSM();
 
   public:
 
@@ -335,7 +337,6 @@ class Document : public XMLSchema::TDocument
     <xsl:with-param name="mode" select="'decl_elem_getter'"/>
   </xsl:call-template>  
     
-  void initFSM();
 };
 <xsl:call-template name="T_emit_cppNSEnd_for_nsUri"><xsl:with-param name="nsUri" select="$targetNsUri"/></xsl:call-template>
 #endif
@@ -424,6 +425,9 @@ class Document : public XMLSchema::TDocument
     <xsl:variable name="cppNameUseCase"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'declaration'"/></xsl:call-template></xsl:variable>
       if(!<xsl:value-of select="$cppNameUseCase"/>) {
         XsdEvent event(<xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/>, NULL, DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), XsdEvent::ELEMENT_START);
+        if(this-&gt;createSample()) {
+          event.cbOptions.isSampleCreate = true;
+        }
         _fsm->processEventThrow(event); 
       }
     }
@@ -993,7 +997,10 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
 #include "<xsl:value-of select="$cppTargetNSDirChain"/>/Document.h"
 </xsl:if>
 
+  <xsl:for-each select="*[ local-name()='element' or local-name()='attribute']">
+  <!--
   <xsl:for-each select="*[ (local-name()='element' or local-name()='attribute') and not(@type)]">
+  -->
     <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
     <xsl:variable name="hdrName" select="concat($cppTargetNSDirChain, '/', $cppName, '.h')" />
 #include "<xsl:value-of select="$hdrName"/>"    

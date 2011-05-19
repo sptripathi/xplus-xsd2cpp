@@ -1,7 +1,34 @@
 <html>
 
   <head>
+    <meta name="Title" content="documentation">
+    <meta name="Author" content="Satya Prakash Tripathi">
+    <meta name="Subject" content="XmlPlus Documentation">
+    <meta name="Description" content="XmlPlus Documentation">
+    <meta name="Keywords" content="XmlPlus installation">
+    <meta name="Language" content="English">
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">  
     <title>Installation</title>
+  <STYLE TYPE="text/css">
+  <!-- BODY
+   {
+   font-family:sans-serif;
+   }
+    -->
+  </STYLE>  
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-18904337-3']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>    
   </head>
 
   <h2>Installation Instructions <hr NOSHADE SIZE=10 WIDTH=100%> </h2>
@@ -120,7 +147,7 @@
 
         <br>
         <li><code>$ make &amp;&amp; make install</code> <br>
-        This will build and install the build in the sepecified installation path.
+        This will build and install the build in the specified installation path.
       </ol>
     	
 			<a name="BUILD_LATER"><h5>Rebuilding the source later(probably with different options) <hr NOSHADE SIZE=5 WIDTH=100%> </h5></a>
@@ -131,21 +158,21 @@
         This step generates relevant Makefiles.<br>
 
         <br>
-        Alternatively, if you want the build to be installed in user defined path <br>
+        Alternatively, if you want the build to be installed in user defined path: <br>
         <code>$ ./configure --prefix=/path/of/installation </code><br>
         For example:<br>
         <code>$ ./configure --prefix=$HOME/xplusbuild </code><br>
 
         <br>
         <li><code>$ make &amp;&amp; make install</code> <br>
-        This will build and install the build in the sepecified installation path.
+        This will build and install the build in the specified installation path.
       </ol>
 
 
       <br>
 
       <a name="UPDATE_ENV"><h3>Updating the environment with the installation path <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-      If you chose custom path of instalation in previous steps, you would need to update your working environment with those paths. (typically done by exporting these variables in .bashrc or .profile files in Linux or Mac-OS machines).<br><br>
+      If you chose custom path of instalation in previous steps, you would need to update your working environment with those paths. (typically done by exporting these variables in ".bashrc" or ".profile" files in Linux or Mac-OS machines).<br><br>
       <code>
         $ export PATH=$PATH:/path/of/installation/bin <br>  
         $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/of/installation/lib

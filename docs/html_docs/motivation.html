@@ -1,7 +1,27 @@
 <html>
 
   <head>
+    <meta name="Title" content="documentation">
+    <meta name="Author" content="Satya Prakash Tripathi">
+    <meta name="Subject" content="XmlPlus Documentation">
+    <meta name="Description" content="XmlPlus Documentation">
+    <meta name="Keywords" content="C++ XML Data Binding, XML Data Binding, XML Data Binding Tool, XML Schema, data binding, XSD to C++, xsd2cpp, c++ and xml schema, schema c++ code generator, xml tool">
+    <meta name="Language" content="English">
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">  
     <title>Motivation</title>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-18904337-3']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
   </head>
 
   <h2>Motivation<hr NOSHADE SIZE=10 WIDTH=100%></h2>
@@ -11,7 +31,7 @@
      
      <ul>
        <li><a href="#WHY_XMLSCHEMA">Why W3C XML-Schema?</a>
-       <li><a href="#WHY_DB">Why Data-Binding?</a>
+       <li><a href="#WHY_DB">Why Data Binding?</a>
        <li><a href="#WHY_XSD2CPP">Why XmlPlus xsd2cpp?</a>
      </ul>
 
@@ -53,16 +73,16 @@
 
     <br><br>
     
-    <a name="WHY_DB"><h3>Why Data-Binding?  <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
+    <a name="WHY_DB"><h3>Why Data Binding?  <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
     <i>
     My application needs to do XML I/O. Now that I have XML-Schemas for the XML files that my application needs to do I/O on, do I have to write custom handwritten parser for each such XML-Schema ? Couldn't the life be any easier ? </i>   
       <br><br>
     
-    <br> The data-binding comes for rescue here. The data-binding implementations typically provide following utilities:
+    <br> The XML data binding comes for rescue here. The XML data binding implementations typically provide following utilities:
     <ul>
       <li> <b>X/O mapping</b>:<br> 
-      The data-binding tool automatically generates structures( eg. classes in OO languages) mapped for XML-Schema components. The in-memory objects holding xml data are also known as <i>XML-Object</i>s. The applications interact with xml data directly through in-memory objects, rather than using DOM/SAX APIs.<br><br>
-      <li> <b>Parsing ie. Deserailization/Unmarshalling:</b><br> 
+      The XML data binding tool automatically generates structures( eg. classes in OO languages) mapped for XML-Schema components. The in-memory objects holding xml data are also known as <i>XML-Object</i>s. The applications interact with xml data directly through in-memory objects, rather than using DOM/SAX APIs.<br><br>
+      <li> <b>Parsing ie. Deserialization/Unmarshalling:</b><br> 
       Parser to read valid XML documents into in-memory <i>XML-Object</i>s<br><br>
       <li> <b>Marshalling/Serialization:</b><br> 
       Writer to write the <i>XML-Object</i>s to xml files
@@ -70,22 +90,30 @@
 
     In essence, the application has to interact only with readymade in-memory object-interface. These objects hide(and save) all the complexities of XML I/O from(for) the application. Thus, one is saved from writing XML I/O implementations(ie. Classes to hold xml data, alongwith Serialization/Deserialization code) for xml data.<br><br>
     
-    There are several data-binding solutions available across platforms/programming-languages.<br>  
+    There are several XML data binding tools available across platforms/programming-languages.<br>  
 
     
     <br><br>
     <a name="WHY_XSD2CPP"><h3>Why <i>XmlPlus-xsd2cpp</i>?  <hr NOSHADE SIZE=7 WIDTH=100%> </h3></a>
-    <i>Why should I use XmlPlus data-binding? </i>
+    <i>Why should I use XmlPlus XML data binding tool? </i>
     <br><br>
     
     Here are a few reasons:<br>
     <ul>
-      <li> XmlPlus is <i>open-source</i> and <i>free</i>
-      <li> XmlPlus provides <i>"simple to use"</i> C++ data-binding
-      <li> XmlPlus <i>Deserialization</i> has <i>in-built</i> validation
-      <li> XmlPlus <i>Serialization/Deserialization</i> retains not just elements and attributes but also processing-instructions and comments, across roundtrips.
+      <li> XmlPlus is <i>open-source</i> and <i>free</i>.
+      <li> XmlPlus provides a code generator viz. xsd2cpp. The xsd2cpp tool generates C++ Data Binding code(XML-Objects) for the supplied schema.
+      <li> XmlPlus provides <i>"simple to use"</i> C++ XML data binding.
+      <li> XmlPlus generated code when built into a <b>[input]run</b> binary, can be used to generate good sample xml documents, validate xml documents,  xml I/O ie. serialization/deserialization etc. 
+      <li> XmlPlus is a <i>nework-enabled processor</i>.
+      <li> XmlPlus <i>Deserialization</i> has <i>in-built</i> validation.
+      <li> XmlPlus  retains not just elements and attributes but also processing-instructions and comments, across roundtrips. Here roundtrip refers to the typical tests of reading a xml document into data-binding objects(in memory) and then writing them back to a xml document.
     </ul>
-    Please read other sections on XmlPlus documentation, to learn more about it.
+
+
+<p>
+    The xsd2cpp tool is a C++ code generator. The xsd2cpp tool when invoked on an input XML Schema, generates C++ classes(headers) mapped to the input XML Schema components. Alongside, wherever needed, it generates implementation files(.cpp) for the generated C++ classes. Also, a sample application(main.cpp) is generated to show how an application could consume the generated C++ source files.
+</p>    
+  Please read other sections of XmlPlus documentation, to learn more about it.
 
     <br><br>
     Currently Supported Platforms(OS):

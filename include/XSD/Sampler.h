@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011 Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -21,16 +21,22 @@
 #define __SAMPLER_H__
 
 #include "DOM/DOMAllInc.h"
+#include "XPlus/Types.h"
 
 #define CNT_SAMPLES 10
 
 using namespace std;
 using namespace DOM;
+using namespace XPlus;
     
 namespace XMLSchema
 {
   namespace Sampler
   {
+    const extern DOMString alphaCharSet;
+    const extern DOMString alphaNumCharSet;
+    const extern DOMString hexBinaryCharSet;
+
     extern DOMString stringSamples[CNT_SAMPLES];
     extern DOMString booleanSamples[CNT_SAMPLES];
     extern DOMString normalizedStringSamples[CNT_SAMPLES];
@@ -76,7 +82,35 @@ namespace XMLSchema
     extern DOMString languageSamples[CNT_SAMPLES];
     extern DOMString tokenSamples[CNT_SAMPLES];
 
-    DOMString getRandomSample(DOMString *arrSamples);
+    DOMString getRandomSampleStringOfLengthRange(int minLength, int maxLength, DOMString charSet=alphaCharSet);
+    DOMString getRandomSampleStringOfMinLength(int minLength, DOMString charSet=alphaCharSet);
+    DOMString getRandomSampleStringOfMaxLength(int maxLength, DOMString charSet=alphaCharSet);
+    DOMString getRandomSampleStringOfLength(int length, DOMString charSet=alphaCharSet);
+
+    DOMString getRandomSampleBase64StringOfLength(int length);
+    DOMString getRandomSampleBase64StringOfLengthRange(int minLength, int maxLength);
+    DOMString getRandomSampleBase64StringOfMinLength(int minLength);
+    DOMString getRandomSampleBase64StringOfMaxLength(int maxLength);
+    
+    DOMString getUrlSchemeSample(int len);
+    DOMString getUrnSchemeSample(int len);
+    DOMString getRandomSampleAnyURIOfLength(int len);
+    DOMString getRandomSampleAnyURIOfLengthRange(int minLen, int maxLen);
+    DOMString getRandomSampleAnyURIOfMinLength(int minLen);
+    DOMString getRandomSampleAnyURIOfMaxLength(int maxLen);
+
+    DOMString getRandomSampleLong(Int64 minIncl, Int64 maxIncl);
+    DOMString getRandomSampleLongOfLength(int len);
+    
+    DOMString getRandomSampleDouble(double minIncl, double maxIncl);
+    // -1 in totalDigits/fractionDigits digits means those are unset
+    DOMString getRandomSampleDoubleOfDigits(int totalDigits=-1, int fractionDigits=-1);
+
+    DOMString getRandomSample(vector<DOMString> samples);
+    DOMString getRandomSample(DOMString *arrSamples, int lenSamples=CNT_SAMPLES);
+
+    UInt64 nonnegativeIntegerRandom(UInt64 maxExcl);
+    Int64 integerRandomInRange(Int64 minIncl, Int64 maxExcl);
   }
 }
 

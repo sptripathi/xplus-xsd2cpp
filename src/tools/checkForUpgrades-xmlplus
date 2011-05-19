@@ -1,0 +1,70 @@
+#!/bin/bash
+
+is_ver1_gt_ver2()
+{
+  ver1_gt_ver2=0
+
+  ver1=`echo $ver1 | sed -e 's/\.//g'`
+  ver2=`echo $ver2 | sed -e 's/\.//g'`
+
+  allzeros="0000000000000000000000"
+  len1=`echo ${#ver1}`
+  len2=`echo ${#ver2}`
+
+  if [ $len1 -gt $len2 ]; then
+    diff=`expr $len1 '-' $len2`
+    $ver2="${ver2}${allzeros:0:$diff}"
+  elif [ $len1 -lt $len2 ]; then
+    diff=`expr $len2 '-' $len1`
+    ver1="${ver1}${allzeros:0:$diff}"
+  fi
+
+  if [ $ver1 -gt $ver2 ]; then
+    ver1_gt_ver2=1
+  fi  
+}
+
+
+internet_available=0
+host="www.google.com"
+
+check_internet_available()
+{
+  ping -q -c 2 $host > /dev/null 2>&1
+  if [ $? -ne 0 ]; then
+   internet_available=0
+  else
+   internet_available=1
+  fi
+}
+
+#main
+check_internet_available
+if [ $internet_available -eq 0 ]; then
+  echo
+  echo "  can not check for upgrades, internet seems to be unavailable"
+  echo
+  exit 1
+fi  
+
+rm -f /tmp/latest_version /tmp/my_version
+wget -o /dev/null -O /tmp/latest_version  http://xmlplus.sourceforge.net/latest_version
+xsd2cpp -v > /tmp/my_version
+latestVersion=`cat /tmp/latest_version | grep XmlPlus | awk -F' ' '{ print $2 }'`
+myVersion=`cat /tmp/my_version | grep XmlPlus | awk -F' ' '{ print $2 }'`
+rm -f /tmp/latest_version /tmp/my_version
+
+ver1=$latestVersion
+ver2=$myVersion
+is_ver1_gt_ver2
+
+if [ $ver1_gt_ver2 -eq 1 ]; then
+  echo
+  echo "  Found a new release available for download: xmlplus-$latestVersion" 
+else  
+  echo
+  echo "  No new release of XmlPlus available for download."
+fi
+echo "  The installed release: xmlplus-$myVersion"
+echo
+

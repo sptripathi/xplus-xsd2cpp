@@ -4,7 +4,7 @@
 
     Following are examples of -atomic- simpleType elements
   <ns1:xBoolean>false</ns1:xBoolean>
-      <ns1:xDecimal>-1.23e-6</ns1:xDecimal>
+  <ns1:xDecimal>-1.23e-6</ns1:xDecimal>
   <ns1:xFloat>-1.23e-3</ns1:xFloat>
   <ns1:xDouble>-1.23e-5</ns1:xDouble>
   <ns1:xInteger>-12678967543233</ns1:xInteger>
@@ -21,7 +21,7 @@
   <ns1:xUnsignedShort>65535</ns1:xUnsignedShort>
   <ns1:xUnsignedByte>255</ns1:xUnsignedByte>
   <ns1:xHexBinary>FEFF</ns1:xHexBinary>
-  <ns1:xBase64Binary>ZXF+NAQF/d</ns1:xBase64Binary>
+  <ns1:xBase64Binary>aGVsbG8gd29ybGQ=</ns1:xBase64Binary>
   <ns1:xUri>http://www.example.com/xmlplus</ns1:xUri>
   <ns1:xNormalizedString>no CR LF TAB</ns1:xNormalizedString>
   <ns1:xToken>xs:hexBinary</ns1:xToken>

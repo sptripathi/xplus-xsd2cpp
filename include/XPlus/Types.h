@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011 Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include "Poco/Types.h"
 #include <limits>
 
+#define ABS(x) ( ((x) < 0) ? -(x) : (x))
 
 namespace XPlus {
 

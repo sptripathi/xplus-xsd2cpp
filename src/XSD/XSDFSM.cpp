@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -95,31 +95,6 @@ void outputErrorToException(XPlus::Exception& ex, list<DOMString> allowedEvents,
 
   s3 << endl << "         => " << gotEvent << endl;
   ex.setContext("Got", s3.str());
-
-  /*
-  if(!docBuilding) {
-    //FIXME: this won't work with non-gnu compilers
-    stream << "\nFile:" << __FILE__ << "     Line:" << __LINE__ ;
-  }
-  stream << "\n-----------------------------------------------" << endl;
-  stream << "Expected";
-  if(allowedEvents.size()>1) {
-    stream << " one of";
-  }
-  stream  << ": ";
-  if(allowedEvents.size() == 0) {
-    stream << "(none)";
-  }
-  else
-  {
-    list<DOMString>::const_iterator cit = allowedEvents.begin();
-    for( ; cit!=allowedEvents.end(); cit++){
-      stream << "\n=> " << *cit << endl;
-    }
-  }
-  stream  << "\nGot:\n=> " << gotEvent << endl;
-  stream << "-----------------------------------------------" << endl;
-  */
 }
 
 bool matchNamespace(const DOMString* nsUri1, const DOMString* nsUri2)
@@ -686,10 +661,8 @@ void XsdChoiceFsmOfFSMs::fireSampleEvents(bool docBuilding)
   if(_allFSMs.size() == 0) {
     return;
   }
-
-  // for now let's have the policy that the sample would have just the
-  // first option
-  _allFSMs[0]->fireSampleEvents(docBuilding);
+  unsigned int idx = XMLSchema::Sampler::nonnegativeIntegerRandom(_allFSMs.size()); 
+  _allFSMs[idx]->fireSampleEvents(docBuilding);
 }
 
 Node* XsdSequenceFsmOfFSMs::previousSiblingElementInSchemaOrder(XsdFsmBase *callerFsm)
@@ -957,8 +930,6 @@ void BinaryFsmTree::removePrunedSubtrees()
     }  
 
     BinaryFsmTree::TreeNodePtr node = fsmTreeNode;
-    //diff: 
-    //while((node->_parent != NULL) && node->_parent->hasOneChild()){
     while((node->_parent != NULL) && node->_parent->hasOneChild() && !node->_parent->isRoot()){
       node = node->_parent;
     }
@@ -1024,15 +995,6 @@ XsdFsmArray::XsdFsmArray(const XsdFsmArray& ref):
   this->parentFsm(ref.parentFsm());
   _unitFsm = ref.unitFsm()->clone();
   _unitFsm->parentFsm(this);
-  /*
-  const list<XsdFsmBasePtr>& fsmList = ref.fsmList();
-  list<XsdFsmBasePtr>::const_iterator cit = fsmList.begin();
-  for(; cit!=fsmList.end(); ++cit)
-  {
-    XsdFsmBasePtr fsm = *cit;
-    _fsmList.push_back(fsm->clone()); 
-  }
-  */
 
   _minOccurence = ref.minOccurence();
   _maxOccurence = ref.maxOccurence();
@@ -1398,37 +1360,42 @@ void XsdFsmArray::fireRequiredEvents(bool docBuilding)
     return;
   }
   resize(_fsmTree._minDepth, docBuilding);
-    
-  /*
-  const list<BinaryFsmTree::TreeNodePtr> leaves = _fsmTree.getLeaves();
-  assert(leaves.size()==1);
-  FsmTreeNode* fsmTreeNode = const_cast<FsmTreeNode *>(dynamic_cast<const FsmTreeNode *>(leaves.front().get()));
-
-  for(unsigned int i=fsmTreeNode->_depth; i<_fsmTree._minDepth; i++)
-  {
-    bool b = addNewGreedyFsmToArray();
-    if(!b) {
-      // TODO: throw exception
-    }
-    const list<BinaryFsmTree::TreeNodePtr> leaves = _fsmTree.getLeaves();
-    assert(leaves.size()==1);
-    FsmTreeNode* fsmTreeNode = const_cast<FsmTreeNode *>(dynamic_cast<const FsmTreeNode *>(leaves.front().get()));
-    fsmTreeNode->_data->fireRequiredEvents();
-  }
-  */
 }
 
 void XsdFsmArray::fireSampleEvents(bool docBuilding)
 {
-  unsigned int depth = 0;
-  // if unbounded, we wll take MAXOCCUR_SAMPLE
+  unsigned int randDepth = 0;
   if(-1 == (int)_fsmTree._maxDepth) {
-    depth = MAXOCCUR_SAMPLE; 
+    randDepth = XMLSchema::Sampler::integerRandomInRange(_fsmTree._minDepth, _fsmTree._minDepth + 5); 
   }
   else {
-    depth = _fsmTree._maxDepth;
+    randDepth = XMLSchema::Sampler::integerRandomInRange(_fsmTree._minDepth, _fsmTree._maxDepth+1); 
   }
-  resize(_fsmTree._minDepth, docBuilding);
+
+  int sz = static_cast<int>(randDepth);
+  if( (sz < _fsmTree._minDepth) || (sz > _fsmTree._maxDepth)) {
+    ostringstream oss;
+    oss << "size should be in range: [" 
+      << _fsmTree._minDepth
+      << "," << _fsmTree._maxDepth << "]";
+    throw IndexOutOfBoundsException(oss.str());
+  }
+
+  const list<BinaryFsmTree::TreeNodePtr> leaves = _fsmTree.getLeaves();
+  assert(leaves.size()==1);
+  FsmTreeNode* fsmTreeNode = const_cast<FsmTreeNode *>(dynamic_cast<const FsmTreeNode *>(leaves.front().get()));
+
+  for(unsigned int i=fsmTreeNode->_depth; i<sz; i++)
+  {
+    bool b = addNewGreedyFsmToArray();
+    if(!b) {
+      throw XMLSchema::FSMException("resize failed");
+    }
+    const list<BinaryFsmTree::TreeNodePtr> leaves = _fsmTree.getLeaves();
+    assert(leaves.size()==1);
+    FsmTreeNode* fsmTreeNode = const_cast<FsmTreeNode *>(dynamic_cast<const FsmTreeNode *>(leaves.front().get()));
+    fsmTreeNode->_data->fireSampleEvents(docBuilding);
+  }
 }
  
 void XsdFsmArray::fireDefaultEvents(bool docBuilding)

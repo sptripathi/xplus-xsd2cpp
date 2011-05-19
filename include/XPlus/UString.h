@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011 Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -46,6 +46,7 @@ namespace UTF8FNS {
   bool isSpaceChar(UChar ch);
   bool is_TAB_LF_CR(UChar ch);
   bool is_TAB_SPACE(UChar ch);
+  bool isEqualChar(UChar ch);
 }
 
 // TODO: change the iterations on string using at() to rather use

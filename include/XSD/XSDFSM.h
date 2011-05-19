@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011 Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -34,6 +34,7 @@
 #include "DOM/DOMAllInc.h"
 #include "XSD/XSDException.h"
 #include "XSD/FSM.h"
+#include "XSD/Sampler.h"
 
 #define EVT_TYPE_ATTRIBUTE       "Attribute"
 #define EVT_TYPE_ELEMENT         "Element"
@@ -338,12 +339,12 @@ class XsdFSM : public XsdFsmBase
             int unboundedMaxOccur =(int)_nsName.maxOccurence;
             if(unboundedMaxOccur == -1)
             {
-              nextStateId = stateId;
               for(unsigned int j=0; j<_nsName.minOccurence; j++)
               {
                 nextStateId = stateId +1;
                 FSM::ActionEdge edge(stateId, eventId, nextStateId);
                 transitions.push_back(edge);
+                stateId = nextStateId;
               }
 
               FSM::ActionEdge edge(nextStateId, eventId, nextStateId);
@@ -380,7 +381,7 @@ class XsdFSM : public XsdFsmBase
       if( (_fsmType == XsdEvent::ELEMENT_START) && (_nodeList.size()>0) )
       {
         //NB: revisit
-        // dynamic_cast fails below, so using static_cast with check for famType 
+        // dynamic_cast fails below, so using static_cast with check for fsmType 
         // being ELEMENT_START, because there are templates of XsdFSM<void *>
         // and void* fails to dynamic_cast to a class* eg Node*
         //Node* pNode = static_cast<Node *>(const_cast<void *>(_nodeList.back()));
@@ -473,12 +474,11 @@ class XsdFSM : public XsdFsmBase
       event.docBuilding = docBuilding;
       event.cbOptions.isSampleCreate = true;
       unsigned int occur = 0;
-      
-      if(_nsName.hasUnboundedMaxOccurence() || (_nsName.maxOccurence > MAXOCCUR_SAMPLE)) {
-        occur = MAXOCCUR_SAMPLE;
+      if(_nsName.hasUnboundedMaxOccurence()) {
+        occur = XMLSchema::Sampler::integerRandomInRange(_nsName.minOccurence, _nsName.minOccurence+5);
       }
       else {
-        occur = _nsName.maxOccurence;
+        occur = XMLSchema::Sampler::integerRandomInRange(_nsName.minOccurence, _nsName.maxOccurence+1);
       }
 
       for(unsigned int j=0; j<occur; j++) 
@@ -968,7 +968,6 @@ struct BinaryFsmTree : public BinaryTree<XsdFsmBasePtr>
 
     void assignBT(const TreeNodePtr& node)
     {
-      //cout << "assignBT callled" << endl;
       if(node.isNull()) {
         return;
       }

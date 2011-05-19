@@ -3,7 +3,7 @@
 <!--
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011   Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -706,7 +706,7 @@ public:
     ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
     ///  \n Chooses the element from the choice and sizes-up the "list of the element
     ///  nodes" with the supplied size
-    ///  @param size the request size(unsigned int) of the list
+    ///  @param size the requested size(unsigned int) of the list
     ///  @return the list of "pointer-to-element-node"
     MEMBER_FN <xsl:value-of select="$returnType"/> choose_list_<xsl:value-of select="$cppNameFunction"/>(unsigned int size);
 
@@ -940,6 +940,10 @@ public:
     </xsl:when>
 
   </xsl:choose>
+  
+  <xsl:for-each select="*[local-name()='extension']/*[local-name()='attribute']">
+    <xsl:call-template name="GEN_HASHINCLUDE_FOR_ELEMENT_ATTRIBUTE"/>
+  </xsl:for-each>  
 
 </xsl:template>
 

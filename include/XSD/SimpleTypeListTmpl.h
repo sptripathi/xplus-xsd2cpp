@@ -1,6 +1,6 @@
 // This file is part of XmlPlus package
 // 
-// Copyright (C)   2010   Satya Prakash Tripathi
+// Copyright (C)   2010-2011 Satya Prakash Tripathi
 //
 //
 // This program is free software: you can redistribute it and/or modify
@@ -35,6 +35,7 @@
 #include "XSD/XSDException.h"
 #include "XSD/UrTypes.h"
 #include "XSD/Facets.h"
+#include "XSD/Sampler.h"
 
 using namespace std;
 using namespace XPlus;
@@ -58,14 +59,71 @@ namespace XMLSchema
         public:
 
           SimpleTypeListTmpl(AnyTypeCreateArgs args):
-            anySimpleType(args, PD_STRING),
-            _isSampleCreate(args.isSampleCreate)
+            anySimpleType(args, PD_STRING)
           {
           }
 
           virtual ~SimpleTypeListTmpl() {}
 
           void stringValue(DOMString val)
+          {
+            //setValue(val);
+            anySimpleType::stringValue(val);
+          }
+
+          inline virtual DOMString stringValue() {
+            return anySimpleType::stringValue();
+          }
+
+#define MAX_LIST_CNT_SAMPLE 10
+          virtual DOMString sampleValue() 
+          {
+            int minLen = 0, maxLen = MAX_LIST_CNT_SAMPLE;
+            int cnt = Sampler::integerRandomInRange(1,MAX_LIST_CNT_SAMPLE+1);
+            if(isEnumerationCFacetSet()) {
+              vector<DOMString> enumStrings = _enumerationCFacet.value();
+              return Sampler::getRandomSample(enumStrings);
+            }
+            if(isLengthCFacetSet()) {
+              cnt = _lengthCFacet.value();
+            }
+            else if(isMinLengthCFacetSet() || isMaxLengthCFacetSet())
+            {
+              if(isMinLengthCFacetSet()) {
+                minLen = _minLengthCFacet.value();
+              }
+              if(isMaxLengthCFacetSet()) {
+                maxLen = _maxLengthCFacet.value();
+              }
+              cnt = Sampler::integerRandomInRange(minLen, maxLen+1);
+            }
+
+            AnyTypeCreateArgs args;
+            args.isSampleCreate = true; 
+            T t(args);
+
+            DOMString sampleListStr;
+            for(int i=0; i<cnt; i++)
+            {
+              if(i != 0) {
+                sampleListStr += " ";
+              }
+              sampleListStr += t.sampleValue();
+            }
+            return sampleListStr;
+          }
+
+          inline virtual unsigned int lengthFacet() {
+            return _listValues.size(); 
+          }
+
+          list<T> listValues() {
+            return _listValues;
+          }
+
+        protected:
+        
+          virtual void setValue(DOMString val) 
           {
             vector<XPlus::UString> tokens;
             val.tokenize(' ', tokens);
@@ -77,45 +135,11 @@ namespace XMLSchema
               t.stringValue(tokens[i]);
               _listValues.push_back(t);
             }
-            
-            anySimpleType::stringValue(val);
+
+            _value = val;
           }
-
-          inline virtual DOMString stringValue() {
-            return anySimpleType::stringValue();
-          }
-
-#define SAMPLE_LIST_CNT 5
-          virtual DOMString sampleValue() 
-          {
-            AnyTypeCreateArgs args;
-            args.isSampleCreate = true; 
-            T t(args);
-
-            DOMString sampleListStr;
-            for(int i=0; i<SAMPLE_LIST_CNT; i++)
-            {
-              if(i != 0) {
-                sampleListStr += " ";
-              }
-              sampleListStr += t.sampleValue();
-            }
-            return sampleListStr;
-          }
-
-
-          inline virtual unsigned int lengthFacet() {
-            return _listValues.size(); 
-          }
-
-          list<T> listValues() {
-            return _listValues;
-          }
-
-        protected:
 
           list<T>         _listValues;
-          bool            _isSampleCreate;
       };
 
   } // end namespace Types 
