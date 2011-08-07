@@ -57,7 +57,7 @@ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
       <xsd:element name="xUnsignedShort" type="xsd:unsignedShort" default="65535"/>
       <xsd:element name="xUnsignedByte" type="xsd:unsignedByte" default="255"/>
       <xsd:element name="xHexBinary" type="xsd:hexBinary" default="FEFF"/>
-      <xsd:element name="xBase64Binary" type="xsd:base64Binary" default="aGVsbG8gd29ybGQ="/>
+      <xsd:element name="xBase64Binary" type="xsd:base64Binary"/>
       <xsd:element name="xUri" type="xsd:anyURI" default="http://www.example.com/xmlplus"/>
       <xsd:element name="xNormalizedString" type="xsd:normalizedString" default="no CR LF TAB"/>
       <xsd:element name="xToken" type="xsd:token" default=" xs:hexBinary "/>

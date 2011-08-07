@@ -2,6 +2,7 @@
 #include <string>
 
 #include "XSD/UserOps.h"
+#include "XPlus/Base64Codec.h"
 #include "STDemo/all-include.h"
 
 void populateDocument(STDemo::Document* xsdDoc);
@@ -79,6 +80,9 @@ void populateDocument(STDemo::Document* xsdDoc)
   //rootElem->set_aDate("2009");
   rootElem->set_aYear(2009);
   rootElem->set_aCommonName("abcde");
+
+  XPlus::Base64Codec base64Codec;
+  rootElem->set_xBase64Binary(base64Codec.encode("hello world"));
   //  end : atomic simpleType elements
 
   //  begin : list simpleType elements        
