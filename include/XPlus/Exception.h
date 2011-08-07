@@ -86,6 +86,14 @@ namespace XPlus
     }
   };
   
+  class IndeterminateException : public XPlus::Exception {
+    public:
+      IndeterminateException(string msg=""):
+      Exception(msg)
+    {
+    }
+  };
+
   class DateTimeException : public XPlus::Exception {
     public:
       DateTimeException(string msg=""):
@@ -93,7 +101,7 @@ namespace XPlus
     {
     }
   };
-  
+
   class RuntimeException : public XPlus::Exception {
     public:
       RuntimeException(string msg=""):

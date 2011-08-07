@@ -250,7 +250,7 @@ namespace XPlus {
   {
     int result = DateAlgo::cmp(*this, dt);
     if(result == INDETERMINATE) {
-      throw DateTimeException("INDETERMINATE DateTime == comparison");
+      throw IndeterminateException("INDETERMINATE DateTime == comparison");
     }
     return (result == 0);
   }
@@ -265,7 +265,7 @@ namespace XPlus {
   {
     int result = DateAlgo::cmp(*this, dt);
     if(result == INDETERMINATE) {
-      throw DateTimeException("INDETERMINATE DateTime < comparison");
+      throw IndeterminateException("INDETERMINATE DateTime < comparison");
     }
     return (result == -1);
   }
@@ -274,7 +274,7 @@ namespace XPlus {
   {
     int result = DateAlgo::cmp(*this, dt);
     if(result == INDETERMINATE) {
-      throw DateTimeException("INDETERMINATE DateTime <= comparison");
+      throw IndeterminateException("INDETERMINATE DateTime <= comparison");
     }
     return ((result == -1) || (result == 0));
   }
@@ -283,7 +283,7 @@ namespace XPlus {
   {
     int result = DateAlgo::cmp(*this, dt);
     if(result == INDETERMINATE) {
-      throw DateTimeException("INDETERMINATE DateTime > comparison");
+      throw IndeterminateException("INDETERMINATE DateTime > comparison");
     }
     return (result == 1);
   }
@@ -292,7 +292,7 @@ namespace XPlus {
   {
     int result = DateAlgo::cmp(*this, dt);
     if(result == INDETERMINATE) {
-      throw DateTimeException("INDETERMINATE DateTime >= comparison");
+      throw IndeterminateException("INDETERMINATE DateTime >= comparison");
     }
     return ((result == 1) || (result == 0));
   }
@@ -327,7 +327,7 @@ XPlus::Duration operator - (const XPlus::DateTime& dt1, const XPlus::DateTime& d
 {
   //make sure both dt1 and dt2 have timezones
   if(!dt1.tzAvailable() || !dt2.tzAvailable()) {
-    throw DateTimeException("INDETERMINATE DateTime operation - ");
+    throw IndeterminateException("INDETERMINATE DateTime operation - ");
   }
   
   //get rid of timezone part

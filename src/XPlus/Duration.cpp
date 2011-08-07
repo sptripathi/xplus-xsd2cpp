@@ -55,7 +55,7 @@ namespace XPlus
   {
     int result = DateAlgo::cmp(*this, dur);
     if(result == DateTime::INDETERMINATE) {
-      throw DateTimeException("INDETERMINATE Duration != comparison");
+      throw IndeterminateException("INDETERMINATE Duration != comparison");
     }
     return (result == -1);
   }
@@ -64,7 +64,7 @@ namespace XPlus
   {
     int result = DateAlgo::cmp(*this, dur);
     if(result == DateTime::INDETERMINATE) {
-      throw DateTimeException("INDETERMINATE Duration == comparison");
+      throw IndeterminateException("INDETERMINATE Duration == comparison");
     }
     return (result == 0);
   }
@@ -97,7 +97,7 @@ namespace XPlus
   {
     int result = DateAlgo::cmp(*this, dur);
     if(result == DateTime::DateTime::INDETERMINATE) {
-      throw DateTimeException("INDETERMINATE Duration > comparison");
+      throw IndeterminateException("INDETERMINATE Duration > comparison");
     }
     return (result == 1);
   }
@@ -106,7 +106,7 @@ namespace XPlus
   {
     int result = DateAlgo::cmp(*this, dur);
     if(result == DateTime::INDETERMINATE) {
-      throw DateTimeException("INDETERMINATE Duration >= comparison");
+      throw IndeterminateException("INDETERMINATE Duration >= comparison");
     }
     return ((result == 1) || (result == 0));
   }

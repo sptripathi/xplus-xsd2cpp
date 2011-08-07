@@ -120,4 +120,5 @@ output_all_dirs_html()
 }
 
 #main
+cd ../..
 output_all_dirs_html

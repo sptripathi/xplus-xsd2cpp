@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="root">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="code" type="MyCode" minOccurs="2" maxOccurs="unbounded"/>
+				<xsd:element name="sku" type="SKU"/>
+			</xsd:sequence>
+      <xsd:attribute name="sku" type="SKU" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+
+  <xsd:simpleType name="MyCode">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[0-8]{5}"/>
+			<xsd:pattern value="[a-z]{5}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+  <xsd:simpleType name="SKU">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\d{3}-[A-Z]{2}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

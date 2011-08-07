@@ -807,7 +807,7 @@ namespace Types
           throwFacetViolation(CF_MAXINCLUSIVE);
         }
       }
-      catch(DateTimeException&amp; ex) {
+      catch(IndeterminateException&amp; ex) {
         throwFacetViolation(CF_MAXINCLUSIVE, ex.rawMsg());
       }
       catch(XPlus::Exception&amp; ex) {
@@ -832,7 +832,7 @@ namespace Types
           throwFacetViolation(CF_MAXEXCLUSIVE);
         }
       }
-      catch(DateTimeException&amp; ex) {
+      catch(IndeterminateException&amp; ex) {
         throwFacetViolation(CF_MAXINCLUSIVE, ex.rawMsg());
       }
       catch(XPlus::Exception&amp; ex) {
@@ -857,7 +857,7 @@ namespace Types
           throwFacetViolation(CF_MININCLUSIVE);
         }
       }
-      catch(DateTimeException&amp; ex) {
+      catch(IndeterminateException&amp; ex) {
         throwFacetViolation(CF_MAXINCLUSIVE, ex.rawMsg());
       }
       catch(XPlus::Exception&amp; ex) {
@@ -882,7 +882,7 @@ namespace Types
           throwFacetViolation(CF_MINEXCLUSIVE);
         }
       }
-      catch(DateTimeException&amp; ex) {
+      catch(IndeterminateException&amp; ex) {
         throwFacetViolation(CF_MAXINCLUSIVE, ex.rawMsg());
       }
       catch(XPlus::Exception&amp; ex) {

@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<ns1:elem xmlns:ns1="urn:ns1">
+  <ns1:e1>a dog is a man's best friend but my best friend happens to be a canary</ns1:e1>
+  <ns1:e2>knight's moves on chessboard</ns1:e2>
+</ns1:elem>

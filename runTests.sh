@@ -20,9 +20,9 @@ ascertain_test_dirs()
   #W3C_TESTS_DIRS=`ls -1d Tests/w3c_tests/*`
 
   EX_DIRS=`find examples  -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
-  W3C_TESTS_DIRS=`find Tests/w3c_tests  -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
-  XPLUS_TESTS_DIRS=`find Tests/xplus_tests -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
-  XPLUS_NEGTESTS_DIRS=`find Tests/xplus_neg_tests -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
+  #W3C_TESTS_DIRS=`find Tests/w3c_tests  -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
+  #XPLUS_TESTS_DIRS=`find Tests/xplus_tests -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
+  #XPLUS_NEGTESTS_DIRS=`find Tests/xplus_neg_tests -maxdepth 1 -mindepth 1 -type d | grep -v "svn*"`
 }
 
 print_usage()

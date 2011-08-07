@@ -3,8 +3,8 @@
 	<xsd:element name="Root">
 	  <xsd:complexType>
 	    <xsd:sequence>
-		<xsd:element name="Total1" type="Base"/>
-		<xsd:element name="Total2" type="Derived"/>
+		    <xsd:element name="Total1" type="Base"/>
+		    <xsd:element name="Total2" type="Derived"/>
  	    </xsd:sequence>
 	  </xsd:complexType>
 	</xsd:element>
