@@ -22,7 +22,12 @@
 
 extern "C" {
 #include <string.h>  
-#include "expat_external.h"
+
+#ifdef EXPAT_BUNDLED
+#include "expat/expat_external.h"
+#else
+#include <expat_external.h>
+#endif
 }
 
 #include "XPlus/LList.h" 

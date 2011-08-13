@@ -26,7 +26,12 @@
 
 extern "C" {
 #include <stdio.h>
-#include "expat.h"
+
+#ifdef EXPAT_BUNDLED
+#include "expat/expat.h"
+#else
+#include <expat.h>
+#endif
 }
 
 #if defined(__amigaos__) && defined(__USE_INLINE__)

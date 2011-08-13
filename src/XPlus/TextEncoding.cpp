@@ -19,7 +19,13 @@
 
 
 #include "XPlus/TextEncoding.h"
-#include <strings.h>
+#include <string.h>
+
+#ifdef _WIN32
+#define STRCASECMP strcmpi
+#else
+#define STRCASECMP strcasecmp
+#endif
 
 namespace XPlus
 {
@@ -44,7 +50,7 @@ namespace XPlus
     int matchedIdx = MAX_ENC;
     for(int i=0; i<MAX_ENC; i++)
     {
-      if( strcasecmp(s_encodingStr[i].c_str(), encStr.c_str()) == 0) {
+      if( STRCASECMP(s_encodingStr[i].c_str(), encStr.c_str()) == 0) {
         matchedIdx = i;
         break;
       }

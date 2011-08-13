@@ -91,7 +91,7 @@ namespace DOM
   // no-op if it has a non-null namespace
   // TODO: verify this behaviour with spec
   Node* NamedNodeMap::removeNamedItem(DOMString* name) {
-    removeNamedItemNS(NULL, name);
+    return removeNamedItemNS(NULL, name);
   }
 
   // Introduced in DOM Level 2:

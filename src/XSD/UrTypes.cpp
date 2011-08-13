@@ -1687,8 +1687,12 @@ namespace XMLSchema
       }
 
       int randDay = Sampler::integerRandomInRange(minIncl, maxIncl);
-      char buffer[8]; 
+      char buffer[8];
+#ifdef _WIN32     
+      _snprintf(buffer, 8, "%02d", randDay);
+#else
       snprintf(buffer, 8, "%02d", randDay);
+#endif
       return DOMString(buffer);
     }
 

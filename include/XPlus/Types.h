@@ -61,6 +61,16 @@ typedef Poco::UInt64 UInt64;
 #define UIntBiggest Poco::Int32
 #endif
 
+#ifdef _WIN32
+#define SRAND srand
+#define RAND  rand
+#define DRAND()  ((double)(rand() % 100 + 1)/100)
+#else
+#define SRAND   srand48
+#define RAND    lrand48
+#define DRAND() drand48() 
+#endif
+
 const Int64 XSD_LONG_MININCL    =  -9223372036854775807LL-1;
 const Int64 XSD_LONG_MAXINCL    =   9223372036854775807LL;
 const UInt64 XSD_ULONG_MAXINCL  =   18446744073709551615ULL;

@@ -29,6 +29,7 @@ extern "C" {
 #include "XSD/Sampler.h"
 #include "XPlus/StringUtils.h"
 
+
 namespace XMLSchema
 {
   namespace Sampler
@@ -604,8 +605,8 @@ namespace XMLSchema
       {
         UInt64 intDiff = static_cast<UInt64>(ABS(maxIncl - minIncl));
         unsigned long long step = integerRandomInRange(1, intDiff);
-        //drand48 generates random in range [0,1]
-        doubleStep = step - drand48();
+        //DRAND generates random in range [0,1]
+        doubleStep = step - DRAND();
       }
       
       double outDouble = minIncl + doubleStep;
@@ -697,8 +698,8 @@ namespace XMLSchema
     UInt64 nonnegativeIntegerRandom(UInt64 maxExcl)
     {
       assert(maxExcl > 0);
-      srand48( time(NULL)%10001 + lrand48()%10001 );
-      long int r = lrand48()%(maxExcl);
+      SRAND( time(NULL)%10001 + RAND()%10001 );
+      long int r = RAND()%(maxExcl);
       return r;
     }
     

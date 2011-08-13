@@ -124,7 +124,7 @@ namespace XPlus {
                 SKIP_PAST_DECIMAL();
                 std::string::const_iterator it_end = it;
                 FPA::parseDecimal(str, it_begin, it_end, significand, exponent);
-                second = significand*pow(10,exponent);
+                second = significand*pow((double)10,(double)exponent);
               }
               break;
             case 'z':
@@ -247,7 +247,7 @@ namespace XPlus {
         double significand;
         int exponent;
         FPA::parseDecimal(str, it_begin, it_end, significand, exponent);
-        fraction = significand*pow(10,exponent); 
+        fraction = significand*pow((double)10,(double)exponent); 
       }
 
       //cout << "*it:" << *it << " number:" << number <<   " expect:" << expect << endl;

@@ -42,7 +42,8 @@ int checkBounds () {
 
 
 
-main()
+int main()
 {
   checkBounds();
+  return 1;
 }

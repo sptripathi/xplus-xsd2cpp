@@ -130,7 +130,8 @@ void test1()
 }
 
 
-main()
+int main()
 {
   test1();
+  return 0;
 }

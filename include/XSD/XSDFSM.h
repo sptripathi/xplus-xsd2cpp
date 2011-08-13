@@ -99,10 +99,10 @@ struct FsmCbOptions
   bool isSampleCreate;
   
   FsmCbOptions(DOMString xsiType="", DOMString xsiNil="", DOMString xsiSchemaLocation="", DOMString xsiNoNamespaceSchemaLocation=""):
-    xsiType(""),
-    xsiNil(""),
-    xsiSchemaLocation(""),
-    xsiNoNamespaceSchemaLocation(""),
+    xsiType(xsiType),
+    xsiNil(xsiNil),
+    xsiSchemaLocation(xsiSchemaLocation),
+    xsiNoNamespaceSchemaLocation(xsiNoNamespaceSchemaLocation),
     isDefaultCreate(false),
     isSampleCreate(false)
     {

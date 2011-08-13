@@ -441,7 +441,8 @@ namespace XPlus
       bool addNodeAsLeaf(TreeNodePtr node)
       {
         _leaves.push_back(node);
-      }
+        return true;
+	  }
 
 
       bool addNodeAsLeafAlongAnotherLeafNode(TreeNodePtr& referenceNode, TreeNodePtr& node, bool before=true)

@@ -143,7 +143,7 @@ void testRelational()
   }
 }
 
-main()
+int main()
 {
   //testArithmetic();
   //testRelational();
@@ -153,4 +153,6 @@ main()
   DateTime dt2 = DateTimeUtils::parseISO8601DateTime("2010-01-01T12:00:00Z");
 
   cout << (dt1 > dt2) << endl;
+
+  return 0;
 }

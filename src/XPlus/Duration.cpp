@@ -96,7 +96,7 @@ namespace XPlus
   bool Duration::operator >  (const Duration& dur) const
   {
     int result = DateAlgo::cmp(*this, dur);
-    if(result == DateTime::DateTime::INDETERMINATE) {
+    if(result == DateTime::INDETERMINATE) {
       throw IndeterminateException("INDETERMINATE Duration > comparison");
     }
     return (result == 1);
