@@ -128,6 +128,12 @@ namespace XPlus
       static UString stringToUString(const std::string& str);
 
   };
+  
+}
+
+namespace DOM 
+{
+  typedef XPlus::UString DOMString;
 }
 
 #endif

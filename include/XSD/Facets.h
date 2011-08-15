@@ -341,7 +341,12 @@ namespace XMLSchema
         case PD_GDAY:
         {
           XPlus::Day aDay = DateTimeUtils::parseXsdDay(strVal);
-          XPlus::DateTime dtTime = DateTime(DateTime::UNSPECIFIED, DateTime::UNSPECIFIED, aDay.day(), DateTime::UNSPECIFIED, DateTime::UNSPECIFIED, DateTime::UNSPECIFIED);
+          XPlus::DateTime dtTime = DateTime(DateTime::UNSPECIFIED,
+                                            DateTime::UNSPECIFIED,
+                                            aDay.day(),
+                                            DateTime::UNSPECIFIED,
+                                            DateTime::UNSPECIFIED,
+                                            DateTime::UNSPECIFIED);
           value(dtTime);
         }
           break;

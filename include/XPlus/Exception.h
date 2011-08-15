@@ -21,41 +21,51 @@
 #define __UTILS_EXCEPTION_H__
 
 #include <stdexcept>
-#include <string>
 #include <map>
+#include <vector>
+#include "XPlus/UString.h"
 
 using namespace std;
+using namespace DOM;
 
 namespace XPlus
 {
   class Exception : public std::exception
   {
     protected:
-      string                 _msg;
-      map<string, string>    _contextMap;
+      DOMString                          _msg;
+      map<DOMString, vector<DOMString> >     _contextMap;
 
     public:
-     Exception(string msg="");
+     Exception(DOMString msg="");
 
     virtual ~Exception() throw();
     
-    virtual string msg();
+    virtual DOMString msg();
     
-    void msg(string str);
+    void msg(DOMString str);
     
     void appendException(const Exception& ex);
     
-    void appendMsg(string str);
+    void appendMsg(DOMString str);
     
-    string rawMsg() const;
+    DOMString rawMsg() const;
+  
+    void outcome(DOMString str);
+    DOMString outcome();
 
-    void setContext(const string name, const double value);
-    void setContext(const string name, const string value);
+    inline map<DOMString, vector<DOMString> > getContext() {
+      return _contextMap; 
+    }
+    
+    void setContext(const DOMString name, const double value);
+    void setContext(const DOMString name, const DOMString value);
+    void setContext(const DOMString name, const vector<DOMString> values);
   };
 
   class NullPointerException : public XPlus::Exception {
     public:
-      NullPointerException(string msg=""):
+      NullPointerException(DOMString msg=""):
       Exception(msg)
     {
     }
@@ -63,7 +73,7 @@ namespace XPlus
 
   class IndexOutOfBoundsException : public XPlus::Exception {
     public:
-      IndexOutOfBoundsException(string msg=""):
+      IndexOutOfBoundsException(DOMString msg=""):
       Exception(msg)
     {
     }
@@ -72,7 +82,7 @@ namespace XPlus
   class RegularExpressionException: public XPlus::Exception
   {
     public:
-      RegularExpressionException(string msg=""):
+      RegularExpressionException(DOMString msg=""):
         Exception(msg)
       {
       }
@@ -80,7 +90,7 @@ namespace XPlus
   
   class NotFoundException : public XPlus::Exception {
     public:
-      NotFoundException(string msg=""):
+      NotFoundException(DOMString msg=""):
       Exception(msg)
     {
     }
@@ -88,7 +98,7 @@ namespace XPlus
   
   class IndeterminateException : public XPlus::Exception {
     public:
-      IndeterminateException(string msg=""):
+      IndeterminateException(DOMString msg=""):
       Exception(msg)
     {
     }
@@ -96,7 +106,7 @@ namespace XPlus
 
   class DateTimeException : public XPlus::Exception {
     public:
-      DateTimeException(string msg=""):
+      DateTimeException(DOMString msg=""):
       Exception(msg)
     {
     }
@@ -104,7 +114,7 @@ namespace XPlus
 
   class RuntimeException : public XPlus::Exception {
     public:
-      RuntimeException(string msg=""):
+      RuntimeException(DOMString msg=""):
       Exception(msg)
     {
     }
@@ -112,7 +122,7 @@ namespace XPlus
 
   class StringException : public XPlus::Exception {
     public:
-      StringException(string msg=""):
+      StringException(DOMString msg=""):
       Exception(msg)
     {
     }

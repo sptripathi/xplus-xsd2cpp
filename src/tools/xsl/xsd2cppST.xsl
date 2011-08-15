@@ -858,7 +858,7 @@ namespace Types
         }
       }
       catch(IndeterminateException&amp; ex) {
-        throwFacetViolation(CF_MAXINCLUSIVE, ex.rawMsg());
+        throwFacetViolation(CF_MININCLUSIVE, ex.rawMsg());
       }
       catch(XPlus::Exception&amp; ex) {
         throwFacetViolation(CF_MININCLUSIVE);

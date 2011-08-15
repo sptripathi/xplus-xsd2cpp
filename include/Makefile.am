@@ -38,6 +38,7 @@ nobase_include_HEADERS = \
   XPlus/TimeZone.h \
   XPlus/Types.h \
   XPlus/TextEncoding.h \
+  XPlus/Txn.h \
   XPlus/UString.h \
   XPlus/XPlusObject.h \
   XPlus/Year.h \

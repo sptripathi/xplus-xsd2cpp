@@ -152,6 +152,13 @@ namespace XPlus
   //        single-char delimiters allowed
   void UString::tokenize(UChar delim, vector<XPlus::UString>& tokens)
   {
+    if( (this->length() == 0) ||
+        ((this->length() == 1) && (this->at(0) == delim))
+      )
+    {
+      return;
+    }
+
     // 0 1 2| 3 4| 5 6 7
     UString::iterator begin = this->begin();
     UString::iterator itBegin = begin;
@@ -168,7 +175,7 @@ namespace XPlus
       }
     }
 
-    if(itBegin != end-1) {
+    if(itBegin != end) {
       token.assign(itBegin,end);
       if(token.size() > 0) tokens.push_back(token);
     }

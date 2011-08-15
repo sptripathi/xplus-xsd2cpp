@@ -147,7 +147,6 @@ namespace DOM
   typedef AutoPtr<PI> PIPtr;
   typedef PI* PIP;
   
-  typedef XPlus::UString DOMString;
   typedef AutoPtr<DOMString> DOMStringPtr;
   //typedef DOMString* DOMStringPtr;
   typedef DOMString* DOMStringP;

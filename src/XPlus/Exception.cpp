@@ -17,13 +17,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+extern "C" {
+#include <stdio.h>
+}
+
 #include "XPlus/Exception.h"
 #include "XPlus/StringUtils.h"
+
 
 namespace XPlus
 {
 
-  Exception::Exception(string msg):
+  Exception::Exception(DOMString msg):
     _msg(msg)
   {
   }
@@ -31,43 +36,93 @@ namespace XPlus
   Exception::~Exception() throw() { };
 
 
-  void Exception::msg(string str) {
+  void Exception::msg(DOMString str) {
     _msg = str;
   }
 
-  void Exception::appendMsg(string str) {
+  void Exception::appendMsg(DOMString str) {
     _msg += str;
   }
 
-  string Exception::rawMsg() const {
+  DOMString Exception::rawMsg() const {
     return _msg;
   }
-
-  void Exception::setContext(const string name, const string value) {
-    _contextMap.insert(pair<string, string>(name, value));
+  
+  void Exception::setContext(const DOMString name, const vector<DOMString> values) {
+    _contextMap.insert(pair<DOMString, vector<DOMString> >(name, values));
+  }
+  
+  void Exception::setContext(const DOMString name, const DOMString value) {
+    vector<DOMString> values;
+    values.push_back(value);
+    _contextMap.insert(pair<DOMString, vector<DOMString> >(name, values));
   }
 
-  void Exception::setContext(const string name, const double value) {
-    _contextMap.insert(pair<string, string>(name, toString<const double>(value)));
+  void Exception::setContext(const DOMString name, const double value) {
+    vector<DOMString> values;
+    values.push_back(toString<const double>(value));
+    _contextMap.insert(pair<DOMString, vector<DOMString> >(name,values));
   }
 
   void Exception::appendException(const Exception& ex)
   {
     this->appendMsg(ex.rawMsg());
-    map<string, string>::const_iterator it = ex._contextMap.begin();
+    map<DOMString, vector<DOMString> >::const_iterator it = ex._contextMap.begin();
     for(; it != ex._contextMap.end(); ++it) {
       _contextMap.insert(*it);
     }
   }
 
-  string Exception::msg() 
+  DOMString Exception::msg() 
   {
-    ostringstream oss;
-    oss << _msg;
-    map<string, string>::const_iterator it = _contextMap.begin();
-    for( ; it!= _contextMap.end(); ++it) {
-      oss << endl << "  " << it->first << ": " << it->second ;
+    if( (_msg.length() == 0) && (_contextMap.size() == 0) ) {
+      return "";
     }
+
+    char buffer[25];
+
+    ostringstream oss;
+    oss << "  {" << endl;
+    
+    if(_msg.length() > 0)
+    {
+      snprintf(buffer, 25, "  %-25s ", "\"error\"");
+      oss << "    " << buffer << " : \"" << _msg << "\",";
+      oss << endl;
+    }
+
+    map<DOMString, vector<DOMString> >::const_iterator it = _contextMap.begin();
+    bool notFirst = false;
+    for( ; it!= _contextMap.end(); ++it)
+    {
+      if(notFirst) {
+        oss << "," << endl;
+      }
+      notFirst = true;
+      
+      DOMString name = DOMString("\"") + it->first + "\"";
+      snprintf(buffer, 25, "  %-25s ", name.c_str());
+
+      oss << "    " << buffer << " : ";
+      vector<DOMString> values = it->second;
+      if(values.size() == 1) {
+        oss <<  "\"" << values[0] << "\"";
+      }
+      else if(values.size() > 1)
+      {
+        oss << "[";
+        for(unsigned int i=0; i<values.size(); i++)
+        {
+          oss <<  "\"" << values[i] << "\"";
+          if(i != values.size()-1) {
+            oss << ", ";
+          }
+        }
+        oss << "]";
+      }
+    }
+
+    oss << endl << "  }";
     return oss.str();
   }
 

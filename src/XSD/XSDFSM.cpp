@@ -81,20 +81,21 @@ void outputErrorToException(XPlus::Exception& ex, list<DOMString> allowedEvents,
   if(allowedEvents.size()>1) {
     s1 << " one of";
   }
+
   if(allowedEvents.size() == 0) {
     s2 <<  "(none)";
+    ex.setContext(s1.str(), s2.str());
   }
   else
   {
+    vector<DOMString> values;
     list<DOMString>::const_iterator cit = allowedEvents.begin();
     for( ; cit!=allowedEvents.end(); cit++){
-      s2 << endl << "         => " << *cit ;
+      values.push_back(*cit);
     }
+    ex.setContext(s1.str(), values);
   }
-  ex.setContext(s1.str(), s2.str());
-
-  s3 << endl << "         => " << gotEvent << endl;
-  ex.setContext("Got", s3.str());
+  ex.setContext("Got", gotEvent);
 }
 
 bool matchNamespace(const DOMString* nsUri1, const DOMString* nsUri2)

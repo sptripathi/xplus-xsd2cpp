@@ -25,6 +25,7 @@ extern "C" {
 
 #include <iostream>
 
+#include "XPlus/Txn.h"
 #include "DOM/Stream.h"
 #include "XSD/xsdUtils.h"
 
@@ -73,8 +74,10 @@ namespace XSD
 
       void writeSample()
       {
-        cout << "Going to write sample file..." << endl;
         string outFile = "sample.xml";
+        XPlus::Txn txn;
+        txn.action("Writing sample xml file");
+        txn.success(string(" => wrote file ") + outFile);
         try 
         {
           AutoPtr<T> xsdDoc = createXsdDocument(true, true);
@@ -82,19 +85,19 @@ namespace XSD
           doc2xml(xsdDoc, outFile);
         }
         catch(XPlus::Exception& ex) {
-          cerr << "  => write failed" << endl;
-          cerr << endl << "{" << endl;
-          cerr << ex.msg();
-          cerr << endl << "}" << endl;
-          exit(1);
+          txn.failure(ex);
         }
+        txn.outputToStream(cout);
+        cout << endl << endl;
       }
 
 
       void writePopulatedDoc()
       {
-        cout << "Going to populate Document and write xml file..." << endl;
         string outFile="t.xml";
+        XPlus::Txn txn;
+        txn.action("Writing the xml file using populated Document(object-model)");
+        txn.success(string(" => wrote file ") + outFile);
         try 
         {
           AutoPtr<T> xsdDoc = createXsdDocument(true);
@@ -105,23 +108,19 @@ namespace XSD
           doc2xml(xsdDoc, outFile);
         }
         catch(XPlus::Exception& ex) {
-          cerr << "  => write failed" << endl;
-          cerr << endl << "{" << endl;
-          cerr << ex.msg();
-          cerr << endl << "}" << endl;
-          exit(1);
+          txn.failure(ex);
         }
+        txn.outputToStream(cout);
+        cout << endl << endl;
       }
 
       void readUpdateWriteFile(string inFilePath)
       {
-        cout << "readUpdateWriteFile:" << inFilePath << endl;
-        cout << "Going to: \n"
-          << "  1) read input-xml-file\n"
-          "  2) operate on the read Document with user-supplied function updateOrConsumeDocument()\n"
-          "  3) write xml file..." 
-          << endl << endl;
         string outFile = inFilePath+ ".row.xml";
+        XPlus::Txn txn;
+        txn.addNameValueInfo("input file", inFilePath);
+        txn.action("Doing a read-update-write of input xml file");
+        txn.success(string(" => wrote file ") + outFile);
         try 
         {
           AutoPtr<T> xsdDoc = createXsdDocumentFromFile(inFilePath);
@@ -132,14 +131,106 @@ namespace XSD
           doc2xml(xsdDoc, outFile);
         }
         catch(XPlus::Exception& ex) {
-          cerr << "  => write failed" << endl;
-          cerr << endl << "{" << endl;
-          cerr << ex.msg();
-          cerr << endl << "}" << endl;
-          exit(1);
+          txn.failure(ex);
         }
+        txn.outputToStream(cout);
+        cout << endl << endl;
       }
 
+
+      static void roundtripFile(string inFilePath)
+      {
+        string outFile = inFilePath + ".rt.xml";
+        XPlus::Txn txn;
+        txn.addNameValueInfo("input file", inFilePath);
+        txn.action("Doing a roundtrip of input xml file");
+        txn.success(string(" => wrote file ") + outFile);
+        try 
+        {
+          AutoPtr<T> xsdDoc = createXsdDocumentFromFile(inFilePath);
+          xsdDoc->prettyPrint(true);
+          doc2xml(xsdDoc, outFile);
+        }
+        catch(XPlus::Exception& ex) {
+          txn.failure(ex);
+        }
+        txn.outputToStream(cout);
+        cout << endl << endl;
+      }
+
+      static void validateFile(string inFilePath)
+      {
+        XPlus::Txn txn;
+        txn.success();
+        txn.addNameValueInfo("input file", inFilePath);
+        txn.action("validating input xml file");
+        
+        // this is one way of validation:
+        // when the Document is built from a xml-file, the file
+        // does get validated. Any errors(exception) thrown, would
+        // be reported in the catch block
+        try
+        {
+          AutoPtr<T> xsdDoc = createXsdDocumentFromFile(inFilePath);
+        }
+        catch(XPlus::Exception& ex)
+        {
+          txn.failure(ex);
+        }
+        catch(std::exception& ex) {
+          XPlus::Exception ex2("Unknown error");
+          txn.failure(ex2);
+        }
+        catch(...) {
+          XPlus::Exception ex("Unknown error");
+          txn.failure(ex);
+        }
+        txn.outputToStream(cout);
+        cout << endl << endl;
+      }
+      
+      static T* createXsdDocumentFromFile(string inFilePath)
+      {
+        XPlusFileInputStream is;
+        is.open(inFilePath.c_str());
+        T* xsdDoc = new T(false);
+        is >> *xsdDoc; 
+        return xsdDoc;
+      }
+
+      static void doc2xml(T* xsdDoc, string outFile)
+      {
+        // output xml file
+        XPlusFileOutputStream ofs(outFile.c_str(), ios::binary);
+        ofs << *xsdDoc;
+      }
+
+      static void printHelp(string argv0)
+      {
+        cout << "Usage: " << argv0 << " [options] XMLfiles ..." << endl;
+        cout << "Options:" << endl;  
+        cout << " -s, --sample\n"
+          << "            create a schema-driven sample xml-file\n" 
+          << endl;
+        cout << " -w, --write\n"
+          << "            write a xml-file using populated Document\n" 
+          << "            Note: populateDocument() function in main.cpp template,\n"
+          << "            must be used to populate the Document"
+          << endl;
+        cout << " -v, --validate\n"
+          << "            validate input xml-file(against compiled schema)"
+          << endl;
+        cout << " -r, --roundtrip\n"
+          << "            roundtrip (read->write) input xml-file"
+          << endl;
+        cout << " -u, --row\n"
+          << "         perform read->operate->write operations on input xml-file"
+          << endl;
+        cout << " -h, --help\n"
+          << "         print help"
+          << endl;
+        cout << endl;
+      }
 
       int run(int argc, char**argv)
       {
@@ -235,98 +326,6 @@ namespace XSD
           exit(1);
         }
 
-      }
-
-      static void roundtripFile(string inFilePath)
-      {
-        cout << "Going to roundtrip file:" << inFilePath << endl;
-        try 
-        {
-          AutoPtr<T> xsdDoc = createXsdDocumentFromFile(inFilePath);
-          xsdDoc->prettyPrint(true);
-          string outFile = inFilePath + ".rt.xml";
-          doc2xml(xsdDoc, outFile);
-        }
-        catch(XPlus::Exception& ex) {
-          cerr << "Error:\n" << ex.msg() << endl;
-          exit(1);
-        }
-      }
-
-      static void validateFile(string inFilePath)
-      {
-        cout << "validating file:" << inFilePath << endl;
-        // this is one way of validation:
-        // when the Document is built from a xml-file, the file
-        // does get validated. Any errors(exception) thrown, would
-        // be reported in the catch block
-        try
-        {
-          AutoPtr<T> xsdDoc = createXsdDocumentFromFile(inFilePath);
-        }
-        catch(XPlus::Exception& ex)
-        {
-          ex.setContext("file", inFilePath);
-          cerr << "  => validation failed" << endl;
-          cerr << endl << "Error: {" << endl;
-          cerr << ex.msg();
-          cerr << endl << "}" << endl;
-          exit(1);
-        }
-        catch(std::exception& ex) {
-          cerr << " unknown error" << endl;
-        }
-        catch(...) {
-          cerr << " unknown error" << endl;
-        }
-        cout << "  => validated successfully"
-          << endl << endl;
-
-      }
-      
-      static T* createXsdDocumentFromFile(string inFilePath)
-      {
-        XPlusFileInputStream is;
-        is.open(inFilePath.c_str());
-        T* xsdDoc = new T(false);
-        is >> *xsdDoc; 
-        return xsdDoc;
-      }
-
-      static void doc2xml(T* xsdDoc, string outFile)
-      {
-        // output xml file
-        XPlusFileOutputStream ofs(outFile.c_str(), ios::binary);
-        ofs << *xsdDoc;
-        cout << "  => wrote file:" << outFile << " (using DOM Document)" 
-          << endl << endl;
-      }
-
-      static void printHelp(string argv0)
-      {
-        cout << "Usage: " << argv0 << " [options] XMLfiles ..." << endl;
-        cout << "Options:" << endl;  
-        cout << " -s, --sample\n"
-          << "            create a schema-driven sample xml-file\n" 
-          << endl;
-        cout << " -w, --write\n"
-          << "            write a xml-file using populated Document\n" 
-          << "            Note: populateDocument() function in main.cpp template,\n"
-          << "            must be used to populate the Document"
-          << endl;
-        cout << " -v, --validate\n"
-          << "            validate input xml-file(against compiled schema)"
-          << endl;
-        cout << " -r, --roundtrip\n"
-          << "            roundtrip (read->write) input xml-file"
-          << endl;
-        cout << " -u, --row\n"
-          << "         perform read->operate->write operations on input xml-file"
-          << endl;
-        cout << " -h, --help\n"
-          << "         print help"
-          << endl;
-        cout << endl;
       }
 
 
