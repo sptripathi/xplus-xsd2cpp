@@ -992,9 +992,9 @@ namespace <xsl:value-of select="$nsStr"/>{
 
 <xsl:template name="T_get_nsuri_name_ElementAttr">
   <xsl:variable name="cppName"><xsl:call-template name="T_get_name_ElementAttr"/></xsl:variable>
-  <xsl:variable name="typeNsUri"><xsl:call-template name="T_get_type_nsUri_ElementAttr"/></xsl:variable>  
+  <xsl:variable name="nsUri"><xsl:call-template name="T_get_targetNsUri_ElementAttr"/></xsl:variable>
   <xsl:variable name="expandedQName">
-    {<xsl:value-of select="$typeNsUri"/>}<xsl:value-of select="$cppName"/>
+    {<xsl:value-of select="$nsUri"/>}<xsl:value-of select="$cppName"/>
   </xsl:variable>  
   <xsl:value-of select="normalize-space($expandedQName)"/>    
 </xsl:template>

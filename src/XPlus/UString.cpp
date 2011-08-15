@@ -55,7 +55,6 @@ namespace XPlus
 #if defined(XPLUS_UNICODE_WCHAR_T)
   UString::UString(std::string str):
     XPlusObject("UString")
-    //_refCnt(0)
   {
     this->reserve(str.size());
     for (std::string::const_iterator it = str.begin(); it != str.end();)
@@ -70,13 +69,11 @@ namespace XPlus
   UString::UString(const wstring wstr):
     XPlusObject("UString"),
     wstring(wstr)
-    //_refCnt(0)
   {
   }
 
   UString::UString(const char *buffer):
     XPlusObject("UString")
-    //_refCnt(0)
   {
     if(!buffer) {
       throw NullPointerException("UString constructed with NULL buffer");
@@ -92,7 +89,6 @@ namespace XPlus
 
   UString::UString(const char *buffer, unsigned int len)
     XPlusObject("UString")
-    //_refCnt(0)
   {
     if(!buffer) {
       throw NullPointerException("UString constructed with NULL buffer");
@@ -125,30 +121,26 @@ namespace XPlus
   UString::UString(const string str):
     XPlusObject("UString"),
     string(str)
-    //_refCnt(0)
   {
   }
 
   UString::UString(const char *buffer):
     XPlusObject("UString"),
     string(buffer)
-    //_refCnt(0)
   {
   }
 
   UString::UString(const char *buffer, unsigned int len):
     XPlusObject("UString"),
     string(buffer, len)
-    //_refCnt(0)
   {
   }
   
   string UString::str() const 
   {
     ostringstream oss;
-    unsigned int len = this->length();
-    for(unsigned int i=0; i<len; i++) {
-      oss << this->at(i); 
+    for (UString::const_iterator it = this->begin(); it != this->end(); ++it) {
+      oss << *it;
     }
     return oss.str();
   }
@@ -160,27 +152,28 @@ namespace XPlus
   //        single-char delimiters allowed
   void UString::tokenize(UChar delim, vector<XPlus::UString>& tokens)
   {
-    unsigned int offset=0, count=0, len= this->length();
-    for(unsigned int i=0; i<len; i++)
+    // 0 1 2| 3 4| 5 6 7
+    UString::iterator begin = this->begin();
+    UString::iterator itBegin = begin;
+    UString::iterator end = this->end();
+
+    UString token ="";
+    for (UString::iterator it=begin; it!=end; ++it)
     {
-      // 0 1 2| 3 4| 5 6 7
-      if(this->at(i) == delim) 
+      if(*it == delim)
       {
-        count = i - offset;
-        XPlus::UString token = this->substr(offset, count); 
-        tokens.push_back(token);
-        offset = i+1; 
+        token.assign(itBegin, it);
+        itBegin = it+1;
+        if(token.size() > 0) tokens.push_back(token);
       }
     }
 
-    if(offset < len) 
-    {
-      count = len - offset;
-      XPlus::UString token = this->substr(offset, count); 
-      tokens.push_back(token);
+    if(itBegin != end-1) {
+      token.assign(itBegin,end);
+      if(token.size() > 0) tokens.push_back(token);
     }
-  }
-      
+  }  
+
   unsigned int UString::countCodePoints(TextEncoding::eTextEncoding enc)
   {
     switch(enc)
@@ -194,9 +187,9 @@ namespace XPlus
 
   bool UString::matchCharSet(USTRING_CHAR_FN applicableToChar)
   {
-    for(size_type i=0; i<this->length(); i++)
+    for(UString::iterator it=this->begin(); it!=this->end(); ++it)
     {
-      if(!applicableToChar(this->at(i)) ) {
+      if(!applicableToChar(*it) ) {
         return false;
       }
     }
@@ -205,27 +198,33 @@ namespace XPlus
 
   void UString::trimLeft(USTRING_CHAR_FN applicableToChar) 
   {
-    size_type pos= 0;
-    while( (pos < this->length()) && applicableToChar(this->at(pos)) ) {
-      pos++;
+    string::iterator begin = this->begin();
+    string::iterator end = this->end();
+    string::iterator it=begin;
+    for (it=begin; it!=end; ++it)
+    {
+      if(!applicableToChar(*it)) {
+        break;
+      }
     }
-    this->erase(this->begin(), this->begin()+pos);
+    this->erase(begin, it);
   }
 
   void UString::trimRight(USTRING_CHAR_FN applicableToChar) 
   {
-    size_type len = this->length();
-    if(len==0) {
-      return;
+    string::iterator begin = this->begin();
+    string::iterator end = this->end() -1;
+    string::iterator it=begin;
+    for (it=end; it!=begin; --it)
+    {
+      if(!applicableToChar(*it)) {
+        break;
+      }
     }
-    int pos= len-1;
-    while( (pos >= 0) && applicableToChar(this->at(pos)) ) {
-      pos--;
+    if(!applicableToChar(*it)) {
+      ++it; 
     }
-    if(pos < len-1) {
-      this->erase(pos+1);
-      //this->erase(pos+1, len-pos+1);
-    }
+    this->erase(it, this->end());
   }
 
   void UString::trim(USTRING_CHAR_FN applicableToChar) 
@@ -236,15 +235,14 @@ namespace XPlus
   
   void UString::removeChars(USTRING_CHAR_FN applicableToChar) 
   {
-    for(size_type i=0; i<this->length(); i++)
+    for(UString::iterator it=this->begin(); it!=this->end(); ++it)
     {
-      if( applicableToChar(this->at(i)) ) {
-        this->erase(this->begin()+i);
-        i--;
+      if( applicableToChar(*it) ) {
+        this->erase(it);
+        it--; 
       }
     }
   }
-
 
   void UString::removeContiguousChars(USTRING_CHAR_FN applicableToChar) 
   {
@@ -283,11 +281,12 @@ namespace XPlus
 
   void UString::replaceCharsWithChar(USTRING_CHAR_FN applicableToChar, UChar withChar) 
   {
-    for(size_type i=0; i<this->length(); i++)
+    for (UString::iterator it=this->begin(); it != this->end(); ++it)
     {
-      if( applicableToChar(this->at(i)) ) {
-        this->erase(this->begin()+i);
-        this->insert(this->begin()+i, withChar);
+      if( applicableToChar(*it) ) {
+        this->erase(it);
+        --it; ++it;
+        this->insert(it, withChar);
       }
     }
   }
