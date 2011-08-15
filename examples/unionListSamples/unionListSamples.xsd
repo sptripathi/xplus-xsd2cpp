@@ -1,0 +1,93 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+  <xsd:element name="samples">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="font" type="Font" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="specificFont" type="SpecificFont" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="listOfPosIntMax5k" type="ListOfPosIntMax5k" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="listOfFourPosIntMax5k" type="ListOfFourPosIntMax5k" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="listOfMinTwoPosIntMax5k" type="ListOfMinTwoPosIntMax5k" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="listOfMaxSixPosIntMax5k" type="ListOfMaxSixPosIntMax5k" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="listOfMinTwoMaxSixPosIntMax5k" type="ListOfMinTwoMaxSixPosIntMax5k" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="listOfEnumPosIntMax5k" type="ListOfEnumPosIntMax5k" minOccurs="10" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>  
+
+  <xsd:simpleType name="Font">
+    <xsd:union memberTypes="FontByNumber FontByStringName"/>
+  </xsd:simpleType> 
+
+  <xsd:simpleType name='SpecificFont'>
+    <xsd:restriction base='Font'>
+      <xsd:enumeration value="medium"/>
+      <xsd:enumeration value="large"/>
+      <xsd:enumeration value="40"/>
+      <xsd:enumeration value="72"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+
+  <xsd:simpleType name="FontByNumber">
+    <xsd:restriction base="xsd:positiveInteger">
+      <xsd:maxInclusive value="72"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="FontByStringName">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="small"/>
+      <xsd:enumeration value="medium"/>
+      <xsd:enumeration value="large"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='ListOfFourPosIntMax5k'>
+    <xsd:restriction base='ListOfPosIntMax5k'>
+      <xsd:length value='4'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+ 
+  <xsd:simpleType name='ListOfMinTwoMaxSixPosIntMax5k'>
+    <xsd:restriction base='ListOfPosIntMax5k'>
+      <xsd:minLength value='2'/>
+      <xsd:maxLength value='6'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='ListOfMinTwoPosIntMax5k'>
+    <xsd:restriction base='ListOfPosIntMax5k'>
+      <xsd:minLength value='2'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name='ListOfMaxSixPosIntMax5k'>
+    <xsd:restriction base='ListOfPosIntMax5k'>
+      <xsd:maxLength value='6'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='ListOfEnumPosIntMax5k'>
+    <xsd:restriction base='ListOfPosIntMax5k'>
+      <xsd:enumeration value="1000"/>
+      <xsd:enumeration value="2000"/>
+      <xsd:enumeration value="3000"/>
+      <xsd:enumeration value="4000"/>
+      <xsd:enumeration value="5000"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='ListOfPosIntMax5k'>
+    <xsd:list itemType='PosIntMax5k'/>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='PosIntMax5k'>
+    <xsd:restriction base='xsd:positiveInteger'>
+      <xsd:maxInclusive value='5000'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+
+</xsd:schema>
+

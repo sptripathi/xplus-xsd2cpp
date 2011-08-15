@@ -1,0 +1,90 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+ 
+  <xsd:element name="samples">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="decimalMinMaxIncl" type="DecimalMinMaxIncl" minOccurs="10"/>
+        <xsd:element name="decimalMinMaxExcl" type="DecimalMinMaxExcl" minOccurs="10"/>
+        <xsd:element name="decimal7.3" type="Decimal7.3" minOccurs="10"/>
+        <xsd:element name="decimal2.2" type="Decimal2.2" minOccurs="10"/>
+        <xsd:element name="decimal7" type="Decimal7" minOccurs="10"/>
+        <xsd:element name="decimal.4" type="Decimal.4" minOccurs="10"/>
+        <xsd:element name="anUnsignedByte" type="xsd:unsignedByte" minOccurs="10"/>
+        <xsd:element name="positiveIntegerBounded" type="PositiveIntegerBounded" minOccurs="10"/>
+        <xsd:element name="nonPositiveIntegerBounded" type="NonPositiveIntegerBounded" minOccurs="10"/>
+        <xsd:element name="longBounded" type="LongBounded" minOccurs="10"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>  
+  
+
+  <xsd:simpleType name="DecimalMinMaxIncl">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:minInclusive value="10.5"/>
+      <xsd:maxInclusive value="40.9"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="DecimalMinMaxExcl">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:minExclusive value="0.1"/>
+      <xsd:maxExclusive value="0.95"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Decimal7.3">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:totalDigits value="7"/>
+      <xsd:fractionDigits value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="Decimal7.3">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:totalDigits value="7"/>
+      <xsd:fractionDigits value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="Decimal2.2">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:totalDigits value="2"/>
+      <xsd:fractionDigits value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Decimal7">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:totalDigits value="7"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Decimal.4">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:fractionDigits value="4"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="PositiveIntegerBounded">
+    <xsd:restriction base="xsd:positiveInteger">
+      <xsd:minExclusive value="100"/>
+      <xsd:maxInclusive value="10000"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="NonPositiveIntegerBounded">
+    <xsd:restriction base="xsd:nonPositiveInteger">
+      <xsd:minExclusive value="-1000"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="LongBounded">
+    <xsd:restriction base="xsd:long">
+      <xsd:minInclusive value="-50000"/>
+      <xsd:maxExclusive value="50000"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>
+

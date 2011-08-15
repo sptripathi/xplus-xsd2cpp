@@ -1,0 +1,29 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+  <xsd:element name="samples">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="aFloat" type="xsd:float" minOccurs="10"/>
+        <xsd:element name="floatBounded" type="FloatBounded" minOccurs="10"/>
+        <xsd:element name="aDouble" type="xsd:double" minOccurs="10"/>
+        <xsd:element name="doubleBounded" type="DoubleBounded" minOccurs="10"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>  
+
+  <xsd:simpleType name="FloatBounded">
+    <xsd:restriction base="xsd:float">
+      <xsd:minInclusive value="100.30"/>
+      <xsd:maxInclusive value="200.50"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="DoubleBounded">
+    <xsd:restriction base="xsd:double">
+      <xsd:minExclusive value="1000"/>
+      <xsd:maxExclusive value="1500"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>
+

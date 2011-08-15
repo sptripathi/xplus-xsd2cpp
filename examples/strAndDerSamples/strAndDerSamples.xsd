@@ -1,0 +1,55 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+  <xsd:element name="samples">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="aStr" type="xsd:string" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="aStrLen30" type="StrLen30" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="aStrMinLen10" type="StrMinLen10" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="aStrMaxLen50" type="StrMaxLen50" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="aStrLenMin10Max50" type="StrLenMin10Max50" minOccurs="10" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="aNMTOKEN" type="xsd:NMTOKEN"/>
+      <xsd:attribute name="aWeekDay" type="DayOfWeek"/>
+    </xsd:complexType>
+  </xsd:element>  
+
+  <xsd:simpleType name='StrLen30'>
+    <xsd:restriction base='xsd:string'>
+      <xsd:length value='30'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name='StrMinLen10'>
+    <xsd:restriction base='xsd:string'>
+      <xsd:minLength value='10'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name='StrMaxLen50'>
+    <xsd:restriction base='xsd:string'>
+      <xsd:maxLength value='50'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name='StrLenMin10Max50'>
+    <xsd:restriction base='xsd:string'>
+      <xsd:minLength value='10'/>
+      <xsd:maxLength value='50'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='DayOfWeek'>
+    <xsd:restriction base='xsd:NMTOKEN'>
+      <xsd:enumeration value='monday'/>
+      <xsd:enumeration value='tuesday'/>
+      <xsd:enumeration value='wednesday'/>
+      <xsd:enumeration value='thursday'/>
+      <xsd:enumeration value='friday'/>
+      <xsd:enumeration value='saturday'/>
+      <xsd:enumeration value='sunday'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>
+

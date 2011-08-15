@@ -1,0 +1,89 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+  <xsd:element name="samples">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="hexBin" type="xsd:hexBinary" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="hexBinLen40" type="HexBinLen40" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="hexBinLenMin20" type="HexBinLenMin20" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="hexBinLenMax50" type="HexBinLenMax50" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="hexBinLenMin10Max20" type="HexBinLenMin10Max20" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="hexBinEnum" type="HexBinEnum" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="base64" type="xsd:base64Binary" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="base64Len10" type="Base64Len10" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="base64LenMin5" type="Base64LenMin5" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="base64LenMax12" type="Base64LenMax12" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="base64LenMin5Max12" type="Base64LenMin5Max12" minOccurs="10" maxOccurs="unbounded"/>
+        <xsd:element name="base64Enum" type="Base64Enum" minOccurs="10" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>  
+ 
+  <xsd:simpleType name='HexBinLen40'>
+    <xsd:restriction base='xsd:hexBinary'>
+      <xsd:length value='40'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='HexBinLenMin20'>
+    <xsd:restriction base='xsd:hexBinary'>
+      <xsd:minLength value='20'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='HexBinLenMax50'>
+    <xsd:restriction base='xsd:hexBinary'>
+      <xsd:maxLength value='50'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name='HexBinLenMin10Max20'>
+    <xsd:restriction base='xsd:hexBinary'>
+      <xsd:minLength value='10'/>
+      <xsd:maxLength value='20'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='HexBinEnum'>
+    <xsd:restriction base='xsd:hexBinary'>
+      <xsd:enumeration value="A0B1C2"/>
+      <xsd:enumeration value="D3E4F5"/>
+      <xsd:enumeration value="A9B8C7"/>
+      <xsd:enumeration value="F6E5D4"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='Base64Len10'>
+    <xsd:restriction base='xsd:base64Binary'>
+      <xsd:length value='10'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='Base64LenMin5'>
+    <xsd:restriction base='xsd:base64Binary'>
+      <xsd:minLength value='5'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='Base64LenMax12'>
+    <xsd:restriction base='xsd:base64Binary'>
+      <xsd:maxLength value='12'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name='Base64LenMin5Max12'>
+    <xsd:restriction base='xsd:base64Binary'>
+      <xsd:minLength value='5'/>
+      <xsd:maxLength value='12'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name='Base64Enum'>
+    <xsd:restriction base='xsd:base64Binary'>
+      <xsd:enumeration value="ZktMmmUQ5w=="/>
+      <xsd:enumeration value="uMToLBPL1KI="/>
+      <xsd:enumeration value="oLBPL1Kif+snTgqo"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

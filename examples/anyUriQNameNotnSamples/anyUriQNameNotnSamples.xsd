@@ -1,0 +1,104 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+<!--
+  W3C XSD1.0:
+  The use of length, minLength, maxLength on datatypes ·derived· from QName and NOTATION is deprecated.
+
+  XmlPlus 0.2 : use of these facets are reported as errors on xsd2cpp
+  invocation. For QName these facets have no effect.
+-->
+ 
+  <xsd:element name="samples">
+    <xsd:complexType>
+      <xsd:sequence>
+        <!-- anyURI -->
+        <xsd:element name="anyUri" type="xsd:anyURI" minOccurs="10"/>
+        <xsd:element name="anyUriLen20" type="AnyURILen20" minOccurs="10"/>
+        <xsd:element name="anyUriMinLen10" type="AnyURIMinLen10" minOccurs="10"/>
+        <xsd:element name="anyUriMaxLen30" type="AnyURIMaxLen30" minOccurs="10"/>
+        <xsd:element name="anyUriLenMin10Max30" type="AnyURILenMin10Max30" minOccurs="10"/>
+        <xsd:element name="anyUriEnum" type="AnyURIEnum" minOccurs="10"/>
+
+        <!-- QName -->
+        <xsd:element name="qname" type="xsd:QName" minOccurs="10"/>
+        <xsd:element name="qnameLen7" type="QNameLen7" minOccurs="10"/>
+        <xsd:element name="qnameEnum" type="QNameEnum" minOccurs="10"/>
+
+        <!-- NOTATION -->
+        <xsd:element name="audioContent" type="AudioContent" minOccurs="10" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>  
+  
+
+  <!-- anyURI -->
+  <xsd:simpleType name="AnyURILen20">
+    <xsd:restriction base="xsd:anyURI">
+      <xsd:length value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="AnyURIMinLen10">
+    <xsd:restriction base="xsd:anyURI">
+      <xsd:minLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="AnyURIMaxLen30">
+    <xsd:restriction base="xsd:anyURI">
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="AnyURILenMin10Max30">
+    <xsd:restriction base="xsd:anyURI">
+      <xsd:minLength value="10"/>
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="AnyURIEnum">
+    <xsd:restriction base="xsd:anyURI">
+      <xsd:enumeration value="http://www.example.com/xmlplus"/>
+      <xsd:enumeration value="http://www.example.com/xsd2cpp"/>
+      <xsd:enumeration value="http://www.example.com/schema/tools"/>
+      <xsd:enumeration value="http://www.example.com/schema/databinding"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- QName -->
+
+  <xsd:simpleType name="QNameLen7">
+    <xsd:restriction base="xsd:QName">
+      <xsd:length value="7"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="QNameEnum">
+    <xsd:restriction base="xsd:QName">
+      <xsd:enumeration value="ns1:enum1"/>
+      <xsd:enumeration value="ns1:enum2"/>
+      <xsd:enumeration value="ns2:enum1"/>
+      <xsd:enumeration value="ns2:enum2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- NOTATION -->
+
+  <xsd:simpleType name="AudioFormat">
+    <xsd:restriction base="xsd:NOTATION">
+      <xsd:enumeration value="audio:flv"/>
+      <xsd:enumeration value="audio:mp4"/>
+      <xsd:enumeration value="audio:wav"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="AudioContent">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:hexBinary">
+        <xsd:attribute name="fmt" type="AudioFormat" use="required"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+</xsd:schema>
+

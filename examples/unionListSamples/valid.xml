@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<samples>
+  <font>54</font>
+  <font>large</font>
+  <font>medium</font>
+  <font>large</font>
+  <font>36</font>
+  <font>58</font>
+  <font>small</font>
+  <font>15</font>
+  <font>large</font>
+  <font>medium</font>
+  <specificFont>medium</specificFont>
+  <specificFont>40</specificFont>
+  <specificFont>40</specificFont>
+  <specificFont>large</specificFont>
+  <specificFont>large</specificFont>
+  <specificFont>medium</specificFont>
+  <specificFont>72</specificFont>
+  <specificFont>40</specificFont>
+  <specificFont>medium</specificFont>
+  <specificFont>medium</specificFont>
+  <listOfPosIntMax5k>1775 4613 3813</listOfPosIntMax5k>
+  <listOfPosIntMax5k>2921 898 3005 505 926 6 2138</listOfPosIntMax5k>
+  <listOfPosIntMax5k>533</listOfPosIntMax5k>
+  <listOfPosIntMax5k>3910</listOfPosIntMax5k>
+  <listOfPosIntMax5k>4510 3271</listOfPosIntMax5k>
+  <listOfPosIntMax5k>2490 3503 4893 865</listOfPosIntMax5k>
+  <listOfPosIntMax5k>643 1835 647 3566 877</listOfPosIntMax5k>
+  <listOfPosIntMax5k>919</listOfPosIntMax5k>
+  <listOfPosIntMax5k>699 526 4116 238</listOfPosIntMax5k>
+  <listOfPosIntMax5k>4230 2430 755 1041 1926 1252 4982 2612 4344</listOfPosIntMax5k>
+  <listOfFourPosIntMax5k>2494 3165 586 534</listOfFourPosIntMax5k>
+  <listOfFourPosIntMax5k>140 2673 3373 3692</listOfFourPosIntMax5k>
+  <listOfFourPosIntMax5k>105 1025 174 974</listOfFourPosIntMax5k>
+  <listOfFourPosIntMax5k>4221 194 3301 1753</listOfFourPosIntMax5k>
+  <listOfFourPosIntMax5k>2347 3397 1359 4714</listOfFourPosIntMax5k>
+  <listOfFourPosIntMax5k>2513 4644 2588 287</listOfFourPosIntMax5k>
+  <listOfFourPosIntMax5k>118 459 3037 1418</listOfFourPosIntMax5k>
+  <listOfFourPosIntMax5k>3370 2030 4537 2384</listOfFourPosIntMax5k>
+  <listOfFourPosIntMax5k>1939 2003 3022 480</listOfFourPosIntMax5k>
+  <listOfFourPosIntMax5k>2494 3165 586 534</listOfFourPosIntMax5k>
+  <listOfMinTwoPosIntMax5k>2673 3373 3692 303 105</listOfMinTwoPosIntMax5k>
+  <listOfMinTwoPosIntMax5k>974 2199 4221 194 3301 1753</listOfMinTwoPosIntMax5k>
+  <listOfMinTwoPosIntMax5k>3397 1359 4714 2370 2513 4644 2588 287 1968</listOfMinTwoPosIntMax5k>
+  <listOfMinTwoPosIntMax5k>3037 1418</listOfMinTwoPosIntMax5k>
+  <listOfMinTwoPosIntMax5k>2030 4537 2384 4690 1939 2003 3022 480 2000 2494</listOfMinTwoPosIntMax5k>
+  <listOfMinTwoPosIntMax5k>534 504 140 2673 3373 3692 303 105</listOfMinTwoPosIntMax5k>
+  <listOfMinTwoPosIntMax5k>974 2199 4221 194 3301 1753</listOfMinTwoPosIntMax5k>
+  <listOfMinTwoPosIntMax5k>3397 1359 4714 2370 2513 4644 2588 287 1968</listOfMinTwoPosIntMax5k>
+  <listOfMinTwoPosIntMax5k>3037 1418</listOfMinTwoPosIntMax5k>
+  <listOfMinTwoPosIntMax5k>2030 4537 2384 4690 1939 2003 3022 480 2000 2494</listOfMinTwoPosIntMax5k>
+  <listOfMaxSixPosIntMax5k>534</listOfMaxSixPosIntMax5k>
+  <listOfMaxSixPosIntMax5k>2673 3373 3692 303 105</listOfMaxSixPosIntMax5k>
+  <listOfMaxSixPosIntMax5k>974</listOfMaxSixPosIntMax5k>
+  <listOfMaxSixPosIntMax5k>194 3301 1753 2545 2347 3397</listOfMaxSixPosIntMax5k>
+  <listOfMaxSixPosIntMax5k>2370 2513 4644 2588 287 1968</listOfMaxSixPosIntMax5k>
+  <listOfMaxSixPosIntMax5k>3037 1418</listOfMaxSixPosIntMax5k>
+  <listOfMaxSixPosIntMax5k>2030 4537 2384</listOfMaxSixPosIntMax5k>
+  <listOfMaxSixPosIntMax5k>2003</listOfMaxSixPosIntMax5k>
+  <listOfMaxSixPosIntMax5k>2000 2494 3165 586</listOfMaxSixPosIntMax5k>
+  <listOfMaxSixPosIntMax5k>140 2673 3373 3692 303</listOfMaxSixPosIntMax5k>
+  <listOfMinTwoMaxSixPosIntMax5k>174 974 2199 4221 194 3301</listOfMinTwoMaxSixPosIntMax5k>
+  <listOfMinTwoMaxSixPosIntMax5k>2347 3397 1359 4714 2370 2513</listOfMinTwoMaxSixPosIntMax5k>
+  <listOfMinTwoMaxSixPosIntMax5k>287 1968 118 459</listOfMinTwoMaxSixPosIntMax5k>
+  <listOfMinTwoMaxSixPosIntMax5k>3932 3370 2030 4537</listOfMinTwoMaxSixPosIntMax5k>
+  <listOfMinTwoMaxSixPosIntMax5k>1939 2003 3022 480 2000 2494</listOfMinTwoMaxSixPosIntMax5k>
+  <listOfMinTwoMaxSixPosIntMax5k>534 504</listOfMinTwoMaxSixPosIntMax5k>
+  <listOfMinTwoMaxSixPosIntMax5k>3373 3692 303 105</listOfMinTwoMaxSixPosIntMax5k>
+  <listOfMinTwoMaxSixPosIntMax5k>974 2199 4221 194 3301</listOfMinTwoMaxSixPosIntMax5k>
+  <listOfMinTwoMaxSixPosIntMax5k>2347 3397 1359 4714 2370 2513</listOfMinTwoMaxSixPosIntMax5k>
+  <listOfMinTwoMaxSixPosIntMax5k>287 1968 118 459</listOfMinTwoMaxSixPosIntMax5k>
+  <listOfEnumPosIntMax5k>3000</listOfEnumPosIntMax5k>
+  <listOfEnumPosIntMax5k>5000</listOfEnumPosIntMax5k>
+  <listOfEnumPosIntMax5k>2000</listOfEnumPosIntMax5k>
+  <listOfEnumPosIntMax5k>5000</listOfEnumPosIntMax5k>
+  <listOfEnumPosIntMax5k>3000</listOfEnumPosIntMax5k>
+  <listOfEnumPosIntMax5k>5000</listOfEnumPosIntMax5k>
+  <listOfEnumPosIntMax5k>4000</listOfEnumPosIntMax5k>
+  <listOfEnumPosIntMax5k>1000</listOfEnumPosIntMax5k>
+  <listOfEnumPosIntMax5k>4000</listOfEnumPosIntMax5k>
+  <listOfEnumPosIntMax5k>3000</listOfEnumPosIntMax5k>
+</samples>
