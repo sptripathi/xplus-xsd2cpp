@@ -123,6 +123,7 @@ gen_source_files()
     if [ "$DIRS_TO_BACKUP" != "" ]; then
       echo "    * The directories ($DIRS_TO_BACKUP) already exist."
       echo "      Backing them up in $BACKUP_DIR"
+      #$RM -rf $BACKUP_DIR/*
       $MV $DIRS_TO_BACKUP $BACKUP_DIR/
     fi
 
@@ -136,7 +137,6 @@ gen_source_files()
     $MKDIR $OUTDIR
   fi
     
-  $RM -rf $BACKUP_DIR/*
   
 
   # generate the xsd-to-sources
