@@ -285,7 +285,7 @@ namespace XMLSchema
 
     virtual void stringValue(DOMString strVal) {
       T val = fromString<T>(strVal); 
-      value(val);
+      this->value(val);
     }
 
     virtual DOMString stringValue()  const{
@@ -304,7 +304,7 @@ namespace XMLSchema
 
     virtual void stringValue(DOMString strVal) {
       T val = fromString<T>(strVal); 
-      value(val);
+      this->value(val);
     }
 
     virtual DOMString stringValue() const {
@@ -396,7 +396,7 @@ namespace XMLSchema
     virtual void stringValue(DOMString strVal) 
     {
       XPlus::Duration dur = DateTimeUtils::parseXsdDuration(strVal);
-      value(dur);
+      this->value(dur);
     }
 
     virtual DOMString stringValue() const {
