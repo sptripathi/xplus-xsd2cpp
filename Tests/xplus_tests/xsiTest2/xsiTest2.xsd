@@ -23,7 +23,7 @@
   <xsd:element name="root">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="items" type="SomeType"/>
+        <xsd:element name="items" type="SomeType2"/>
       </xsd:sequence>
     </xsd:complexType>  
   </xsd:element>
