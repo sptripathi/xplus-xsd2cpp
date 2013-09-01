@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="urn:foo-bar:baz" 
+	targetNamespace="urn:foo-bar:baz"
+	xmlns:tns="urn:foo-bar:baz"
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified">
+	
+
+	<xsd:simpleType name="Integer8">
+		<xsd:restriction base="xsd:byte" />
+	</xsd:simpleType>
+
+	<xsd:complexType name="NULL" final="#all" >
+		<xsd:sequence>
+			<xsd:element name="value" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+</xsd:schema>

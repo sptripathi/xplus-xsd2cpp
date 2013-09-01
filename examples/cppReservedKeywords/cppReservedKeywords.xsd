@@ -1,0 +1,19 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="urn:foo-bar:baz" 
+	targetNamespace="urn:foo-bar:baz"
+  >
+
+  <xsd:include schemaLocation="myTypes.xsd"/>
+
+  <xsd:element name="myElem">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="int8Elem" type="Integer8" />
+        <xsd:element name="nullElem" type="NULL"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>  
+    
+  
+</xsd:schema>
+

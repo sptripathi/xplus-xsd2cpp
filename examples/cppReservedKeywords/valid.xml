@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<ns1:myElem xmlns:ns1="urn:foo-bar:baz">
+  <int8Elem>11</int8Elem>
+  <nullElem>
+    <ns1:value>I am not null</ns1:value>
+  </nullElem>
+</ns1:myElem>
