@@ -666,21 +666,25 @@ namespace Types
 <xsl:template name="DEFINE_FNS_COMPLEXTYPE_CPP">
   <xsl:param name="schemaComponentName" select="@name"/>
 
+  <xsl:variable name="hv">
+    <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="$schemaComponentName"/></xsl:call-template>
+  </xsl:variable>
+       
   <xsl:choose>
     <xsl:when test="*[local-name()='sequence' or local-name()='choice' or local-name()='all' or local-name()='group']">
       <xsl:call-template name="DEFINE_FNS_COMPLEXTYPE_WITH_MG_MGD_CPP">
-        <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+        <xsl:with-param name="schemaComponentName" select="$hv"/>
       </xsl:call-template>   
     </xsl:when>
     <xsl:when test="*[local-name()='simpleContent']">
       <xsl:call-template name="DEFINE_FNS_COMPLEXTYPE_WITH_SIMPLECONTENT_CPP">
-        <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+        <xsl:with-param name="schemaComponentName" select="$hv"/>
       </xsl:call-template>   
     </xsl:when>
     <!-- for both explicit and implicit complexContent -->
     <xsl:otherwise>
       <xsl:call-template name="DEFINE_FNS_COMPLEXTYPE_WITH_COMPLEXCONTENT_CPP">
-        <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
+        <xsl:with-param name="schemaComponentName" select="$hv"/>
       </xsl:call-template>   
     </xsl:otherwise>
   </xsl:choose>

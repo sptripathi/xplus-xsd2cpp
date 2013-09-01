@@ -612,7 +612,10 @@ public:
     </xsl:call-template>  
 
     /// constructor for the MG node
-    <xsl:value-of select="$mgNameSingularCpp"/>(<xsl:value-of select="$schemaComponentName"/>* that);
+    <xsl:variable name="hv">
+      <xsl:value-of select="$schemaComponentName"/>
+    </xsl:variable>
+    <xsl:value-of select="$mgNameSingularCpp"/>(<xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="$hv"/></xsl:call-template>* that);
 
     <xsl:for-each select="*[local-name()='element']">
       <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
@@ -821,7 +824,7 @@ public:
       return new <xsl:value-of select="$mgNameSingularCpp"/>(*this);
     }
 
-    <xsl:value-of select="$schemaComponentName"/>*      _that;
+    <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="$hv"/></xsl:call-template>*      _that;
   }; // end <xsl:value-of select="$mgNameSingularCpp"/>
     
   <xsl:if test="$maxOccurGT1='true'">

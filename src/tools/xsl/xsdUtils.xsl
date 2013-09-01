@@ -398,18 +398,22 @@ namespace <xsl:value-of select="$cppValidNsStr"/>  {
 
 <xsl:template name="T_emit_cppNSBegin_for_urn_scheme">
   <xsl:param name="urn_path"/>
+
   <xsl:choose>
     <xsl:when test="contains($urn_path, ':')">
-namespace <xsl:value-of select="substring-before($urn_path, ':')"/> {
+      <xsl:variable name="hv">
+        <xsl:value-of select="substring-before($urn_path, ':')"/>
+      </xsl:variable>
+      
+namespace <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="$hv"/></xsl:call-template> {
       <xsl:call-template name="T_emit_cppNSBegin_for_urn_scheme">
         <xsl:with-param name="urn_path" select="substring-after($urn_path, ':')"/>
       </xsl:call-template>
     </xsl:when>
     <xsl:otherwise>
-namespace <xsl:value-of select="$urn_path"/> {
+namespace <xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="$urn_path"/></xsl:call-template> {
     </xsl:otherwise>
   </xsl:choose>
-
 </xsl:template>
 
 
@@ -1125,7 +1129,7 @@ namespace <xsl:value-of select="$nsStr"/>{
   <xsl:variable name="cppNSDerefLevel1Onwards">
     <xsl:choose>
       <xsl:when test="local-name(..)='schema'">
-          <xsl:if test="(local-name()='complexType') and @name"><xsl:value-of select="@name"/>::</xsl:if>
+          <xsl:if test="(local-name()='complexType') and @name"><xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="@name"/></xsl:call-template>::</xsl:if>
       </xsl:when>
       <xsl:otherwise>
         <xsl:for-each select="ancestor::*[local-name()='element' or local-name()='complexType']">
@@ -1137,7 +1141,7 @@ namespace <xsl:value-of select="$nsStr"/>{
           <xsl:if test="(local-name()='element') and ($myNsUri=$targetNsUri)"><xsl:value-of select="$cppName"/>::</xsl:if>
           -->
           <xsl:if test="local-name()='element'"><xsl:value-of select="$cppName"/>::</xsl:if>
-          <xsl:if test="(local-name()='complexType') and @name"><xsl:value-of select="@name"/>::</xsl:if>
+          <xsl:if test="(local-name()='complexType') and @name"><xsl:call-template name="T_transform_token_to_cppValidToken"><xsl:with-param name="token" select="@name"/></xsl:call-template>::</xsl:if>
         </xsl:for-each>  
       </xsl:otherwise>
     </xsl:choose>
