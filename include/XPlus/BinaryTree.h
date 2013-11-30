@@ -30,6 +30,8 @@ extern "C" {
 
 using namespace std;
 
+#include <assert.h>
+
 namespace XPlus
 {
   template <class T>
@@ -441,6 +443,7 @@ namespace XPlus
       bool addNodeAsLeaf(TreeNodePtr node)
       {
         _leaves.push_back(node);
+        return true;
       }
 
 

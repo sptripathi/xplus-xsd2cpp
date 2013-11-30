@@ -88,10 +88,12 @@ class DOMParser : public ExpatParser
 
     inline bool beginOfCDATASection() {
       _cdataInProgress = true;
+      return true;
     }
     inline bool endOfCDATASection() {
       _cdataInProgress = false;
       resetCDATABuffer();
+      return true;
     }
     inline bool isCDATAInProgress() {
       return _cdataInProgress;
