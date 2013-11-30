@@ -235,8 +235,8 @@ complexType Content:
   <xsl:if test="$maxOccurGT1='true'">
   //constructor
   MEMBER_FN <xsl:value-of select="$cppNSParent"/><xsl:value-of select="$mgName"/>::<xsl:value-of select="$mgName"/>(<xsl:value-of select="$schemaComponentName"/>* that):
-    _that(that),
-    XsdFsmArray(new <xsl:value-of select="$localName"/>(that), <xsl:value-of select="$minOccurence"/>, <xsl:value-of select="$maxOccurence"/> )
+    XsdFsmArray(new <xsl:value-of select="$localName"/>(that), <xsl:value-of select="$minOccurence"/>, <xsl:value-of select="$maxOccurence"/> ),
+    _that(that)
   {
   }
 
@@ -779,8 +779,8 @@ namespace Types
                                              )),
     </xsl:when>
   </xsl:choose>
-    _fsmElems(NULL),
-    _fsmAttrs(NULL)
+    _fsmAttrs(NULL),
+    _fsmElems(NULL)
   <xsl:for-each select="*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
     <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
     , _<xsl:value-of select="$mgName"/>(new <xsl:value-of select="$mgName"/>(this) )
@@ -892,8 +892,8 @@ namespace Types
     </xsl:when>
     <xsl:otherwise></xsl:otherwise>
   </xsl:choose>
-    _fsmElems(NULL),
-    _fsmAttrs(NULL)
+    _fsmAttrs(NULL),
+    _fsmElems(NULL)
   {
     <!-- specific to restriction case -->  
     <xsl:if test="*[local-name()='simpleContent']/*[local-name()='restriction']">
@@ -1105,8 +1105,8 @@ namespace Types
     </xsl:when>
     <xsl:otherwise></xsl:otherwise>
   </xsl:choose>
-    _fsmElems(NULL),
-    _fsmAttrs(NULL)
+    _fsmAttrs(NULL),
+    _fsmElems(NULL)
   <xsl:for-each select="*[local-name()='complexContent']/*[local-name()='extension' or local-name()='restriction']/*[local-name()='sequence' or local-name()='choice' or local-name()='all']">
     <xsl:variable name="mgName"><xsl:call-template name="T_get_cppName_mg"/></xsl:variable>
     , _<xsl:value-of select="$mgName"/>(new <xsl:value-of select="$mgName"/>(this) )
