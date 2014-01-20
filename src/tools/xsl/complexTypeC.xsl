@@ -1131,7 +1131,7 @@ namespace Types
   void <xsl:value-of select="normalize-space($cppNSDerefLevel1Onwards)"/>initFSM()
   {
     XsdFsmBasePtr fsmsAttrs[] = {
-    <xsl:for-each select="*[local-name()='complexContent']/*[local-name()='extension' or local-name()='restriction']/*[local-name()='attribute']">
+    <xsl:for-each select="*[local-name()='complexContent']/*[local-name()='extension' or local-name()='restriction']/*[local-name()='attribute'] | *[local-name()='attribute']">
       <xsl:call-template name="T_new_XsdFsm_ElementAttr">
         <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
         <xsl:with-param name="thisOrThat" select="'this'"/>
