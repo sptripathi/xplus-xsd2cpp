@@ -225,7 +225,9 @@ namespace XMLSchema
       }
     }
 
-    virtual ~TElement() {}  
+    TElement() {printf("TElement::TElement()\n");};
+
+    virtual ~TElement() {};
 
     virtual TDocumentP ownerDocument() =0;
     virtual TElementP ownerElement() =0; 
@@ -252,6 +254,7 @@ namespace XMLSchema
     }
   };
   
+  //XMLSchema::XmlElement<XMLSchema::Types::anyType>::XmlElement()
 
   template <class T> class XmlElement :  public TElement, public T
   {
@@ -265,10 +268,14 @@ namespace XMLSchema
                               Types::BOF_NONE, Types::BOF_NONE, Types::CONTENT_TYPE_VARIETY_MIXED, 
                               Types::ANY_TYPE, args.suppressTypeAbstract, args.isSampleCreate)
            )
-    { 
+    {
+        printf("XMLSchema::XmlElement::XmlElement(XMLSchema::Types::ElementCreateArgs)\n");
+        cout << args.name->str() << endl;
     }
 
-      virtual ~XmlElement() {}
+      XmlElement() {printf("XmlElement::XmlElement()\n");};
+
+      virtual ~XmlElement() {};
         
       //
       // TElement interface: delegates the call to T
