@@ -644,7 +644,7 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;XMLSch
   public:
 
     /// constructor for the element node
-    MEMBER_FN <xsl:value-of select="$cppName"/>(ElementCreateArgs args);
+    MEMBER_FN <xsl:value-of select="$cppName"/>(ElementCreateArgs args){};
 
   <xsl:for-each select="*[local-name()='complexType']">
     <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
