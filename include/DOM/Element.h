@@ -42,6 +42,8 @@ namespace DOM
         Node* nextSibling=NULL
         );
 
+    Element() {cout << "DOM::Element::Element()\n";};
+
     virtual ~Element() {}
     
     virtual const DOMString* getTagName() const {
