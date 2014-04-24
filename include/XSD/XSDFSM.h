@@ -1037,8 +1037,8 @@ class XsdFsmArray : public XsdFsmBase
     inline const XsdFsmBasePtr& unitFsm() const { return _unitFsm; }
     inline const BinaryFsmTree& fsmTree() const { return _fsmTree; }
     //inline const list<XsdFsmBasePtr>& fsmList() const { return _fsmList; }
-    inline const unsigned int minOccurence() { return _minOccurence; }
-    inline const unsigned int maxOccurence() { return _maxOccurence; }
+    inline unsigned int minOccurence() const { return _minOccurence; }
+    inline unsigned int maxOccurence() const { return _maxOccurence; }
 
   protected:
     XsdFsmBasePtr              _unitFsm;
