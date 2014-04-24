@@ -80,6 +80,6 @@ namespace XPlus
         return DateTime::operator>=(dateTime);
       }
   };
-};
+}
 
 #endif

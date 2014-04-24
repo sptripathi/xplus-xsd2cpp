@@ -68,6 +68,6 @@ namespace XPlus
       eTextEncoding _encoding;
       static string  s_encodingStr[MAX_ENC];
   };
-};
+}
 
 #endif
