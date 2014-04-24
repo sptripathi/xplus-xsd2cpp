@@ -70,7 +70,7 @@ namespace XMLSchema
       virtual inline DOMString stringValue() const {
         return "";
       }
-      virtual void stringValue(DOMString strVal){
+      virtual void stringValue(DOMString /*strVal*/){
       };
 
       inline bool isInError() {

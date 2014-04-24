@@ -59,10 +59,10 @@ namespace DOM
           const DOMString* encStr, 
           long standalone =  STANDALONE_UNSPECIFIED);
 
-      inline const eXmlVersion version() const {
+      inline eXmlVersion version() const {
         return _version; 
       }
-      const string versionString() const {
+      string versionString() const {
         return enumToStringVersion(_version);
       }
       inline void version(eXmlVersion versionEnum) {
@@ -73,7 +73,7 @@ namespace DOM
       inline eStandalone standalone() const {
         return _standalone; 
       }
-      const string standaloneString() const {
+      string standaloneString() const {
         return enumToStringStandalone(_standalone);
       }
       inline void standalone(eStandalone standaloneEnum) {
@@ -81,10 +81,10 @@ namespace DOM
       }
 
 
-      inline const TextEncoding::eTextEncoding encoding() const {
+      inline TextEncoding::eTextEncoding encoding() const {
         return _encoding.toEnum(); 
       }
-      inline const string encodingString() const {
+      inline string encodingString() const {
         return _encoding.toString(); 
       }
       inline void encoding(TextEncoding::eTextEncoding encEnum) {
@@ -101,9 +101,9 @@ namespace DOM
       }
 
       /////////////// static members //////////////////
-      static const string enumToStringVersion(eXmlVersion version);
-      static const string enumToStringStandalone(eStandalone standalone);
-      static const eXmlVersion stringToEnumVersion(string version);
+      static string enumToStringVersion(eXmlVersion version);
+      static string enumToStringStandalone(eStandalone standalone);
+      static eXmlVersion stringToEnumVersion(string version);
       static string v_1_0;
       static string v_1_1;
       static string yes;

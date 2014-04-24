@@ -174,10 +174,10 @@ namespace DOM
         return _xmlDecl;
       }
 
-      inline const eXmlVersion version() const {
+      inline eXmlVersion version() const {
         return _xmlDecl.version(); 
       }
-      inline const string versionString() const {
+      inline string versionString() const {
         return _xmlDecl.versionString(); 
       }
       inline void version(eXmlVersion versionEnum) {
@@ -194,10 +194,10 @@ namespace DOM
         _xmlDecl.standalone(standaloneEnum);
       }
 
-      inline const TextEncoding::eTextEncoding encoding() const {
+      inline TextEncoding::eTextEncoding encoding() const {
         return _xmlDecl.encoding(); 
       }
-      inline const string encodingString() const {
+      inline string encodingString() const {
         return _xmlDecl.encodingString(); 
       }
       inline void encoding(TextEncoding::eTextEncoding encEnum) {

@@ -108,6 +108,8 @@ namespace XSD
                         fsm(fsm_),
                         options(options_)
       {
+        USED(actualTypeName_);
+        USED(actualTypeNsUri_);
       }
   };
 

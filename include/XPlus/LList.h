@@ -99,7 +99,7 @@ namespace XPlus
         return NULL;
       }
 
-      const unsigned long getLength() const {
+      unsigned long getLength() const {
         return _size;
       }
 

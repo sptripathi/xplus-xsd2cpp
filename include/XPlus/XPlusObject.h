@@ -26,6 +26,9 @@
 using namespace std;
 //#define _SHAREDPTR_OBJ_DBG 1
 
+/* beautify the compiler output... */
+#define USED( var ) ((void)var)
+
 namespace XPlus 
 {
 

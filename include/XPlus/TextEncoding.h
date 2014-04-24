@@ -52,7 +52,7 @@ namespace XPlus
         _encoding = stringToEnum(encStr);
       }
 
-      inline const eTextEncoding toEnum() const {
+      inline eTextEncoding toEnum() const {
         return _encoding;
       }
       

@@ -106,6 +106,10 @@ struct FsmCbOptions
     isDefaultCreate(false),
     isSampleCreate(false)
     {
+      USED(xsiType);
+      USED(xsiNil);
+      USED(xsiSchemaLocation);
+      USED(xsiNoNamespaceSchemaLocation);
     }
 
     void printDebug() {
@@ -285,13 +289,13 @@ class XsdFSM : public XsdFsmBase
 
     // copy constructor
     XsdFSM(const XsdFSM& xsdFsm):
+      XPlusObject(),
       //_nsName(xsdFsm.nsName()),
       _eventIds(xsdFsm.eventIds()),
       _eventNames(xsdFsm.eventNames()),
       _cbFunctor(xsdFsm.cbFunctor()),
       _fsmType(xsdFsm.fsmType()),
-      _fsm(xsdFsm.stateFsm()->clone()),
-      XPlusObject()
+      _fsm(xsdFsm.stateFsm()->clone())
     {
       _nsName = xsdFsm.nsName(); // FIXME: will operator = work ?
       this->parentFsm(xsdFsm.parentFsm());
@@ -415,6 +419,7 @@ class XsdFSM : public XsdFsmBase
     // else refer to parentFsm for previous sibling element
     virtual Node* previousSiblingElementInSchemaOrder(XsdFsmBase *callerFsm)
     {
+      USED(*callerFsm);
       Node *node = this->rightmostElement();
       if(node) {
         return node;
@@ -428,6 +433,7 @@ class XsdFSM : public XsdFsmBase
 
     virtual Node* nextSiblingElementInSchemaOrder(XsdFsmBase *callerFsm)
     {
+      USED(*callerFsm);
       //revisit:
       // if the node is being added at some index in elem[] array then
       // will need to find nexts-sibling here
@@ -621,7 +627,7 @@ class XsdFSM : public XsdFsmBase
       return _cbFunctor;
     }
     
-    inline const XsdEvent::XsdFsmType fsmType() const {
+    inline XsdEvent::XsdFsmType fsmType() const {
       return _fsmType;
     }
     
@@ -945,7 +951,7 @@ struct BinaryFsmTree : public BinaryTree<XsdFsmBasePtr>
   }
 
     BinaryFsmTree(const BinaryFsmTree& ref):
-      //BinaryTree<XsdFsmBasePtr>(ref),
+      BinaryTree<XsdFsmBasePtr>(ref),
       _minDepth(ref._minDepth),
       _maxDepth(ref._maxDepth),
       _unitFsm(NULL)

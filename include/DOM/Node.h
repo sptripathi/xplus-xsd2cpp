@@ -230,7 +230,7 @@ public:
     _nodeValue = nodeValue;
   }
 
-  virtual inline const NodeType getNodeType() const {
+  virtual inline NodeType getNodeType() const {
     return _nodeType;
   }
   virtual inline void setNodeType(NodeType nodeType) {

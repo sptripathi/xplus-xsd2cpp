@@ -55,7 +55,7 @@ namespace DOM
   }
 
 
-  const string XmlDecl::enumToStringVersion(eXmlVersion version)
+  string XmlDecl::enumToStringVersion(eXmlVersion version)
   {
     switch(version)
     {
@@ -74,7 +74,7 @@ namespace DOM
   }
 
 
-  const string XmlDecl::enumToStringStandalone(eStandalone standalone)
+  string XmlDecl::enumToStringStandalone(eStandalone standalone)
   {
     switch(standalone)
     {
@@ -92,7 +92,7 @@ namespace DOM
     }
   }
 
-  const eXmlVersion XmlDecl::stringToEnumVersion(string version)
+  eXmlVersion XmlDecl::stringToEnumVersion(string version)
   {
     if(version ==  v_1_0) {
       return XML_VERSION_1_0; 
