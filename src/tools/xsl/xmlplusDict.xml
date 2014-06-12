@@ -42,7 +42,7 @@
       </impl>  
     </type>
     <type name="decimal">
-      <impl implType="long long" adt="false">
+      <impl implType="double" adt="false">
       </impl>  
     </type>
     <type name="float">
@@ -53,111 +53,6 @@
       <impl implType="double" adt="false">
       </impl>  
     </type>
-
-    <!--
-    infinite set {...,-2,-1,0,1,2,...}.
-    -->
-    <type name="integer">
-      <impl implType="XPlus::Int64" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-    is the infinite set {1,2,...}
-    -->
-    <type name="positiveInteger">
-      <impl implType="XPlus::UInt64" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-    infinite set {...,-2,-1,0}
-    -->
-    <type name="nonPositiveInteger">
-      <impl implType="XPlus::Int64" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-    infinite set {...,-2,-1}
-    -->
-    <type name="negativeInteger">
-      <impl implType="XPlus::Int64" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-    is the infinite set {0,1,2,...}. 
-    -->
-    <type name="nonNegativeInteger">
-      <impl implType="XPlus::UInt64" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-     is ·derived· from integer by setting the value of ·maxInclusive· to be 9223372036854775807 and ·minInclusive· to be -9223372036854775808.
-    -->
-    <type name="long">
-      <impl implType="XPlus::Int64" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-    is ·derived· from long by setting the value of ·maxInclusive· to be 2147483647 and ·minInclusive· to be -2147483648
-    -->
-    <type name="int">
-      <impl implType="int" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-    is ·derived· from int by setting the value of ·maxInclusive· to be 32767 and ·minInclusive· to be -32768
-    -->
-    <type name="short">
-      <impl implType="short" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-    is ·derived· from short by setting the value of ·maxInclusive· to be 127 and ·minInclusive· to be -128
-    -->
-    <type name="byte">
-      <impl implType="char" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-    is ·derived· from nonNegativeInteger by setting the value of ·maxInclusive· to be 18446744073709551615
-    -->
-    <type name="unsignedLong">
-      <impl implType="XPlus::UInt64" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-    is ·derived· from unsignedLong by setting the value of ·maxInclusive· to be 4294967295
-    -->
-    <type name="unsignedInt">
-      <impl implType="unsigned int" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-    is ·derived· from unsignedInt by setting the value of ·maxInclusive· to be 65535
-    -->
-    <type name="unsignedShort">
-      <impl implType="unsigned short" adt="false">
-      </impl>  
-    </type>
-
-    <!--
-    is ·derived· from unsignedShort by setting the value of ·maxInclusive· to be 255
-    -->
-    <type name="unsignedByte">
-      <impl implType="unsigned char" adt="false">
-      </impl>  
-    </type>
-
     <type name="time">
       <impl implType="XPlus::Time" adt="true" >
         <boundFacetSuffix>DateTime</boundFacetSuffix>
@@ -396,6 +291,109 @@
       </impl>  
     </type>
 
+    <!--
+    infinite set {...,-2,-1,0,1,2,...}.
+    -->
+    <type name="integer" primType="decimal">
+      <impl implType="XPlus::Int64" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+    is the infinite set {1,2,...}
+    -->
+    <type name="positiveInteger" primType="decimal">
+      <impl implType="XPlus::UInt64" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+    infinite set {...,-2,-1,0}
+    -->
+    <type name="nonPositiveInteger" primType="decimal">
+      <impl implType="XPlus::Int64" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+    infinite set {...,-2,-1}
+    -->
+    <type name="negativeInteger" primType="decimal">
+      <impl implType="XPlus::Int64" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+    is the infinite set {0,1,2,...}. 
+    -->
+    <type name="nonNegativeInteger" primType="decimal">
+      <impl implType="XPlus::UInt64" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+     is ·derived· from integer by setting the value of ·maxInclusive· to be 9223372036854775807 and ·minInclusive· to be -9223372036854775808.
+    -->
+    <type name="long" primType="decimal">
+      <impl implType="XPlus::Int64" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+    is ·derived· from long by setting the value of ·maxInclusive· to be 2147483647 and ·minInclusive· to be -2147483648
+    -->
+    <type name="int" primType="decimal">
+      <impl implType="int" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+    is ·derived· from int by setting the value of ·maxInclusive· to be 32767 and ·minInclusive· to be -32768
+    -->
+    <type name="short" primType="decimal">
+      <impl implType="short" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+    is ·derived· from short by setting the value of ·maxInclusive· to be 127 and ·minInclusive· to be -128
+    -->
+    <type name="byte" primType="decimal">
+      <impl implType="char" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+    is ·derived· from nonNegativeInteger by setting the value of ·maxInclusive· to be 18446744073709551615
+    -->
+    <type name="unsignedLong" primType="decimal">
+      <impl implType="XPlus::UInt64" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+    is ·derived· from unsignedLong by setting the value of ·maxInclusive· to be 4294967295
+    -->
+    <type name="unsignedInt" primType="decimal">
+      <impl implType="unsigned int" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+    is ·derived· from unsignedInt by setting the value of ·maxInclusive· to be 65535
+    -->
+    <type name="unsignedShort" primType="decimal">
+      <impl implType="unsigned short" adt="false">
+      </impl>  
+    </type>
+
+    <!--
+    is ·derived· from unsignedShort by setting the value of ·maxInclusive· to be 255
+    -->
+    <type name="unsignedByte" primType="decimal">
+      <impl implType="unsigned char" adt="false">
+      </impl>  
+    </type>
   </derivedTypes>
 
   <ConstrainingFacets>
