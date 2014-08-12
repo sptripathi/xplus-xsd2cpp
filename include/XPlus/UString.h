@@ -127,6 +127,18 @@ namespace XPlus
       static std::string UStringTostring(const UString& str);
       static UString stringToUString(const std::string& str);
 
+	  friend istream& operator>>(istream &in, UString &out)
+		{
+			out = "";
+
+			while (in.rdbuf()->in_avail() > 0)
+			{
+				out += static_cast<char>(in.rdbuf()->sbumpc());
+			}
+
+			return in;
+		}
+
   };
 }
 
