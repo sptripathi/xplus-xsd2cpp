@@ -270,18 +270,39 @@ namespace DOM
   
   const Element* Document::getDocumentElement() const 
   {
-    if(getChildNodes().getLength() > 0) {
-      return dynamic_cast<Element*>(const_cast<Node*>(getChildNodes().item(0)));
+    if (getChildNodes().getLength() > 0)
+	{
+		for (int i = 0; i < getChildNodes().getLength(); i++)
+		{
+			if(Node::COMMENT_NODE == getChildNodes().item(i)->getNodeType())
+			{
+				continue;
+			}
+			else
+			{
+				return dynamic_cast<Element*> (const_cast<Node*> (getChildNodes().item(i)));
       //return dynamic_cast<Element*>(getChildNodes().item(0));
     }
+		}
+	}
     return NULL;
   }
   
   Element* Document::getDocumentElement()  
   {
     if(getChildNodes().getLength() > 0) {
-      return dynamic_cast<Element*>(getChildNodes().item(0));
+		for (int i = 0; i < getChildNodes().getLength(); i++)
+		{
+			if(Node::COMMENT_NODE == getChildNodes().item(i)->getNodeType())
+			{
+				continue;
+			}
+			else
+			{
+				return dynamic_cast<Element*>(getChildNodes().item(i));
       //return dynamic_cast<Element*>(getChildNodes().item(0));
+    }
+		} 
     }
     return NULL;
   }
