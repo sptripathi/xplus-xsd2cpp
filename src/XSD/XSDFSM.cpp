@@ -25,14 +25,14 @@ void warnNullNode(void *pNode, const char* nodeName, const char* qName, int minO
 {
   if(pNode == NULL)
   {
-    ostringstream oss;
-    oss << "   *** Warning: the node-pointer for component " << qName << " was found NULL, when retrieved.\n"
-      << "   Dereferencing this node-pointer would cause runtime errors." << endl;
-    if(minOccurence==0) {
-      oss << "   As this node is optional, consider marking it present:" << endl
-        << "   parentNode->mark_present_" << nodeName << "()"; 
+    if(minOccurence!=0) {   // no warning for optional nodes
+      ostringstream oss;
+
+      oss << "   *** Warning: the node-pointer for component " << qName << " was found NULL, when retrieved.\n"
+        << "   Dereferencing this node-pointer would cause runtime errors." << endl;
+
+      cerr << endl << oss.str() << endl;
     }
-    cerr << endl << oss.str() << endl;
   }
 }
 

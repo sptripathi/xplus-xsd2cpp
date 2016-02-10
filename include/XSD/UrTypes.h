@@ -216,7 +216,6 @@ namespace XMLSchema
       public:
 
         anyType(AnyTypeCreateArgs args, eAnyTypeUseCase anyTypeUseCase_ = ANY_TYPE);
-        anyType(){printf("anyType::anyType()\n");};
 
         virtual ~anyType() {}
 
@@ -400,7 +399,7 @@ namespace XMLSchema
     class anySimpleType : public anyType
     {
       public:
-        anySimpleType(AnyTypeCreateArgs args, ePrimitiveDataType primType);
+        anySimpleType(AnyTypeCreateArgs args, ePrimitiveDataType primType = PD_STRING);
 
         virtual ~anySimpleType() {}
         
@@ -409,6 +408,8 @@ namespace XMLSchema
         inline virtual DOMString stringValue() {
           return _value;
         }
+
+        typedef ePrimitiveDataType anySimplePrimitiveType;
         
         // NB:
         // The value-as-string is stored for every type(anyType and 

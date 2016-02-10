@@ -151,6 +151,8 @@ namespace XPlus
           T *nextNode = this->item(pos);
           return this->insertBetween(node, prevNode, nextNode);
         }
+
+        return NULL;
       }
 
 

@@ -42,8 +42,6 @@ namespace DOM
         Node* nextSibling=NULL
         );
 
-    Element() {cout << "DOM::Element::Element()\n";};
-
     virtual ~Element() {}
     
     virtual const DOMString* getTagName() const {
@@ -76,6 +74,7 @@ namespace DOM
     virtual bool hasAttributeNS(DOMString* namespaceURI,
                                 DOMString* localName);
 
+    Element* copy(DOMString* tagName, Document* ownerDocument, Node* parentNode, Node* prevSibling, Node* nextSibling);
   };
 
 }

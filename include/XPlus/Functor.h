@@ -23,8 +23,6 @@
 #include "XPlus/AutoPtr.h"
 #include "XPlus/XPlusObject.h"
 
-#include <assert.h>
-
 namespace XPlus
 {
   using namespace std;
@@ -63,8 +61,6 @@ namespace XPlus
         }
         else {
           //TODO: throw NullPointerException
-            assert(0); 
-            return NULL;
         }
       }
   };
@@ -106,8 +102,6 @@ namespace XPlus
         }
         else {
           //TODO: throw NullPointerException
-            assert(0);
-            return NULL;
         }
       }
   };

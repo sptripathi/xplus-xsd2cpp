@@ -270,46 +270,28 @@ namespace DOM
   
   const Element* Document::getDocumentElement() const 
   {
-    if (getChildNodes().getLength() > 0)
-	{
-		for (int i = 0; i < getChildNodes().getLength(); i++)
-		{
-			if(Node::COMMENT_NODE == getChildNodes().item(i)->getNodeType())
-			{
-				continue;
-			}
-			else
-			{
-				return dynamic_cast<Element*> (const_cast<Node*> (getChildNodes().item(i)));
+    if(getChildNodes().getLength() > 0) {
+      return dynamic_cast<Element*>(const_cast<Node*>(getChildNodes().item(0)));
       //return dynamic_cast<Element*>(getChildNodes().item(0));
     }
-		}
-	}
     return NULL;
   }
   
   Element* Document::getDocumentElement()  
   {
     if(getChildNodes().getLength() > 0) {
-		for (int i = 0; i < getChildNodes().getLength(); i++)
-		{
-			if(Node::COMMENT_NODE == getChildNodes().item(i)->getNodeType())
-			{
-				continue;
-			}
-			else
-			{
-				return dynamic_cast<Element*>(getChildNodes().item(i));
+      return dynamic_cast<Element*>(getChildNodes().item(0));
       //return dynamic_cast<Element*>(getChildNodes().item(0));
-    }
-		} 
     }
     return NULL;
   }
 
   void Document::addPrefixedNamespace(DOMString nsPrefixStr, DOMString nsUriStr) {
     //TODO: improve eg. use some hash than lookup each time to check presence
-    _prefixedNamespaces.insert(std::pair<DOMString, DOMString>(nsPrefixStr, nsUriStr));
+    if (!isPrefixTaken(nsPrefixStr))
+    {
+      _prefixedNamespaces.insert(std::pair<DOMString, DOMString>(nsPrefixStr, nsUriStr));
+    }
   }
 
   const DOMString Document::getNsUriForNsPrefixExplicit(const DOMString nsPrefix) const

@@ -106,31 +106,35 @@ namespace XSD
                         nillable(nillable_),
                         fixed(fixed_),
                         fsm(fsm_),
-                        options(options_)
+                        options(options_),
+ 			actualTypeNsUri(actualTypeNsUri_),
+			actualTypeName(actualTypeName_)
       {
-        USED(actualTypeName_);
-        USED(actualTypeNsUri_);
       }
   };
 
 
-  template<typename T> XMLSchema::Types::anyType* createType(ElementCreateArgs args) 
+  template<typename T> XmlElement* createType(ElementCreateArgs args) 
   { 
-    T* pT = NULL;
     try {
-      pT = new T(args);
+	    XmlElement* pElt = new XmlElement(args);
+      T* pT = new T(AnyTypeCreateArgs(true, pElt, pElt, args.ownerDoc, args.childBuildsTree, false,
+                              Types::BOF_NONE, Types::BOF_NONE, Types::CONTENT_TYPE_VARIETY_MIXED,
+                              Types::ANY_TYPE, args.suppressTypeAbstract, args.isSampleCreate));
+	pElt->userObject(pT);
+
+	return pElt;
     }
     catch(XPlus::Exception& ex) {
       cerr << "Failed to create type:" << ex.msg() << endl;
     }
-    XMLSchema::Types::anyType* pAny = dynamic_cast<XMLSchema::Types::anyType *>(pT);
-    //return pT;
-    return pAny;
+
+    return NULL;
   }
     
   struct MapWrapper
   {
-    typedef map<string, XMLSchema::Types::anyType*(*)(ElementCreateArgs args)> map_type;
+    typedef map<string, XmlElement*(*)(ElementCreateArgs args)> map_type;
    
     MapWrapper():
      _pQNameToTypeMap(NULL)
@@ -158,7 +162,7 @@ namespace XSD
 
   struct TypeDefinitionFactory 
   {
-    typedef map<string, XMLSchema::Types::anyType*(*)(ElementCreateArgs args)> map_type;
+    typedef map<string, XmlElement*(*)(ElementCreateArgs args)> map_type;
     
     TypeDefinitionFactory(const string& typeName, const string& typeNsUri):
       _name(typeName),
@@ -166,15 +170,53 @@ namespace XSD
     {
     }
 
-    static XMLSchema::Types::anyType* getTypeForQName(const string& typeName, const string& typeNsUri, ElementCreateArgs args) 
+    static XmlElement* getTypeForQName(const string& typeName, const string& typeNsUri, ElementCreateArgs args) 
     {
       string key = createKeyForQNameToTypeMap(typeName, typeNsUri);
       map_type::iterator it = getMap()->find(key);
-      if(it == getMap()->end()) {
-        return NULL;
+
+      bool foundType = false;
+      if(it == getMap()->end())
+      {
+          // if no prefix for the type, look if the type exists in the default namespace of the document
+          if (typeNsUri.empty())
+          {
+              list<DOMString>::const_iterator itUnNs = args.ownerDoc->getUnprefixedNamespaces().begin();
+              for( ; itUnNs != args.ownerDoc->getUnprefixedNamespaces().end(); ++itUnNs)
+              {
+                  key = createKeyForQNameToTypeMap(typeName, *itUnNs);
+                  it = getMap()->find(key);
+                  if(it != getMap()->end())
+                  {
+                      foundType = true;
+                      break;
+                  }
+              }
+
+              if (!foundType)
+              {
+                  // in case the default namespace is also explicitly defined, it is only present in the list
+                  // of prefixed namespaces, so we also have to look there.
+                  map<DOMString, DOMString>::const_iterator itNs = args.ownerDoc->getPrefixedNamespaces().begin();
+                  for( ; itNs != args.ownerDoc->getPrefixedNamespaces().end(); ++itNs)
+                  {
+                      key = createKeyForQNameToTypeMap(typeName, itNs->second);
+                      it = getMap()->find(key);
+                      if(it != getMap()->end())
+                      {
+                          foundType = true;
+                          break;
+                      }
+                  }
+              }
+          }
+      }
+      else
+      {
+          foundType = true;
       }
       // this calls createType
-      return it->second(args);
+      return foundType ? it->second(args) : NULL;
     }
 
     protected:
@@ -218,9 +260,19 @@ namespace XSD
     }
   };
 
-  // E : element class
-  // TPtr : pointer to "class of element's type"
-  template<typename E, typename TPtr> E* createElementTmpl(StructCreateElementThroughFsm& t)
+  template<typename T> struct Check_If_T_Is_anySimpleType
+  {
+	typedef char yes[1];
+	typedef char no[2];
+
+ 	template<typename C> static yes& test(typename C::anySimplePrimitiveType*);
+ 	template<typename> static no& test(...);
+        
+        static const bool value = sizeof(test<T>(0)) == sizeof(yes);
+  };
+
+  // TPtr : class of element's type
+  template<typename T> XmlElement* createElementTmpl(StructCreateElementThroughFsm& t)
   {
     if(t.ownerDoc->buildTree() || !t.fsm->fsmCreatedNode())
     {
@@ -237,7 +289,9 @@ namespace XSD
       }
       
       ElementCreateArgs args(t.tagName, t.nsUri, t.nsPrefix, t.ownerDoc, t.parentNode, prevSibl, nextSibl, t.abstract, t.nillable, t.fixed, false, t.options.isSampleCreate);
-      E* node = NULL;
+      XmlElement* node = NULL;
+
+      //std::cout << "xsi:type = " << t.options.xsiType << std::endl;
 
       // if element's type is specified in instance document using xsi:type
       if(t.options.xsiType.length()>0)
@@ -254,9 +308,22 @@ namespace XSD
         else {
           instanceTypeName = tokens[0];
         }
-        XMLSchema::Types::anyType* pOverriddenType = TypeDefinitionFactory::getTypeForQName(instanceTypeName, instanceTypeNsUri, args);
-        TPtr myTypeCast = dynamic_cast<TPtr>(pOverriddenType);
-        if(!myTypeCast || pOverriddenType->typeAbstract()) 
+        XmlElement* pOverriddenType = TypeDefinitionFactory::getTypeForQName(instanceTypeName, instanceTypeNsUri, args);
+        if(!pOverriddenType)
+        {
+            ostringstream oss;
+            oss << "  The value of the attribute {"
+                    << XPlus::Namespaces::s_xsiUri
+                    << "}type inside an element, in the instance document should resolve "
+                    "to a valid derivation of it's declared type in Schema document." << endl
+                    << "  Type {" << instanceTypeNsUri  << "}" << instanceTypeName
+                    << " is not a derivation of Type {" << t.actualTypeNsUri << "}"
+                    << t.actualTypeName;
+            throw XPlus::RuntimeException(oss.str());
+        }
+
+        T* myTypeCast = dynamic_cast<T*>(pOverriddenType->userObject());
+        if(!myTypeCast || pOverriddenType->userObject()->typeAbstract()) 
         {
           ostringstream oss;
           oss << "  The value of the attribute {"
@@ -269,19 +336,31 @@ namespace XSD
           throw XPlus::RuntimeException(oss.str());
         }
 
-        args.suppressTypeAbstract = true;
-        node = new E(args);
-        node->replaceFsm(pOverriddenType->fsm());
+	node = pOverriddenType;
       }
       else
       {
-        node = new E(args);
+        node = new XmlElement(args);
+        if (t.actualTypeName != "anySimpleType")
+        {
+	   T* ptr = new T(AnyTypeCreateArgs(true, node, node, args.ownerDoc, args.childBuildsTree, false,
+		                      Types::BOF_NONE, Types::BOF_NONE, Types::CONTENT_TYPE_VARIETY_MIXED,
+		                      Types::ANY_TYPE, args.suppressTypeAbstract, args.isSampleCreate));
+	   node->userObject(ptr);
+        }
+        else
+        {
+           XMLSchema::Types::bt_string* ptr = new XMLSchema::Types::bt_string(AnyTypeCreateArgs(true, node, node, args.ownerDoc, args.childBuildsTree, false,
+		                      Types::BOF_NONE, Types::BOF_NONE, Types::CONTENT_TYPE_VARIETY_MIXED,
+		                      Types::ANY_TYPE, args.suppressTypeAbstract, args.isSampleCreate));
+	   node->userObject(ptr);
+        }
       }
       
       if(t.options.xsiNil == "true")
       {
         if(t.nillable) {
-          node->fsm()->contentFsm()->nilled(true);
+          node->userObject()->fsm()->contentFsm()->nilled(true);
         }
         else 
         {
@@ -301,10 +380,9 @@ namespace XSD
       return node;
     }
     else {
-      return dynamic_cast<E *>(const_cast<Node*>(t.fsm->fsmCreatedNode()));
+      return dynamic_cast<XmlElement*>(const_cast<Node*>(t.fsm->fsmCreatedNode()));
     }
   }
-
 
   // T :   attribute's class
   template<typename T> T* createAttributeTmpl(StructCreateAttrThroughFsm t)

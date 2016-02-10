@@ -83,15 +83,26 @@ namespace Types
 class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyType
 {
   public:
+
+  static const DOMString QUALIFIED_TYPE;
+
+  virtual DOMString getSchemaType()
+  {
+    return QUALIFIED_TYPE;  
+  }
+  
   //constructor
   <xsl:value-of select="$cppName"/>(AnyTypeCreateArgs args);
+  
+  //destructor
+  virtual ~<xsl:value-of select="$cppName"/>() {}
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
   </xsl:call-template>  
 
   private:
-  static XSD::TypeDefinitionFactoryTmpl&lt;XmlElement&lt;<xsl:value-of select="$cppName"/>&gt; &gt;   s_typeRegistry;
+  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
 }; //end class <xsl:value-of select="$cppName"/>
 </xsl:template>
 
@@ -224,11 +235,11 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyType
          TODO: {content type} is mixed and a particle which is ·emptiable·
       -->
       <xsl:when test="$isComplexType='true'">
-        <xsl:if test="not(*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType'])">
+        <!--xsl:if test="not(*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType'])">
           <xsl:call-template name="T_terminate_with_msg"><xsl:with-param name="msg">
            Error: A "Complex-Type-Definition" with simple content Schema Component, having derivation method as "restriction", whose base attribute resolves to a complex-type-definition, must have a &lt;simpleType&gt; present among the [children] of &lt;restriction&gt;
           </xsl:with-param></xsl:call-template>
-        </xsl:if>
+        </xsl:if-->
         <xsl:for-each select="*[local-name()='simpleContent']/*[local-name()='restriction']/*[local-name()='simpleType']">
           <xsl:call-template name="ON_SIMPLETYPE"><xsl:with-param name="simpleTypeName" select="concat('_', $schemaComponentName)"/></xsl:call-template>
         </xsl:for-each>
@@ -245,15 +256,26 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyType
 class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$baseCppTypeWithNSDeref"/>
 {
   public:
+
+  static const DOMString QUALIFIED_TYPE;
+  
+  virtual DOMString getSchemaType()
+  {
+    return QUALIFIED_TYPE;  
+  }
+
   //constructor
   <xsl:value-of select="$cppName"/>(AnyTypeCreateArgs args);
+  
+  //destructor
+  virtual ~<xsl:value-of select="$cppName"/>() {}
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
   </xsl:call-template>
 
   private:
-  static XSD::TypeDefinitionFactoryTmpl&lt;XmlElement&lt;<xsl:value-of select="$cppName"/>&gt; &gt;   s_typeRegistry;
+  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
 }; //end class <xsl:value-of select="$cppName"/>
 
 </xsl:template>
@@ -295,15 +317,26 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDer
 {
 
   public:
+
+  static const DOMString QUALIFIED_TYPE;
+
+  virtual DOMString getSchemaType()
+  {
+    return QUALIFIED_TYPE;  
+  }
+  
   //constructor
   <xsl:value-of select="$cppName"/>(AnyTypeCreateArgs args);
+  
+  //destructor
+  virtual ~<xsl:value-of select="$cppName"/>() {}
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
   </xsl:call-template>
   
   private:
-  static XSD::TypeDefinitionFactoryTmpl&lt;XmlElement&lt;<xsl:value-of select="$cppName"/>&gt; &gt;   s_typeRegistry;
+  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
 
 }; //end class <xsl:value-of select="$cppName"/>
 
@@ -335,15 +368,26 @@ class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDer
 class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/> 
 {
   public:
+
+  static const DOMString QUALIFIED_TYPE;
+
+  virtual DOMString getSchemaType()
+  {
+    return QUALIFIED_TYPE;  
+  }
+  
   //constructor
   <xsl:value-of select="$cppName"/>(AnyTypeCreateArgs args);
+  
+  //destructor
+  virtual ~<xsl:value-of select="$cppName"/>() {}
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$schemaComponentName"/>
   </xsl:call-template>  
 
   private:
-  static XSD::TypeDefinitionFactoryTmpl&lt;XmlElement&lt;<xsl:value-of select="$cppName"/>&gt; &gt;   s_typeRegistry;
+  static XSD::TypeDefinitionFactoryTmpl&lt;<xsl:value-of select="$cppName"/>&gt;   s_typeRegistry;
 }; //end class <xsl:value-of select="$cppName"/>
 </xsl:template>
 
@@ -629,7 +673,7 @@ public:
 
       <xsl:variable name="returnType">
         <xsl:choose>
-          <xsl:when test="$maxOccurGT1Child='true'">List&lt;<xsl:value-of select="$cppTypeSmartPtrShort"/>&gt;</xsl:when>
+          <xsl:when test="$maxOccurGT1Child='true'">List&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;</xsl:when>
           <xsl:otherwise><xsl:value-of select="$cppTypePtrShort"/></xsl:otherwise>
         </xsl:choose>
       </xsl:variable>
@@ -770,6 +814,17 @@ public:
     ///  @return the pointer to the added element
     MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/> add_node_<xsl:value-of select="$cppNameFunction"/>();
 
+    ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" for abstract types :
+    ///  \n Adds one derived element to the end of the "list of the element nodes"
+    ///  @return the pointer to the added element
+    MEMBER_FN template&lt;typename T&gt; T* add_node_<xsl:value-of select="$cppNameFunction"/>()
+    {
+       DOMStringPtr nsUriPtr = new DOMString(&quot;<xsl:call-template name="T_get_type_nsUri_ElementAttr"/>&quot;);
+       XsdEvent event(nsUriPtr, NULL, DOMString(&quot;<xsl:value-of select="$cppNameFunction"/>&quot;), DOMString(T::QUALIFIED_TYPE), XsdEvent::ELEMENT_START, false);
+       this->processEventThrow(event);        
+       return dynamic_cast&lt;T*&gt;(elements_<xsl:value-of select="$cppNameFunction"/>().back());
+    }
+
     ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
     ///  \n Sizes-up the "list of the element nodes" with the supplied size
     ///  @param size the request size(unsigned int) of the list
@@ -799,6 +854,16 @@ public:
     ///  For the optional scalar element with QName "<xsl:value-of select="$expandedQName"/>" :
     ///  \n Marks the element as present 
     void mark_present_<xsl:value-of select="$cppNameFunction"/>();
+    
+    ///  For the optional scalar element with QName "{http://bosch.de/AA_AS/Telediag/Configuration}triggerConfig" :
+    ///  \n Marks the element as present
+    template&lt;typename T&gt; void mark_present_<xsl:value-of select="$cppNameFunction"/>()
+    {
+        DOMStringPtr nsUriPtr = new DOMString(&quot;<xsl:call-template name="T_get_type_nsUri_ElementAttr"/>&quot;);
+        XsdEvent event(nsUriPtr, NULL, DOMString(&quot;<xsl:value-of select="$cppNameFunction"/>&quot;), DOMString(T::QUALIFIED_TYPE), XsdEvent::ELEMENT_START, false);
+        this->processEventThrow(event);   
+        element_<xsl:value-of select="$cppNameFunction"/>()-&gt;createAttributeNS(new DOMString(&quot;http://www.w3.org/2001/XMLSchema-instance&quot;), new DOMString(&quot;xsi&quot;), new DOMString(&quot;type&quot;), new DOMString(T::QUALIFIED_TYPE));     	
+    }    
     </xsl:if>
     </xsl:for-each>
 
@@ -896,7 +961,7 @@ public:
     </xsl:with-param></xsl:call-template>
   </xsl:if>
 
-  //annotation: <xsl:value-of select="."/>           
+  /*annotation: <xsl:value-of select="."/>*/
 </xsl:template>
 
 
@@ -965,7 +1030,7 @@ public:
   <xsl:variable name="cppNameUseCase"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'declaration'"/></xsl:call-template></xsl:variable>
   <xsl:variable name="cppNameDeclPlural"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'declaration_plural'"/></xsl:call-template></xsl:variable>
   <xsl:variable name="cppFsmName"><xsl:call-template name="T_get_cppFsmName_ElementAttr"/></xsl:variable>
-  <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
+  <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypePtrShort_ElementAttr"/></xsl:variable>
   <xsl:variable name="cppPtrNsUri"><xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/></xsl:variable>
   <xsl:variable name="maxOccurGT1Node"><xsl:call-template name="T_is_maxOccurence_gt_1"/></xsl:variable>
   <xsl:variable name="isUnderSingularMgNesting">
@@ -1015,10 +1080,10 @@ public:
         <xsl:when test="$localName='element'">
           <xsl:choose>
             <xsl:when test="$maxOccurGT1Node='true' or $isUnderSingularMgNesting='false'">
-  MEMBER_VAR List&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;<xsl:text> </xsl:text><xsl:value-of select="$cppNameDeclPlural"/>;
+  MEMBER_VAR List&lt;AutoPtr&lt;XmlElement&gt; &gt;<xsl:text> </xsl:text><xsl:value-of select="$cppNameDeclPlural"/>;
             </xsl:when>
             <xsl:when test="$maxOccurGT1Node='false' and $isUnderSingularMgNesting='true'">
-  MEMBER_VAR <xsl:value-of select="$cppTypePtrShort"/><xsl:text> </xsl:text><xsl:value-of select="$cppNameUseCase"/>;
+  MEMBER_VAR AutoPtr&lt;XmlElement&gt;<xsl:text> </xsl:text><xsl:value-of select="$cppNameUseCase"/>;
             </xsl:when>
             <xsl:otherwise>
             </xsl:otherwise>
@@ -1125,7 +1190,7 @@ public:
 <xsl:template name="DECL_PVT_FNS_FOR_MEMBER_ELEMENT_OR_ATTRIBUTE_H">
   <xsl:variable name="cppTypeSmartPtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
   <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
-  MEMBER_FN <xsl:value-of select="$cppTypeSmartPtrShort"/><xsl:text> </xsl:text>create_<xsl:value-of select="$cppNameFunction"/>(FsmCbOptions&amp; options);
+  MEMBER_FN <xsl:if test="local-name()='attribute'"><xsl:value-of select="$cppTypeSmartPtrShort"/></xsl:if><xsl:if test="local-name()='element'">XmlElement*</xsl:if><xsl:text> </xsl:text>create_<xsl:value-of select="$cppNameFunction"/>(FsmCbOptions&amp; options);
 </xsl:template>
 
 
@@ -1179,7 +1244,7 @@ public:
   ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
   ///  \n Returns the list of the element nodes
   ///  @return the list of element nodes fetched
-  MEMBER_FN List&lt;<xsl:value-of select="$cppTypeSmartPtrShort"/>&gt;<xsl:text> </xsl:text><xsl:value-of select="$localName"/>s_<xsl:value-of select="$cppNameFunction"/>();
+  MEMBER_FN List&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;<xsl:text> </xsl:text><xsl:value-of select="$localName"/>s_<xsl:value-of select="$cppNameFunction"/>();
 
   ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
   ///  \n Returns the element node at supplied index
@@ -1268,7 +1333,7 @@ public:
 
     <xsl:variable name="returnType">
       <xsl:choose>
-        <xsl:when test="$maxOccurGT1Node">List&lt;<xsl:value-of select="$cppTypeSmartPtrShort"/>&gt;</xsl:when>
+        <xsl:when test="$maxOccurGT1Node">List&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;</xsl:when>
         <xsl:otherwise><xsl:value-of select="$cppTypePtrShort"/></xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -1280,6 +1345,16 @@ public:
   ///  @return the pointer to the added element
   MEMBER_FN <xsl:value-of select="$cppTypePtrShort"/> add_node_<xsl:value-of select="$cppNameFunction"/>();
   
+  ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" for abstract types :
+  ///  \n Adds one derived element to the end of the "list of the element nodes"
+  ///  @return the pointer to the added element
+  MEMBER_FN template&lt;typename T&gt; T* add_node_<xsl:value-of select="$cppNameFunction"/>()
+  {
+    T* pT = get_sequence()-&gt;add_node_<xsl:value-of select="$cppNameFunction"/>&lt;T&gt;();
+    pT-&gt;createAttributeNS(new DOMString(&quot;http://www.w3.org/2001/XMLSchema-instance&quot;), new DOMString(&quot;xsi&quot;), new DOMString(&quot;type&quot;), new DOMString(T::QUALIFIED_TYPE));
+    return pT;
+  }
+
   ///  For vector-element with QName "<xsl:value-of select="$expandedQName"/>" :
   ///  \n Sizes-up the "list of the element nodes" with the supplied size
   ///  @param size the request size(unsigned int) of the list

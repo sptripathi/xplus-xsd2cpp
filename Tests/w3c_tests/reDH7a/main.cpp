@@ -40,11 +40,11 @@ void populateDocument(NoNS::Document* xsdDoc)
   NoNS::doc* pdoc = xsdDoc->element_doc();
   pdoc->set_count_choiceList(2);
 
-  List<NoNS::doc::elem_ptr>  choice1ElemList = pdoc->choice_at(0)->choose_list_elem(2);
+  List<NoNS::doc::elem_p>  choice1ElemList = pdoc->choice_at(0)->choose_list_elem(2);
   choice1ElemList.at(0)->stringValue("123");
   choice1ElemList.at(1)->stringValue("234");
 
-  List<NoNS::doc::elem_ptr>  choice2ElemList = pdoc->choice_at(1)->choose_list_elem(1);
+  List<NoNS::doc::elem_p>  choice2ElemList = pdoc->choice_at(1)->choose_list_elem(1);
   choice2ElemList.at(0)->stringValue("789");
 }
 

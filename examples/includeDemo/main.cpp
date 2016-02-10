@@ -40,7 +40,7 @@ void populateDocument(NoNS::Document* xsdDoc)
   pDir->mark_present_attr_numberOfFiles();
   pDir->attribute_attr_numberOfFiles()->stringValue("3");
 
-  List<NoNS::myProject::directory::files::fileName_ptr> fileNames = pMyProj->element_directory()->element_files()->set_count_fileName(3);
+  List<NoNS::myProject::directory::files::fileName_p> fileNames = pMyProj->element_directory()->element_files()->set_count_fileName(3);
   fileNames.at(0)->stringValue("a.xml");
   fileNames.at(1)->stringValue("b.xml");
   fileNames.at(2)->stringValue("c.xml");

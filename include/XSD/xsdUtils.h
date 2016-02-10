@@ -225,9 +225,7 @@ namespace XMLSchema
       }
     }
 
-    TElement() {printf("TElement::TElement()\n");};
-
-    virtual ~TElement() {};
+    virtual ~TElement() {}  
 
     virtual TDocumentP ownerDocument() =0;
     virtual TElementP ownerElement() =0; 
@@ -254,44 +252,53 @@ namespace XMLSchema
     }
   };
   
-  //XMLSchema::XmlElement<XMLSchema::Types::anyType>::XmlElement()
 
-  template <class T> class XmlElement :  public TElement, public T
+  class XmlElement :  public TElement
   {
     protected:
+
+    private:
+
+	XMLSchema::Types::anyType* userObj;
 
     public:
 
       XmlElement(ElementCreateArgs args):
-          TElement(args),
-          T(AnyTypeCreateArgs(true, this, this, args.ownerDoc, args.childBuildsTree, false, 
-                              Types::BOF_NONE, Types::BOF_NONE, Types::CONTENT_TYPE_VARIETY_MIXED, 
-                              Types::ANY_TYPE, args.suppressTypeAbstract, args.isSampleCreate)
-           )
-    {
-        printf("XMLSchema::XmlElement::XmlElement(XMLSchema::Types::ElementCreateArgs)\n");
-        cout << args.name->str() << endl;
+          TElement(args), userObj(0)
+    { 
     }
 
-      XmlElement() {printf("XmlElement::XmlElement()\n");};
+      virtual ~XmlElement() 
+       {
+		delete userObj;
+		userObj = 0;
+	}
+       
+      virtual XMLSchema::Types::anyType* userObject()
+	{
+		return userObj;
+	}
 
-      virtual ~XmlElement() {};
-        
+	virtual void userObject(XMLSchema::Types::anyType* obj)
+{
+	userObj = obj;
+}
+ 
       //
       // TElement interface: delegates the call to T
       //
      
       virtual TDocumentP ownerDocument() {
-        return T::ownerDocument();
+        return userObj->ownerDocument();
       }
       virtual TElementP ownerElement() {
-        return T::ownerElement();
+        return userObj->ownerElement();
       }
       
       virtual TElement* createElementWithAttributes(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName, vector<AttributeInfo>& attrVec)
       {
         try {
-          return T::createElementWithAttributes(nsUri, nsPrefix, localName, attrVec);
+          return userObj->createElementWithAttributes(nsUri, nsPrefix, localName, attrVec);
         }
         catch(XPlus::Exception& ex) 
         {
@@ -302,7 +309,7 @@ namespace XMLSchema
 
       virtual inline void endElementNS(DOMString* nsUri, DOMString* nsPrefix, DOMString* localName)
       {
-        T::endElementNS(nsUri, nsPrefix, localName);
+        userObj->endElementNS(nsUri, nsPrefix, localName);
       }
 
       virtual AttributeP createAttributeNS(DOMString* nsUri,
@@ -311,7 +318,7 @@ namespace XMLSchema
           DOMString* value) 
       {
         try {
-          return T::createAttributeNS(nsUri, nsPrefix, localName, value);
+          return userObj->createAttributeNS(nsUri, nsPrefix, localName, value);
         }
         catch(XPlus::Exception& ex) 
         {
@@ -323,13 +330,13 @@ namespace XMLSchema
 
       virtual inline void endDocument() 
       {
-        T::endDocument();
+        userObj->endDocument();
       }
 
       virtual inline TextNodeP createTextNode(DOMString* data) 
       {
         try {
-          return T::createTextNode(data);
+          return userObj->createTextNode(data);
         }
         catch(XPlus::Exception& ex) 
         {
@@ -341,7 +348,7 @@ namespace XMLSchema
       virtual inline CDATASection* createCDATASection(DOMString* data) 
       {
         try {
-          return T::createCDATASection(data);
+          return userObj->createCDATASection(data);
         }
         catch(XPlus::Exception& ex) 
         {

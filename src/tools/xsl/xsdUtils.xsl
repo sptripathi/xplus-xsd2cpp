@@ -1259,6 +1259,8 @@ namespace <xsl:value-of select="$nsStr"/>{
   <xsl:param name="node" select="."/>
   
   <xsl:variable name="isGlobal"><xsl:call-template name="T_isGlobal_ElementAttr"><xsl:with-param name="node" select="$node"/></xsl:call-template></xsl:variable>
+  <xsl:variable name="isAbstract"><xsl:call-template name="T_isAbstractTypeFromElement"><xsl:with-param name="node" select="$node"/></xsl:call-template></xsl:variable>
+  <!--xsl:message>ABSTRACT = <xsl:value-of select="$isAbstract"/></xsl:message-->
 
   <xsl:variable name="minOccurence">
     <xsl:choose>
@@ -1272,6 +1274,8 @@ namespace <xsl:value-of select="$nsStr"/>{
       </xsl:when>
       <xsl:when test="local-name($node)='sequence' or local-name($node)='choice' or local-name($node)='element'">
         <xsl:choose>
+	  <!-- MAL : for abstract type, the min occurence cannot be greater than 0 otherwise XmlPlus will try to add abstract nodes to the document -->
+          <xsl:when test="$node/@minOccurs and $isAbstract=1">0</xsl:when>
           <xsl:when test="$node/@minOccurs"><xsl:value-of select="$node/@minOccurs"/></xsl:when>
           <xsl:otherwise>1</xsl:otherwise>
         </xsl:choose>
@@ -1284,6 +1288,17 @@ namespace <xsl:value-of select="$nsStr"/>{
 </xsl:template>
 
 
+<xsl:template name="T_isAbstractTypeFromElement">
+	<xsl:param name="node" select="."/>
+	<!--xsl:message><xsl:value-of select="substring-after($node/@type, ':')"/></xsl:message-->
+	<xsl:for-each select="//*[local-name(.)='complexType' and @name and $node/@type and @name=substring-after($node/@type, ':')]">
+		<!--xsl:message><xsl:value-of select="./@name"/></xsl:message-->
+		<xsl:choose>
+			<xsl:when test="./@abstract and ./@abstract='true'">1</xsl:when>
+			<xsl:otherwise>0</xsl:otherwise>
+		</xsl:choose>
+	</xsl:for-each>
+</xsl:template>
 
 
 <xsl:template name="T_get_maxOccurence">
@@ -1531,7 +1546,7 @@ namespace <xsl:value-of select="$nsStr"/>{
    * have you misspelt the qualified-name ?
           </xsl:with-param></xsl:call-template>
         </xsl:if>
-        <xsl:if test="local-name()='element'">XMLSchema::XmlElement</xsl:if><xsl:if test="local-name()='attribute'">XMLSchema::XmlAttribute</xsl:if>&lt;<xsl:value-of select="$typeCppNS"/>::Types::<xsl:value-of select="$cppTypeLocalPart"/>&gt;
+        <xsl:if test="local-name()='element'"></xsl:if><xsl:if test="local-name()='attribute'">XMLSchema::XmlAttribute&lt;</xsl:if><xsl:value-of select="$typeCppNS"/>::Types::<xsl:value-of select="$cppTypeLocalPart"/><xsl:if test="local-name()='attribute'">&gt;</xsl:if>
       </xsl:when>
 
       <xsl:when test="@ref">
@@ -1563,7 +1578,7 @@ namespace <xsl:value-of select="$nsStr"/>{
       <xsl:when test="*[local-name()='simpleType']">
         <xsl:choose>
           <xsl:when test="local-name()='element'">
-        XMLSchema::XmlElement&lt;<xsl:value-of select="concat('_', @name)"/>&gt;
+        <xsl:value-of select="concat('_', @name)"/>
           </xsl:when>
           <xsl:when test="local-name()='attribute'">
         XMLSchema::XmlAttribute&lt;<xsl:value-of select="concat('_attr_', @name)"/>&gt;
@@ -1581,7 +1596,7 @@ namespace <xsl:value-of select="$nsStr"/>{
           <xsl:when test="count(child::*[local-name() != 'annotation']) = 0">
             <xsl:choose>
               <xsl:when test="local-name()='attribute'">XMLSchema::XmlAttribute&lt;anySimpleType&gt;</xsl:when>
-              <xsl:when test="local-name()='element'">XMLSchema::XmlElement&lt;anyType&gt;</xsl:when>
+              <xsl:when test="local-name()='element'">anyType</xsl:when>
             </xsl:choose>
           </xsl:when>
           <xsl:otherwise>
@@ -1923,6 +1938,12 @@ namespace <xsl:value-of select="$nsStr"/>{
       <xsl:when test="local-name()='element'">XsdEvent::ELEMENT_START</xsl:when>
     </xsl:choose>
   </xsl:variable>
+  <xsl:variable name="fsmTplType">
+    <xsl:choose>
+      <xsl:when test="local-name()='attribute'"><xsl:value-of select="$cppTypePtrShort"/></xsl:when>
+      <xsl:when test="local-name()='element'">XmlElement*</xsl:when>
+    </xsl:choose>
+  </xsl:variable>
 
   <!--  we use defaultOccurence in case of attribute only, and the way it's value 
         is 1 if attribute has a default or fixed value -->
@@ -1934,7 +1955,7 @@ namespace <xsl:value-of select="$nsStr"/>{
   </xsl:variable>
 
   <xsl:variable name="out">
-    new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/><xsl:if test="$defaultOccur != 0">, <xsl:value-of select="$defaultOccur"/></xsl:if>), <xsl:value-of select="$fsmType"/>, new object_unary_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(<xsl:value-of select="$thisOrThat"/>, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>))
+    new XsdFSM&lt;<xsl:value-of select="$fsmTplType"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/><xsl:if test="$defaultOccur != 0">, <xsl:value-of select="$defaultOccur"/></xsl:if>), <xsl:value-of select="$fsmType"/>, new object_unary_mem_fun_t&lt;<xsl:value-of select="$fsmTplType"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(<xsl:value-of select="$thisOrThat"/>, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>))
   </xsl:variable> 
   <xsl:value-of select="normalize-space($out)"/>
 </xsl:template>

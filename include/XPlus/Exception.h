@@ -51,6 +51,9 @@ namespace XPlus
 
     void setContext(const string name, const double value);
     void setContext(const string name, const string value);
+
+    std::map<std::string, std::string> getContext();
+    std::string getContext(const string name);
   };
 
   class NullPointerException : public XPlus::Exception {

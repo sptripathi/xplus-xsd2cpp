@@ -136,7 +136,7 @@ namespace XMLSchema
 
         //NB: throwing exception in constructor causes some strange issues.
         // So storing the errors to be reported later
-        if(fixed() && val != _value) 
+        if(fixed() && checkValueIsDifferent(val))
         {
           ostringstream oss;
           oss << "-fixed- Facet value violated:"
@@ -153,7 +153,7 @@ namespace XMLSchema
           "\nFacet: {" << enumToStringCFacet(type()) << "}"
           << "\n parent-facet-value: (" << currFacetValStr << ")"
           << "\n child-facet-value:" << newFacetValStr ;
-        if( (_type == CF_LENGTH) && isSet() && (_value != val)) {
+        if( (_type == CF_LENGTH) && isSet() && (checkValueIsDifferent(val))) {
           _errors.push_back(oss2.str());
         }
         else if( (_type == CF_MINLENGTH) && isSet() && (val < _value)) {
@@ -175,6 +175,8 @@ namespace XMLSchema
           _errors.push_back(oss2.str());
         }
       }
+
+      virtual bool checkValueIsDifferent(T value) = 0;
 
       void value(T val) 
       {
@@ -225,6 +227,10 @@ namespace XMLSchema
     {
     }
 
+    virtual bool checkValueIsDifferent(T value) {
+    	return this->value() != value;
+    }
+
     bool operator == (const OrderableCFacetAbstraction& cf) const {
       const OrderableCFacet<T>& ocf = dynamic_cast<const OrderableCFacet<T>& >(cf);
       return (ocf == this->value()); 
@@ -273,6 +279,75 @@ namespace XMLSchema
   };
 
 
+  struct DoubleOrderableCFacet : public OrderableCFacetAbstraction,
+                                 public ConstrainingFacet<double>
+  {
+	  DoubleOrderableCFacet(eConstrainingFacets type, double value, bool fixed=false):
+        ConstrainingFacetBase(type, fixed),
+        OrderableCFacetAbstraction(type, fixed),
+        ConstrainingFacet<double>(type, value, fixed)
+    {
+    }
+
+	virtual bool checkValueIsDifferent(double value) {
+		return (this->value() > value || this->value() < value);
+	}
+
+	bool operator == (const OrderableCFacetAbstraction& cf) const {
+	  const DoubleOrderableCFacet& ocf = dynamic_cast<const DoubleOrderableCFacet& >(cf);
+	  return (ocf >= this->value() && ocf <= this->value());
+	}
+	bool operator != (const OrderableCFacetAbstraction& cf) const {
+	  const DoubleOrderableCFacet& ocf = dynamic_cast<const DoubleOrderableCFacet& >(cf);
+	  return (ocf > this->value() || ocf < this->value());
+	}
+	bool operator <  (const OrderableCFacetAbstraction& cf) const {
+	  const DoubleOrderableCFacet& ocf = dynamic_cast<const DoubleOrderableCFacet& >(cf);
+	  return (ocf > this->value());
+	}
+	bool operator <= (const OrderableCFacetAbstraction& cf) const {
+	  const DoubleOrderableCFacet& ocf = dynamic_cast<const DoubleOrderableCFacet& >(cf);
+	  return (ocf >= this->value());
+	}
+	bool operator >  (const OrderableCFacetAbstraction& cf) const {
+	  const DoubleOrderableCFacet& ocf = dynamic_cast<const DoubleOrderableCFacet& >(cf);
+	  return (ocf < this->value());
+	}
+	bool operator >= (const OrderableCFacetAbstraction& cf) const {
+	  const DoubleOrderableCFacet& ocf = dynamic_cast<const DoubleOrderableCFacet& >(cf);
+	  return (ocf <= this->value());
+	}
+
+    bool operator ==  (const double& t) const {
+      return (this->value() <= t && this->value() >= t);
+    }
+    bool operator != (const double& t) const {
+      return (this->value() > t || this->value() < t);
+    }
+    bool operator <  (const double& t) const {
+      return (this->value() < t);
+    }
+    bool operator <= (const double& t) const {
+      return (this->value() <= t);
+    }
+    bool operator >  (const double& t) const {
+      return (this->value() > t);
+    }
+    bool operator >= (const double& t) const {
+      return (this->value() >= t);
+    }
+
+    virtual void stringValue(DOMString strVal) {
+      double val = fromString<double>(strVal);
+      this->value(val);
+    }
+
+    virtual DOMString stringValue() const {
+      return toString<double>(ConstrainingFacet<double>::_value);
+    }
+  };
+
+
   // for T in native-types like int,long,double,std::string etc.
   template<typename T>
     struct NativeTypeCFacet : public ConstrainingFacet<T>
@@ -281,6 +356,12 @@ namespace XMLSchema
         ConstrainingFacetBase(facetType, fixed),
       ConstrainingFacet<T>(facetType, facetValue, fixed)
     {
+    }
+
+    virtual ~NativeTypeCFacet() {}
+
+    virtual bool checkValueIsDifferent(T value) {
+    	return this->value() != value;
     }
 
     virtual void stringValue(DOMString strVal) {
@@ -301,6 +382,8 @@ namespace XMLSchema
       OrderableCFacet<T>(facetType, facetValue, fixed)
     {
     }
+
+    virtual ~NativeTypeOrderableCFacet() {}
 
     virtual void stringValue(DOMString strVal) {
       T val = fromString<T>(strVal); 
@@ -486,6 +569,10 @@ namespace XMLSchema
     {
     }
 
+    virtual bool checkValueIsDifferent(vector<DOMString> value) {
+    	return this->value() != value;
+    }
+
     virtual DOMString stringValue() const 
     {
       ostringstream oss;
@@ -509,6 +596,10 @@ namespace XMLSchema
       ConstrainingFacetBase(CF_PATTERN),
       ConstrainingFacet<vector<DOMString> >(CF_PATTERN)
     {
+    }
+
+    virtual bool checkValueIsDifferent(vector<DOMString> value) {
+    	return this->value() != value;
     }
 
     virtual DOMString stringValue() const 
@@ -607,35 +698,35 @@ namespace XMLSchema
   //   double:   maxExclusive, maxInclusive, minExclusive, minInclusive
   //
 
-  struct MaxInclusiveCFacetDouble : public NativeTypeOrderableCFacet<double>
+  struct MaxInclusiveCFacetDouble : public DoubleOrderableCFacet
   {
     MaxInclusiveCFacetDouble(double maxIncl=0, bool fixed=false):
       ConstrainingFacetBase(CF_MAXINCLUSIVE, fixed),
-      NativeTypeOrderableCFacet<double>(CF_MAXINCLUSIVE, maxIncl, fixed)
+	  DoubleOrderableCFacet(CF_MAXINCLUSIVE, maxIncl, fixed)
     { }
   };
 
-  struct MaxExclusiveCFacetDouble : public NativeTypeOrderableCFacet<double>
+  struct MaxExclusiveCFacetDouble : public DoubleOrderableCFacet
   {
     MaxExclusiveCFacetDouble(double maxExcl=0, bool fixed=false):
       ConstrainingFacetBase(CF_MAXEXCLUSIVE, fixed),
-      NativeTypeOrderableCFacet<double>(CF_MAXEXCLUSIVE, maxExcl, fixed)
+	  DoubleOrderableCFacet(CF_MAXEXCLUSIVE, maxExcl, fixed)
     { }
   };
 
-  struct MinInclusiveCFacetDouble : public NativeTypeOrderableCFacet<double>
+  struct MinInclusiveCFacetDouble : public DoubleOrderableCFacet
   {
     MinInclusiveCFacetDouble(double minIncl=0, bool fixed=false):
       ConstrainingFacetBase(CF_MININCLUSIVE, fixed),
-      NativeTypeOrderableCFacet<double>(CF_MININCLUSIVE, minIncl, fixed)
+	  DoubleOrderableCFacet(CF_MININCLUSIVE, minIncl, fixed)
     { }
   };
 
-  struct MinExclusiveCFacetDouble : public NativeTypeOrderableCFacet<double>
+  struct MinExclusiveCFacetDouble : public DoubleOrderableCFacet
   {
     MinExclusiveCFacetDouble(double minExcl=0, bool fixed=false):
       ConstrainingFacetBase(CF_MINEXCLUSIVE, fixed),
-      NativeTypeOrderableCFacet<double>(CF_MINEXCLUSIVE, minExcl, fixed)
+	  DoubleOrderableCFacet(CF_MINEXCLUSIVE, minExcl, fixed)
     { }
   };
 

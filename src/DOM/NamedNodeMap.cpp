@@ -136,8 +136,9 @@ namespace DOM
           matchNamespace(it->second->getNamespaceURI(), namespaceURI)
         )
       {
+        NodePtr res = it->second;
         this->erase(it);
-        return it->second;
+        return res;
       }
     }
     return NULL;

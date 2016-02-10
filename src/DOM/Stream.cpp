@@ -178,8 +178,12 @@ void outputDocElementNamespaces(XPlusCharOutputStream& s, const Element& e)
   list<DOMString>::const_iterator it = unprefixedNamespaces.begin();
   for( ; it != unprefixedNamespaces.end(); it++)
   {
-    s << " xmlns:" << e.getOwnerDocument()->getNsPrefixForNsUriImplicit(*it)
-      << "=\"" << *it << "\"";
+    DOMString prefix = e.getOwnerDocument()->getNsPrefixForNsUriImplicit(*it);
+    if (prefixedNamespaces.find(prefix) == prefixedNamespaces.end())
+    {
+      s << " xmlns:" << e.getOwnerDocument()->getNsPrefixForNsUriImplicit(*it)
+	<< "=\"" << *it << "\"";
+    }
   }
 }
 

@@ -285,10 +285,10 @@ class Document : public XMLSchema::TDocument
   <xsl:for-each select="*[local-name()='element']">
     <xsl:variable name="cppTypeUseCase"><xsl:call-template name="T_get_cppTypeUseCase_ElementAttr"/></xsl:variable>
     <xsl:variable name="cppNameUseCase"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'declaration'"/></xsl:call-template></xsl:variable>
-  MEMBER_VAR <xsl:value-of select="$cppTypeUseCase"/><xsl:text> </xsl:text><xsl:value-of select="$cppNameUseCase"/>;
+  MEMBER_VAR AutoPtr&lt;XmlElement&gt;<xsl:text> </xsl:text><xsl:value-of select="$cppNameUseCase"/>;
     <xsl:variable name="cppFsmName"><xsl:call-template name="T_get_cppFsmName_ElementAttr"/></xsl:variable>
     <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
-  MEMBER_VAR AutoPtr&lt;XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt; &gt;<xsl:text> </xsl:text><xsl:value-of select="$cppFsmName"/>;
+  MEMBER_VAR AutoPtr&lt;XsdFSM&lt;XmlElement*&gt; &gt;<xsl:text> </xsl:text><xsl:value-of select="$cppFsmName"/>;
   </xsl:for-each>  
 
   <!-- includes -->
@@ -317,6 +317,23 @@ class Document : public XMLSchema::TDocument
     <xsl:for-each select="*[local-name()='element']">
       <xsl:variable name="cppName"><xsl:call-template name="T_get_cppName_ElementAttr"/></xsl:variable>
   MEMBER_FN void set_root_<xsl:value-of select="$cppName"/>();
+  MEMBER_FN template&lt;typename T&gt; void set_root_<xsl:value-of select="$cppName"/>()
+  {<xsl:variable name="cppNameUseCase"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'declaration'"/></xsl:call-template></xsl:variable>
+    if(!<xsl:value-of select="$cppNameUseCase"/>)
+    {
+      XsdEvent event(new DOMString("<xsl:call-template name="T_get_type_nsUri_ElementAttr"/>"), NULL, DOMString(&quot;<xsl:value-of select="$cppName"/>&quot;), DOMString(T::QUALIFIED_TYPE), XsdEvent::ELEMENT_START);
+      if(this->createSample()) 
+      {
+        event.cbOptions.isSampleCreate = true;
+      }
+      _fsm->processEventThrow(event); 
+      <xsl:value-of select="$cppNameUseCase"/>-&gt;createAttributeNS(new DOMString(&quot;http://www.w3.org/2001/XMLSchema-instance&quot;), new DOMString(&quot;xsi&quot;), new DOMString(&quot;type&quot;), new DOMString(T::QUALIFIED_TYPE));
+      
+      // this makes the generated code only compatible with types from the rdaconfig schema
+      //element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMajor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMajor()->maxInclusiveCFacet().stringValue());
+      //element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMinor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMinor()->maxInclusiveCFacet().stringValue());
+    }
+  }
     </xsl:for-each>        
   </xsl:if>  
 
@@ -367,6 +384,12 @@ class Document : public XMLSchema::TDocument
     initFSM();
     DOM::Document::attributeDefaultQualified(<xsl:value-of select="$attributeDefaultQualified"/>);
     DOM::Document::elementDefaultQualified(<xsl:value-of select="$elementDefaultQualified"/>);
+    <xsl:for-each select="/*[local-name()='schema']">
+	<xsl:for-each select="namespace::*">
+		<xsl:variable name="attrName"><xsl:value-of select="name()"/></xsl:variable>
+    DOM::Document::addPrefixedNamespace(&quot;<xsl:value-of select="$attrName"/>&quot;, &quot;<xsl:value-of select="."/>&quot;);</xsl:for-each>
+    </xsl:for-each>
+
     <xsl:if test="$cntTLE=1">
     if(buildTree()) 
     {
@@ -391,7 +414,13 @@ class Document : public XMLSchema::TDocument
     <xsl:variable name="cppNameFunction"><xsl:call-template name="T_get_cppNameUseCase_ElementAttr"><xsl:with-param name="useCase" select="'functionName'"/></xsl:call-template></xsl:variable>
     <xsl:variable name="cppTypePtrShort"><xsl:call-template name="T_get_cppTypeSmartPtrShort_ElementAttr"/></xsl:variable>
     <xsl:variable name="cppPtrNsUri"><xsl:call-template name="T_get_cppPtr_targetNsUri_ElementAttr"/></xsl:variable>
-    XMARKER <xsl:value-of select="$cppFsmName"/> = new XsdFSM&lt;<xsl:value-of select="$cppTypePtrShort"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/>),  XsdEvent::ELEMENT_START, new object_unary_mem_fun_t&lt;<xsl:value-of select="$cppTypePtrShort"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(this, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>));
+    <xsl:variable name="fsmTplType">
+      <xsl:choose>
+        <xsl:when test="local-name()='attribute'"><xsl:value-of select="$cppTypePtrShort"/></xsl:when>
+        <xsl:when test="local-name()='element'">XmlElement*</xsl:when>
+      </xsl:choose>
+  </xsl:variable>
+    XMARKER <xsl:value-of select="$cppFsmName"/> = new XsdFSM&lt;<xsl:value-of select="$fsmTplType"/>&gt;( Particle(<xsl:value-of select="$cppPtrNsUri"/>,  DOMString("<xsl:call-template name="T_get_name_ElementAttr"/>"), <xsl:call-template name="T_get_minOccurence"/>, <xsl:call-template name="T_get_maxOccurence"/>),  XsdEvent::ELEMENT_START, new object_unary_mem_fun_t&lt;<xsl:value-of select="$fsmTplType"/>, <xsl:value-of select="$schemaComponentName"/>, FsmCbOptions&gt;(this, &amp;<xsl:value-of select="$schemaComponentName"/>::create_<xsl:value-of select="$cppNameFunction"/>));
   </xsl:for-each>  
 
   <xsl:call-template name="ITERATE_SCHEMA_INCLUDES">
@@ -429,6 +458,10 @@ class Document : public XMLSchema::TDocument
           event.cbOptions.isSampleCreate = true;
         }
         _fsm->processEventThrow(event); 
+        
+        // this makes the generated code only compatible with types from the rdaconfig schema
+        //element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMajor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMajor()->maxInclusiveCFacet().stringValue());
+        //element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMinor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMinor()->maxInclusiveCFacet().stringValue());        
       }
     }
     </xsl:for-each>        
@@ -639,12 +672,15 @@ XML Representation Summary: element Element Information Item
 /// The class for element <xsl:value-of select="$expandedQName"/> with following structure: 
 /// \n complexType->ModelGroup-or-ModelGroupDefinition
 /// Read more on structures/methods inside ...
-class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;XMLSchema::Types::anyType&gt;
+class <xsl:value-of select="$cppName"/> : public XMLSchema::Types::anyType
 {
   public:
 
     /// constructor for the element node
-    MEMBER_FN <xsl:value-of select="$cppName"/>(ElementCreateArgs args){};
+    MEMBER_FN <xsl:value-of select="$cppName"/>(AnyTypeCreateArgs args);
+
+    /// destructor
+    MEMBER_FN ~<xsl:value-of select="$cppName"/>() {}
 
   <xsl:for-each select="*[local-name()='complexType']">
     <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
@@ -702,12 +738,12 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;XMLSch
 /// The class for element <xsl:value-of select="$elemName"/> with following structure: 
 /// \n complexType->complexContent->restriction
 /// \n Refer to documentation on structures/methods inside ...
-class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;
+class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/>
 {
   public:
 
   /// constructor for the element node
-  MEMBER_FN <xsl:value-of select="$elemName"/>(ElementCreateArgs args);
+  MEMBER_FN <xsl:value-of select="$elemName"/>(AnyTypeCreateArgs args);
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$elemName"/>
@@ -752,12 +788,12 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
 /// The class for element <xsl:value-of select="$elemName"/> with following structure: 
 /// \n complexType->complexContent->extension
 /// \n Refer to documentation on structures/methods inside ...
-class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;
+class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/>
 {
   public:
 
   /// constructor for the element node
-  MEMBER_FN <xsl:value-of select="$elemName"/>(ElementCreateArgs args);
+  MEMBER_FN <xsl:value-of select="$elemName"/>(AnyTypeCreateArgs args);
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$elemName"/>
@@ -769,6 +805,15 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
 </xsl:template>
 
 
+<xsl:template name="T_findDefaultNamespace">
+    <xsl:variable name="targetNamespace"><xsl:value-of select="/*[local-name()='schema']/@targetNamespace"/></xsl:variable>
+    <xsl:for-each select="/*[local-name()='schema']">
+	<xsl:for-each select="namespace::*">
+            <xsl:variable name="ns"><xsl:value-of select="."/></xsl:variable>
+            <xsl:if test="$targetNamespace=$ns"><xsl:value-of select="name()"/></xsl:if>
+        </xsl:for-each>
+    </xsl:for-each>
+</xsl:template>
 
 
 <xsl:template name="DEFINE_INLINE_COMPLEXTYPE_ELEMENT_WITH_SIMPLECONTENT_H">
@@ -818,12 +863,12 @@ class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:v
 /// The class for element <xsl:value-of select="$elemName"/> with following structure: 
 /// \n complexType->simpleContent->extension
 /// \n Refer to documentation on structures/methods inside ...
-class <xsl:value-of select="$cppName"/> : public XMLSchema::XmlElement&lt;<xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/>&gt;
+class <xsl:value-of select="$cppName"/> : public <xsl:value-of select="$cppNSDeref"/>::<xsl:value-of select="$baseCppType"/>
 {
   public:
 
   /// constructor for the element node
-  MEMBER_FN <xsl:value-of select="$elemName"/>(ElementCreateArgs args);
+  MEMBER_FN <xsl:value-of select="$elemName"/>(AnyTypeCreateArgs args);
 
   <xsl:call-template name="DEFINE_BODY_COMPLEXTYPE_H">
     <xsl:with-param name="schemaComponentName" select="$elemName"/>

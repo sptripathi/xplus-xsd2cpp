@@ -100,9 +100,9 @@ void populateDocument(STDemo::Document* xsdDoc)
   // set some text nodes which also do the job of describing the element sections
   rootElem->setTextAmongChildrenAt("\nHere you will see some examples of simpleType elements", 0);
   rootElem->setTextAmongChildrenAt("\nFollowing are examples of -atomic- simpleType elements", 1);
-  markerNode = rootElem->element_aCommonName();
+  markerNode = rootElem->element_aCommonName()->ownerElement();
   rootElem->setTextAfterNode("End of -atomic- simpleType elements\n  Following are examples of -list- simpleType elements", markerNode);
-  markerNode = rootElem->element_aListOfTwoIntMax3k();
+  markerNode = rootElem->element_aListOfTwoIntMax3k()->ownerElement();
   rootElem->setTextAfterNode("End of -list- simpleType elements\n Following are examples of -union- simpleType elements", markerNode);
   rootElem->setTextEnd("End of -union- simpleType elements\nEnd of all example elements");
 

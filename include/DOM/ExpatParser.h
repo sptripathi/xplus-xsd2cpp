@@ -60,6 +60,7 @@ struct ParserUserData {
   void *userData;
 
   ParserUserData():
+    parser(NULL),
     userData(NULL)
   {
   }

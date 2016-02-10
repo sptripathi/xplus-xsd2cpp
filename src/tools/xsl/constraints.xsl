@@ -1008,11 +1008,12 @@ All of the following must be true:
   </xsl:variable>
 
   <xsl:variable name="D" select="exsl:node-set($DXml)/*[local-name()='simpleTypeDefinition']"/>
+<!--
   <xsl:call-template name="print_xml_variable">
       <xsl:with-param name="xmlVar" select="$D"/>
       <xsl:with-param name="filePath" select="'/tmp/D.xml'"/>
   </xsl:call-template>
-
+-->
   <xsl:if test="not($D/baseTypeDef/*[local-name()='simpleTypeDefinition'])">
     <xsl:call-template name="T_rule_violated">
       <xsl:with-param name="ruleStr">The base-type-definition of a simple-type-definition should be a simple-type-definition</xsl:with-param>

@@ -307,7 +307,7 @@ void populateDocument(simplest::Document xsdDoc)
   }
   else
   {
-    XPlus::List<simplest::items::item_ptr>  list_items2 = pItems->set_count_item(2);
+    XPlus::List<simplest::items::item_p>  list_items2 = pItems->set_count_item(2);
     list_items2.at(0)->stringValue("one");
     list_items2.at(1)->stringValue("two");
   }

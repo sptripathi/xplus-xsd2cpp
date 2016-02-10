@@ -46,7 +46,6 @@ using namespace std;
 using namespace XPlus;
 using XPlus::Namespaces;
 
-
 namespace FSM {
 
   class XsdFsmBase;
@@ -98,7 +97,7 @@ struct FsmCbOptions
   bool isDefaultCreate;
   bool isSampleCreate;
   
-  FsmCbOptions(DOMString xsiType="", DOMString xsiNil="", DOMString xsiSchemaLocation="", DOMString xsiNoNamespaceSchemaLocation=""):
+  FsmCbOptions(DOMString /*xsiType*/="", DOMString /*xsiNil*/="", DOMString /*xsiSchemaLocation*/="", DOMString /*xsiNoNamespaceSchemaLocation*/=""):
     xsiType(""),
     xsiNil(""),
     xsiSchemaLocation(""),
@@ -106,10 +105,6 @@ struct FsmCbOptions
     isDefaultCreate(false),
     isSampleCreate(false)
     {
-      USED(xsiType);
-      USED(xsiNil);
-      USED(xsiSchemaLocation);
-      USED(xsiNoNamespaceSchemaLocation);
     }
 
     void printDebug() {
@@ -148,6 +143,16 @@ struct XsdEvent
     fsmType(fsmType_),
     docBuilding(docBuilding_)
   {
+  }
+
+  XsdEvent(DOMString* nsUri_, DOMString* nsPrefix_, DOMString localName_, DOMString xsiType_, XsdEvent::XsdFsmType fsmType_, bool docBuilding_=true):
+    nsUri(nsUri_),
+    nsPrefix(nsPrefix_),
+    localName(localName_),
+    fsmType(fsmType_),
+    docBuilding(docBuilding_)
+  {
+	cbOptions.xsiType = xsiType_;
   }
 
 };
@@ -289,7 +294,6 @@ class XsdFSM : public XsdFsmBase
 
     // copy constructor
     XsdFSM(const XsdFSM& xsdFsm):
-      XPlusObject(),
       //_nsName(xsdFsm.nsName()),
       _eventIds(xsdFsm.eventIds()),
       _eventNames(xsdFsm.eventNames()),
@@ -390,7 +394,18 @@ class XsdFSM : public XsdFsmBase
         // being ELEMENT_START, because there are templates of XsdFSM<void *>
         // and void* fails to dynamic_cast to a class* eg Node*
         //Node* pNode = static_cast<Node *>(const_cast<void *>(_nodeList.back()));
-        const Node* pNode = static_cast<const Node *>(_nodeList.back());
+	/*XMLSchema::Types::anyType* at = dynamic_cast<XMLSchema::Types::anyType*>(_nodeList.back());
+	if (at)
+	{
+		const Node* pNode = static_cast<const Node *>(_nodeList.back()->ownerNode());
+        	return const_cast<Node *>(pNode);  
+	}
+	else
+	{
+		const Node* pNode = static_cast<const Node *>(_nodeList.back());
+		return const_cast<Node *>(pNode);  
+	}*/
+	const Node* pNode = static_cast<const Node *>(_nodeList.back());
         return const_cast<Node *>(pNode);  
         //return dynamic_cast<Node *>(_nodeList.back());  
       }
@@ -419,7 +434,6 @@ class XsdFSM : public XsdFsmBase
     // else refer to parentFsm for previous sibling element
     virtual Node* previousSiblingElementInSchemaOrder(XsdFsmBase *callerFsm)
     {
-      USED(*callerFsm);
       Node *node = this->rightmostElement();
       if(node) {
         return node;
@@ -433,7 +447,6 @@ class XsdFSM : public XsdFsmBase
 
     virtual Node* nextSiblingElementInSchemaOrder(XsdFsmBase *callerFsm)
     {
-      USED(*callerFsm);
       //revisit:
       // if the node is being added at some index in elem[] array then
       // will need to find nexts-sibling here
@@ -951,7 +964,7 @@ struct BinaryFsmTree : public BinaryTree<XsdFsmBasePtr>
   }
 
     BinaryFsmTree(const BinaryFsmTree& ref):
-      BinaryTree<XsdFsmBasePtr>(ref),
+      BinaryTree<XsdFsmBasePtr>(),
       _minDepth(ref._minDepth),
       _maxDepth(ref._maxDepth),
       _unitFsm(NULL)

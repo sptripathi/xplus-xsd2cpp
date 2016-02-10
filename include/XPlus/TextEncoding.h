@@ -56,7 +56,7 @@ namespace XPlus
         return _encoding;
       }
       
-      inline const string toString() const {
+      inline string toString() const {
         return enumToString(_encoding);
       }
 
@@ -68,6 +68,6 @@ namespace XPlus
       eTextEncoding _encoding;
       static string  s_encodingStr[MAX_ENC];
   };
-}
+};
 
 #endif

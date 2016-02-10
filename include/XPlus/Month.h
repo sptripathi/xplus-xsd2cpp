@@ -77,6 +77,6 @@ namespace XPlus
       }
 
   };
-}
+};
 
 #endif

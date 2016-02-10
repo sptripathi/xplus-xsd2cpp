@@ -117,8 +117,8 @@ namespace DOM
 
       inline bool operator==(const NodeNSTriplet& nsTriplet) const {
 
-        return ( ( this->nsUri() == nsTriplet.nsUri() ) & 
-            ( this->nsPrefix() == nsTriplet.nsPrefix() ) ||
+        return ( (( this->nsUri() == nsTriplet.nsUri() ) &&
+            ( this->nsPrefix() == nsTriplet.nsPrefix() )) ||
             ( this->localName() == nsTriplet.localName())
             );
       }
@@ -212,8 +212,6 @@ public:
       Node* prevSibling=NULL,
       Node* nextSibling=NULL
   );
-
-  Node() {cout << "DOM::Node::Node()\n";};
 
   virtual ~Node();
 

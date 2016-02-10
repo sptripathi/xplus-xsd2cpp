@@ -86,14 +86,12 @@ class DOMParser : public ExpatParser
     void onDocumentEnd(void *userData);
     void createAccumulatedTextNode();
 
-    inline bool beginOfCDATASection() {
+    inline void beginOfCDATASection() {
       _cdataInProgress = true;
-      return true;
     }
-    inline bool endOfCDATASection() {
+    inline void endOfCDATASection() {
       _cdataInProgress = false;
       resetCDATABuffer();
-      return true;
     }
     inline bool isCDATAInProgress() {
       return _cdataInProgress;

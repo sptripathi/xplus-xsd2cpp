@@ -145,5 +145,57 @@ namespace DOM
     return (getAttributeNodeNS(namespaceURI, localName) != NULL);
   }
 
+  Element* Element::copy(DOMString* tagName, Document* ownerDocument, Node* parentNode, Node* prevSibling, Node* nextSibling)
+  {
+      Element* res = new Element(tagName ? tagName : new DOMString(*getTagName()),
+              getNamespaceURI()?new DOMString(*getNamespaceURI()):NULL,
+              getNamespacePrefix()?new DOMString(*getNamespacePrefix()):NULL,
+              ownerDocument, parentNode, prevSibling, nextSibling);
+
+      Node* lastInsertedChild = NULL;
+
+      for (unsigned int i = 0 ; i < getChildNodes().getLength() ; i++)
+      {
+          Node* child = getChildNodes().item(i);
+          if (dynamic_cast<Element*>(child))
+          {
+              Element* childElt = dynamic_cast<Element*>(child);
+              lastInsertedChild = childElt->copy(NULL, ownerDocument, res, lastInsertedChild, NULL);
+          }
+      }
+
+      const NamedNodeMap& atts = getAttributes();
+      for(unsigned int i = 0; i < atts.length(); i++)
+      {
+          const Node* attr = atts.item(i);
+          if(attr)
+          {
+              const Attribute* childAttr = dynamic_cast<const Attribute*>(attr);
+              new Attribute(new DOMString(*(childAttr->getName())),
+                      childAttr->getValue()?new DOMString(*(childAttr->getValue())):NULL,
+                      childAttr->getNamespaceURI()?new DOMString(*(childAttr->getNamespaceURI())):NULL,
+                      childAttr->getNamespacePrefix()?new DOMString(*(childAttr->getNamespacePrefix())):NULL,
+                      res, ownerDocument);
+          }
+      }
+
+      for (unsigned int i = 0 ; i < getChildNodes().getLength() ; i++)
+      {
+          Node* child = getChildNodes().item(i);
+          if (dynamic_cast<TextNode*>(child))
+          {
+              TextNode* childTxt = dynamic_cast<TextNode*>(child);
+              new TextNode(new DOMString(*(childTxt->getNodeValue())), ownerDocument, res, NULL);
+          }
+          else if (dynamic_cast<CDATASection*>(child))
+          {
+              CDATASection* childTxt = dynamic_cast<CDATASection*>(child);
+              new CDATASection(new DOMString(*(childTxt->getNodeValue())), ownerDocument, res, NULL);
+          }
+      }
+
+      return res;
+  }
+
   
 }

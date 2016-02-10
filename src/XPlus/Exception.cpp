@@ -51,6 +51,14 @@ namespace XPlus
     _contextMap.insert(pair<string, string>(name, toString<const double>(value)));
   }
 
+  std::map<std::string, std::string> Exception::getContext() {
+    return _contextMap;
+  }
+
+  std::string Exception::getContext(const string name) {
+    return _contextMap[name];
+  }
+
   void Exception::appendException(const Exception& ex)
   {
     this->appendMsg(ex.rawMsg());

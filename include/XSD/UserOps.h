@@ -48,7 +48,8 @@ namespace XSD
 
         UserOpsCbStruct():
           cbPopulateDocument(NULL),
-          cbUpdateOrConsumeDocument(NULL)
+          cbUpdateOrConsumeDocument(NULL),
+		  cbChooseDocumentElement(NULL)
         {
         }
       };

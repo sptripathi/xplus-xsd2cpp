@@ -30,8 +30,6 @@ extern "C" {
 
 using namespace std;
 
-#include <assert.h>
-
 namespace XPlus
 {
   template <class T>
@@ -440,17 +438,17 @@ namespace XPlus
         return false;
       }
 
-      bool addNodeAsLeaf(TreeNodePtr node)
+      void addNodeAsLeaf(TreeNodePtr node)
       {
         _leaves.push_back(node);
-        return true;
       }
 
 
       bool addNodeAsLeafAlongAnotherLeafNode(TreeNodePtr& referenceNode, TreeNodePtr& node, bool before=true)
       {
         if(referenceNode.isNull()) {
-          return addNodeAsLeaf(node);
+          addNodeAsLeaf(node);
+          return true;
         }
 
         typename list<TreeNodePtr>::iterator cit = _leaves.begin();

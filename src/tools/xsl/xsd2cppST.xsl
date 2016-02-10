@@ -897,6 +897,9 @@ namespace Types
         <xsl:when test="$hasADTImpl='true'">
       _implValue = stringToType(_value);
         </xsl:when>
+        <xsl:when test="$implType = 'bool'">
+      _implValue = (_value == "true");   
+        </xsl:when>
         <xsl:otherwise>
       _implValue = fromString&lt;<xsl:value-of select="$implType"/>&gt;(_value);
         </xsl:otherwise>
