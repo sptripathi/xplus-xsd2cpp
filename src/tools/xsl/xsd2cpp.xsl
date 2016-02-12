@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 // This file is part of XmlPlus package
 // 
@@ -26,7 +25,6 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
 //
 -->
-
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 targetNamespace="http://www.w3.org/2001/XMLSchema"
@@ -336,8 +334,11 @@ class Document : public XMLSchema::TDocument
       <xsl:value-of select="$cppNameUseCase"/>-&gt;createAttributeNS(new DOMString(&quot;http://www.w3.org/2001/XMLSchema-instance&quot;), new DOMString(&quot;xsi&quot;), new DOMString(&quot;type&quot;), new DOMString(T::QUALIFIED_TYPE));
       
       // this makes the generated code only compatible with types from the rdaconfig schema
-      //element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMajor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMajor()->maxInclusiveCFacet().stringValue());
-      //element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMinor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMinor()->maxInclusiveCFacet().stringValue());
+      //element_<xsl:value-of select="$cppName"/>()-&gt;mark_present_attr_schemaMajor();
+      //element_<xsl:value-of select="$cppName"/>()-&gt;mark_present_attr_schemaMinor();
+      
+      element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMajor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMajor()->maxInclusiveCFacet().stringValue());
+      element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMinor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMinor()->maxInclusiveCFacet().stringValue());
     }
   }
     </xsl:for-each>        
@@ -466,8 +467,11 @@ class Document : public XMLSchema::TDocument
         _fsm->processEventThrow(event); 
         
         // this makes the generated code only compatible with types from the rdaconfig schema
-        //element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMajor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMajor()->maxInclusiveCFacet().stringValue());
-        //element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMinor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMinor()->maxInclusiveCFacet().stringValue());        
+        //element_<xsl:value-of select="$cppName"/>()-&gt;mark_present_attr_schemaMajor();
+        //element_<xsl:value-of select="$cppName"/>()-&gt;mark_present_attr_schemaMinor();
+      
+        element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMajor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMajor()->maxInclusiveCFacet().stringValue());
+        element_<xsl:value-of select="$cppName"/>()-&gt;set_attr_schemaMinor(element_<xsl:value-of select="$cppName"/>()-&gt;attribute_attr_schemaMinor()->maxInclusiveCFacet().stringValue());        
       }
     }
     </xsl:for-each>        

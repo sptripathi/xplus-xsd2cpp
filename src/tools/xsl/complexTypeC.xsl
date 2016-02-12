@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 // This file is part of XmlPlus package
 // 
@@ -1747,11 +1746,11 @@ namespace Types
     </xsl:choose>
     
     <xsl:if test="$parentSchemaComponentName='Document' and local-name()='element'">
-    //if (buildTree())
-    //{
-    //	node-&gt;set_attr_schemaMajor(node-&gt;attribute_attr_schemaMajor()->maxInclusiveCFacet().stringValue());
-    //	node-&gt;set_attr_schemaMinor(node-&gt;attribute_attr_schemaMinor()->maxInclusiveCFacet().stringValue());
-    //}            
+    if (buildTree())
+    {
+    	node-&gt;set_attr_schemaMajor(node-&gt;attribute_attr_schemaMajor()->maxInclusiveCFacet().stringValue());
+    	node-&gt;set_attr_schemaMinor(node-&gt;attribute_attr_schemaMinor()->maxInclusiveCFacet().stringValue());
+    }            
     </xsl:if>
     
     <xsl:choose>
@@ -1969,3 +1968,4 @@ namespace Types
 
 
 </xsl:stylesheet>
+
