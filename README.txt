@@ -27,8 +27,8 @@ Currently Supported Encodings:
 
 Links:
 =====
-•	Project’s hosting at google-code: 
-      http://code.google.com/p/xplus-xsd2cpp/
+•	Project’s hosting at github: 
+        https://github.com/sptripathi/xplus-xsd2cpp
 
 •	Download link(compressed,tarball of source package) on sourceforge.net:
       http://sourceforge.net/projects/xmlplus/
